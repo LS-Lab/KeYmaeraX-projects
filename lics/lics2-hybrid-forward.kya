@@ -1,4 +1,4 @@
-﻿ArchiveEntry "LICS: 4a safe stopping of time-triggered car".
+﻿ArchiveEntry "LICS 2: Single car drives forward".
 
 Functions.        /* function symbols cannot change their value */
   R b().          /* braking capabilities */
@@ -15,29 +15,39 @@ ProgramVariables. /* program variables may change their value over time */
 End.
 
 Problem.          /* differential dynamic logic formula */
-    v^2<=2*b*(m-x) & v>=0  & A>=0 & b>0
+    v>=0  & A>=0 & b>0
  -> [
       {
-        {?(2*b*(m-x) >= v^2+(A+b)*(A*ep^2+2*ep*v)); a:=A; ++ a:=-b; }
-        t := 0;
-        {x'=v, v'=a, t'=1 & v>=0 & t<=ep}
-      }*@invariant(v^2<=2*b*(m-x))
-    ] x <= m
+        {a:=A; ++ a:=-b;}
+        {x'=v, v'=a & v>=0}
+      }*@invariant(v>=0)
+    ] v>=0
 End.
 
-Tactic "LICS: 4a safety of time-triggered car: Interactive Proof".
-  implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
-  QE,
-  QE,
+Tactic "LICS 2: Single car drives forward: Interactive Proof".
+  implyR(1) ; loop({`v>=0`}, 1) ; <(
+  closeId,
+  closeId,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
-    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; composeb(1) ; assignb(1) ; solve(1) ; QE,
-    assignb(1) ; composeb(1) ; assignb(1) ; solve(1) ; QE
+    assignb(1) ; solve(1) ; QE,
+    assignb(1) ; solve(1) ; QE
     )
   )
 End.
        
-Tactic "LICS: 4a safety of time-triggered car: Automatic Proof".
+Tactic "LICS 2: Single car drives forward: Automatic Proof".
   master
+End.
+       
+Tactic "LICS 2: Single car drives forward: Clever Proof".
+  implyR(1) ; loop({`v>=0`}, 1) ; <(
+  closeId,
+  closeId,
+  composeb(1) ; choiceb(1) ; andR(1) ; <(
+    assignb(1) ; dW(1) ; prop,
+    assignb(1) ; dW(1) ; prop
+    )
+  )
 End.
        
 
