@@ -2,7 +2,7 @@
 
 Functions.        /* function symbols cannot change their value */
   R b().          /* braking capabilities */
-  R A().           /* maximum acceleration */
+  R A().          /* maximum acceleration */
   R ep().         /* reaction time */
 End.
 
