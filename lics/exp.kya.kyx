@@ -1,0 +1,104 @@
+﻿ArchiveEntry "Exponential Decay".
+
+/**
+ * Exponential Decay.
+ */
+ProgramVariables.
+  R x.
+End.
+
+Problem.
+  x>1 -> [{x'=-x}]x>0
+End.
+
+Tactic "Exponential Decay from tactic".
+  implyR(1) ; dG({`y`}, {`1/2`}, {`0`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE
+End.
+ 
+Tactic "Exponential Decay: Automatic".
+  master
+End.
+ 
+
+End.
+
+ArchiveEntry "Exponential Growth".
+
+/**
+ * Exponential Growth.
+ */
+ProgramVariables.
+  R x.
+End.
+
+Problem.
+  x>1 -> [{x'=x}]x>0
+End.
+
+Tactic "Exponential Growth from tactic".
+  implyR(1) ; dG({`y`}, {`-1/2`}, {`0`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE
+End.
+
+Tactic "Exponential Growth: Automatic".
+  master
+End.
+
+
+End.
+
+
+ArchiveEntry "Exponential at Equilibrium".
+
+/**
+* Exponential at equilibrium.
+*/
+ProgramVariables.
+ R x.
+End.
+
+Problem.
+ x=0 -> [{x'=x}]x=0
+End.
+
+
+Tactic "Exponential at Equilibrium from tactic".
+ implyR(1) ; dG({`y`}, {`-1`}, {`0`}, {`y>0&x*y=0`}, 1) ; boxAnd(1.0) ; dI(1.0.1) ; dG({`z`}, {`1/2`}, {`0`}, {`y*z^2=1`}, 1.0.0) ; dI(1.0.0.0) ; QE
+End.
+
+Tactic "Exponential at Equilibrium: top-level proof".
+ implyR(1) ; dG({`y`}, {`-1`}, {`0`}, {`y>0&x*y=0`}, 1) ; existsR({`1`}, 1) ; boxAnd(1) ; andR(1) ; <(
+ dG({`z`}, {`1/2`}, {`0`}, {`z^2*y=1`}, 1) ; existsR({`1`}, 1) ; dI(1),
+ dI(1)
+ )
+End.
+
+Tactic "Exponential at Equilibrium: Automatic".
+ master
+End.
+
+
+End.
+
+ArchiveEntry "Exponential difference".
+
+/**
+ * Exponential difference.
+ */
+ProgramVariables.
+  R x.
+End.
+
+Problem.
+  x!=0 -> [{x'=x}]x!=0
+End.
+
+
+Tactic "Exponential difference from tactic".
+  implyR(1) ; dG({`y`}, {`-1`}, {`0`}, {`x*y=1`}, 1) ; dI(1.0) ; QE
+End.
+   
+Tactic "Exponential difference: top-level proof".
+  implyR(1) ; dG({`y`}, {`-1`}, {`0`}, {`x*y=1`}, 1) ; existsR({`1/x`}, 1) ; dI(1)
+End.
+   
+End.
