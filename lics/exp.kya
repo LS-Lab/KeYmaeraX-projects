@@ -1,4 +1,4 @@
-﻿ArchiveEntry "Exponential Decay".
+﻿ArchiveEntry "Exponential Decay: [x'=-x]x>0".
 
 /**
  * Exponential Decay.
@@ -22,7 +22,7 @@ End.
 
 End.
 
-ArchiveEntry "Exponential Growth".
+ArchiveEntry "Exponential Growth: [x'=x]x>0".
 
 /**
  * Exponential Growth.
@@ -47,7 +47,7 @@ End.
 End.
 
 
-ArchiveEntry "Exponential at Equilibrium".
+ArchiveEntry "Exponential at Equilibrium [x'=x]x=0".
 
 /**
 * Exponential at equilibrium.
@@ -79,7 +79,7 @@ End.
 
 End.
 
-ArchiveEntry "Exponential difference".
+ArchiveEntry "Exponential difference [x'=x]x!=0".
 
 /**
  * Exponential difference.
