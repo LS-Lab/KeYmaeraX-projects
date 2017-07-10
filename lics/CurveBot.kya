@@ -1,0 +1,64 @@
+﻿ArchiveEntry "CurveBot".
+
+/**
+ * CurveBot: run a robot round the bend
+ */
+ProgramVariables.
+  R x.    /* robot position: x */
+  R y.    /* robot position: y */
+  R v.    /* robot orientation in x direction */
+  R w.    /* robot orientation in y direction */
+  R om.   /* robot rotational velocity */
+  R ox.   /* x position summary of obstacle */
+  R oy.   /* y position summary of obstacle */
+  /* cx:=x+w/om; cy:=y-v/om; center for om of radius \sqrt{v^2+w^2}/|om| */
+  /* v:=om*(y-cy); w:=-om*(x-cx); direction for center (cx,cy) */
+End.
+    
+Problem.
+  x!=ox | y!=oy ->
+  [{
+    {?(x+w/-1-ox)^2+(y-v/-1-oy)^2!=v^2+w^2; om:=-1;
+    ++ ?(x+w-ox)^2+(y-v-oy)^2!=v^2+w^2; om:=1;
+    ++ ?(ox-x)*w!=(oy-y)*v; om:=0;}
+    {x'=v,y'=w,v'=om*w,w'=-om*v}
+    /*@invariant(
+      v=om*(y-old(y-v/om))&w=-om*(x-old(x+w/om)),
+      (x+w/om-ox)^2+(y-v/om-oy)^2!=v^2+w^2,
+    )*/
+   }*@invariant(!(x=ox & y=oy))
+  ] !(x=ox & y=oy)
+End.
+
+Tactic "CurveBot: Proof".
+  implyR(1) ; loop({`!(x=ox&y=oy)`}, 1) ; <(
+  QE,
+  closeId,
+  composeb(1) ; choiceb(1) ; andR(1) ; <(
+    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dC({`v=-1*(y-old(y-v/-1))&w=1*(x-old(x+w/-1))`}, 1) ; <(
+      dC({`(x+w/-1-ox)^2+(y-v/-1-oy)^2!=v^2+w^2`}, 1) ; <(
+        dW(1) ; QE,
+        dI(1)
+        ),
+      dI(1)
+      ),
+    choiceb(1) ; andR(1) ; <(
+      composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dC({`v=1*(y-old(y-v/1))&w=-1*(x-old(x+w/1))`}, 1) ; <(
+        dC({`(x+w/1-ox)^2+(y-v/1-oy)^2!=v^2+w^2`}, 1) ; <(
+          dW(1) ; QE,
+          dI(1)
+          ),
+        dI(1)
+        ),
+      composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dG({`t`}, {`0`}, {`1`}, {`!(x=ox&y=oy)`}, 1) ; existsR({`0`}, 1) ; dC({`v=old(v)&w=old(w)&x=old(x)+v*t&y=old(y)+w*t`}, 1) ; <(
+        dW(1) ; QE,
+        dI(1)
+        )
+      )
+    )
+  )
+End.
+       
+
+End.
+       
