@@ -23,7 +23,6 @@ End.
        
 
 End.
-       
 ArchiveEntry "LICS: 2 Single car drives forward".
 
 Functions.        /* function symbols cannot change their value */
@@ -47,6 +46,17 @@ Problem.          /* differential dynamic logic formula */
     ] v>=0
 End.
 
+Tactic "LICS: 2 Single car drives forward: Clever Proof".
+implyR(1) ; loop({`v>=0`}, 1) ; <(
+  closeId,
+  closeId,
+  composeb(1) ; choiceb(1) ; andR(1) ; <(
+    assignb(1) ; dW(1) ; prop ; done,
+    assignb(1) ; dW(1) ; prop ; done
+    )
+  )
+End.
+
 Tactic "LICS: 2 Single car drives forward: Interactive Proof".
   implyR(1) ; loop({`v>=0`}, 1) ; <(
   closeId,
@@ -62,20 +72,8 @@ Tactic "LICS: 2 Single car drives forward: Automatic Proof".
   master
 End.
        
-Tactic "LICS: 2 Single car drives forward: Clever Proof".
-  implyR(1) ; loop({`v>=0`}, 1) ; <(
-  closeId,
-  closeId,
-  composeb(1) ; choiceb(1) ; andR(1) ; <(
-    assignb(1) ; dW(1) ; prop,
-    assignb(1) ; dW(1) ; prop
-    )
-  )
-End.
-       
 
 End.
-
 ArchiveEntry "LICS: 4a safe stopping of time-triggered car".
 
 Functions.        /* function symbols cannot change their value */
@@ -103,6 +101,20 @@ Problem.          /* differential dynamic logic formula */
     ] x <= m
 End.
 
+Tactic "LICS: 4a safety of time-triggered car: Clever Proof".
+implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
+  closeId,
+  QE,
+  composeb(1) ; choiceb(1) ; andR(1) ; <(
+    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; composeb(1) ; assignb(1) ; dC({`2*b()*(m-x)>=v^2+(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)`}, 1) ; <(
+      dW(1) ; QE,
+      dI(1)
+      ),
+    assignb(1) ; composeb(1) ; assignb(1) ; dI(1)
+    )
+  )
+End.
+
 Tactic "LICS: 4a safety of time-triggered car: Interactive Proof".
   implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
   QE,
@@ -120,8 +132,6 @@ End.
        
 
 End.
-
-
 ArchiveEntry "Bouncing Ball".
 
 Functions.        /* function symbols cannot change their value */
@@ -145,6 +155,20 @@ Problem.
       {?x=0; v:=-c*v;  ++  ?x!=0;}
     }*@invariant(2*g*x<=2*g*H-v^2 & x>=0)
   ] (x>=0 & x<=H)
+End.
+
+Tactic "Bouncing Ball: Clever Proof".
+implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
+  QE,
+  QE,
+  composeb(1) ; dC({`2*g()*x<=2*g()*H()-v^2`}, 1) ; <(
+    dW(1) ; implyR(1) ; choiceb(1) ; andR(1) ; <(
+      composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE,
+      testb(1) ; implyR(1) ; prop ; done
+      ),
+    dI(1)
+    )
+  )
 End.
 
 Tactic "Bouncing Ball: generalizing as in book".
@@ -186,8 +210,6 @@ End.
        
 
 End.
-
-
 ArchiveEntry "Simple rotational dynamics".
 
 ProgramVariables.
@@ -201,13 +223,12 @@ Problem.
     [{v'=w,w'=-v}@invariant(v^2+w^2-r^2=0)] v^2+w^2-r^2=0
 End.
 
-Tactic "Simple rotational dynamics: Proof 1".
+Tactic "10: Simple rotational dynamics: Proof 1".
   implyR(1) ; dI(1)
 End.
        
 
 End.
-
 ArchiveEntry "Damped Oscillator".
 
 Functions.        /* function symbols cannot change their value */
@@ -263,8 +284,6 @@ End.
        
 
 End.
-
-
 ArchiveEntry "Exponential Decay: [x'=-x]x>0".
 
 /**
@@ -287,4 +306,85 @@ Tactic "Exponential Decay: Automatic".
 End.
  
 
+End.
+
+ArchiveEntry "Exponential Growth: [x'=x]x>0".
+
+/**
+ * Exponential Growth.
+ */
+ProgramVariables.
+  R x.
+End.
+
+Problem.
+  x>1 -> [{x'=x}]x>0
+End.
+
+Tactic "Exponential Growth from tactic".
+  implyR(1) ; dG({`y`}, {`-1/2`}, {`0`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE
+End.
+
+Tactic "Exponential Growth: Automatic".
+  master
+End.
+
+
+End.
+
+
+ArchiveEntry "Exponential at Equilibrium [x'=x]x=0".
+
+/**
+* Exponential at equilibrium.
+*/
+ProgramVariables.
+ R x.
+End.
+
+Problem.
+ x=0 -> [{x'=x}]x=0
+End.
+
+
+Tactic "Exponential at Equilibrium from tactic".
+ implyR(1) ; dG({`y`}, {`-1`}, {`0`}, {`y>0&x*y=0`}, 1) ; boxAnd(1.0) ; dI(1.0.1) ; dG({`z`}, {`1/2`}, {`0`}, {`y*z^2=1`}, 1.0.0) ; dI(1.0.0.0) ; QE
+End.
+
+Tactic "Exponential at Equilibrium: top-level proof".
+ implyR(1) ; dG({`y`}, {`-1`}, {`0`}, {`y>0&x*y=0`}, 1) ; existsR({`1`}, 1) ; boxAnd(1) ; andR(1) ; <(
+ dG({`z`}, {`1/2`}, {`0`}, {`z^2*y=1`}, 1) ; existsR({`1`}, 1) ; dI(1),
+ dI(1)
+ )
+End.
+
+Tactic "Exponential at Equilibrium: Automatic".
+ master
+End.
+
+
+End.
+
+ArchiveEntry "Exponential difference [x'=x]x!=0".
+
+/**
+ * Exponential difference.
+ */
+ProgramVariables.
+  R x.
+End.
+
+Problem.
+  x!=0 -> [{x'=x}]x!=0
+End.
+
+
+Tactic "Exponential difference from tactic".
+  implyR(1) ; dG({`y`}, {`-1`}, {`0`}, {`x*y=1`}, 1) ; dI(1.0) ; QE
+End.
+   
+Tactic "Exponential difference: top-level proof".
+  implyR(1) ; dG({`y`}, {`-1`}, {`0`}, {`x*y=1`}, 1) ; existsR({`1/x`}, 1) ; dI(1)
+End.
+   
 End.
