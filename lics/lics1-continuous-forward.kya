@@ -13,7 +13,11 @@ Problem.          /* differential dynamic logic formula */
     ] v>=0
 End.
 
-Tactic "LICS: 1 Continuous car accelerates forward: Proof 1".
+Tactic "LICS: 1 Continuous car accelerates forward: Clever Proof".
+  implyR(1) ; dW(1) ; prop; done
+End.
+
+Tactic "LICS: 1 Continuous car accelerates forward: Interactive Proof".
   implyR(1) ; solve(1) ; QE
 End.
        
