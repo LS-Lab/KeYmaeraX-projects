@@ -11,8 +11,6 @@ ProgramVariables.
   R om.   /* robot rotational velocity */
   R ox.   /* x position summary of obstacle */
   R oy.   /* y position summary of obstacle */
-  /* cx:=x+w/om; cy:=y-v/om; center for om of radius \sqrt{v^2+w^2}/|om| */
-  /* v:=om*(y-cy); w:=-om*(x-cx); direction for center (cx,cy) */
 End.
     
 Problem.
@@ -22,10 +20,6 @@ Problem.
     ++ ?(x+w-ox)^2+(y-v-oy)^2!=v^2+w^2; om:=1;
     ++ ?(ox-x)*w!=(oy-y)*v; om:=0;}
     {x'=v,y'=w,v'=om*w,w'=-om*v}
-    /*@invariant(
-      v=om*(y-old(y-v/om))&w=-om*(x-old(x+w/om)),
-      (x+w/om-ox)^2+(y-v/om-oy)^2!=v^2+w^2,
-    )*/
    }*@invariant(!(x=ox & y=oy))
   ] !(x=ox & y=oy)
 End.
