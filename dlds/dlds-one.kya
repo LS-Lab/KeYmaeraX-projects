@@ -293,8 +293,8 @@ End.
 ArchiveEntry "Parachute".
 
 Functions.
-  R g() = (3).  /* square root of gravity */
-  R p() = (1).  /* square root of parachute drag coefficient */
+  R g() = (9).  /* gravity */
+  R p() = (1).  /* parachute drag coefficient */
   R a().        /* skydiver air drag coefficient */
   R m().        /* impact velocity */
   R T().        /* skydiver reaction time */
@@ -308,33 +308,33 @@ ProgramVariables.
 End.
 
 Problem.
-  g()>0 & p()>0 & p()^2>a() & a()>0 & T()>0 & m()< -g()/p() &
-  x>=0 & v<0 & v> -g()/p() & r=a()
+  g()>0 & p()>a() & a()>0 & T()>0 & m()< -(g()/p())^(1/2) &
+  x>=0 & v<0 & v> -(g()/p())^(1/2) & r=a()
 ->
 [ {
     {
-      ?(v - g()^2*T() > -g()/p() & r = a());
+      ?(v - g()*T() > -(g()/p())^(1/2) & r = a());
       ++
-      r := p()^2;
+      r := p();
     }
     t := 0;
-    {x'=v, v'=-g()^2+r*v^2, t'=1 & t<=T() & x>=0 & v<0}
-  }*@invariant((x>=0 & v<0) & v>-g()/p())
+    {x'=v, v'=-g()+r*v^2, t'=1 & t<=T() & x>=0 & v<0}
+  }*@invariant((x>=0 & v<0) & v>-(g()/p())^(1/2))
 ](x=0 -> v>=m())
 End.
 
-Tactic "Parachute: Interactive Proof".
-  implyR(1) ; loop({`(x>=0&v<0)& v>-g()/p()`}, 1) ; <(
+Tactic "Parachute: Proof 1".
+  implyR(1) ; loop({`(x>=0&v < 0)&v>-(9/1)^(1/2)`}, 1) ; <(
   QE,
   QE,
   boxAnd(1) ; andR(1) ; <(
     master,
     unfold ; <(
-      dC({`v>=old(v)-g()^2*t`}, 1) ; <(
+      dC({`v>=old(v)-9*t`}, 1) ; <(
         dW(1) ; QE,
         dI(1)
         ),
-      dG({`y'=(-1/2*1^2*(v-g()/p()))*y`}, {`y^2*(v+g()/p())=1`}, 1) ; dI(1.0) ; QE
+      dG({`y`}, {`-1/2*1*(v-(9/1)^(1/2))`}, {`0`}, {`y^2*(v+(9/1)^(1/2))=1`}, 1) ; dI(1.0) ; QE
       )
     )
   )
