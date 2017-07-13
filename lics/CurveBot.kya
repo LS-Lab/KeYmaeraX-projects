@@ -44,7 +44,7 @@ Tactic "CurveBot: Proof".
           ),
         dI(1)
         ),
-      composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dG({`t`}, {`0`}, {`1`}, {`!(x=ox&y=oy)`}, 1) ; existsR({`0`}, 1) ; dC({`v=old(v)&w=old(w)&x=old(x)+v*t&y=old(y)+w*t`}, 1) ; <(
+      composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dG({`t'=1`}, {`!(x=ox&y=oy)`}, 1) ; existsR({`0`}, 1) ; dC({`v=old(v)&w=old(w)&x=old(x)+v*t&y=old(y)+w*t`}, 1) ; <(
         dW(1) ; QE,
         dI(1)
         )
