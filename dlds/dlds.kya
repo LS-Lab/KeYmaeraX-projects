@@ -1,4 +1,4 @@
-﻿ArchiveEntry "LICS: 1 Continuous car accelerates forward".
+ArchiveEntry "LICS: 1 Continuous car accelerates forward".
 
 ProgramVariables. /* program variables may change their value over time */
   R x.            /* position of the car */
@@ -19,6 +19,10 @@ End.
 
 Tactic "LICS: 1 Continuous car accelerates forward: Interactive Proof".
   implyR(1) ; solve(1) ; QE
+End.
+       
+Tactic "LICS: 1 Continuous car accelerates forward: Proof 2".
+  master
 End.
        
 
@@ -298,7 +302,7 @@ Problem.
 End.
 
 Tactic "Exponential Decay from tactic".
-  implyR(1) ; dG({`y`}, {`1/2`}, {`0`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE
+  implyR(1) ; dG({`y'=1/2*y`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE
 End.
  
 Tactic "Exponential Decay: Automatic".
@@ -322,7 +326,7 @@ Problem.
 End.
 
 Tactic "Exponential Growth from tactic".
-  implyR(1) ; dG({`y`}, {`-1/2`}, {`0`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE
+  implyR(1) ; dG({`y'=-1/2*y`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE
 End.
 
 Tactic "Exponential Growth: Automatic".
@@ -348,12 +352,12 @@ End.
 
 
 Tactic "Exponential at Equilibrium from tactic".
- implyR(1) ; dG({`y`}, {`-1`}, {`0`}, {`y>0&x*y=0`}, 1) ; boxAnd(1.0) ; dI(1.0.1) ; dG({`z`}, {`1/2`}, {`0`}, {`y*z^2=1`}, 1.0.0) ; dI(1.0.0.0) ; QE
+ implyR(1) ; dG({`y'=-1*y`}, {`y>0&x*y=0`}, 1) ; boxAnd(1.0) ; dI(1.0.1) ; dG({`z'=1/2*z`}, {`y*z^2=1`}, 1.0.0) ; dI(1.0.0.0) ; QE
 End.
 
 Tactic "Exponential at Equilibrium: top-level proof".
- implyR(1) ; dG({`y`}, {`-1`}, {`0`}, {`y>0&x*y=0`}, 1) ; existsR({`1`}, 1) ; boxAnd(1) ; andR(1) ; <(
- dG({`z`}, {`1/2`}, {`0`}, {`z^2*y=1`}, 1) ; existsR({`1`}, 1) ; dI(1),
+ implyR(1) ; dG({`y'=-1*y`}, {`y>0&x*y=0`}, 1) ; existsR({`1`}, 1) ; boxAnd(1) ; andR(1) ; <(
+ dG({`z'=1/2*z`}, {`z^2*y=1`}, 1) ; existsR({`1`}, 1) ; dI(1),
  dI(1)
  )
 End.
@@ -380,65 +384,11 @@ End.
 
 
 Tactic "Exponential difference from tactic".
-  implyR(1) ; dG({`y`}, {`-1`}, {`0`}, {`x*y=1`}, 1) ; dI(1.0) ; QE
+  implyR(1) ; dG({`y'=-1*y`}, {`x*y=1`}, 1) ; dI(1.0) ; QE
 End.
    
 Tactic "Exponential difference: top-level proof".
-  implyR(1) ; dG({`y`}, {`-1`}, {`0`}, {`x*y=1`}, 1) ; existsR({`1/x`}, 1) ; dI(1)
+  implyR(1) ; dG({`y'=-1*y`}, {`x*y=1`}, 1) ; existsR({`1/x`}, 1) ; dI(1)
 End.
    
 End.
-
-ArchiveEntry "Parachute".
-
-Functions.
-  R g() = (9).  /* gravity */
-  R p() = (1).  /* parachute drag coefficient */
-  R a().        /* skydiver air drag coefficient */
-  R m().        /* impact velocity */
-  R T().        /* skydiver reaction time */
-End.
-
-ProgramVariables.
-  R x.    /* skydiver altitude */
-  R v.    /* skydiver speed (< 0, so lower is faster) */
-  R r.    /* skydiver current drag coefficient (depends on parachute open/closed) */
-  R t.    /* time */
-End.
-
-Problem.
-  g()>0 & p()>a() & a()>0 & T()>0 & m()< -(g()/p())^(1/2) &
-  x>=0 & v<0 & v> -(g()/p())^(1/2) & r=a()
-->
-[ {
-    {
-      ?(v - g()*T() > -(g()/p())^(1/2) & r = a());
-      ++
-      r := p();
-    }
-    t := 0;
-    {x'=v, v'=-g()+r*v^2, t'=1 & t<=T() & x>=0 & v<0}
-  }*@invariant((x>=0 & v<0) & v>-(g()/p())^(1/2))
-](x=0 -> v>=m())
-End.
-
-Tactic "Parachute: Proof 1".
-  implyR(1) ; loop({`(x>=0&v < 0)&v>-(9/1)^(1/2)`}, 1) ; <(
-  QE,
-  QE,
-  boxAnd(1) ; andR(1) ; <(
-    master,
-    unfold ; <(
-      dC({`v>=old(v)-9*t`}, 1) ; <(
-        dW(1) ; QE,
-        dI(1)
-        ),
-      dG({`y`}, {`-1/2*1*(v-(9/1)^(1/2))`}, {`0`}, {`y^2*(v+(9/1)^(1/2))=1`}, 1) ; dI(1.0) ; QE
-      )
-    )
-  )
-End.
-       
-
-End.
-       
