@@ -1,0 +1,21 @@
+﻿ArchiveEntry "Dual Filibuster Game".
+
+ProgramVariables.
+  R x.
+End.
+
+Problem.
+  x=0 -> <{{{x:=0;++x:=1;}^@}*@invariant(x=0)}^@> x=0
+End.
+
+Tactic "Dual Filibuster Game: Proof 1".
+  implyR(1) ; dualDirectd(1) ; loop({`x=0`}, 1) ; <(
+  closeId,
+  dualDirectb(1) ; choiced(1) ; assignd(1.0) ; assignd(1.1) ; QE,
+  closeId
+  )
+End.
+       
+
+End.
+       
