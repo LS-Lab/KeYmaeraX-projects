@@ -1,0 +1,19 @@
+﻿ArchiveEntry "Differential Ghosts Blog Post Example 2".
+
+Functions.
+  
+End.
+ProgramVariables.
+  R x.
+End.
+Problem.
+  x > 0 -> [{x' = -x^2}] x > 0
+End.
+
+Tactic "Differential Ghosts Blog Post Example 2: Proof 1".
+  implyR(1) ; dG({`{y'=x/2*y}`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE
+End.
+       
+
+End.
+       
