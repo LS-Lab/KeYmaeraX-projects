@@ -10,3 +10,5 @@ Note: All of these proofs can be done automatically using the `ODE` tactic.
    use `ODE` for the portions of the proof that are covered in previous examples.
  * `example_4.kya` is the >= example from the blog post. Again, I just use
    `ODE` for the potions of the proof that are covered in previous examples.
+
+See also `bifurcations/saddle-nodes/1D` for another example of ghosts.
