@@ -1,5 +1,5 @@
 The canonical 1-dimensional Saddle-node bifurcation.
-See [Wiki page](https://en.wikipedia.org/wiki/Saddle-node_bifurcation)
+See this [Wiki page](https://en.wikipedia.org/wiki/Saddle-node_bifurcation) for a discussion of the Saddle-node bifurcation, and see my [notes](http://nfulton.org/2017/07/25/SaddleNode/) on this proof.
 
 This proof demonstrates two "big ideas".
 
