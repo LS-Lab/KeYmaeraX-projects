@@ -2388,7 +2388,7 @@ implyR(1) ; andR(1) ; <(
         QE,
         assignd(2) ; allR(2) ; implyR(2) ; solve(2) ; existsR({`ep()`}, 2) ; simplify(2) ; andR(2) ; <(
           QE,
-          print({`Solved`}); existsR({`A()*ep()+vr_1`}, 2) ; simplify(2) ; existsR({`vo_1+0`}, 2) ; fullSimplify ; existsR({`A()/2*ep()^2+vr_1*ep()+xr_1`}, 2) ; simplify(2) ; existsR({`vo_1*ep()+xo_1`}, 2) ; simplify(2) ; edit({`vr>=A()*ep()`}, -9) ; edit({`xr>=xr_1`}, -11) ; edit({`xo>0`}, -12) ; hideL(-7) ; hideL(-6) ; con({`A()>0&b()>0&ep()>0&Vmin()>0&vo>=Vmin()&xo>0&vr>=A()*ep()&xr+v*ep()*(A()*ep())>0`}, 2) ; <(
+          print({`Solved`}); existsR({`vo_1+0`}, 2) ; fullSimplify ; existsR({`A()*ep()+vr_1`}, 2) ; simplify(2) ; existsR({`vo_1*ep()+xo_1`}, 2) ; simplify(2) ; existsR({`A()/2*ep()^2+vr_1*ep()+xr_1`}, 2) ; simplify(2) ; edit({`vr>=A()*ep()`}, -10) ; edit({`xr>=xr_1`}, -12) ; edit({`xo>0`}, -11) ; hideL(-7=={`xo_1>0`}) ; hideL(-6=={`vr_1>=0`}) ; con({`A()>0&b()>0&ep()>0&Vmin()>0&vo>=Vmin()&xo>0&vr>=A()*ep()&xr+v*ep()*(A()*ep())>0`}, 2) ; <(
             QE,
             andL('L)* ; composed(1) ; composed(1) ; randomd(1) ; existsR({`0`}, 1) ; testd(1) ; andR(1) ; <(
               QE,
@@ -3720,7 +3720,7 @@ implyR(1) ; andL('L)* ; andR(1) ; <(
       QE,
       composed(2) ; composed(2) ; choiced(2) ; orR(2) ; hideR(3) ; composed(2) ; testd(2) ; simplify(2) ; assignd(2) ; assignd(2) ; allR(2) ; implyR(2) ; solve(2) ; existsR({`ep()`}, 2) ; simplify(2) ; andR(2) ; <(
         QE,
-        print({`Solved`}); existsR({`A()*ep()+vr_1`}, 2) ; simplify(2) ; existsR({`ep()+T_1`}, 2) ; simplify(2) ; existsR({`vo_1+0`}, 2) ; fullSimplify ; existsR({`A()/2*ep()^2+vr_1*ep()+xr_1`}, 2) ; simplify(2) ; existsR({`vo_1*ep()+xo_1`}, 2) ; simplify(2) ; hideL('L=={`T=ep()+T_1`}) ; edit({`vr>=A()*ep()`}, 'L=={`vr=A()*ep()+vr_1`}) ; edit({`xo>0`}, 'L=={`xo=vo_1*ep()+xo_1`}) ; edit({`xr>=xr_1`}, 'L=={`xr=A()/2*ep()^2+vr_1*ep()+xr_1`}) ; hideL('L=={`vr_1>=0`}) ; con({`A()>0&b()>0&ep()>0&Vmin()>0&vo>=Vmin()&xo>0&vr>=A()*ep()&xr+v*ep()*(A()*ep())>0`}, 2) ; <(
+        print({`Solved`}); existsR({`ep()+T_1`}, 2) ; simplify(2) ; existsR({`vo_1+0`}, 2) ; fullSimplify ; existsR({`A()*ep()+vr_1`}, 2) ; simplify(2) ; existsR({`vo_1*ep()+xo_1`}, 2) ; simplify(2) ; existsR({`A()/2*ep()^2+vr_1*ep()+xr_1`}, 2) ; simplify(2) ; hideL('L=={`T=ep()+T_1`}) ; edit({`vr>=A()*ep()`}, 'L=={`vr=A()*ep()+vr_1`}) ; edit({`xo>0`}, 'L=={`xo=vo_1*ep()+xo_1`}) ; edit({`xr>=xr_1`}, 'L=={`xr=A()/2*ep()^2+vr_1*ep()+xr_1`}) ; hideL('L=={`vr_1>=0`}) ; con({`A()>0&b()>0&ep()>0&Vmin()>0&vo>=Vmin()&xo>0&vr>=A()*ep()&xr+v*ep()*(A()*ep())>0`}, 2) ; <(
           QE,
           andL('L)* ; composed(1) ; composed(1) ; randomd(1) ; existsR({`0`}, 1) ; testd(1) ; andR(1) ; <(
             QE,
