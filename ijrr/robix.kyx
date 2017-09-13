@@ -1802,7 +1802,7 @@ Theorem "Theorem 11: Reach waypoint".
  *
  */
 
-Functions.
+Definitions.
 	R ep().      /* time limit for control decisions */
   R b().       /* minimum braking capability of the robot */
   R A().       /* maximum acceleration -b <= a <= A */
@@ -1834,6 +1834,17 @@ Functions.
 	B loopinv() <-> (
 	  0 <= vr & vr <= Vmax & xr + stopDist(vr) < waypointEndDist(xg)
 	).
+
+	HP ctrl ::= {
+      ar := -b();
+   ++ ?vr = 0; ar := 0;
+   ++ ?xr + stopDist(vr) + accComp(vr) < waypointEndDist(xg) & vr+A()*ep()<=Vmax(); ar := A();
+   ++ ?xr <= waypointStartDist(xg) & vr <= Vmax(); ar := *; ?-b() <= ar & ar <= (Vmax()-vr)/ep() & ar <= A();
+	}.
+
+	HP dyn ::= { {xr' = vr, vr' = ar, t' = 1 & t <= ep() & vr >= 0} }.
+
+	HP dwwp ::= { { { ctrl; t:=0; } dyn; }*@invariant(loopinv()) }.
 End.
 
 ProgramVariables.
@@ -1848,43 +1859,17 @@ Problem.
   assumptions()
 	  ->
 	  /* safety */
-	  [
-      {	{
-        {
-              ar := -b();
-           ++ ?vr = 0; ar := 0;
-           ++ ?xr + stopDist(vr) + accComp(vr) < waypointEndDist(xg) & vr+A()*ep()<=Vmax(); ar := A();
-           ++ ?xr <= waypointStartDist(xg) & vr <= Vmax(); ar := *; ?-b() <= ar & ar <= (Vmax()-vr)/ep() & ar <= A();
-        }
-        /* dynamics */
-        t := 0;
-        }
-        {xr' = vr, vr' = ar, t' = 1 & t <= ep() & vr >= 0}
-      }*@invariant(loopinv())
-		] (xr < waypointEndDist(xg))
+	  [ dwwp; ] (xr < waypointEndDist(xg))
 		&
 		/* liveness */
-		<
-      {	{
-        {
-              ar := -b();
-           ++ ?vr = 0; ar := 0;
-           ++ ?xr + stopDist(vr) + accComp(vr) < waypointEndDist(xg) & vr+A()*ep()<=Vmax(); ar := A();
-           ++ ?xr <= waypointStartDist(xg) & vr <= Vmax(); ar := *; ?-b() <= ar & ar <= (Vmax()-vr)/ep() & ar <= A();
-        }
-        /* dynamics */
-        t := 0;
-        }
-        {xr' = vr, vr' = ar, t' = 1 & t <= ep() & vr >= 0}
-      }*
-		>(waypointStartDist(xg) < xr)
+		< dwwp; >(waypointStartDist(xg) < xr)
 End.
 
 Tactic "Proof Theorem 11: Reach waypoint".
   implyR(1) ; andL('L)* ; andR(1) ; <(
     master,
     iterated(1) ; orR(1) ; composed(2) ; composed(2) ; choiced(2) ; orR(2) ; hideR(2) ; choiced(2) ; orR(2) ;
-    hideR(2) ; choiced(2) ; orR(2) ; hideR(2) ; composed(2) ; testd(2) ; andR(2) ; <(
+    hideR(2) ; choiced(2) ; orR(2) ; hideR(2) ; composed(2) ; testd(2) ; andR(2); <(
       QE,
       composed(2) ; randomd(2) ; existsR({`min(((Vmax()-vr)/ep(),A()))`}, 2) ; testd(2) ; andR(2) ; <(
         QE,
@@ -1945,7 +1930,7 @@ Theorem "Theorem 12: Cross intersection".
  *
  */
 
-Functions.
+Definitions.
 	R ep().      /* time limit for control decisions */
   R b().       /* minimum braking capability of the robot */
   R A().       /* maximum acceleration -b <= a <= A */
@@ -1980,6 +1965,32 @@ Functions.
               | ixo() < xo + Vmin()*(ixr()-xr)/vr))
     )
 	).
+
+	HP obstacle ::= { ao := *; ?-b()<=ao&ao<=A(); }.
+
+	HP robot ::= {
+    if (RAfterX(xr) | OAfterX(xo)) {
+      ar := *; ?-b()<=ar&ar<=A();
+    } else { if (/*PassFaster*/ vr>0 & ( xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()
+                                       | ixo() < xo + Vmin()*(ixr()-xr)/(vr+A()*ep()) ) ) {
+      ar := *; ?0<=ar&ar<=A();
+    } else { if (/*PassCoast*/ vr>0 & ixo() < xo + Vmin()*(ixr()-xr)/vr) {
+      ar := 0;
+    } else {         /* 1D Model 3 */
+        ar := -b();
+     ++ ?vr = 0; ar := 0;
+     ++ ?xr + stopDist(vr) + accComp(vr) < ixr(); ar := A();
+    }}}
+	}.
+
+	HP dyn ::= { {xr' = vr, vr' = ar, xo'=vo, vo'=ao, t' = 1 & t <= ep() & vr >= 0 & vo>=Vmin() } }.
+
+	HP dwcx ::= {
+	  {	obstacle;
+      { robot; t := 0; }
+      dyn;
+    }*@invariant(loopinv())
+	}.
 End.
 
 ProgramVariables.
@@ -1996,62 +2007,10 @@ Problem.
   assumptions()
 	  ->
 	  /* safety */
-	  [
-      {	/* obstacle */
-        {
-          ao := *; ?-b()<=ao&ao<=A();
-        }
-        /* robot */
-        {
-        {
-          if (RAfterX(xr) | OAfterX(xo)) {
-            ar := *; ?-b()<=ar&ar<=A();
-          } else { if (/*PassFaster*/ vr>0 & ( xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()
-                                             | ixo() < xo + Vmin()*(ixr()-xr)/(vr+A()*ep()) ) ) {
-            ar := *; ?0<=ar&ar<=A();
-          } else { if (/*PassCoast*/ vr>0 & ixo() < xo + Vmin()*(ixr()-xr)/vr) {
-            ar := 0;
-          } else {         /* 1D Model 3 */
-              ar := -b();
-           ++ ?vr = 0; ar := 0;
-           ++ ?xr + stopDist(vr) + accComp(vr) < ixr(); ar := A();
-          }}}
-        }
-        /* dynamics */
-        t := 0;
-        }
-        {xr' = vr, vr' = ar, xo'=vo, vo'=ao, t' = 1 & t <= ep() & vr >= 0 & vo>=Vmin() }
-      }*@invariant(loopinv())
-		] (xr=ixr() -> xo!=ixo())
+	  [ dwcx; ](xr=ixr() -> xo!=ixo())
 		&
 		/* liveness */
-		<
-      {	/* obstacle */
-        {
-          ao := *; ?-b()<=ao&ao<=A();
-        }
-        /* robot */
-        {
-        {
-          if (RAfterX(xr) | OAfterX(xo)) {
-            ar := *; ?-b()<=ar&ar<=A();
-          } else { if (/*PassFaster*/ vr>0 & ( xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()
-                                             | ixo() < xo + Vmin()*(ixr()-xr)/(vr+A()*ep()) ) ) {
-            ar := *; ?0<=ar&ar<=A();
-          } else { if (/*PassCoast*/ vr>0 & ixo() < xo + Vmin()*(ixr()-xr)/vr) {
-            ar := 0;
-          } else {         /* 1D Model 3 */
-              ar := -b();
-           ++ ?vr = 0; ar := 0;
-           ++ ?xr + stopDist(vr) + accComp(vr) < ixr(); ar := A();
-          }}}
-        }
-        /* dynamics */
-        t := 0;
-        }
-        {xr' = vr, vr' = ar, xo' = vo, vo' = ao, t' = 1 & t <= ep() & vr >= 0 & vo>=Vmin() }
-      }*
-		>(RAfterX(xr))
+		< dwcx; >(RAfterX(xr))
 End.
 
 Tactic "Proof Theorem 12: Cross intersection (single convergence condition)".
@@ -2696,6 +2655,29 @@ Functions.
     				       (vr >= minV() & T > maxTravelTime(xg-xr) + ep() + stopTime(Vmax()))
     				     | (vr <= minV() & T > speedUpTime(vr) + maxTravelTime(xg-xr) + ep() + stopTime(Vmax())))
 	).
+
+	HP ctrl ::= {
+    if (xr > waypointStartDist(xg)) {
+      /* in the goal area: brake or stay stopped */
+      ar := -b(); ++ ?vr = 0; ar := 0;
+    } else {
+      if (xr + stopDist(vr) + accComp(vr) < waypointEndDist(xg) & vr+A()*ep() <= Vmax()) {
+        /* if robot can stop from higher speed before leaving goal area then accelerate */
+        ar := A();
+      } else {
+        /* else coast until at goal */
+        ar := 0;
+      }
+    }
+	}.
+
+	HP dyn ::= { {xr' = vr, vr' = ar, t' = 1, T'=-1 & t <= ep() & vr >= 0} }.
+
+	HP dwwpdl ::= {
+    {	{ ctrl; t := 0; }
+      dyn;
+    }*@invariant(loopinv())
+	}.
 End.
 
 ProgramVariables.
@@ -2709,50 +2691,8 @@ End.
 
 Problem.
   assumptions()
-	  -> [
-  			{	{
-  			  {
-  			     if (xr > waypointStartDist(xg)) {
-  			       /* in the goal area: brake or stay stopped */
-  			       ar := -b(); ++ ?vr = 0; ar := 0;
-  			     } else {
-  			       if (xr + stopDist(vr) + accComp(vr) < waypointEndDist(xg) & vr+A()*ep() <= Vmax()) {
-  			         /* if robot can stop from higher speed before leaving goal area then accelerate */
-  			         ar := A();
-  			       } else {
-  				       /* else coast until at goal */
-  				       ar := 0;
-  				     }
-  				   }
-          }
-				  /* dynamics */
-				  t := 0;
-				  }
-				  {xr' = vr, vr' = ar, t' = 1, T'=-1 & t <= ep() & vr >= 0}
-			  }*@invariant(loopinv())
-		] (xr < waypointEndDist(xg) & (T <= 0 -> (waypointStartDist(xg) < xr & vr = 0)))
-		& <
-		  {	{
-        {
-           if (xr > waypointStartDist(xg)) {
-             /* in the goal area: brake or stay stopped */
-             ar := -b(); ++ ?vr = 0; ar := 0;
-           } else {
-             if (xr + stopDist(vr) + accComp(vr) < waypointEndDist(xg) & vr+A()*ep() <= Vmax()) {
-               /* if robot can stop from higher speed before leaving goal area then accelerate */
-               ar := A();
-             } else {
-               /* else coast until at goal */
-               ar := 0;
-             }
-           }
-        }
-        /* dynamics */
-        t := 0;
-        }
-        {xr' = vr, vr' = ar, t' = 1, T'=-1 & t <= ep() & vr >= 0}
-      }*
-		> (waypointStartDist(xg) < xr & vr = 0)
+	  -> [ dwwpdl; ](xr < waypointEndDist(xg) & (T <= 0 -> (waypointStartDist(xg) < xr & vr = 0)))
+		 & < dwwpdl; >(waypointStartDist(xg) < xr & vr = 0)
 End.
 
 Tactic "Proof Theorem 14: Reach waypoint with deadline".
@@ -3014,6 +2954,35 @@ Functions.
       | T > 0 & RAfterX(xr + vr*(max(0,D()-T)) + A()/2*(max(0,D()-T))^2) )
   ).
 
+  HP obstacle ::= { ao := *; ?-b()<=ao&ao<=A(); }.
+
+  HP robot ::= {
+    if (OAfterX(xo)) {
+      ar := A();
+    } else { if (RAfterX(xr)) {
+      ar := *; ?-b()<=ar&ar<=A();
+    } else { if (/*PassFaster*/ vr>0 & ( xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()
+                                       | ixo() < xo + Vmin()*(ixr()-xr)/(vr+A()*ep()) ) ) {
+      ar := *; ?0<=ar&ar<=A();
+    } else { if (/*PassCoast*/ vr>0 & ixo() < xo + Vmin()*(ixr()-xr)/vr) {
+      ar := 0;
+    } else {         /* 1D Model 3 */
+        ar := -b();
+     ++ ?vr = 0; ar := 0;
+     ++ ?xr + stopDist(vr) + accComp(vr) < ixr(); ar := A();
+    }}}}
+  }.
+
+  HP dyn ::= { {xr' = vr, vr' = ar, xo'=vo, vo'=ao, t' = 1, T'=1 & t <= ep() & vr >= 0 & vo>=Vmin() } }.
+
+  HP dwcxd ::= {
+    {
+      obstacle;
+      { robot; t := 0; }
+      dyn;
+    }*@invariant(loopinv())
+  }.
+
 End.
 
 ProgramVariables.
@@ -3031,66 +3000,10 @@ Problem.
   assumptions()
 	  ->
 	  /* safety */
-	  [
-      {	/* obstacle */
-        {
-          ao := *; ?-b()<=ao&ao<=A();
-        }
-        /* robot */
-        {
-        {
-          if (OAfterX(xo)) {
-            ar := A();
-          } else { if (RAfterX(xr)) {
-            ar := *; ?-b()<=ar&ar<=A();
-          } else { if (/*PassFaster*/ vr>0 & ( xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()
-                                             | ixo() < xo + Vmin()*(ixr()-xr)/(vr+A()*ep()) ) ) {
-            ar := *; ?0<=ar&ar<=A();
-          } else { if (/*PassCoast*/ vr>0 & ixo() < xo + Vmin()*(ixr()-xr)/vr) {
-            ar := 0;
-          } else {         /* 1D Model 3 */
-              ar := -b();
-           ++ ?vr = 0; ar := 0;
-           ++ ?xr + stopDist(vr) + accComp(vr) < ixr(); ar := A();
-          }}}}
-        }
-        /* dynamics */
-        t := 0;
-        }
-        {xr' = vr, vr' = ar, xo'=vo, vo'=ao, t' = 1, T'=1 & t <= ep() & vr >= 0 & vo>=Vmin() }
-      }*@invariant(loopinv())
-		] ( (xr=ixr() -> xo!=ixo()) & (T>=D() -> RAfterX(xr)) )
+	  [ dwcxd; ]( (xr=ixr() -> xo!=ixo()) & (T>=D() -> RAfterX(xr)) )
 		&
 		/* liveness */
-		<
-      {	/* obstacle */
-        {
-          ao := *; ?-b()<=ao&ao<=A();
-        }
-        /* robot */
-        {
-        {
-          if (OAfterX(xo)) {
-            ar := A();
-          } else { if (RAfterX(xr)) {
-            ar := *; ?-b()<=ar&ar<=A();
-          } else { if (/*PassFaster*/ vr>0 & ( xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()
-                                             | ixo() < xo + Vmin()*(ixr()-xr)/(vr+A()*ep()) ) ) {
-            ar := *; ?0<=ar&ar<=A();
-          } else { if (/*PassCoast*/ vr>0 & ixo() < xo + Vmin()*(ixr()-xr)/vr) {
-            ar := 0;
-          } else {         /* 1D Model 3 */
-              ar := -b();
-           ++ ?vr = 0; ar := 0;
-           ++ ?xr + stopDist(vr) + accComp(vr) < ixr(); ar := A();
-          }}}}
-        }
-        /* dynamics */
-        t := 0;
-        }
-        {xr' = vr, vr' = ar, xo'=vo, vo'=ao, t' = 1, T'=1 & t <= ep() & vr >= 0 & vo>=Vmin() }
-      }*
-		>(RAfterX(xr))
+		< dwcxd; >( RAfterX(xr) )
 End.
 
 Tactic "Proof Theorem 15: Cross intersection with deadline (single convergence condition)".
