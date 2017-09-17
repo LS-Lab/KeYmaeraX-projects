@@ -1,0 +1,235 @@
+Lemma "ACAS X Safe Use Case Lower Bound".
+
+Functions.
+  R hp.   /* puck height */
+  R rp.   /* puck radius */
+  R a.    /* minimal vertical acceleration. Typically g/4 */
+
+  /* velocity bound 1 = lower, -1 = upper */
+  R wUp() = (-1).
+  R wLo() = (1).
+
+  R abs(R).
+  R min(R, R).
+  R max(R, R).
+
+  B C(R,R,R,R,R/*w,dhf,dhd,r,h*/) <-> (
+    \forall t \forall ro \forall ho (
+        (0 <= t & t < max(0, ._0 * (._1 - ._2)) / a & ro = rv * t & ho = (._0 * a) / 2 * t^2 + ._2 * t)
+      | (t >= max(0, ._0 * (._1 - ._2)) / a & ro = rv * t & ho = ._1 * t - ._0 * max(0, ._0 * (._1 - ._2))^2 / (2*a))
+      -> (abs(._3 - ro) > rp | ._0 * ._4 < ._0 * ho - hp)
+    )
+  ).
+
+  B loopInv() <-> (
+    ( (w=wUp() | w=wLo()) & C(w,dhf,dhd,r,h) ) & ( hp>0&rp>=0&rv>=0&a>0 )
+  ).
+
+  B safe() <-> ((abs(r)>rp|abs(h)>hp)).
+
+End.
+
+ProgramVariables.
+
+  /* horizontal */
+  R r.    /* relative distance in ft; xi - xo */
+          /* x = r */
+  R rv.   /* relative speed -(vi - vo) */
+
+  /* vertical */
+  R h.    /* relative altitude in ft */
+          /* if negative: the intruder is lower than the ownship */
+          /* h := hi - ho */
+          /* z = h */
+  R dhd.  /* vertical velocity of ownship */
+  R dhf.  /* target minimum velocity */
+  R w.    /* velocity bound */
+
+End.
+
+Problem.
+
+  loopInv() -> safe()
+
+End.
+
+Tactic "Proof ACAS X Safe Use Case Lower Bound".
+
+  implyR('R);
+  (andL('L)*);
+  allL(/*{`t`},*/  {`0`}, 'L);
+  allL(/*{`ro`},*/ {`0`}, 'L);
+  allL(/*{`ho`},*/ {`0`}, 'L);
+  fullSimplify;
+  implyL('L); <(
+    print({`Use case 1`}); hideR(1=={`abs(r)>rp|abs(h)>hp`});
+    abbrv({`max((0,w*(dhf-dhd)))`}, {`maxI`}); print({`abbrv`});
+    edit({`maxI=expand(max(0,w*(dhf-dhd)))`},-6=={`maxI=max(0,w*(dhf-dhd))`}); QE; done
+    ,
+    edit({`expand(abs(r))>rp | expand(abs(h))>hp`}, 1=={`abs(r)>rp | abs(h)>hp`}); print({`Use case 2`}); QE; done
+  )
+
+End.
+
+End.
+
+Lemma "ACAS X Safe Lower Bound".
+
+Functions.
+  R hp.   /* puck height */
+  R rp.   /* puck radius */
+  R a.    /* minimal vertical acceleration. Typically g/4 */
+
+  /* velocity bound 1 = lower, -1 = upper */
+  R wUp() = (-1).
+  R wLo() = (1).
+
+  R abs(R).
+  R min(R, R).
+  R max(R, R).
+
+  B C(R,R,R,R,R/*w,dhf,dhd,r,h*/) <-> (
+    \forall t \forall ro \forall ho (
+        (0 <= t & t < max(0, ._0 * (._1 - ._2)) / a & ro = rv * t & ho = (._0 * a) / 2 * t^2 + ._2 * t)
+      | (t >= max(0, ._0 * (._1 - ._2)) / a & ro = rv * t & ho = ._1 * t - ._0 * max(0, ._0 * (._1 - ._2))^2 / (2*a))
+      -> (abs(._3 - ro) > rp | ._0 * ._4 < ._0 * ho - hp)
+    )
+  ).
+
+End.
+
+ProgramVariables.
+
+  /* horizontal */
+  R r.    /* relative distance in ft; xi - xo */
+          /* x = r */
+  R rv.   /* relative speed -(vi - vo) */
+
+  /* vertical */
+  R h.    /* relative altitude in ft */
+          /* if negative: the intruder is lower than the ownship */
+          /* h := hi - ho */
+          /* z = h */
+  R dhd.  /* vertical velocity of ownship */
+  R dhf.  /* target minimum velocity */
+  R w.    /* velocity bound */
+  R ao.
+
+End.
+
+Problem.
+    (w*dhd>=w*dhf|w*ao>=a)
+  & (w=wUp|w=wLo)
+  & C(w,dhf,dhd,r,h)
+  & hp>0 & rp>=0 & rv>=0 & a>0
+  ->
+  [{r'=-rv,h'=-dhd,dhd'=ao&w*dhd>=w*dhf|w*ao>=a}]((w=wUp|w=wLo)&C(w,dhf,dhd,r,h))
+
+End.
+
+Tactic "Proof ACAS X Safe Lower Bound".
+
+implyR(1) ; andL('L)* ; boxAnd(1) ; andR(1) ; <(
+  dW(1) ; prop,
+  solve(1) ; allR(1) ; implyR(1) ; implyR(1) ; allL({`t_`}, -9) ; fullSimplify ; allR(1) ; allR(1) ; allR(1) ; allL({`t_+t`}, -3) ; allL({`rv*(t_+t)`}, -3) ; cut({`0<=t+t_&t+t_ < max((0,w*(dhf-dhd)))/a()|t+t_>=max((0,w*(dhf-dhd)))/a()`}) ; <(
+    orL(-10) ; <(
+      allL({`w*a()/2*(t+t_)^2+dhd*(t+t_)`}, -3) ; implyL(-3) ; <(
+        orR(2) ; hideR(3=={`t_+t>=max((0,w*(dhf-dhd)))/a()&rv*(t_+t)=rv*(t_+t)&w*a()/2*(t+t_)^2+dhd*(t+t_)=dhf*(t_+t)-w*max((0,w*(dhf-dhd)))^2/(2*a())`}) ; QE,
+        prop ; doall(print({`QE...`}) ; smartQE ; print({`...done`}))
+        ),
+      allL({`dhf*(t+t_)-w*max((0,w*(dhf-dhd)))^2/(2*a())`}, -3) ; implyL(-3) ; <(
+        orR(2) ; hideR(2=={`0<=t_+t&t_+t < max((0,w*(dhf-dhd)))/a()&rv*(t_+t)=rv*(t_+t)&dhf*(t+t_)-w*max((0,w*(dhf-dhd)))^2/(2*a())=w*a()/2*(t_+t)^2+dhd*(t_+t)`}) ; QE,
+        prop ; doall(print({`QE...`}) ; smartQE ; print({`...done`}))
+        )
+      ),
+    hideL(-3=={`\forall ho (0<=t_+t&t_+t < max((0,w*(dhf-dhd)))/a()&rv*(t_+t)=rv*(t_+t)&ho=w*a()/2*(t_+t)^2+dhd*(t_+t)|t_+t>=max((0,w*(dhf-dhd)))/a()&rv*(t_+t)=rv*(t_+t)&ho=dhf*(t_+t)-w*max((0,w*(dhf-dhd)))^2/(2*a())->abs(r-rv*(t_+t))>rp()|w*h < w*ho-hp())`}); QE
+    )
+  )
+
+End.
+
+End.
+
+Theorem "ACAS X Theorem 1: Correctness of Implicit Safe Regions".
+
+Functions.
+  R hp.   /* puck height */
+  R rp.   /* puck radius */
+  R a.    /* minimal vertical acceleration. Typically g/4 */
+
+  /* velocity bound 1 = lower, -1 = upper */
+  R wUp() = (-1).
+  R wLo() = (1).
+
+  R abs(R).
+  R min(R, R).
+  R max(R, R).
+
+  B C(R,R,R,R,R/*w,dhf,dhd,r,h*/) <-> (
+    \forall t \forall ro \forall ho (
+        (0 <= t & t < max(0, ._0 * (._1 - ._2)) / a & ro = rv * t & ho = (._0 * a) / 2 * t^2 + ._2 * t)
+      | (t >= max(0, ._0 * (._1 - ._2)) / a & ro = rv * t & ho = ._1 * t - ._0 * max(0, ._0 * (._1 - ._2))^2 / (2*a))
+      -> (abs(._3 - ro) > rp | ._0 * ._4 < ._0 * ho - hp)
+    )
+  ).
+
+  B loopInv() <-> ( (w=wUp() | w=wLo()) & C(w,dhf,dhd,r,h) ).
+
+End.
+
+ProgramVariables.
+
+  /* horizontal */
+  R r.    /* relative distance in ft; xi - xo */
+          /* x = r */
+  R rv.   /* relative speed -(vi - vo) */
+
+  /* vertical */
+  R h.    /* relative altitude in ft */
+          /* if negative: the intruder is lower than the ownship */
+          /* h := hi - ho */
+          /* z = h */
+  R dhd.  /* vertical velocity of ownship */
+  R dhf.  /* target minimum velocity */
+  R w.    /* velocity bound */
+  R ao.
+
+End.
+
+Problem.
+    (hp > 0 & rp >= 0 & rv >= 0 & a > 0)
+  & ( (w=wUp() | w=wLo()) & C(w,dhf,dhd,r,h) )
+  ->
+  [{ {
+     { ?true;
+       ++
+       {dhf := *;
+        { w:=wUp(); ++ w:=wLo(); }
+        ?C(w,dhf,dhd,r,h);
+       }
+     }
+     ao := *;
+     }
+     {r' = -rv, h' = -dhd, dhd' = ao & (w * dhd >= w * dhf | w * ao >= a)}
+   }*@invariant(loopInv())
+  ] ( (abs(r) > rp | abs(h) > hp) & C(w,dhf,dhd,r,h) )
+End.
+
+Tactic "Proof ACAS X Theorem 1: Correctness of Implicit Safe Regions".
+implyR(1) ; andL('L)* ; loop({`(w=-1|w=1)&\forall t \forall ro \forall ho (0<=t&t < max((0,w*(dhf-dhd)))/a()&ro=rv*t&ho=w*a()/2*t^2+dhd*t|t>=max((0,w*(dhf-dhd)))/a()&ro=rv*t&ho=dhf*t-w*max((0,w*(dhf-dhd)))^2/(2*a())->abs(r-ro)>rp()|w*h < w*ho-hp())`}, 1) ; <(
+  prop,
+  andR(1) ; <(
+    useLemma({`ACAS X Safe Use Case Lower Bound`}, {`prop`}),
+    prop
+    ),
+  composeb(1) ; MR({`((w=-1|w=1)&\forall t \forall ro \forall ho (0<=t&t < max((0,w*(dhf-dhd)))/a()&ro=rv*t&ho=w*a()/2*t^2+dhd*t|t>=max((0,w*(dhf-dhd)))/a()&ro=rv*t&ho=dhf*t-w*max((0,w*(dhf-dhd)))^2/(2*a())->abs(r-ro)>rp()|w*h < w*ho-hp()))&hp()>0&rp()>=0&rv>=0&a()>0`}, 1) ; <(
+    chase(1) ; andL(-1) ; simplify(1) ; closeTrue,
+    cut({`w*dhd>=w*dhf|w*ao>=a()`}) ; <(
+      useLemma({`ACAS X Safe Lower Bound`}, {`prop`}),
+      DI(1) ; implyR(1) ; closeId
+      )
+    )
+  )
+End.
+
+End.
