@@ -1,6 +1,4 @@
-Lemma "ACAS X Safe Use Case Lower Bound".
-
-Functions.
+SharedDefinitions.
   R hp.   /* puck height */
   R rp.   /* puck radius */
   R a.    /* minimal vertical acceleration. Typically g/4 */
@@ -15,19 +13,20 @@ Functions.
 
   B C(R,R,R,R,R/*w,dhf,dhd,r,h*/) <-> (
     \forall t \forall ro \forall ho (
-        (0 <= t & t < max(0, ._0 * (._1 - ._2)) / a & ro = rv * t & ho = (._0 * a) / 2 * t^2 + ._2 * t)
-      | (t >= max(0, ._0 * (._1 - ._2)) / a & ro = rv * t & ho = ._1 * t - ._0 * max(0, ._0 * (._1 - ._2))^2 / (2*a))
-      -> (abs(._3 - ro) > rp | ._0 * ._4 < ._0 * ho - hp)
+        (0 <= t & t < max(0, ._0 * (._1 - ._2))/a() & ro = rv * t & ho = (._0 * a())/2 * t^2 + ._2 * t)
+      | (t >= max(0, ._0 * (._1 - ._2))/a() & ro = rv * t & ho = ._1 * t - ._0 * max(0, ._0 * (._1 - ._2))^2 / (2*a()))
+      -> (abs(._3 - ro) > rp() | ._0 * ._4 < ._0 * ho - hp())
     )
   ).
 
-  B loopInv() <-> (
-    ( (w=wUp() | w=wLo()) & C(w,dhf,dhd,r,h) ) & ( hp>0&rp>=0&rv>=0&a>0 )
-  ).
+  B init() <-> ( hp()>0 & rp()>=0 & rv>=0 & a()>0 ).
 
-  B safe() <-> ((abs(r)>rp|abs(h)>hp)).
+  B loopInv() <-> ( (w=wUp() | w=wLo()) & C(w,dhf,dhd,r,h) ).
 
+  HP motion ::= { {r' = -rv, h' = -dhd, dhd' = ao & w*dhd>=w*dhf|w*ao>=a() } }.
 End.
+
+Lemma "ACAS X Safe Use Case Lower Bound".
 
 ProgramVariables.
 
@@ -49,7 +48,7 @@ End.
 
 Problem.
 
-  loopInv() -> safe()
+  loopInv() & init() -> abs(r)>rp() | abs(h)>hp()
 
 End.
 
@@ -62,11 +61,11 @@ Tactic "Proof ACAS X Safe Use Case Lower Bound".
   allL(/*{`ho`},*/ {`0`}, 'L);
   fullSimplify;
   implyL('L); <(
-    print({`Use case 1`}); hideR(1=={`abs(r)>rp|abs(h)>hp`});
+    print({`Use case 1`}); hideR(1=={`abs(r)>rp()|abs(h)>hp()`});
     abbrv({`max((0,w*(dhf-dhd)))`}, {`maxI`}); print({`abbrv`});
     edit({`maxI=expand(max(0,w*(dhf-dhd)))`},-6=={`maxI=max(0,w*(dhf-dhd))`}); QE; done
     ,
-    edit({`expand(abs(r))>rp | expand(abs(h))>hp`}, 1=={`abs(r)>rp | abs(h)>hp`}); print({`Use case 2`}); QE; done
+    edit({`expand(abs(r))>rp() | expand(abs(h))>hp()`}, 1=={`abs(r)>rp() | abs(h)>hp()`}); print({`Use case 2`}); QE; done
   )
 
 End.
@@ -74,29 +73,6 @@ End.
 End.
 
 Lemma "ACAS X Safe Lower Bound".
-
-Functions.
-  R hp.   /* puck height */
-  R rp.   /* puck radius */
-  R a.    /* minimal vertical acceleration. Typically g/4 */
-
-  /* velocity bound 1 = lower, -1 = upper */
-  R wUp() = (-1).
-  R wLo() = (1).
-
-  R abs(R).
-  R min(R, R).
-  R max(R, R).
-
-  B C(R,R,R,R,R/*w,dhf,dhd,r,h*/) <-> (
-    \forall t \forall ro \forall ho (
-        (0 <= t & t < max(0, ._0 * (._1 - ._2)) / a & ro = rv * t & ho = (._0 * a) / 2 * t^2 + ._2 * t)
-      | (t >= max(0, ._0 * (._1 - ._2)) / a & ro = rv * t & ho = ._1 * t - ._0 * max(0, ._0 * (._1 - ._2))^2 / (2*a))
-      -> (abs(._3 - ro) > rp | ._0 * ._4 < ._0 * ho - hp)
-    )
-  ).
-
-End.
 
 ProgramVariables.
 
@@ -118,12 +94,12 @@ ProgramVariables.
 End.
 
 Problem.
-    (w*dhd>=w*dhf|w*ao>=a)
-  & (w=wUp|w=wLo)
+    (w*dhd>=w*dhf|w*ao>=a())
+  & (w=wUp()|w=wLo())
   & C(w,dhf,dhd,r,h)
-  & hp>0 & rp>=0 & rv>=0 & a>0
+  & init()
   ->
-  [{r'=-rv,h'=-dhd,dhd'=ao&w*dhd>=w*dhf|w*ao>=a}]((w=wUp|w=wLo)&C(w,dhf,dhd,r,h))
+  [motion;]((w=wUp()|w=wLo()) & C(w,dhf,dhd,r,h))
 
 End.
 
@@ -152,31 +128,6 @@ End.
 
 Theorem "ACAS X Theorem 1: Correctness of Implicit Safe Regions".
 
-Functions.
-  R hp.   /* puck height */
-  R rp.   /* puck radius */
-  R a.    /* minimal vertical acceleration. Typically g/4 */
-
-  /* velocity bound 1 = lower, -1 = upper */
-  R wUp() = (-1).
-  R wLo() = (1).
-
-  R abs(R).
-  R min(R, R).
-  R max(R, R).
-
-  B C(R,R,R,R,R/*w,dhf,dhd,r,h*/) <-> (
-    \forall t \forall ro \forall ho (
-        (0 <= t & t < max(0, ._0 * (._1 - ._2)) / a & ro = rv * t & ho = (._0 * a) / 2 * t^2 + ._2 * t)
-      | (t >= max(0, ._0 * (._1 - ._2)) / a & ro = rv * t & ho = ._1 * t - ._0 * max(0, ._0 * (._1 - ._2))^2 / (2*a))
-      -> (abs(._3 - ro) > rp | ._0 * ._4 < ._0 * ho - hp)
-    )
-  ).
-
-  B loopInv() <-> ( (w=wUp() | w=wLo()) & C(w,dhf,dhd,r,h) ).
-
-End.
-
 ProgramVariables.
 
   /* horizontal */
@@ -197,7 +148,7 @@ ProgramVariables.
 End.
 
 Problem.
-    (hp > 0 & rp >= 0 & rv >= 0 & a > 0)
+    init()
   & ( (w=wUp() | w=wLo()) & C(w,dhf,dhd,r,h) )
   ->
   [{ {
@@ -210,19 +161,19 @@ Problem.
      }
      ao := *;
      }
-     {r' = -rv, h' = -dhd, dhd' = ao & (w * dhd >= w * dhf | w * ao >= a)}
+     motion;
    }*@invariant(loopInv())
-  ] ( (abs(r) > rp | abs(h) > hp) & C(w,dhf,dhd,r,h) )
+  ] ( (abs(r) > rp() | abs(h) > hp()) & C(w,dhf,dhd,r,h) )
 End.
 
 Tactic "Proof ACAS X Theorem 1: Correctness of Implicit Safe Regions".
-implyR(1) ; andL('L)* ; loop({`(w=-1|w=1)&\forall t \forall ro \forall ho (0<=t&t < max((0,w*(dhf-dhd)))/a()&ro=rv*t&ho=w*a()/2*t^2+dhd*t|t>=max((0,w*(dhf-dhd)))/a()&ro=rv*t&ho=dhf*t-w*max((0,w*(dhf-dhd)))^2/(2*a())->abs(r-ro)>rp()|w*h < w*ho-hp())`}, 1) ; <(
+implyR(1) ; andL('L)* ; loop({`loopInv()`}, 1) ; <(
   prop,
   andR(1) ; <(
     useLemma({`ACAS X Safe Use Case Lower Bound`}, {`prop`}),
     prop
     ),
-  composeb(1) ; MR({`((w=-1|w=1)&\forall t \forall ro \forall ho (0<=t&t < max((0,w*(dhf-dhd)))/a()&ro=rv*t&ho=w*a()/2*t^2+dhd*t|t>=max((0,w*(dhf-dhd)))/a()&ro=rv*t&ho=dhf*t-w*max((0,w*(dhf-dhd)))^2/(2*a())->abs(r-ro)>rp()|w*h < w*ho-hp()))&hp()>0&rp()>=0&rv>=0&a()>0`}, 1) ; <(
+  composeb(1) ; MR({`loopInv() & init()`}, 1) ; <(
     chase(1) ; andL(-1) ; simplify(1) ; closeTrue,
     cut({`w*dhd>=w*dhf|w*ao>=a()`}) ; <(
       useLemma({`ACAS X Safe Lower Bound`}, {`prop`}),
