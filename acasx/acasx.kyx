@@ -14,7 +14,7 @@ SharedDefinitions.
   B C(R,R,R,R,R/*w,dhf,dhd,r,h*/) <-> (
     \forall t \forall ro \forall ho (
         (0 <= t & t < max(0, ._0 * (._1 - ._2))/a() & ro = rv * t & ho = (._0 * a())/2 * t^2 + ._2 * t)
-      | (t >= max(0, ._0 * (._1 - ._2))/a() & ro = rv * t & ho = ._1 * t - ._0 * max(0, ._0 * (._1 - ._2))^2 / (2*a()))
+      | (t >= max(0, ._0 * (._1 - ._2))/a() & ro = rv * t & ho = ._1 * t - ._0 * max(0, ._0 * (._1 - ._2))^2/(2*a()))
       -> (abs(._3 - ro) > rp() | ._0 * ._4 < ._0 * ho - hp())
     )
   ).
@@ -178,6 +178,406 @@ implyR(1) ; andL('L)* ; loop({`loopInv()`}, 1) ; <(
     cut({`w*dhd>=w*dhf|w*ao>=a()`}) ; <(
       useLemma({`ACAS X Safe Lower Bound`}, {`prop`}),
       DI(1) ; implyR(1) ; closeId
+      )
+    )
+  )
+End.
+
+End.
+
+Lemma "Lemma 1: Equivalence between implicit and explicit region formulation".
+
+Definitions.
+  B case1()   <-> ( -rp() <= r & r < -rp() - rv * min(0, w * dhd)/a() ).
+  B bounds1() <-> ( w * rv^2 * h < a()/2 * (r + rp())^2 + w * rv * dhd * (r+rp()) - rv^2 * hp() ).
+  B case2()   <-> ( -rp - rv * min(0, w * dhd)/a() <= r & r <= rp() - rv * min(0, w * dhd)/a() ).
+  B bounds2() <-> ( w * h < (-(min(0, w * dhd)^2))/(2*a()) - hp() ).
+  B case3()   <-> ( rp() - rv * min(0, w * dhd)/a() < r & r <= rp() + rv * max(0, w * (dhf-dhd))/a() ).
+  B bounds3() <-> ( w * rv^2 * h < a()/2 * (r - rp())^2 + w * rv * dhd * (r - rp()) - rv^2 * hp() ).
+  B case4()   <-> ( rp() + rv * max(0, w * (dhf - dhd))/a() < r ).
+  B bounds4() <-> ( rv = 0 | w * rv * h  <  w * dhf * (r - rp()) - rv * max(0, w * (dhf - dhd))^2/(2*a()) - rv * hp() ).
+  B case5()   <-> ( -rp() <= r & r < -rp() + rv * max(0, w * (dhf - dhd))/a() ).
+  B bounds5() <-> ( w * rv^2 * h < a()/2 * (r + rp)^2 + w * rv * dhd * (r + rp()) - rv^2 * hp() ).
+  B case6()   <-> ( -rp() + rv * max(0, w * (dhf - dhd))/a() <= r ).
+  B bounds6() <-> ( (rv = 0 & r > rp)
+                    | w * rv * h <  w * dhf * (r + rp()) - rv * max(0, w * (dhf - dhd))^2/(2*a()) - rv * hp() ).
+
+  B Lexpl() <-> (
+    (w * dhf >= 0 ->
+        (case1() -> bounds1())
+      & (case2() -> bounds2())
+      & (case3() -> bounds3())
+      & (case4() -> bounds4())
+    )
+    &
+    (w * dhf < 0 ->
+        (case5() -> bounds5())
+      & (case6() -> bounds6())
+    )
+  ).
+End.
+
+ProgramVariables.
+  /** Variables **/
+   /* horizontal */
+  R r.    /* relative distance in ft; xi - xo */
+          /* x = r */
+  R rv.   /* relative speed -(vi - vo) */
+   /* vertical */
+  R h.    /* relative altitude in ft */
+          /* if negative: the intruder is lower than the ownship */
+          /* h := hi - ho */
+          /* z = h */
+  R dhd.  /* vertical velocity of ownship */
+  R dhf.  /* target minimum velocity */
+  R w.    /* velocity bound 1 = lower, -1 = upper */
+  R ao.   /* vertical acceleration of ownship */
+End.
+
+Problem.
+  init() & (w=wUp() | w=wLo()) -> ( Lexpl() <-> C(w,dhf,dhd,r,h) )
+End.
+
+Tactic "Proof Lemma 1: Equivalence between implicit and explicit region formulation".
+  implyR('R) ; equivR('R) ; <(
+    print({`->`}) ;
+      cut({`w*dhf>=0 | w*dhf<0`}) ; <(
+        (/*cutUse,*/ orL('L=={`w*dhf>=0 | w*dhf<0`}) ; <(
+          print({`w*dhf>=0`}) ;
+          andL('L=={`(w*dhf>=0->(-rp<=r&r < -rp-rv*min((0,w*dhd))/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp)&(-rp-rv*min((0,w*dhd))/a<=r&r<=rp-rv*min((0,w*dhd))/a->w*h < (-min((0,w*dhd))^2)/(2*a)-hp)&(rp-rv*min((0,w*dhd))/a < r&r<=rp+rv*max((0,w*(dhf-dhd)))/a->w*rv^2*h < a/2*(r-rp)^2+w*rv*dhd*(r-rp)-rv^2*hp)&(rp+rv*max((0,w*(dhf-dhd)))/a < r->rv=0|w*rv*h < w*dhf*(r-rp)-rv*max((0,w*(dhf-dhd)))^2/(2*a)-rv*hp))&(w*dhf < 0->(-rp<=r&r < -rp+rv*max((0,w*(dhf-dhd)))/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp)&(-rp+rv*max((0,w*(dhf-dhd)))/a<=r->rv=0&r>rp|w*rv*h < w*dhf*(r+rp)-rv*max((0,w*(dhf-dhd)))^2/(2*a)-rv*hp))`}) ;
+          hideL('L=={`w*dhf < 0->(-rp<=r&r < -rp+rv*max((0,w*(dhf-dhd)))/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp)&(-rp+rv*max((0,w*(dhf-dhd)))/a<=r->rv=0&r>rp|w*rv*h < w*dhf*(r+rp)-rv*max((0,w*(dhf-dhd)))^2/(2*a)-rv*hp)`}) ;
+          implyL('L=={`w*dhf>=0->(-rp<=r&r < -rp-rv*min((0,w*dhd))/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp)&(-rp-rv*min((0,w*dhd))/a<=r&r<=rp-rv*min((0,w*dhd))/a->w*h < (-min((0,w*dhd))^2)/(2*a)-hp)&(rp-rv*min((0,w*dhd))/a < r&r<=rp+rv*max((0,w*(dhf-dhd)))/a->w*rv^2*h < a/2*(r-rp)^2+w*rv*dhd*(r-rp)-rv^2*hp)&(rp+rv*max((0,w*(dhf-dhd)))/a < r->rv=0|w*rv*h < w*dhf*(r-rp)-rv*max((0,w*(dhf-dhd)))^2/(2*a)-rv*hp)`}) ; <(
+            hideR('R=={`\forall t \forall ro \forall ho (0<=t&t < max((0,w*(dhf-dhd)))/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=max((0,w*(dhf-dhd)))/a&ro=rv*t&ho=dhf*t-w*max((0,w*(dhf-dhd)))^2/(2*a)->abs(r-ro)>rp|w*h < w*ho-hp)`}) ; closeId
+            ,
+            (allR('R)*) ;
+              cut({`((r< -rp) | (-rp<=r & r < -rp-rv*min((0,w*dhd))/a) | (-rp-rv*min((0,w*dhd))/a<=r & r<=rp-rv*min((0,w*dhd))/a) | (rp-rv*min((0,w*dhd))/a < r & r<=rp+rv*max((0,w*(dhf-dhd)))/a) | (rp+rv*max((0,w*(dhf-dhd)))/a < r))`}) ;
+              <(
+                (/*cutUse,*/ abbrv({`max((0,w*(dhf-dhd)))`}, {`maxA`}) ;
+                  abbrv({`min((0,w*dhd))`}, {`minA`}) ;
+                  minmax('L=={`max(0,w*(dhf-dhd))`}) ;
+                  minmax('L=={`min(0,w*dhd)`}) ;
+                  absExp('R=={`abs(r-ro)`}) ;
+                  orL('L=={`r < -rp|-rp<=r&r < -rp-rv*minA/a|-rp-rv*minA/a<=r&r<=rp-rv*minA/a|rp-rv*minA/a < r&r<=rp+rv*maxA/a|rp+rv*maxA/a < r`}) ; <(
+                    print({`r<-rp`}) ; hideL('L=={`((-rp<=r&r < -rp-rv*minA/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp)&(-rp-rv*minA/a<=r&r<=rp-rv*minA/a->w*h < (-minA^2)/(2*a)-hp)&(rp-rv*minA/a < r&r<=rp+rv*maxA/a->w*rv^2*h < a/2*(r-rp)^2+w*rv*dhd*(r-rp)-rv^2*hp)&(rp+rv*maxA/a < r->rv=0|w*rv*h < w*dhf*(r-rp)-rv*maxA^2/(2*a)-rv*hp))`}) ; QE,
+                    andL('L=={`(-rp<=r&r < -rp-rv*minA/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp)&(-rp-rv*minA/a<=r&r<=rp-rv*minA/a->w*h < (-minA^2)/(2*a)-hp)&(rp-rv*minA/a < r&r<=rp+rv*maxA/a->w*rv^2*h < a/2*(r-rp)^2+w*rv*dhd*(r-rp)-rv^2*hp)&(rp+rv*maxA/a < r->rv=0|w*rv*h < w*dhf*(r-rp)-rv*maxA^2/(2*a)-rv*hp)`}) ;
+                      orL('L=={`-rp<=r&r < -rp-rv*minA/a|-rp-rv*minA/a<=r&r<=rp-rv*minA/a|rp-rv*minA/a < r&r<=rp+rv*maxA/a|rp+rv*maxA/a < r`}) ; <(
+                      print({`-> 1:(-rp<=r & r < -rp-rv*minA/a)`}) ;
+                        hideL('L=={`(-rp-rv*minA/a<=r&r<=rp-rv*minA/a->w*h < (-minA^2)/(2*a)-hp)&(rp-rv*minA/a < r&r<=rp+rv*maxA/a->w*rv^2*h < a/2*(r-rp)^2+w*rv*dhd*(r-rp)-rv^2*hp)&(rp+rv*maxA/a < r->rv=0|w*rv*h < w*dhf*(r-rp)-rv*maxA^2/(2*a)-rv*hp)`}) ;
+                        implyL('L=={`-rp<=r&r < -rp-rv*minA/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp`}) ; <(
+                          hideR('R=={`0<=t&t < maxA/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=maxA/a&ro=rv*t&ho=dhf*t-w*maxA^2/(2*a)->abs_0>rp|w*h < w*ho-hp`}) ; closeId
+                          ,
+                          implyR('R) ; orR('R) ;
+                            cut({`t <= (r+rp)/rv | t > (r+rp)/rv`}) ; <(
+                              (/*cutUse,*/ orL('L=={`t<=(r+rp)/rv|t>(r+rp)/rv`}) ; <(
+                                print({`t <= (r+rp)/rv`}) ;
+                                hideR('R=={`abs_0>rp`}) ;
+                                  orL('L=={`0<=t&t < maxA/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=maxA/a&ro=rv*t&ho=dhf*t-w*maxA^2/(2*a)`}) ;
+                                  doall(QE) ; done
+                                ,
+                                print({`t > (r+rp)/rv`}) ;
+                                hideR('R=={`w*h < w*ho-hp`})  & orL('L=={`0<=t&t < maxA/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=maxA/a&ro=rv*t&ho=dhf*t-w*maxA^2/(2*a)`}) ;
+                                  doall(QE) ; done
+                                )
+                              )
+                              ,
+                              (/*cutShow,*/ QE ; done)
+                            )
+                          )
+                        ,
+                        hideL('L=={`(-rp<=r&r < -rp-rv*minA/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp)`}) ;
+                          andL('L=={`(-rp-rv*minA/a<=r&r<=rp-rv*minA/a->w*h < (-minA^2)/(2*a)-hp)&(rp-rv*minA/a < r&r<=rp+rv*maxA/a->w*rv^2*h < a/2*(r-rp)^2+w*rv*dhd*(r-rp)-rv^2*hp)&(rp+rv*maxA/a < r->rv=0|w*rv*h < w*dhf*(r-rp)-rv*maxA^2/(2*a)-rv*hp)`}) ;
+                          orL('L=={`-rp-rv*minA/a<=r&r<=rp-rv*minA/a|rp-rv*minA/a < r&r<=rp+rv*maxA/a|rp+rv*maxA/a < r`}) ; <(
+                          print({`-> 2: -rp-rv*minA/a<=r&r<=rp-rv*minA/a`}) ;
+                            hideL('L=={`(rp-rv*minA/a < r&r<=rp+rv*maxA/a->w*rv^2*h < a/2*(r-rp)^2+w*rv*dhd*(r-rp)-rv^2*hp)&(rp+rv*maxA/a < r->rv=0|w*rv*h < w*dhf*(r-rp)-rv*maxA^2/(2*a)-rv*hp)`}) ;
+                            implyL('L=={`(-rp-rv*minA/a<=r&r<=rp-rv*minA/a->w*h < (-minA^2)/(2*a)-hp)`}) ; <(
+                              hideR('R=={`0<=t&t < maxA/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=maxA/a&ro=rv*t&ho=dhf*t-w*maxA^2/(2*a)->abs_0>rp|w*h < w*ho-hp`}) ; closeId ; done
+                              ,
+                              implyR('R) & orR('R) & hideR('R=={`abs_0>rp`}) ; QE ; done
+                              )
+                            ,
+                            hideL('L=={`-rp-rv*minA/a<=r&r<=rp-rv*minA/a->w*h < (-minA^2)/(2*a)-hp`}) ;
+                              andL('L=={`(rp-rv*minA/a < r&r<=rp+rv*maxA/a->w*rv^2*h < a/2*(r-rp)^2+w*rv*dhd*(r-rp)-rv^2*hp)&(rp+rv*maxA/a < r->rv=0|w*rv*h < w*dhf*(r-rp)-rv*maxA^2/(2*a)-rv*hp)`}) ;
+                              orL('L=={`rp-rv*minA/a < r&r<=rp+rv*maxA/a|rp+rv*maxA/a < r`}) ; <(
+                              print({`-> 3: rv*minA/a<=r&r<=rp-rv*minA/`}) ;
+                                hideL('L=={`rp+rv*maxA/a < r->rv=0|w*rv*h < w*dhf*(r-rp)-rv*maxA^2/(2*a)-rv*hp`}) ;
+                                implyL('L=={`rp-rv*minA/a < r&r<=rp+rv*maxA/a->w*rv^2*h < a/2*(r-rp)^2+w*rv*dhd*(r-rp)-rv^2*hp`}) ; <(
+                                  closeId ; done,
+                                  implyR('R) ; cut({`t<= (r-rp)/rv | t > (r-rp)/rv`}) ; <(
+                                    (/*cutUse,*/ orL('L=={`t<=(r-rp)/rv|t>(r-rp)/rv`}) ; <(
+                                      orL('L=={`0<=t&t < maxA/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=maxA/a&ro=rv*t&ho=dhf*t-w*maxA^2/(2*a)`}) ; doall(QE) ; done
+                                      ,
+                                      orL('L=={`0<=t&t < maxA/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=maxA/a&ro=rv*t&ho=dhf*t-w*maxA^2/(2*a)`}) ; doall(QE) ; done
+                                    ))
+                                    ,
+                                    (/*cutShow,*/ QE ; done)
+                                  )
+                                )
+                                ,
+                                print({`-> 4`}) ;
+                                  implyL('L=={`rp+rv*maxA/a < r->rv=0|w*rv*h < w*dhf*(r-rp)-rv*maxA^2/(2*a)-rv*hp`}) ; <(
+                                    closeId ; done,
+                                    implyR('R) ; cut({`t<= (r-rp)/rv | t > (r-rp)/rv`}) ; <(
+                                      (/*cutUse,*/ orL('L=={`t<=(r-rp)/rv|t>(r-rp)/rv`}) ; <(
+                                        orL('L=={`0<=t&t < maxA/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=maxA/a&ro=rv*t&ho=dhf*t-w*maxA^2/(2*a)`}) ; doall(QE) ; done
+                                        ,
+                                        orL('L=={`0<=t&t < maxA/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=maxA/a&ro=rv*t&ho=dhf*t-w*maxA^2/(2*a)`}) ; doall(QE) ; done
+                                      ))
+                                      ,
+                                      (/*cutShow,*/ QE ; done)
+                                    )
+                                  )
+                                )
+                            )
+                        )
+                )
+              )
+              ,
+              (/*cutShow,*/ QE ; done)
+              )
+          )
+          ,
+          print({`w*dhf<0`}) ;
+          (andL('L)*) ;
+          (allR('R)*) ;
+          hideL('L=={`w*dhf>=0->(-rp<=r&r < -rp-rv*min((0,w*dhd))/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp)&(-rp-rv*min((0,w*dhd))/a<=r&r<=rp-rv*min((0,w*dhd))/a->w*h < (-min((0,w*dhd))^2)/(2*a)-hp)&(rp-rv*min((0,w*dhd))/a < r&r<=rp+rv*max((0,w*(dhf-dhd)))/a->w*rv^2*h < a/2*(r-rp)^2+w*rv*dhd*(r-rp)-rv^2*hp)&(rp+rv*max((0,w*(dhf-dhd)))/a < r->rv=0|w*rv*h < w*dhf*(r-rp)-rv*max((0,w*(dhf-dhd)))^2/(2*a)-rv*hp)`}) ;
+          implyL('L=={`w*dhf < 0->(-rp<=r&r < -rp+rv*max((0,w*(dhf-dhd)))/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp)&(-rp+rv*max((0,w*(dhf-dhd)))/a<=r->rv=0&r>rp|w*rv*h < w*dhf*(r+rp)-rv*max((0,w*(dhf-dhd)))^2/(2*a)-rv*hp)`}) ; <(
+            closeId ; done
+            ,
+            cut({`(-rp>r)|(-rp<=r&r < -rp+rv*max((0,w*(dhf-dhd)))/a)|(-rp+rv*max((0,w*(dhf-dhd)))/a<=r)`}) ; <(
+              (/*cutUse,*/ orL('L=={`(-rp>r)|(-rp<=r&r < -rp+rv*max((0,w*(dhf-dhd)))/a)|(-rp+rv*max((0,w*(dhf-dhd)))/a<=r)`}) ; <(
+                hideL('L=={`(-rp<=r&r < -rp+rv*max((0,w*(dhf-dhd)))/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp)&(-rp+rv*max((0,w*(dhf-dhd)))/a<=r->rv=0&r>rp|w*rv*h < w*dhf*(r+rp)-rv*max((0,w*(dhf-dhd)))^2/(2*a)-rv*hp)`}) ; QE ; done
+                ,
+                implyR('R)  &
+                  abbrv({`max((0,w*(dhf-dhd)))`}, {`maxA`}) ;
+                  minmax('L=={`max(0,w*(dhf-dhd))`}) ;
+                  absExp('R=={`abs(r-ro)`}) ;
+                  andL('L=={`(-rp<=r&r < -rp+rv*maxA/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp)&(-rp+rv*maxA/a<=r->rv=0&r>rp|w*rv*h < w*dhf*(r+rp)-rv*maxA^2/(2*a)-rv*hp)`}) ;
+                  orL('L=={`-rp<=r&r < -rp+rv*maxA/a|-rp+rv*maxA/a<=r`}) ; <(
+                    print({`-> 5`}) ;
+                    implyL('L=={`(-rp<=r&r < -rp+rv*maxA/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp)`}) ; <(
+                      closeId ; done
+                      ,
+                      hideL('L=={`-rp+rv*maxA/a<=r->rv=0&r>rp|w*rv*h < w*dhf*(r+rp)-rv*maxA^2/(2*a)-rv*hp`}) ;
+                        orR('R) ;
+                        orL('L=={`0<=t&t < maxA/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=maxA/a&ro=rv*t&ho=dhf*t-w*maxA^2/(2*a)`}) ; doall(QE) ; done
+                    )
+                    ,
+                    print({`-> 6`}) ;
+                    hideL('L=={`-rp<=r&r < -rp+rv*maxA/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp`}) ;
+                    implyL('L=={`-rp+rv*maxA/a<=r->rv=0&r>rp|w*rv*h < w*dhf*(r+rp)-rv*maxA^2/(2*a)-rv*hp`}) ; <(
+                      closeId ; done
+                      ,
+                      orL('L=={`rv=0&r>rp|w*rv*h < w*dhf*(r+rp)-rv*maxA^2/(2*a)-rv*hp`}) ; <(
+                        print({`zerocase`}) ;
+                        orL('L=={`0<=t&t < maxA/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=maxA/a&ro=rv*t&ho=dhf*t-w*maxA^2/(2*a)`}) ; doall(QE) ; done
+                        ,
+                        orR('R) & cut({`t<= (r+rp)/rv | t > (r+rp)/rv`}) ; <(
+                          (/*cutUse,*/ orL('L=={`t<=(r+rp)/rv|t>(r+rp)/rv`}) ; <(
+                            print({`t<= (r+rp)/rv`}) ; hideR('R=={`abs_0>rp`}) ;
+                              orL('L=={`0<=t&t < maxA/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=maxA/a&ro=rv*t&ho=dhf*t-w*maxA^2/(2*a)`}) ;
+                              doall(QE) ; done
+                            ,
+                            print({`t > (r+rp)/rv`}) ; hideR('R=={`w*h < w*ho-hp`}) ;
+                              orL('L=={`0<=t&t < maxA/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=maxA/a&ro=rv*t&ho=dhf*t-w*maxA^2/(2*a)`}) ;
+                              doall(QE) ; done
+                            )
+                          ),
+                          (/*cutShow,*/ QE ; done)
+                        )
+                      )
+                    )
+                  )
+                )
+              ),
+              (/*cutShow,*/ QE ; done)
+            )
+          )
+        )
+      ),
+      (/*cutShow,*/ cohideR('R=={`w*dhf>=0 | w*dhf<0`}) ; QE ; done)
+    )
+    ,
+    print({`<-`}) ;
+    abbrv({`max((0,w*(dhf-dhd)))`}, {`maxA`}) ;
+    minmax('L=={`max(0,w*(dhf-dhd))`}) ;
+    andR('R) ; <(
+      implyR('R) ; andR('R) ; <(
+        print({`<- 1`}) ; minmax('R=={`min(0,w*dhd)`}) ; implyR('R) ; (andL('L)*) ; cut({`rv=0|rv>0`}) ; <(
+          (/*cutUse,*/ orL('L=={`rv=0|rv>0`}) ; <(
+            print({`<- 1:rv=0`}) ;
+              allL(/*t*/ {`0`}, 'L) ;
+              allL(/*ro*/ {`rv*0`}, 'L) ;
+              allL(/*ho*/ {`w*a/2*0^2+dhd*0`}, 'L) ;
+              implyL('L=={`0<=0&0 < maxA/a&rv*0=rv*0&w*a/2*0^2+dhd*0=w*a/2*0^2+dhd*0|0>=maxA/a&rv*0=rv*0&w*a/2*0^2+dhd*0=dhf*0-w*maxA^2/(2*a)->abs(r-rv*0)>rp|w*h < w*(w*a/2*0^2+dhd*0)-hp`}) ; <(
+                QE ; done
+                ,
+                absExp('L=={`abs(r-rv*0)`}) ; QE ; done
+                )
+            ,
+            print({`<- 1:rv>0`}) ;
+              allL(/*t*/ {`(r+rp)/rv`}, 'L) ;
+              allL(/*ro*/ {`rv*((r+rp)/rv)`}, 'L) ;
+              allL(/*ho*/ {`w*a/2*((r+rp)/rv)^2+dhd*((r+rp)/rv)`}, 'L) ;
+              implyL('L=={`0<=(r+rp)/rv&(r+rp)/rv < maxA/a&rv*((r+rp)/rv)=rv*((r+rp)/rv)&w*a/2*((r+rp)/rv)^2+dhd*((r+rp)/rv)=w*a/2*((r+rp)/rv)^2+dhd*((r+rp)/rv)|(r+rp)/rv>=maxA/a&rv*((r+rp)/rv)=rv*((r+rp)/rv)&w*a/2*((r+rp)/rv)^2+dhd*((r+rp)/rv)=dhf*((r+rp)/rv)-w*maxA^2/(2*a)->abs(r-rv*((r+rp)/rv))>rp|w*h < w*(w*a/2*((r+rp)/rv)^2+dhd*((r+rp)/rv))-hp`}) ; <(
+                QE ; done
+                ,
+                absExp('L=={`abs(r-rv*((r+rp)/rv))`}) ; QE ; done
+                )
+          )),
+          (/*cutShow,*/ QE ; done)
+        )
+        ,
+        andR('R) ; <(
+          print({`<- 2`}) ;
+          abbrv({`min((0,w*dhd))`}, {`minA`}) ;
+          minmax('L=={`min((0,w*dhd))`}) ;
+          implyR('R) ; (andL('L)*) ; cut({`rv=0|rv>0`}) ; <(
+            (/*cutUse,*/ orL('L=={`rv=0|rv>0`}) ; <(
+              print({`<- 2:rv=0`}) ;
+                allL(/*t*/ {`-minA/a`}, 'L) ;
+                allL(/*ro*/ {`rv*(-minA/a)`}, 'L) ;
+                allL(/*ho*/ {`w*a/2*(-minA/a)^2+dhd*(-minA/a)`}, 'L) ;
+                implyL('L=={`0<=-minA/a&-minA/a < maxA/a&rv*(-minA/a)=rv*(-minA/a)&w*a/2*(-minA/a)^2+dhd*(-minA/a)=w*a/2*(-minA/a)^2+dhd*(-minA/a)|-minA/a>=maxA/a&rv*(-minA/a)=rv*(-minA/a)&w*a/2*(-minA/a)^2+dhd*(-minA/a)=dhf*(-minA/a)-w*maxA^2/(2*a)->abs(r-rv*(-minA/a))>rp|w*h < w*(w*a/2*(-minA/a)^2+dhd*(-minA/a))-hp`}) ; <(
+                  QE ; done
+                  ,
+                  abbrv({`r-rv*(-minA/a)`}, {`absA`}) ;
+                    absExp('L=={`abs(absA)`}) ; QE ; done
+                  )
+              ,
+              print({`<- 2:rv>0`}) ;
+                allL(/*t*/ {`-minA/a`}, 'L) ;
+                allL(/*ro*/ {`rv*(-minA/a)`}, 'L) ;
+                allL(/*ho*/ {`w*a/2*(-minA/a)^2+dhd*(-minA/a)`}, 'L) ;
+                implyL('L=={`0<=-minA/a&-minA/a < maxA/a&rv*(-minA/a)=rv*(-minA/a)&w*a/2*(-minA/a)^2+dhd*(-minA/a)=w*a/2*(-minA/a)^2+dhd*(-minA/a)|-minA/a>=maxA/a&rv*(-minA/a)=rv*(-minA/a)&w*a/2*(-minA/a)^2+dhd*(-minA/a)=dhf*(-minA/a)-w*maxA^2/(2*a)->abs(r-rv*(-minA/a))>rp|w*h < w*(w*a/2*(-minA/a)^2+dhd*(-minA/a))-hp`}) ; <(
+                  QE ; done
+                  ,
+                  abbrv({`r-rv*(-minA/a)`}, {`absA`}) ;
+                    absExp('L=={`abs(absA)`}) ; QE ; done
+                  )
+              )
+            ),
+            (/*cutShow,*/ QE ; done)
+          )
+          ,
+          andR('R) ; <(
+            print({`<- 3`}) ; minmax('R=={`min(0,w*dhd)`}) ; implyR('R)  ; (andL('L)*) ;
+            cut({`rv=0|rv>0`}) ; <(
+              (/*cutUse,*/ orL('L=={`rv=0|rv>0`}) ; <(
+                  print({`<- 3:rv=0`}) ;
+                    allL(/*t*/ {`0`}, 'L) ;
+                    allL(/*ro*/ {`rv*0`}, 'L) ;
+                    allL(/*ho*/ {`w*a/2*0^2+dhd*0`}, 'L) ;
+                    implyL('L=={`0<=0&0 < maxA/a&rv*0=rv*0&w*a/2*0^2+dhd*0=w*a/2*0^2+dhd*0|0>=maxA/a&rv*0=rv*0&w*a/2*0^2+dhd*0=dhf*0-w*maxA^2/(2*a)->abs(r-rv*0)>rp|w*h < w*(w*a/2*0^2+dhd*0)-hp`}) ; <(
+                      QE ; done
+                      ,
+                      absExp('L=={`abs(r-rv*0)`}) ; QE ; done
+                      )
+                  ,
+                  print({`<- 3:rv>0`}) &
+                    allL(/*t*/ {`(r-rp)/rv`}, 'L) ;
+                    allL(/*ro*/ {`rv*((r-rp)/rv)`}, 'L) ;
+                    allL(/*ho*/ {`w*a/2*((r-rp)/rv)^2+dhd*((r-rp)/rv)`}, 'L) ;
+                    implyL('L=={`0<=(r-rp)/rv&(r-rp)/rv < maxA/a&rv*((r-rp)/rv)=rv*((r-rp)/rv)&w*a/2*((r-rp)/rv)^2+dhd*((r-rp)/rv)=w*a/2*((r-rp)/rv)^2+dhd*((r-rp)/rv)|(r-rp)/rv>=maxA/a&rv*((r-rp)/rv)=rv*((r-rp)/rv)&w*a/2*((r-rp)/rv)^2+dhd*((r-rp)/rv)=dhf*((r-rp)/rv)-w*maxA^2/(2*a)->abs(r-rv*((r-rp)/rv))>rp|w*h < w*(w*a/2*((r-rp)/rv)^2+dhd*((r-rp)/rv))-hp`}) ; <(
+                      QE ; done
+                      ,
+                      absExp('L=={`abs(r-rv*((r-rp)/rv))`}) ; QE ; done
+                      )
+              )),
+              (/*cutShow,*/ QE ; done)
+            )
+            ,
+            print({`<- 4`}) ; (andL('L)*) ; implyR('R) ;
+            cut({`rv=0|rv>0`}) ; <(
+              (/*cutUse,*/ orL('L=={`rv=0|rv>0`}) ; <(
+                print({`<- 4:rv=0`}) ;
+                  orR('R) ; hideR('R=={`w*rv*h < w*dhf*(r-rp)-rv*maxA^2/(2*a)-rv*hp`}) ; QE ; done
+                ,
+                print({`<- 4:rv>0`}) ;
+                  orR('R) ; hideR('R=={`rv=0`}) ;
+                  allL(/*t*/ {`(r-rp)/rv`}, 'L) ;
+                  allL(/*ro*/ {`rv*((r-rp)/rv)`}, 'L) ;
+                  allL(/*ho*/ {`dhf*((r-rp)/rv)-w*maxA^2/(2*a)`}, 'L) ;
+                  implyL('L=={`0<=(r-rp)/rv&(r-rp)/rv < maxA/a&rv*((r-rp)/rv)=rv*((r-rp)/rv)&dhf*((r-rp)/rv)-w*maxA^2/(2*a)=w*a/2*((r-rp)/rv)^2+dhd*((r-rp)/rv)|(r-rp)/rv>=maxA/a&rv*((r-rp)/rv)=rv*((r-rp)/rv)&dhf*((r-rp)/rv)-w*maxA^2/(2*a)=dhf*((r-rp)/rv)-w*maxA^2/(2*a)->abs(r-rv*((r-rp)/rv))>rp|w*h < w*(dhf*((r-rp)/rv)-w*maxA^2/(2*a))-hp`}) ; <(
+                    hideR('R=={`w*rv*h < w*dhf*(r-rp)-rv*maxA^2/(2*a)-rv*hp`}) ; orR('R) ;
+                      hideR('R=={`0<=(r-rp)/rv&(r-rp)/rv < maxA/a&rv*((r-rp)/rv)=rv*((r-rp)/rv)&dhf*((r-rp)/rv)-w*maxA^2/(2*a)=w*a/2*((r-rp)/rv)^2+dhd*((r-rp)/rv)`}) ; QE ; done
+                    ,
+                    absExp('L=={`abs(r-rv*((r-rp)/rv))`}) ; QE ; done
+                    )
+                )
+              ),
+              (/*cutShow,*/ QE ; done)
+            )
+          )
+        )
+      )
+      ,
+      implyR('R) ; andR('R) ; <(
+        print({`<- 5`})  ; (andL('L)*) ;
+        cut({`rv=0|rv>0`}) ; <(
+          (/*cutUse,*/ orL('L=={`rv=0|rv>0`}) ; <(
+            print({`<- 5:rv=0`}) ;
+              allL(/*t*/ {`0`}, 'L) ;
+              allL(/*ro*/ {`rv*0`}, 'L) ;
+              allL(/*ho*/ {`w*a/2*0^2+dhd*0`}, 'L) ;
+              implyL('L=={`0<=0&0 < maxA/a&rv*0=rv*0&w*a/2*0^2+dhd*0=w*a/2*0^2+dhd*0|0>=maxA/a&rv*0=rv*0&w*a/2*0^2+dhd*0=dhf*0-w*maxA^2/(2*a)->abs(r-rv*0)>rp|w*h < w*(w*a/2*0^2+dhd*0)-hp`}) ; <(
+                QE ; done
+                ,
+                absExp('L=={`abs(r-rv*0)`}) ; QE ; done
+                )
+            ,
+            print({`<- 5:rv>0`}) &
+              allL(/*t*/ {`(r+rp)/rv`}, 'L) ;
+              allL(/*ro*/ {`rv*((r+rp)/rv)`}, 'L) ;
+              allL(/*ho*/ {`w*a/2*((r+rp)/rv)^2+dhd*((r+rp)/rv)`}, 'L) ;
+              implyL('L=={`0<=(r+rp)/rv&(r+rp)/rv < maxA/a&rv*((r+rp)/rv)=rv*((r+rp)/rv)&w*a/2*((r+rp)/rv)^2+dhd*((r+rp)/rv)=w*a/2*((r+rp)/rv)^2+dhd*((r+rp)/rv)|(r+rp)/rv>=maxA/a&rv*((r+rp)/rv)=rv*((r+rp)/rv)&w*a/2*((r+rp)/rv)^2+dhd*((r+rp)/rv)=dhf*((r+rp)/rv)-w*maxA^2/(2*a)->abs(r-rv*((r+rp)/rv))>rp|w*h < w*(w*a/2*((r+rp)/rv)^2+dhd*((r+rp)/rv))-hp`}) ; <(
+                QE ; done
+                ,
+                absExp('L=={`abs(r-rv*((r+rp)/rv))`}) ; QE ; done
+                )
+          )),
+          (/*cutShow,*/ QE ; done)
+        )
+        ,
+        print({`<- 6`}) ; (andL('L)*) ; implyR('R) ;
+        cut({`rv=0|rv>0`}) ; <(
+          (/*cutUse,*/ orL('L=={`rv=0|rv>0`}) ; <(
+            print({`<- 6:rv=0`}) ; orR('R)  ;
+            cut({`r>rp|r<=rp`}) ; <(
+              (/*cutUse,*/ orL('L=={`r>rp|r<=rp`}) ; <(
+                hideR('R=={`w*rv*h < w*dhf*(r+rp)-rv*maxA^2/(2*a)-rv*hp`}) ; QE ; done
+                ,
+                hideR('R=={`rv=0&r>rp`}) &
+                cut({`(h+w*maxA^2/(2*a))/dhf>=maxA/a|(h+w*maxA^2/(2*a))/dhf<maxA/a`}) ; <(
+                  (/*cutUse,*/ orL('L=={`(h+w*maxA^2/(2*a))/dhf>=maxA/a|(h+w*maxA^2/(2*a))/dhf<maxA/a`}) ; <(
+                    allL(/*t*/ {`(h+w*maxA^2/(2*a))/dhf`}, 'L) ;
+                    allL(/*ro*/ {`0`}, 'L) ;
+                    allL(/*ho*/ {`h`}, 'L) ;
+                    implyL('L) ; <(hideR('R=={`w*rv*h < w*dhf*(r+rp)-rv*maxA^2/(2*a)-rv*hp`}) ; QE, QE)
+                    ,
+                    allL(/*t*/ {`maxA/a`}, 'L) ;
+                    allL(/*ro*/ {`0`}, 'L) ;
+                    allL(/*ho*/ {`dhf*maxA/a-w*maxA^2/(2*a)`}, 'L) ;
+                      implyL('L) ; <(hideR('R=={`w*rv*h < w*dhf*(r+rp)-rv*maxA^2/(2*a)-rv*hp`}) ; QE, QE)
+                    )
+                  ),
+                  (/*cutShow,*/ hideR('R=={`w*rv*h < w*dhf*(r+rp)-rv*maxA^2/(2*a)-rv*hp`}) ; QE ; done)
+                )
+              )),
+              (/*cutShow,*/ cohideR('Rlast) ; QE ; done)
+            )
+            ,
+            print({`<- 6:rv>0`}) ; orR('R) ; hideR('R=={`rv=0&r>rp`}) ;
+              allL(/*t*/ {`(r+rp)/rv`}, 'L) ;
+              allL(/*ro*/ {`rv*((r+rp)/rv)`}, 'L) ;
+              allL(/*ho*/ {`dhf*((r+rp)/rv)-w*maxA^2/(2*a)`}, 'L) ;
+              implyL('L=={`0<=(r+rp)/rv&(r+rp)/rv < maxA/a&rv*((r+rp)/rv)=rv*((r+rp)/rv)&dhf*((r+rp)/rv)-w*maxA^2/(2*a)=w*a/2*((r+rp)/rv)^2+dhd*((r+rp)/rv)|(r+rp)/rv>=maxA/a&rv*((r+rp)/rv)=rv*((r+rp)/rv)&dhf*((r+rp)/rv)-w*maxA^2/(2*a)=dhf*((r+rp)/rv)-w*maxA^2/(2*a)->abs(r-rv*((r+rp)/rv))>rp|w*h < w*(dhf*((r+rp)/rv)-w*maxA^2/(2*a))-hp`}) ; <(
+                QE ; done
+                ,
+                absExp('L=={`abs(r-rv*((r+rp)/rv))`}) ; QE ; done
+            )
+          )),
+          (/*cutShow,*/ QE ; done)
+        )
       )
     )
   )
