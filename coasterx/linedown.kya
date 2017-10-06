@@ -1,0 +1,62 @@
+﻿ArchiveEntry "linedown".
+Functions.
+ R dyLo.
+ R dyHi.
+  R g.
+  R cx.
+  R cy.
+  R yGlobal.
+  R dy0.
+  R dx0.
+  R vLo.
+  R vHi.
+  R centLo.
+  R centHi.
+  R cent.
+  R tanLo.
+  R tan.
+  R tanHi.
+  R r. /* radius of track */
+  R x0.
+  R y0.    /* initial position */
+  R x1.
+  R y1.
+  R v0.    /* initial speed */
+  R c.
+End.
+
+ProgramVariables.
+  R x.
+  R y.
+  R v.
+  R dx.
+  R dy.
+End.
+
+Problem.
+(g() > 0)&
+(v>0&v^2+2*y*g()=v0()^2+2*yGlobal()*g())&
+((0 >= dy)&(x0()<=x&x<=x1())&(y0()<=y&y<=y1())->((vLo() <= v^2 & v^2 <= vHi())  &  (dyLo()*g()<=-dy0()*g() & -dy0()*g()<=dyHi()*g()))   &  (dx0()*y=dy0()*x+dx0()*c()) )&
+0 >= dy&
+((x0()<=x&x<=x1()) & (y0() <= y & y <= y1())) ->  dx0()*v^2 > 2*(x1()-x)*dy0()*g()&
+(x1() > x0())&
+(dx0()^2 + dy0()^2 = 1)&
+dx0() > 0
+->
+[{x'=v*dx0(),
+y'=v*dy0(),
+v'=-dy0()*g()
+&(x0()<=x&x<=x1())
+&(y0()<=y&y<=y1())}]
+((v>0&v^2+2*y*g()=v0()^2+2*yGlobal()*g())&
+ x0()<=x&x<=x1()
+ &dx0()*y=dy0()*x+dx0()*c())        
+End.
+
+Tactic "linedown".
+master
+End.
+       
+
+End.
+       

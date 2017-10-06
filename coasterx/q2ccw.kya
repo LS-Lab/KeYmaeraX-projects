@@ -1,0 +1,76 @@
+﻿ArchiveEntry "q2ccw".
+Functions.
+  R g.
+  R cx.
+  R cy.
+  R yGlobal.
+  R dy0.
+  R dx0.
+  R vLo.
+  R vHi.
+  R centLo.
+  R centHi.
+  R cent.
+  R tanLo.
+  R tan.
+  R tanHi.
+  R r. /* radius of track */
+  R x0.
+  R y0.    /* initial position */
+  R x1.
+  R y1.
+  R v0.    /* initial speed */
+End.
+
+ProgramVariables.
+  R x.
+  R y.
+  R v.
+  R dx.
+  R dy.
+End.
+
+Problem.
+g() > 0&
+(v>0&v^2+2*y*g()=v0()^2+2*yGlobal()*g())&
+((0 >= dy0())&(x0()<=x&x<=x1())&(y1()<=y&y<=y0())->((x-cx())^2 + (y-cy())^2 = r()^2 & (x<=cx() & cy()<=y)&(vLo() <= v^2 & v^2 <= vHi())&(centLo() <= cent() & cent() <= centHi())&(tanLo() <= tan() & tan() <= tanHi())))&
+0 >= dy0()&
+dx=(cy()-y)/r()&
+dy=-(cx()-x)/r()&
+x1() > x0()&
+y1() < y0()&
+cy() <= y1()&
+x1() <= cx() &
+r() > 0
+->
+[{x'=dx*v,
+  y'=dy*v,
+  v'=-dy*g(),
+  dx' =  (-dy*v)/r(),
+  dy' =  (dx*v)/r()
+  &(x0()<=x&x<=x1())
+  &(y1()<=y&y<=y0())}]
+( dx=(cy()-y)/r()
+& dy=-(cx()-x)/r()
+& v>0&v^2+2*y*g()=v0()^2+2*yGlobal()*g()
+& x <= cx()
+& cy() <= y
+& ((x-cx())^2 + (y-cy())^2 = r()^2)
+)
+
+End.
+
+Tactic "q2ccw Proof".
+unfold  ;
+dC({`dx=((cy())-y)/(r())`},1) ; <(nil, dI(1));
+dC({`dy=-((cx())-x)/(r())`},1) ; <(nil, dI(1));
+dC({`v^2=v0()^2+2*yGlobal()*g()-2*y*g()`},1) ; <(nil, dI(1)) ;
+dC({`v>0`},'R) ; <(nil, ODE(1)) ;
+dC({`(x-cx())^2+(y-cy())^2=r()^2`},'R) ; <(ODE(1), dI(1))
+
+
+End.
+       
+
+End.
+       
