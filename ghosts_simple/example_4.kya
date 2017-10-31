@@ -15,14 +15,14 @@ Tactic "Differential Ghosts Blog Post Example 4: Proof 2".
   hideL(-1) ; orL(-1) ; <(
     MR({`x>0`}, 1) ; <(
       ODE(1),
-      QE
+      QE({`Mathematica`})
       ),
     MR({`x=0`}, 1) ; <(
       ODE(1),
-      QE
+      QE({`Mathematica`})
       )
     ),
-  hideR(1) ; QE
+  hideR(1) ; QE({`Mathematica`})
   )
 End.
        

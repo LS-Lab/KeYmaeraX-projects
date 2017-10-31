@@ -7,9 +7,9 @@ Functions.
   R W().       /* maximum steering */
   R abs(R).    /* predefined function of absolute value */
 
-  R stopDist(R) = ((.)^2 / (2*b())).            /* The straight-line stopping distance from brake start to full stop. */
-  R accelComp(R) = ((A()/b() + 1) * (A()/2 * ep()^2 + ep()*(.)))./* Straight-line distance to compensate acceleration */
-  R admissibleSeparation(R) = (stopDist(.) + accelComp(.)).     /* Separation that allows accelerating on a new curve */
+  R stopDist(R v) = (v^2 / (2*b())).            /* The straight-line stopping distance from brake start to full stop. */
+  R accelComp(R v) = ((A()/b() + 1) * (A()/2 * ep()^2 + ep()*v))./* Straight-line distance to compensate acceleration */
+  R admissibleSeparation(R v) = (stopDist(v) + accelComp(v)).   /* Separation that allows accelerating on a new curve */
 
   B isWellformedDir() <-> (dx^2 + dy^2 = 1).                        /* The orientation of the robot is a unit vector. */
 
@@ -117,7 +117,7 @@ Tactic "Proof Theorem 1: Static safety".
     print({`Transforming...`});
     transform({`abs(x_0-xo)>v_0^2/(2*b())+(A()/b()+1)*(A()/2*t^2+t*v_0)`}, 'L=={`abs(x_0-xo)>admissibleSeparation(v_0)`});
     hideR('R=={`abs(y-yo)>stopDist(v)`});
-    smartQE;
+    smartQE; /* needs QE({`Mathematica`}) */
     print({`Proved acc arithmetic`})
   );
 
@@ -126,7 +126,7 @@ Tactic "Proof Theorem 1: Static safety".
     print({`Transforming...`});
     transform({`abs(y_0-yo)>v_0^2/(2*b())+(A()/b()+1)*(A()/2*t^2+t*v_0)`}, 'L=={`abs(y_0-yo)>admissibleSeparation(v_0)`});
     hideR('R=={`abs(x-xo)>stopDist(v)`});
-    smartQE;
+    smartQE; /* needs QE({`Mathematica`}) */
     print({`Proved acc arithmetic`})
   );
 
@@ -168,9 +168,9 @@ Functions.
   R V().       /* maximum obstacle velocity */
   R abs(R).    /* predefined function of absolute value */
 
-  R stopDist(R) = ((.)^2 / (2*b()) + V()*(.)/b()).
-  R accelComp(R) = ((A()/b() + 1) * (A()/2 * ep()^2 + ep()*((.)+V))).
-  R admissibleSeparation(R) = (stopDist(.) + accelComp(.)).
+  R stopDist(R v) = (v^2 / (2*b()) + V()*v/b()).
+  R accelComp(R v) = ((A()/b() + 1) * (A()/2 * ep()^2 + ep()*(v+V))).
+  R admissibleSeparation(R v) = (stopDist(v) + accelComp(v)).
 
   B isWellformedDir() <-> (dx^2 + dy^2 = 1).                        /* The orientation of the robot is a unit vector. */
 
@@ -290,7 +290,7 @@ Tactic "Proof Theorem 2: Passive safety".
     print({`Transforming...`});
     transform({`abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()+(A()/b()+1)*(A()/2*t^2+t*(v_0+V()))`}, 'L=={`abs(x_0-xo_0)>admissibleSeparation(v_0)`});
     hideR('R=={`abs(y-yo)>stopDist(v)`});
-    smartQE;
+    smartQE; /* needs QE({`Mathematica`}) */
     print({`Proved acc arithmetic`})
   );
 
@@ -299,7 +299,7 @@ Tactic "Proof Theorem 2: Passive safety".
     print({`Transforming...`});
     transform({`abs(y_0-yo_0)>v_0^2/(2*b())+V()*v_0/b()+(A()/b()+1)*(A()/2*t^2+t*(v_0+V()))`}, 'L=={`abs(y_0-yo_0)>admissibleSeparation(v_0)`});
     hideR('R=={`abs(x-xo)>stopDist(v)`});
-    smartQE;
+    smartQE; /* needs QE({`Mathematica`}) */
     print({`Proved acc arithmetic`})
   );
 
@@ -342,10 +342,10 @@ Functions.
   R V().       /* maximum obstacle velocity */
   R abs(R).    /* predefined function of absolute value */
 
-  R friendlyMargin(R) = ( (.)^2/(2*bo()) + tau()*(.) ).
-  R stopDist(R) = ((.)^2 / (2*b()) + V()*(.)/b()).
-  R accelComp(R) = ((A()/b() + 1) * (A()/2 * ep()^2 + ep()*((.)+V))).
-  R admissibleSeparation(R) = (stopDist(.) + friendlyMargin(V()) + accelComp(.)).
+  R friendlyMargin(R v) = ( v^2/(2*bo()) + tau()*v ).
+  R stopDist(R v) = (v^2 / (2*b()) + V()*v/b()).
+  R accelComp(R v) = ((A()/b() + 1) * (A()/2 * ep()^2 + ep()*(v+V))).
+  R admissibleSeparation(R v) = (stopDist(v) + friendlyMargin(V()) + accelComp(v)).
 
   B isWellformedDir() <-> (dx^2 + dy^2 = 1).                        /* The orientation of the robot is a unit vector. */
 
@@ -505,7 +505,7 @@ Tactic "Proof Theorem 3: Passive Friendly Safety".
     print({`Transforming...`});
     transform({`abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()+fm+(A()/b()+1)*(A()/2*t^2+t*(v_0+V()))`}, 'L=={`abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()+fm+(A()/b()+1)*(A()/2*ep()^2+ep()*(v_0+V()))`});
     hideR('R=={`abs(y-yo)>stopDist(v)+fm`});
-    smartQE;
+    smartQE; /* needs QE({`Mathematica`}) */
     print({`Proved acc arithmetic`})
   );
 
@@ -514,7 +514,7 @@ Tactic "Proof Theorem 3: Passive Friendly Safety".
     print({`Transforming...`});
     transform({`abs(y_0-yo_0)>v_0^2/(2*b())+V()*v_0/b()+fm+(A()/b()+1)*(A()/2*t^2+t*(v_0+V()))`}, 'L=={`abs(y_0-yo_0)>v_0^2/(2*b())+V()*v_0/b()+fm+(A()/b()+1)*(A()/2*ep()^2+ep()*(v_0+V()))`});
     hideR('R=={`abs(x-xo)>stopDist(v)+fm`});
-    smartQE;
+    smartQE; /* needs QE({`Mathematica`}) */
     print({`Proved acc arithmetic`})
   );
 
@@ -583,12 +583,12 @@ Functions.
   R Gamma().   /* Sensor range in radian */
   R abs(R).    /* predefined function of absolute value */
 
-  R stopDist(R)   = ( (.)^2 / (2*b()) ).
-  R stopMargin(R) = ( stopDist(.) + V()*(.)/b() ).
-  R accelComp(R)  = ( (A()/b() + 1) * (A()/2 * ep()^2 + ep()*(.)) ).
-  R accelMargin(R)  = ( accelComp(.) + (A()/b() + 1)*ep()*V() ).
-  R admissibleSeparation(R) = ( stopMargin(.) + accelMargin(.) ).
-  R admissibleTurnLength(R) = ( stopDist(.) + accelComp(.) ).
+  R stopDist(R v)   = ( v^2 / (2*b()) ).
+  R stopMargin(R v) = ( stopDist(v) + V()*v/b() ).
+  R accelComp(R v)  = ( (A()/b() + 1) * (A()/2 * ep()^2 + ep()*v) ).
+  R accelMargin(R v)  = ( accelComp(v) + (A()/b() + 1)*ep()*V() ).
+  R admissibleSeparation(R v) = ( stopMargin(v) + accelMargin(v) ).
+  R admissibleTurnLength(R v) = ( stopDist(v) + accelComp(v) ).
 
   B isWellformedDir() <-> (dx^2 + dy^2 = 1).                        /* The orientation of the robot is a unit vector. */
 
@@ -723,7 +723,7 @@ Tactic "Proof Theorem 4: Passive orientation safety".
     hideL('L=={`yo-yo_0<=t*V()`});
     print({`Transforming...`});
     transform({`abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()+((A()/b()+1)*(A()/2*t^2+t*v_0)+(A()/b()+1)*t*V())`}, 'L=={`abs(x_0-xo_0)>admissibleSeparation(v_0)`});
-    smartQE;
+    smartQE; /* needs QE({`Mathematica`}) */
     print({`Proved acc arithmetic`})
   );
 
@@ -735,7 +735,7 @@ Tactic "Proof Theorem 4: Passive orientation safety".
     hideL('L=={`xo-xo_0<=t*V()`});
     print({`Transforming...`});
     transform({`abs(y_0-yo_0)>v_0^2/(2*b())+V()*v_0/b()+((A()/b()+1)*(A()/2*t^2+t*v_0)+(A()/b()+1)*t*V())`}, 'L=={`abs(y_0-yo_0)>admissibleSeparation(v_0)`});
-    smartQE;
+    smartQE; /* needs QE({`Mathematica`}) */
     print({`Proved acc arithmetic`})
   );
 
@@ -795,10 +795,10 @@ Functions.
   R V().       /* maximum obstacle velocity */
   R abs(R).    /* predefined function of absolute value */
 
-  R stopDist(R) = ((.)^2 / (2*b()) + V()*(.)/b()).
-  /*R accelComp(R) = ((a/b() + 1) * (a/2 * ep()^2 + ep()*((.)+V))).
-  R admissibleSeparationG(R) = (stopDist(.) + accelComp(.)).
-  R admissibleSeparationL(R) = (-(.)^2/(2*a)-V*(.)/a).*/
+  R stopDist(R v) = (v^2 / (2*b()) + V()*v/b()).
+  R accelComp(R v, R a) = ((a/b() + 1) * (a/2 * ep()^2 + ep()*(v+V))).
+  R admissibleSeparationG(R v, R a) = (stopDist(v) + accelComp(v,a)).
+  R admissibleSeparationL(R v, R a) = (-v^2/(2*a)-V*v/a).
 
   B isWellformedDir() <-> (dx^2 + dy^2 = 1).                        /* The orientation of the robot is a unit vector. */
 
@@ -865,8 +865,8 @@ assumptions() ->
             ?r!=0 & r*w = v;
 
             /* use that curve, if it is a safe one (admissible velocities) */
-            if (v+a*ep>=0) { ?abs(x-xo) > stopDist(v) + (a/b+1)*(a/2*ep^2 + ep*(v+V)) | abs(y-yo) > stopDist(v) + (a/b+1)*(a/2*ep^2 + ep*(v+V)); }
-            else           { ?abs(x-xo) > -v^2/(2*a)-V*v/a | abs(y-yo) > -v^2/(2*a)-V*v/a; }
+            if (v+a*ep>=0) { ?abs(x-xo) > admissibleSeparationG(v,a) | abs(y-yo) > admissibleSeparationG(v,a); }
+            else           { ?abs(x-xo) > admissibleSeparationL(v,a) | abs(y-yo) > admissibleSeparationL(v,a); }
           }
         };
     	  t := 0;
@@ -918,7 +918,7 @@ Tactic "Proof Theorem 5: Passive safety with actual acceleration".
     print({`Transforming...`});
     ?(transform({`abs(x_0-xo_0)>stopDist(v_0) + (a/b+1)*(a/2*t^2 + t*(v_0+V))`}, 'L=={`abs(x_0-xo_0)>stopDist(v_0) + (a/b+1)*(a/2*ep^2 + ep*(v_0+V))`}));
     hideR('R=={`abs(y-yo)>stopDist(v)`});
-    smartQE;
+    smartQE; /* needs QE({`Mathematica`}) */
     print({`Proved acc arithmetic`})
   );
 
@@ -927,7 +927,7 @@ Tactic "Proof Theorem 5: Passive safety with actual acceleration".
     print({`Transforming...`});
     ?(transform({`abs(y_0-yo_0)>stopDist(v_0) + (a/b+1)*(a/2*t^2 + t*(v_0+V))`}, 'L=={`abs(y_0-yo_0)>stopDist(v_0) + (a/b+1)*(a/2*ep^2 + ep*(v_0+V))`}));
     hideR('R=={`abs(x-xo)>stopDist(v)`});
-    smartQE;
+    smartQE; /* needs QE({`Mathematica`}) */
     print({`Proved acc arithmetic`})
   );
 
@@ -979,9 +979,9 @@ Functions.
   R Dp().      /* maximum location uncertainty */
   R abs(R).    /* predefined function of absolute value */
 
-  R stopDist(R) = ((.)^2 / (2*b()) + V()*(.)/b()).
-  R accelComp(R) = ((A()/b() + 1) * (A()/2 * ep()^2 + ep()*((.)+V())) + Dp()).
-  R admissibleSeparation(R) = (stopDist(.) + accelComp(.)).
+  R stopDist(R v) = (v^2 / (2*b()) + V()*v/b()).
+  R accelComp(R v) = ((A()/b() + 1) * (A()/2 * ep()^2 + ep()*(v+V())) + Dp()).
+  R admissibleSeparation(R v) = (stopDist(v) + accelComp(v)).
 
   B isWellformedDir() <-> (dx^2 + dy^2 = 1).                        /* The orientation of the robot is a unit vector. */
 
@@ -1109,7 +1109,7 @@ Tactic "Proof Theorem 6: Passive safety despite location uncertainty".
     print({`Transforming...`});
     transform({`abs(mx-xo_0)>v_0^2/(2*b())+V()*v_0/b()+(A()/b()+1)*(A()/2*t^2+t*(v_0+V()))+Dp()`}, 'L=={`abs(mx-xo_0)>admissibleSeparation(v_0)`});
     hideR('R=={`abs(y-yo)>stopDist(v)`});
-    smartQE;
+    smartQE; /* needs QE({`Mathematica`}) */
     print({`Proved acc arithmetic`})
   );
 
@@ -1118,7 +1118,7 @@ Tactic "Proof Theorem 6: Passive safety despite location uncertainty".
     print({`Transforming...`});
     transform({`abs(my-yo_0)>v_0^2/(2*b())+V()*v_0/b()+(A()/b()+1)*(A()/2*t^2+t*(v_0+V()))+Dp()`}, 'L=={`abs(my-yo_0)>admissibleSeparation(v_0)`});
     hideR('R=={`abs(x-xo)>stopDist(v)`});
-    smartQE;
+    smartQE; /* needs QE({`Mathematica`}) */
     print({`Proved acc arithmetic`})
   );
 
@@ -1161,9 +1161,9 @@ Functions.
   R Da().      /* maximum actuator perturbation 0< Da <= 1 (robot will not loose brakes entirely) */
   R abs(R).    /* predefined function of absolute value */
 
-  R stopDist(R) = ( (.)^2 / (2*(b()*Da())) + V()*(.)/(b()*Da()) ).
-  R accelComp(R) = ( (A()/(b()*Da()) + 1) * (A()/2 * ep()^2 + ep()*((.)+V())) ).
-  R admissibleSeparation(R) = (stopDist(.) + accelComp(.)).
+  R stopDist(R v) = ( v^2 / (2*(b()*Da())) + V()*v/(b()*Da()) ).
+  R accelComp(R v) = ( (A()/(b()*Da()) + 1) * (A()/2 * ep()^2 + ep()*(v+V())) ).
+  R admissibleSeparation(R v) = (stopDist(v) + accelComp(v)).
 
   B isWellformedDir() <-> (dx^2 + dy^2 = 1).                        /* The orientation of the robot is a unit vector. */
 
@@ -1305,7 +1305,7 @@ Tactic "Proof Theorem 7: Passive safety despite actuator perturbation".
     hideL('L=={`y-y_0<=t*(v_0+A()/2*t)`});
     hideL('L=={`-t*V()<=yo-yo_0`});
     hideL('L=={`yo-yo_0<=t*V()`});
-    smartQE;
+    smartQE; /* needs QE({`Mathematica`}) */
     print({`Proved acc arithmetic`})
   );
 
@@ -1329,7 +1329,7 @@ Tactic "Proof Theorem 7: Passive safety despite actuator perturbation".
     hideL('L=={`x-x_0<=t*(v_0+A()/2*t)`});
     hideL('L=={`-t*V()<=xo-xo_0`});
     hideL('L=={`xo-xo_0<=t*V()`});
-    smartQE;
+    smartQE; /* needs QE({`Mathematica`}) */
     print({`Proved acc arithmetic`})
   );
 
@@ -1372,9 +1372,9 @@ Functions.
   R Dv().      /* maximum velocity uncertainty */
   R abs(R).    /* predefined function of absolute value */
 
-  R stopDist(R) = ( (.)^2 / (2*b()) + V()*(.)/b() ).
-  R accelComp(R) = ( (A()/b() + 1) * (A()/2 * ep()^2 + ep()*((.)+V())) ).
-  R admissibleSeparation(R) = (stopDist(.) + accelComp(.)).
+  R stopDist(R v) = ( v^2 / (2*b()) + V()*v/b() ).
+  R accelComp(R v) = ( (A()/b() + 1) * (A()/2 * ep()^2 + ep()*(v+V())) ).
+  R admissibleSeparation(R v) = (stopDist(v) + accelComp(v)).
 
   B isWellformedDir() <-> (dx^2 + dy^2 = 1).                        /* The orientation of the robot is a unit vector. */
 
@@ -1510,7 +1510,7 @@ Tactic "Proof Theorem 8: Passive safety despite velocity uncertainty".
     hideL('L=={`ep()>0`});
     hideR('R=={`abs(y-yo)>stopDist(v)`});
     transform({`abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()+(A()/b()+1)*(A()/2*t^2+t*(v_0+V()))`}, 'L=={`abs(x_0-xo_0)>(mv+Dv())^2/(2*b())+V()*(mv+Dv())/b()+(A()/b()+1)*(A()/2*t^2+t*((mv+Dv())+V()))`});
-    smartQE;
+    smartQE; /* needs QE({`Mathematica`}) */
     print({`Proved acc arithmetic`})
   );
 
@@ -1529,7 +1529,7 @@ Tactic "Proof Theorem 8: Passive safety despite velocity uncertainty".
     hideL('L=={`ep()>0`});
     hideR('R=={`abs(x-xo)>stopDist(v)`});
     transform({`abs(y_0-yo_0)>v_0^2/(2*b())+V()*v_0/b()+(A()/b()+1)*(A()/2*t^2+t*(v_0+V()))`}, 'L=={`abs(y_0-yo_0)>(mv+Dv())^2/(2*b())+V()*(mv+Dv())/b()+(A()/b()+1)*(A()/2*t^2+t*((mv+Dv())+V()))`});
-    smartQE;
+    smartQE; /* needs QE({`Mathematica`}) */
     print({`Proved acc arithmetic`})
   );
 
@@ -1571,9 +1571,9 @@ Functions.
   R V().       /* maximum obstacle velocity */
   R abs(R).    /* predefined function of absolute value */
 
-  R stopDist(R) = ((.)^2 / (2*b()) + V()*(.)/b()).
-  R accelComp(R) = ((A()/b() + 1) * (A()/2 * ep()^2 + ep()*((.)+V))).
-  R admissibleSeparation(R) = (stopDist(.) + accelComp(.)).
+  R stopDist(R v) = (v^2 / (2*b()) + V()*v/b()).
+  R accelComp(R v) = ((A()/b() + 1) * (A()/2 * ep()^2 + ep()*(v+V))).
+  R admissibleSeparation(R v) = (stopDist(v) + accelComp(v)).
 
   B isWellformedDir() <-> (dx^2 + dy^2 = 1).                        /* The orientation of the robot is a unit vector. */
 
@@ -1756,15 +1756,15 @@ Tactic "Proof Theorem 9: Passive safety for asynchronous controllers".
           implyR(1) ; orR(1) ;
           orL('L=={`abs(x_0-xo_0) > admissibleSeparation(v_0) | abs(y_0-yo_0) > admissibleSeparation(v_0)`}); <(
             transform({`abs(x_0-xo_0) > v_0^2/(2*b())+V()*v_0/b()+(A()/b()+1)*(A()/2*t^2+t*(v_0+V()))`}, 'L=={`abs(x_0-xo_0)>admissibleSeparation(v_0)`});
-            hideR('R=={`abs(y-yo) > stopDist(v)`}); smartQE
+            hideR('R=={`abs(y-yo) > stopDist(v)`}); smartQE /* needs QE({`Mathematica`}) */
             ,
             transform({`abs(y_0-yo_0) > v_0^2/(2*b())+V()*v_0/b()+(A()/b()+1)*(A()/2*t^2+t*(v_0+V()))`}, 'L=={`abs(y_0-yo_0)>admissibleSeparation(v_0)`});
-            hideR('R=={`abs(x-xo) > stopDist(v)`}); smartQE
+            hideR('R=={`abs(x-xo) > stopDist(v)`}); smartQE /* needs QE({`Mathematica`}) */
           )
         )
       ),
       unfold; hideL('L=={`abs(x_0-xo_0) > admissibleSeparation(v_0) | abs(y_0-yo_0) > admissibleSeparation(v_0)`});
-      dia; dw; unfold; doall(smartQE)
+      dia; dw; unfold; doall(smartQE  /* needs QE({`Mathematica`}) */)
     )
   );
 
@@ -1809,13 +1809,13 @@ Definitions.
   R GDelta().	 /* goal area size */
 	R Vmax().    /* robot cannot go faster than this */
 
-	R waypointStartDist(R) = ( (.)-GDelta() ).
-	R waypointEndDist(R)   = ( (.)+GDelta() ).
+	R waypointStartDist(R xg) = ( xg-GDelta() ).
+	R waypointEndDist(R xg)   = ( xg+GDelta() ).
 
   R minV() = ( A()*ep() ).
 
-	R stopDist(R) = ( (.)^2/(2*b()) ).
-	R accComp(R)  = ( (A()/b() + 1)*(A()/2*ep()^2 + ep()*(.)) ).
+	R stopDist(R v) = ( v^2/(2*b()) ).
+	R accComp(R v)  = ( (A()/b() + 1)*(A()/2*ep()^2 + ep()*v) ).
 
 	B bounds() <-> (                                                                     /* Bounds for global constants */
       A() > 0                                                                                       /* Working engine */
@@ -1888,10 +1888,10 @@ Tactic "Proof Theorem 11: Reach waypoint".
                     master,
                     composed(1) ; randomd(1) ; existsR({`0`}, 1) ; testd(1) ; andR(1) ; <(
                       QE,
-                      assignd(1) ; allR(1) ; implyR(1) ; solve(1) ; QE
+                      assignd(1) ; allR(1) ; implyR(1) ; solve(1) ; QE({`Mathematica`})
                       )
                     ),
-                  choiced(1) ; orR(1) ; hideR(2) ; assignd(1) ; assignd(1) ; allR(1) ; implyR(1) ; solve(1) ; QE
+                  choiced(1) ; orR(1) ; hideR(2) ; assignd(1) ; assignd(1) ; allR(1) ; implyR(1) ; solve(1) ; QE({`Mathematica`})
                   ),
                 hideR(1) ; QE
                 ),
@@ -1940,11 +1940,11 @@ Definitions.
 
 	R minV() = ( A()*ep() ).
 
-	R stopDist(R) = ( (.)^2/(2*b()) ).
-	R accComp(R)  = ( (A()/b() + 1)*(A()/2*ep()^2 + ep()*(.)) ).
+	R stopDist(R v) = ( v^2/(2*b()) ).
+	R accComp(R v)  = ( (A()/b() + 1)*(A()/2*ep()^2 + ep()*v) ).
 
-	B OAfterX(R) <-> ( (.)>ixo() ).
-	B RAfterX(R) <-> ( (.)>ixr() ).
+	B OAfterX(R xo) <-> ( xo>ixo() ).
+	B RAfterX(R x) <-> ( x>ixr() ).
 
 	B bounds() <-> (                                                                     /* Bounds for global constants */
       A() > 0                                                                                       /* Working engine */
@@ -2014,6 +2014,7 @@ Problem.
 End.
 
 Tactic "Proof Theorem 12: Cross intersection (single convergence condition)".
+/* some of the QE need QE({`Mathematica`}) */
   implyR(1) ; andR(1) ; <(
   loop({`0<=vr&Vmin()<=vo&(xr>0|xo>0|xr+vr^2/(2*b()) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr))`}, 1) ; <(
     QE,
@@ -2251,6 +2252,7 @@ Tactic "Proof Theorem 12: Cross intersection (single convergence condition)".
 End.
 
 Tactic "Proof Theorem 12: Cross intersection (loop split and unroll)".
+/* some of the QE need QE({`Mathematica`}) */
 implyR(1) ; andR(1) ; <(
   loop({`0<=vr&Vmin()<=vo&(xr>0|xo>0|xr+vr^2/(2*b()) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr))`}, 1) ; <(
     QE,
@@ -2377,10 +2379,11 @@ Functions.
   R V().       /* maximum obstacle velocity */
   R abs(R).    /* predefined function of absolute value */
 
-  R stopDist(R) = ((.)^2 / (2*b()) + V()*(.)/b()).
-  /*R accelComp(R) = ((a/b() + 1) * (a/2 * ep()^2 + ep()*((.)+V))).
-  R admissibleSeparationG(R) = (stopDist(.) + accelComp(.)).
-  R admissibleSeparationL(R) = (-(.)^2/(2*a)-V*(.)/a).*/
+  R stopDist(R v) = (v^2 / (2*b()) + V()*v/b()).
+  R accelComp(R v, R a) = ((a/b() + 1) * (a/2 * ep()^2 + ep()*(v+V))).
+  R admissibleSeparationG(R v, R a) = (stopDist(v) + accelComp(v,a)).
+  R admissibleSeparationL(R v, R a) = (-v^2/(2*a)-V*v/a).
+  R trajectoryDist(R r, R xo, R xc, R yo, R yc) = ( abs(abs(r) - ((xo-xc)^2 + (yo-yc)^2)^(1/2)) ).
 
   B isWellformedDir() <-> ( r!=0 & r^2 = (x-xc)^2 + (y-yc)^2 & dx^2 + dy^2 = 1 & dx = -(y-yc)/r & dy = (x-xc)/r & w*r=v ).
 
@@ -2452,8 +2455,8 @@ assumptions() ->
             ?(r!=0 & r^2 = (x-xc)^2+(y-yc)^2 & dx=-(y-yc)/r & dy=(x-xc)/r & r*w=v);
 
             /* use that curve, if it is a safe one (admissible velocities) */
-            if (v+a*ep>=0) { ?abs(x-xo) > stopDist(v) + (a/b+1)*(a/2*ep^2 + ep*(v+V)) | abs(y-yo) > stopDist(v) + (a/b+1)*(a/2*ep^2 + ep*(v+V)) | abs(abs(r) - ((xo-xc)^2 + (yo-yc)^2)^(1/2)) > V*(ep + (v+a*ep)/b); }
-            else           { ?abs(x-xo) > -v^2/(2*a)-V*v/a | abs(y-yo) > -v^2/(2*a)-V*v/a | abs(abs(r) - ((xo-xc)^2 + (yo-yc)^2)^(1/2)) > -V*v/a; }
+            if (v+a*ep>=0) { ?abs(x-xo) > admissibleSeparationG(v,a) | abs(y-yo) > admissibleSeparationG(v,a) | trajectoryDist(r,xo,xc,yo,yc) > V*(ep + (v+a*ep)/b); }
+            else           { ?abs(x-xo) > admissibleSeparationL(v,a) | abs(y-yo) > admissibleSeparationL(v,a) | trajectoryDist(r,xo,xc,yo,yc) > -V*v/a; }
           }
         };
     	  t := 0;
@@ -2470,6 +2473,7 @@ assumptions() ->
 End.
 
 Tactic "Proof Theorem 13: Passive safety with trajectory distance measurement".
+/* Some of the QE need QE({`Mathematica`}) */
 implyR(1) ; loop({`v>=0&(r!=0&r^2=(x-xc)^2+(y-yc)^2&dx^2+dy^2=1&dx=-(y-yc)/r&dy=(x-xc)/r&w*r=v)&(v>0->abs(x-xo)>v^2/(2*b())+V()*v/b()|abs(y-yo)>v^2/(2*b())+V()*v/b()|abs(abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2))>V()*v/b())`}, 1) ; <(
   QE,
   unfold ; fullSimplify ; hideL(-6) ; hideL(-7) ; hideL(-7) ; hideL(-7) ; hideL(-7) ; hideL(-3) ; hideL(-1) ; orL(-3) ; <(
@@ -2622,16 +2626,16 @@ Functions.
   R GDelta().	 /* goal area size */
 	R Vmax().    /* robot cannot go faster than this */
 
-	R waypointStartDist(R) = ( (.)-GDelta() ).
-	R waypointEndDist(R)   = ( (.)+GDelta() ).
+	R waypointStartDist(R xg) = ( xg-GDelta() ).
+	R waypointEndDist(R xg)   = ( xg+GDelta() ).
 
   R minV() = ( A()*ep() ).
-  R maxTravelTime(R) = ( waypointStartDist(.)/minV() ).
-  R stopTime(R)      = ( (.)/b() ).
-  R speedUpTime(R)   = ( ep()-(.)/A() ).
+  R maxTravelTime(R g) = ( waypointStartDist(g)/minV() ).
+  R stopTime(R v)      = ( v/b() ).
+  R speedUpTime(R v)   = ( ep()-v/A() ).
 
-	R stopDist(R) = ( (.)^2/(2*b()) ).
-	R accComp(R)  = ( (A()/b() + 1)*(A()/2*ep()^2 + ep()*(.)) ).
+	R stopDist(R v) = ( v^2/(2*b()) ).
+	R accComp(R v)  = ( (A()/b() + 1)*(A()/2*ep()^2 + ep()*v) ).
 
 	B bounds() <-> (                                                                     /* Bounds for global constants */
       A() > 0                                                                                       /* Working engine */
@@ -2696,6 +2700,7 @@ Problem.
 End.
 
 Tactic "Proof Theorem 14: Reach waypoint with deadline".
+/* Some of the QE need QE({`Mathematica`}) */
   implyR(1) ; andR(1) ; <(
     loop({`0<=vr&vr<=Vmax()&xr+vr^2/(2*b()) < xg+GDelta()&(xg-GDelta() < xr->vr=0|T>=vr/b())&(xr<=xg-GDelta()->vr>=A()*ep()&T>(xg-xr-GDelta())/(A()*ep())+ep()+Vmax()/b()|vr<=A()*ep()&T>ep()-vr/A()+(xg-xr-GDelta())/(A()*ep())+ep()+Vmax()/b())`}, 1) ; <(
       QE,
@@ -2918,11 +2923,11 @@ Functions.
 
 	R minV() = ( A()*ep() ).
 
-	R stopDist(R) = ( (.)^2/(2*b()) ).
-	R accComp(R)  = ( (A()/b() + 1)*(A()/2*ep()^2 + ep()*(.)) ).
+	R stopDist(R v) = ( v^2/(2*b()) ).
+	R accComp(R v)  = ( (A()/b() + 1)*(A()/2*ep()^2 + ep()*v) ).
 
-	B OAfterX(R) <-> ( (.)>ixo() ).
-	B RAfterX(R) <-> ( (.)>ixr() ).
+	B OAfterX(R xo) <-> ( xo>ixo() ).
+	B RAfterX(R xr) <-> ( xr>ixr() ).
 
 	B bounds() <-> (                                                                     /* Bounds for global constants */
       A() > 0                                                                                       /* Working engine */
@@ -3007,6 +3012,7 @@ Problem.
 End.
 
 Tactic "Proof Theorem 15: Cross intersection with deadline (single convergence condition)".
+/* Some of the QE need QE({`Mathematica`}) */
 implyR(1) ; andR(1) ; <(
   boxAnd(1) ; andR(1) ; <(
     loop({`0<=vr&Vmin()<=vo&(xr>0|xo>0|xr+vr^2/(2*b()) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr))`}, 1) ; <(
@@ -3351,6 +3357,7 @@ implyR(1) ; andR(1) ; <(
 End.
 
 Tactic "Proof Theorem 15: Cross intersection with deadline (loop split and unroll)".
+/* Some of the QE need QE({`Mathematica`}) */
 implyR(1) ; andL('L)* ; andR(1) ; <(
   boxAnd(1) ; andR(1) ; <(
     loop({`0<=vr&Vmin()<=vo&(xr>0|xo>0|xr+vr^2/(2*b()) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr))`}, 1) ; <(

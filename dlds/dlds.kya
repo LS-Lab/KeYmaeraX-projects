@@ -302,10 +302,11 @@ Problem.
 End.
 
 Tactic "Exponential Decay from tactic".
-  implyR(1) ; dG({`y'=1/2*y`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE
+  implyR(1) ; dG({`y'=1/2*y`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE({`Mathematica`})
 End.
  
 Tactic "Exponential Decay: Automatic".
+  /* needs QE({`Mathematica`}) */
   master
 End.
  
@@ -508,8 +509,8 @@ End.
 
 Tactic "Goalie in robot soccer: Proof 1".
   implyR(1) ; composed(1) ; dualDirectd(1) ; choiceb(1) ; andR(1) ; <(
-  assignb(1) ; iterated(1) ; orR(1) ; iterated(2.1) ; diamondOr(2) ; orR(2) ; hideR(3) ; composed(2) ; choiced(2) ; orR(2) ; hideR(3) ; assignd(2) ; solve(2) ; existsR({`-x/v`}, 2) ; QE,
-  assignb(1) ; iterated(1) ; orR(1) ; iterated(2.1) ; diamondOr(2) ; orR(2) ; hideR(3) ; composed(2) ; choiced(2) ; orR(2) ; hideR(2) ; assignd(2) ; solve(2) ; existsR({`-x/v`}, 2) ; QE
+  assignb(1) ; iterated(1) ; orR(1) ; iterated(2.1) ; diamondOr(2) ; orR(2) ; hideR(3) ; composed(2) ; choiced(2) ; orR(2) ; hideR(3) ; assignd(2) ; solve(2) ; existsR({`-x/v`}, 2) ; QE({`Mathematica`}),
+  assignb(1) ; iterated(1) ; orR(1) ; iterated(2.1) ; diamondOr(2) ; orR(2) ; hideR(3) ; composed(2) ; choiced(2) ; orR(2) ; hideR(2) ; assignd(2) ; solve(2) ; existsR({`-x/v`}, 2) ; QE({`Mathematica`})
   )
 End.
 

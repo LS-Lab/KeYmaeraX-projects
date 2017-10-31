@@ -11,11 +11,11 @@ SharedDefinitions.
   R min(R, R).
   R max(R, R).
 
-  B C(R,R,R,R,R/*w,dhf,dhd,r,h*/) <-> (
+  B C(R w, R dhf, R dhd, R r, R h) <-> (
     \forall t \forall ro \forall ho (
-        (0 <= t & t < max(0, ._0 * (._1 - ._2))/a() & ro = rv * t & ho = (._0 * a())/2 * t^2 + ._2 * t)
-      | (t >= max(0, ._0 * (._1 - ._2))/a() & ro = rv * t & ho = ._1 * t - ._0 * max(0, ._0 * (._1 - ._2))^2/(2*a()))
-      -> (abs(._3 - ro) > rp() | ._0 * ._4 < ._0 * ho - hp())
+        (0 <= t & t < max(0, w * (dhf - dhd))/a() & ro = rv * t & ho = (w * a())/2 * t^2 + dhd * t)
+      | (t >= max(0, w * (dhf - dhd))/a() & ro = rv * t & ho = dhf * t - w * max(0, w * (dhf - dhd))^2/(2*a()))
+      -> (abs(r - ro) > rp() | w * h < w * ho - hp())
     )
   ).
 
@@ -63,9 +63,9 @@ Tactic "Proof ACAS X Safe Use Case Lower Bound".
   implyL('L); <(
     print({`Use case 1`}); hideR(1=={`abs(r)>rp()|abs(h)>hp()`});
     abbrv({`max((0,w*(dhf-dhd)))`}, {`maxI`}); print({`abbrv`});
-    edit({`maxI=expand(max(0,w*(dhf-dhd)))`},-6=={`maxI=max(0,w*(dhf-dhd))`}); QE; done
+    edit({`maxI=expand(max(0,w*(dhf-dhd)))`},-6=={`maxI=max(0,w*(dhf-dhd))`}); QE({`Mathematica`}); done
     ,
-    edit({`expand(abs(r))>rp() | expand(abs(h))>hp()`}, 1=={`abs(r)>rp() | abs(h)>hp()`}); print({`Use case 2`}); QE; done
+    edit({`expand(abs(r))>rp() | expand(abs(h))>hp()`}, 1=={`abs(r)>rp() | abs(h)>hp()`}); print({`Use case 2`}); QE({`Mathematica`}); done
   )
 
 End.
@@ -111,11 +111,11 @@ implyR(1) ; andL('L)* ; boxAnd(1) ; andR(1) ; <(
     orL(-10) ; <(
       allL({`w*a()/2*(t+t_)^2+dhd*(t+t_)`}, -3) ; implyL(-3) ; <(
         orR(2) ; hideR(3=={`t_+t>=max((0,w*(dhf-dhd)))/a()&rv*(t_+t)=rv*(t_+t)&w*a()/2*(t+t_)^2+dhd*(t+t_)=dhf*(t_+t)-w*max((0,w*(dhf-dhd)))^2/(2*a())`}) ; QE,
-        prop ; doall(print({`QE...`}) ; smartQE ; print({`...done`}))
+        prop ; doall(print({`QE...`}) ; smartQE /* needs QE({`Mathematica`}) */ ; print({`...done`}))
         ),
       allL({`dhf*(t+t_)-w*max((0,w*(dhf-dhd)))^2/(2*a())`}, -3) ; implyL(-3) ; <(
         orR(2) ; hideR(2=={`0<=t_+t&t_+t < max((0,w*(dhf-dhd)))/a()&rv*(t_+t)=rv*(t_+t)&dhf*(t+t_)-w*max((0,w*(dhf-dhd)))^2/(2*a())=w*a()/2*(t_+t)^2+dhd*(t_+t)`}) ; QE,
-        prop ; doall(print({`QE...`}) ; smartQE ; print({`...done`}))
+        prop ; doall(print({`QE...`}) ; smartQE /* needs QE({`Mathematica`}) */ ; print({`...done`}))
         )
       ),
     hideL(-3=={`\forall ho (0<=t_+t&t_+t < max((0,w*(dhf-dhd)))/a()&rv*(t_+t)=rv*(t_+t)&ho=w*a()/2*(t_+t)^2+dhd*(t_+t)|t_+t>=max((0,w*(dhf-dhd)))/a()&rv*(t_+t)=rv*(t_+t)&ho=dhf*(t_+t)-w*max((0,w*(dhf-dhd)))^2/(2*a())->abs(r-rv*(t_+t))>rp()|w*h < w*ho-hp())`}); QE
@@ -167,6 +167,7 @@ Problem.
 End.
 
 Tactic "Proof ACAS X Theorem 1: Correctness of Implicit Safe Regions".
+/* Lemmas need QE({`Mathematica`}) */
 implyR(1) ; andL('L)* ; loop({`loopInv()`}, 1) ; <(
   prop,
   andR(1) ; <(
@@ -571,9 +572,9 @@ Tactic "Proof Lemma 1: Equivalence between implicit and explicit region formulat
               allL(/*ro*/ {`rv*((r+rp)/rv)`}, 'L) ;
               allL(/*ho*/ {`dhf*((r+rp)/rv)-w*maxA^2/(2*a)`}, 'L) ;
               implyL('L=={`0<=(r+rp)/rv&(r+rp)/rv < maxA/a&rv*((r+rp)/rv)=rv*((r+rp)/rv)&dhf*((r+rp)/rv)-w*maxA^2/(2*a)=w*a/2*((r+rp)/rv)^2+dhd*((r+rp)/rv)|(r+rp)/rv>=maxA/a&rv*((r+rp)/rv)=rv*((r+rp)/rv)&dhf*((r+rp)/rv)-w*maxA^2/(2*a)=dhf*((r+rp)/rv)-w*maxA^2/(2*a)->abs(r-rv*((r+rp)/rv))>rp|w*h < w*(dhf*((r+rp)/rv)-w*maxA^2/(2*a))-hp`}) ; <(
-                QE ; done
+                QE({`Mathematica`}) ; done
                 ,
-                absExp('L=={`abs(r-rv*((r+rp)/rv))`}) ; QE ; done
+                absExp('L=={`abs(r-rv*((r+rp)/rv))`}) ; QE({`Mathematica`}) ; done
             )
           )),
           (/*cutShow,*/ QE ; done)
