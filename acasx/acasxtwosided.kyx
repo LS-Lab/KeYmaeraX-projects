@@ -46,7 +46,8 @@ SharedDefinitions.
 
   B init(R a) <-> ( hp()>0 & rp()>=0 & rv>=0 & a>0 ).
 
-  B loopInv() <-> ( (w=wUp() | w=wLo()) & C(w,dhf,dhd,r,h) ).
+  B loopInv() <-> ( ((w=wUp() | w=wLo()) & (C(w,dhf,dhd,r,h) | CM(w,dhfM,dhd,r,h)))
+                  & (hp > 0 & rp >= 0 & rv >= 0 & a > 0 & aM > 0) ).
 
   B advisory(R w, R dhf, R dhd, R ao) <-> ( w*dhd>=w*dhf|w*ao>=a() ).
 
@@ -225,6 +226,69 @@ cut({`0<=t2+t&t2+t<maxIM/aM|t2+t>=maxIM/aM`}); <(
       /*orL('L, s"0<=t&t<max((0,w*(dhfM-$dhd)))/aM&ro=rv*t&ho=w*aM/2*t^2+$dhd*t|t>=max((0,w*(dhfM-$dhd)))/aM&ro=rv*t&ho=($dhd+w*max((0,w*(dhfM-$dhd))))*t-w*max((0,w*(dhfM-$dhd)))^2/(2*aM)".asFormula)*/
       prop ; doall(QE); print({`Done Show Cut`})
     )
+End.
+
+End.
+
+Lemma "Thm 3: Use Case Low".
+
+ProgramVariables.
+  R w.
+  R dhf.
+  R dhfM.
+  R dhd.
+  R ao.
+  R h.
+  R rv.
+  R r.
+End.
+
+Problem.
+loopInv() -> (abs(r)>rp|abs(h)>hp)
+End.
+
+Tactic "Proof Thm 3: Use Case Low".
+
+implyR('R);
+(andL('L)*);
+print({`before orL`});
+orL('L=={`C(w,dhf,dhd,r,h) | CM(w,dhfM,dhd,r,h)`}); <(
+  print({`before inst 0 lower`});
+  allL(/*t*/ {`0`},'L);
+  allL(/*ro*/ {`0`},'L);
+  allL(/*ho*/ {`0`},'L);
+  implyL('L); <(
+    print({`Use case 1`});
+    hideR('R=={`abs(r)>rp|abs(h)>hp`});
+    abbrv({`maxI(w,dhf,dhd)`}, {`maxI`});
+    minmax(-7.1); /* todo max('L, "max(0,w*(dhf-dhd))".asTerm) */
+    print({`MinMax Lower`});
+    QE;
+    done
+    ,
+    print({`Absolute value`});
+    smartQE;
+    done
+  );
+  done
+  ,
+  print({`before inst 0 upper`});
+  allL(/*t*/ {`0`},'L);
+  allL(/*ro*/ {`0`},'L);
+  allL(/*ho*/ {`0`},'L);
+  implyL('L); <(
+    print({`Use case 1`});
+    hideR('R=={`abs(r)>rp|abs(h)>hp`});
+    abbrv({`maxI(w,dhfM,dhd)`}, {`maxIM`});
+    minmax(-7.1); /* todo max('L, "max(0,w*(dhfM-dhd))".asTerm) */
+    print({`MinMax Upper`});
+    QE
+    ,
+    print({`Absolute value`});
+    smartQE;
+    done
+  )
+)
 End.
 
 End.
