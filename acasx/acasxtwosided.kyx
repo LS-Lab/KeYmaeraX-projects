@@ -44,16 +44,25 @@ SharedDefinitions.
     )
   ).*/
 
-  B init(R a) <-> ( hp()>0 & rp()>=0 & rv>=0 & a>0 ).
+  B initBounds() <-> ( hp()>0 & rp()>=0 & rv>=0 ).
 
-  B loopInv() <-> ( ((w=wUp() | w=wLo()) & (C(w,dhf,dhd,r,h) | CM(w,dhfM,dhd,r,h)))
-                  & (hp > 0 & rp >= 0 & rv >= 0 & a > 0 & aM > 0) ).
+  B init(R a) <-> ( initBounds() & a>0 ).
+
+  B initAll() <-> ( initBounds() & a()>0 & aM()>0 ).
+
+  B loopInv(R w, R dhf, R dhfM, R dhd, R r, R h) <-> (
+    ((w=wUp() | w=wLo()) & (C(w,dhf,dhd,r,h) | CM(w,dhfM,dhd,r,h))) & initAll()
+  ).
 
   B advisory(R w, R dhf, R dhd, R ao) <-> ( w*dhd>=w*dhf|w*ao>=a() ).
 
   B advisoryUp(R w, R dhfM, R dhd, R ao) <-> ( (w*dhd<=w*dhfM & w*ao<=aM|w*ao<=0) ).
 
-  HP motion ::= { {r' = -rv, h' = -dhd, dhd' = ao & advisory(w,dhf,dhd,ao) } }.
+  B evolutionDomain(R w, R dhf, R dhfM, R dhd, R ao) <-> ( advisory(w,dhf,dhd,ao) & advisoryUp(w,dhfM,dhd,ao) ).
+
+  HP motion ::= { {r' = -rv, h' = -dhd, dhd' = ao &
+                             evolutionDomain(w,dhf,dhfM,dhd,ao) }
+  }.
 End.
 
 Lemma "Thm 3: Safe Implicit Low".
@@ -66,45 +75,43 @@ ProgramVariables.
   R h.
   R rv.
   R r.
+  R t_.
 End.
 
 Problem.
-\forall t2 (
 advisory(w,dhf,dhd,ao)
   & (w=wUp()|w=wLo())
   & C(w,dhf,dhd,r,h)
   & init(a())
-  & advisory(w,dhf,ao*t2+dhd,ao)
-  & t2>=0
-  -> C(w, dhf, ao*t2+dhd, (-rv)*t2+r, -(ao/2*t2^2+dhd*t2)+h)
-)
+  & advisory(w,dhf,ao*t_+dhd,ao)
+  & t_>=0
+  -> C(w, dhf, ao*t_+dhd, (-rv)*t_+r, -(ao/2*t_^2+dhd*t_)+h)
 End.
 
 Tactic "Proof Thm3: Safe Implicit Low".
-allR('R);
 implyR('R);
 (andL('L)*);
 print({`Before skolem`}); (allR('R)*); print({`After skolem`});
 implyR('R); orR('R);
 /* here we'd want to access previously introduced skolem symbol and
    time introduced by diffSolution;goal 90 */
-allL(/*t*/ {`t2 + t`},'L);                                                   /* t_22+t_23: t2 == t_22, t == t_23 */
-allL(/*ro*/ {`rv*(t2 + t)`},'L);                                             /* rv*(t_22+t_23) */
+allL(/*t*/ {`t_ + t`},'L);                                                   /* t_22+t_23: t_ == t_22, t == t_23 */
+allL(/*ro*/ {`rv*(t_ + t)`},'L);                                             /* rv*(t_22+t_23) */
 abbrv({`maxI(w,dhf,dhd)`}, {`maxI`});
 print({`Before CUT`});
-cut({`0<=t+t2&t+t2<maxI/a()|t+t2>=maxI/a()`}); <(
+cut({`0<=t+t_&t+t_<maxI/a()|t+t_>=maxI/a()`}); <(
   /*use*/
   print({`Use Cut`});
-  orL('L=={`0<=t+t2&t+t2 < maxI/a()|t+t2>=maxI/a()`}); <(
+  orL('L=={`0<=t+t_&t+t_ < maxI/a()|t+t_>=maxI/a()`}); <(
     print({`Goal 110`});
-    allL(/*ho*/ {`w*a/2*(t+t2)^2 + dhd*(t+t2)`},'L);
+    allL(/*ho*/ {`w*a/2*(t+t_)^2 + dhd*(t+t_)`},'L);
     print({`instantiate ho 1 Lo`});
-    implyL('L=={`0<=t2+t&t2+t < maxI/a&rv*(t2+t)=rv*(t2+t)&w*a/2*(t+t2)^2+dhd*(t+t2)=w*a/2*(t2+t)^2+dhd*(t2+t)|t2+t>=maxI/a&rv*(t2+t)=rv*(t2+t)&w*a/2*(t+t2)^2+dhd*(t+t2)=dhf*(t2+t)-w*maxI^2/(2*a)->abs(r-rv*(t2+t))>rp|w*h < w*(w*a/2*(t+t2)^2+dhd*(t+t2))-hp`}); <(
+    implyL('L=={`0<=t_+t&t_+t < maxI/a&rv*(t_+t)=rv*(t_+t)&w*a/2*(t+t_)^2+dhd*(t+t_)=w*a/2*(t_+t)^2+dhd*(t_+t)|t_+t>=maxI/a&rv*(t_+t)=rv*(t_+t)&w*a/2*(t+t_)^2+dhd*(t+t_)=dhf*(t_+t)-w*maxI^2/(2*a)->abs(r-rv*(t_+t))>rp|w*h < w*(w*a/2*(t+t_)^2+dhd*(t+t_))-hp`}); <(
       print({`left of -> 1 Lo`});
       orR('R);
-      hideR('R=={`t2+t>=maxI/a&rv*(t2+t)=rv*(t2+t)&w*a/2*(t+t2)^2+dhd*(t+t2)=dhf*(t2+t)-w*maxI^2/(2*a)`});
-      hideR('R=={`abs(((-rv)*t2+r)-ro)>rp`});
-      hideR('R=={`w*(-(ao/2*t2^2+dhd*t2)+h)<w*ho-hp`});
+      hideR('R=={`t_+t>=maxI/a&rv*(t_+t)=rv*(t_+t)&w*a/2*(t+t_)^2+dhd*(t+t_)=dhf*(t_+t)-w*maxI^2/(2*a)`});
+      hideR('R=={`abs(((-rv)*t_+r)-ro)>rp`});
+      hideR('R=={`w*(-(ao/2*t_^2+dhd*t_)+h)<w*ho-hp`});
       hideL('L=={`maxI=maxI(w,dhf,dhd)`});
       QE;
       done
@@ -116,14 +123,14 @@ cut({`0<=t+t2&t+t2<maxI/a()|t+t2>=maxI/a()`}); <(
     )
     ,
     print({`final time in straight Lo`});
-    allL(/*ho*/ {`dhf*(t+t2) - w*maxI^2/(2*a)`},'L);
+    allL(/*ho*/ {`dhf*(t+t_) - w*maxI^2/(2*a)`},'L);
     print({`instantiate ho 2 Lo`});
-    implyL('L=={`0<=t2+t&t2+t < maxI/a&rv*(t2+t)=rv*(t2+t)&dhf*(t+t2)-w*maxI^2/(2*a)=w*a/2*(t2+t)^2+dhd*(t2+t)|t2+t>=maxI/a&rv*(t2+t)=rv*(t2+t)&dhf*(t+t2)-w*maxI^2/(2*a)=dhf*(t2+t)-w*maxI^2/(2*a)->abs(r-rv*(t2+t))>rp|w*h < w*(dhf*(t+t2)-w*maxI^2/(2*a))-hp`}); <(
+    implyL('L=={`0<=t_+t&t_+t < maxI/a&rv*(t_+t)=rv*(t_+t)&dhf*(t+t_)-w*maxI^2/(2*a)=w*a/2*(t_+t)^2+dhd*(t_+t)|t_+t>=maxI/a&rv*(t_+t)=rv*(t_+t)&dhf*(t+t_)-w*maxI^2/(2*a)=dhf*(t_+t)-w*maxI^2/(2*a)->abs(r-rv*(t_+t))>rp|w*h < w*(dhf*(t+t_)-w*maxI^2/(2*a))-hp`}); <(
       print({`left of -> 2 Lo`});
       orR('R);
-      hideR('R=={`0<=t2+t&t2+t < maxI/a&rv*(t2+t)=rv*(t2+t)&dhf*(t+t2)-w*maxI^2/(2*a)=w*a/2*(t2+t)^2+dhd*(t2+t)`});
-      hideR('R=={`abs(((-rv)*t2+r)-ro)>rp`});
-      hideR('R=={`w*(-(ao/2*t2^2+dhd*t2)+h)<w*ho-hp`});
+      hideR('R=={`0<=t_+t&t_+t < maxI/a&rv*(t_+t)=rv*(t_+t)&dhf*(t+t_)-w*maxI^2/(2*a)=w*a/2*(t_+t)^2+dhd*(t_+t)`});
+      hideR('R=={`abs(((-rv)*t_+r)-ro)>rp`});
+      hideR('R=={`w*(-(ao/2*t_^2+dhd*t_)+h)<w*ho-hp`});
       hideL('L=={`maxI=maxI(w,dhf,dhd)`});
       QE;
       done
@@ -138,12 +145,12 @@ cut({`0<=t+t2&t+t2<maxI/a()|t+t2>=maxI/a()`}); <(
   /*show */
   print({`Show Cut`});
   hideL('L=={`maxI=maxI(w,dhf,dhd)`});
-  hideL('L=={`\forall ho (0<=t2+t&t2+t < maxI/a&rv*(t2+t)=rv*(t2+t)&ho=w*a/2*(t2+t)^2+dhd*(t2+t)|t2+t>=maxI/a&rv*(t2+t)=rv*(t2+t)&ho=dhf*(t2+t)-w*maxI^2/(2*a())->abs(r-rv*(t2+t))>rp|w*h < w*ho-hp)`});
-  hideR('R=={`abs(((-rv)*t2+r)-ro)>rp`});
-  hideR('R=={`w*(-(ao/2*t2^2+dhd*t2)+h)<w*ho-hp`});
+  hideL('L=={`\forall ho (0<=t_+t&t_+t < maxI/a&rv*(t_+t)=rv*(t_+t)&ho=w*a/2*(t_+t)^2+dhd*(t_+t)|t_+t>=maxI/a&rv*(t_+t)=rv*(t_+t)&ho=dhf*(t_+t)-w*maxI^2/(2*a())->abs(r-rv*(t_+t))>rp|w*h < w*ho-hp)`});
+  hideR('R=={`abs(((-rv)*t_+r)-ro)>rp`});
+  hideR('R=={`w*(-(ao/2*t_^2+dhd*t_)+h)<w*ho-hp`});
   print({`Show Cut 2`});
   orR('R);
-  /*orL('L=={`0<=t&t<max((0,w*(dhf-(ao*t2+dhd))))/a&ro=rv*t&ho=w*a()/2*t^2+(ao*t2+dhd)*t|t>=max((0,w*(dhf-(ao*t2+dhd))))/a()&ro=rv*t&ho=dhf*t-w*max((0,w*(dhf-(ao*t2+dhd))))^2/(2*a())`});*/
+  /*orL('L=={`0<=t&t<max((0,w*(dhf-(ao*t_+dhd))))/a&ro=rv*t&ho=w*a()/2*t^2+(ao*t_+dhd)*t|t>=max((0,w*(dhf-(ao*t_+dhd))))/a()&ro=rv*t&ho=dhf*t-w*max((0,w*(dhf-(ao*t_+dhd))))^2/(2*a())`});*/
   print({`End CutShowLbl`});
   prop; doall(QE);
   /* atomicQE; */
@@ -164,53 +171,51 @@ ProgramVariables.
   R h.
   R rv.
   R r.
+  R t_.
 End.
 
 Problem.
-\forall t2 (
 advisoryUp(w,dhfM,dhd,ao)
   & (w=wUp()|w=wLo())
   & CM(w,dhfM,dhd,r,h)
   & init(aM())
-  & advisoryUp(w,dhfM,ao*t2+dhd,ao)
-  & t2>=0
-  -> CM(w, dhfM, ao*t2+dhd, (-rv)*t2+r, -(ao/2*t2^2+dhd*t2)+h)
-)
+  & advisoryUp(w,dhfM,ao*t_+dhd,ao)
+  & t_>=0
+  -> CM(w, dhfM, ao*t_+dhd, (-rv)*t_+r, -(ao/2*t_^2+dhd*t_)+h)
 End.
 
 Tactic "Proof Thm 3: Safe Implicit Up".
-allR('R);
 implyR('R);
 (andL('L)*);
 print({`Before skolem Up`}); (allR('R)*); print({`After skolem Up`});
 implyR('R); orR('R);
-allL(/*t*/ {`t2 + t`},'L);
-allL(/*ro*/ {`rv*(t2 + t)`},'L);
+allL(/*t*/ {`t_ + t`},'L);
+allL(/*ro*/ {`rv*(t_ + t)`},'L);
 abbrv({`maxI(w,dhfM,dhd)`},{`maxIM`});
 print({`Before CUT`});
-cut({`0<=t2+t&t2+t<maxIM/aM|t2+t>=maxIM/aM`}); <(
+cut({`0<=t_+t&t_+t<maxIM/aM|t_+t>=maxIM/aM`}); <(
       /*cutUse, */ print({`Use Cut`});
-        orL('L=={`0<=t2+t&t2+t<maxIM/aM|t2+t>=maxIM/aM`});<(
+        orL('L=={`0<=t_+t&t_+t<maxIM/aM|t_+t>=maxIM/aM`});<(
         print({`final time in parabola`});
-          allL(/*ho*/ {`w*aM/2*(t2+t)^2+dhd*(t2+t)`}, 'L);
+          allL(/*ho*/ {`w*aM/2*(t_+t)^2+dhd*(t_+t)`}, 'L);
           print({`instantiate ho 1 Up`});
-          implyL('L=={`0<=t2+t&t2+t < maxIM/aM&rv*(t2+t)=rv*(t2+t)&w*aM/2*(t2+t)^2+dhd*(t2+t)=w*aM/2*(t2+t)^2+dhd*(t2+t)|t2+t>=maxIM/aM&rv*(t2+t)=rv*(t2+t)&w*aM/2*(t2+t)^2+dhd*(t2+t)=(dhd+w*maxIM)*(t2+t)-w*maxIM^2/(2*aM)->abs(r-rv*(t2+t))>rp|w*h>w*(w*aM/2*(t2+t)^2+dhd*(t2+t))+hp`}); <(
+          implyL('L=={`0<=t_+t&t_+t < maxIM/aM&rv*(t_+t)=rv*(t_+t)&w*aM/2*(t_+t)^2+dhd*(t_+t)=w*aM/2*(t_+t)^2+dhd*(t_+t)|t_+t>=maxIM/aM&rv*(t_+t)=rv*(t_+t)&w*aM/2*(t_+t)^2+dhd*(t_+t)=(dhd+w*maxIM)*(t_+t)-w*maxIM^2/(2*aM)->abs(r-rv*(t_+t))>rp|w*h>w*(w*aM/2*(t_+t)^2+dhd*(t_+t))+hp`}); <(
           print({`left of -> 1 Up`}); orR('R);
-            hideR('R=={`t2+t>=maxIM/aM&rv*(t2+t)=rv*(t2+t)&w*aM/2*(t2+t)^2+dhd*(t2+t)=(dhd+w*maxIM)*(t2+t)-w*maxIM^2/(2*aM)`});
-            hideR('R=={`abs(((-rv)*t2+r)-ro)>rp`}); hideR('R=={`w*(-(ao/2*t2^2+dhd*t2)+h)>w*ho+hp`});
+            hideR('R=={`t_+t>=maxIM/aM&rv*(t_+t)=rv*(t_+t)&w*aM/2*(t_+t)^2+dhd*(t_+t)=(dhd+w*maxIM)*(t_+t)-w*maxIM^2/(2*aM)`});
+            hideR('R=={`abs(((-rv)*t_+r)-ro)>rp`}); hideR('R=={`w*(-(ao/2*t_^2+dhd*t_)+h)>w*ho+hp`});
             hideL('L=={`maxIM=max((0,w*(dhfM-dhd)))`}); QE; done
           ,
           print({`right of -> 1 Up`}); prop; doall(QE); done; print({`Done right of -> 1 Up`})
         )
         ,
         print({`final time in straight Up`});
-          allL(/*ho*/ {`(dhd+w*maxIM)*(t2+t)-w*maxIM^2/(2*aM)`}, 'L);
+          allL(/*ho*/ {`(dhd+w*maxIM)*(t_+t)-w*maxIM^2/(2*aM)`}, 'L);
           print({`instantiate ho 2 Lo`});
-          implyL('L=={`0<=t2+t&t2+t < maxIM/aM&rv*(t2+t)=rv*(t2+t)&(dhd+w*maxIM)*(t2+t)-w*maxIM^2/(2*aM)=w*aM/2*(t2+t)^2+dhd*(t2+t)|t2+t>=maxIM/aM&rv*(t2+t)=rv*(t2+t)&(dhd+w*maxIM)*(t2+t)-w*maxIM^2/(2*aM)=(dhd+w*maxIM)*(t2+t)-w*maxIM^2/(2*aM)->abs(r-rv*(t2+t))>rp|w*h>w*((dhd+w*maxIM)*(t2+t)-w*maxIM^2/(2*aM))+hp`})
+          implyL('L=={`0<=t_+t&t_+t < maxIM/aM&rv*(t_+t)=rv*(t_+t)&(dhd+w*maxIM)*(t_+t)-w*maxIM^2/(2*aM)=w*aM/2*(t_+t)^2+dhd*(t_+t)|t_+t>=maxIM/aM&rv*(t_+t)=rv*(t_+t)&(dhd+w*maxIM)*(t_+t)-w*maxIM^2/(2*aM)=(dhd+w*maxIM)*(t_+t)-w*maxIM^2/(2*aM)->abs(r-rv*(t_+t))>rp|w*h>w*((dhd+w*maxIM)*(t_+t)-w*maxIM^2/(2*aM))+hp`})
          ;<(
           print({`left of -> 2 Up`}); orR('R);
-            hideR('R=={`0<=t2+t&t2+t < maxIM/aM&rv*(t2+t)=rv*(t2+t)&(dhd+w*maxIM)*(t2+t)-w*maxIM^2/(2*aM)=w*aM/2*(t2+t)^2+dhd*(t2+t)`});
-            hideR('R=={`abs(((-rv)*t2+r)-ro)>rp`}); hideR('R=={`w*(-(ao/2*t2^2+dhd*t2)+h)>w*ho+hp`});
+            hideR('R=={`0<=t_+t&t_+t < maxIM/aM&rv*(t_+t)=rv*(t_+t)&(dhd+w*maxIM)*(t_+t)-w*maxIM^2/(2*aM)=w*aM/2*(t_+t)^2+dhd*(t_+t)`});
+            hideR('R=={`abs(((-rv)*t_+r)-ro)>rp`}); hideR('R=={`w*(-(ao/2*t_^2+dhd*t_)+h)>w*ho+hp`});
             hideL('L=={`maxIM=max((0,w*(dhfM-dhd)))`}); QE; done
           ,
           print({`right of -> 2 Up`}); prop; doall(QE); done; print({`Done right of -> 2 Up`})
@@ -220,8 +225,8 @@ cut({`0<=t2+t&t2+t<maxIM/aM|t2+t>=maxIM/aM`}); <(
       /*show*/
       print({`Show Cut`});
       hideL('L=={`maxIM=maxI(w,dhfM,dhd)`});
-      hideL('L=={`\forall ho (0<=t2+t&t2+t < maxIM/aM&rv*(t2+t)=rv*(t2+t)&ho=w*aM/2*(t2+t)^2+dhd*(t2+t)|t2+t>=maxIM/aM&rv*(t2+t)=rv*(t2+t)&ho=(dhd+w*maxIM)*(t2+t)-w*maxIM^2/(2*aM)->abs(r-rv*(t2+t))>rp|w*h>w*ho+hp)`});
-      hideR('R=={`abs(((-rv)*t2+r)-ro)>rp`}); hideR('R=={`w*(-(ao/2*t2^2+dhd*t2)+h)>w*ho+hp`});
+      hideL('L=={`\forall ho (0<=t_+t&t_+t < maxIM/aM&rv*(t_+t)=rv*(t_+t)&ho=w*aM/2*(t_+t)^2+dhd*(t_+t)|t_+t>=maxIM/aM&rv*(t_+t)=rv*(t_+t)&ho=(dhd+w*maxIM)*(t_+t)-w*maxIM^2/(2*aM)->abs(r-rv*(t_+t))>rp|w*h>w*ho+hp)`});
+      hideR('R=={`abs(((-rv)*t_+r)-ro)>rp`}); hideR('R=={`w*(-(ao/2*t_^2+dhd*t_)+h)>w*ho+hp`});
       print({`Show Cut 2`}); orR('R);
       /*orL('L, s"0<=t&t<max((0,w*(dhfM-$dhd)))/aM&ro=rv*t&ho=w*aM/2*t^2+$dhd*t|t>=max((0,w*(dhfM-$dhd)))/aM&ro=rv*t&ho=($dhd+w*max((0,w*(dhfM-$dhd))))*t-w*max((0,w*(dhfM-$dhd)))^2/(2*aM)".asFormula)*/
       prop ; doall(QE); print({`Done Show Cut`})
@@ -244,7 +249,7 @@ ProgramVariables.
 End.
 
 Problem.
-loopInv() -> (abs(r)>rp|abs(h)>hp)
+loopInv(w, dhf, dhfM, dhd, r, h) -> (abs(r)>rp|abs(h)>hp)
 End.
 
 Tactic "Proof Thm 3: Use Case Low".
@@ -287,6 +292,134 @@ orL('L=={`C(w,dhf,dhd,r,h) | CM(w,dhfM,dhd,r,h)`}); <(
     print({`Absolute value`});
     smartQE;
     done
+  )
+)
+End.
+
+End.
+
+Theorem "Theorem 3: Correctness of Two-Sided Safe Regions".
+
+ProgramVariables.
+  R w.
+  R dhf.
+  R dhfM.
+  R dhd.
+  R ao.
+  R h.
+  R rv.
+  R r.
+End.
+
+
+Problem.
+  loopInv(w, dhf, dhfM, dhd, r, h)
+  -> [
+  {   {
+      { ?true; ++
+        {dhf :=*; {w:=wUp(); ++ w:=wLo();}
+         ?( C(w,dhf,dhd,r,h) | CM(w,dhfM,dhd,r,h) );
+        }
+      }
+      ao :=*;
+      }
+      motion;
+   }*@invariant(loopInv(w, dhf, dhfM, dhd, r, h))
+  ]( (abs(r) > rp() | abs(h) > hp()) & (C(w,dhf,dhd,r,h) | CM(w,dhfM,dhd,r,h)) )
+End.
+
+Tactic "Proof Theorem 3".
+implyR('R);
+/* do not keep constants around, otherwise simplifier will simplify those first and won't recognize invariant */
+loop({`loopInv(w, dhf, dhfM, dhd, r, h)`},'R) /*DLBySubst.loop(invariant, skip)('R);*/ <(
+  /*init*/
+  print({`Base case`});
+  prop;
+  done;
+  print({`Base case done`})
+  ,
+  /*use*/
+  print({`Use case`});
+  andR('R); <(
+    useLemma({`Thm 3: Use Case Low`}, {`prop`}); done,
+    (andL('L) *); closeId; done
+  );
+  done;
+  print({`Use case done`})
+  ,
+  /*step*/
+  print({`Step`});
+  composeb('R); MR({`loopInv(w, dhf, dhfM, dhd, r, h)`},1); <(
+    /*show*/ print({`Generalization Holds`});
+    chase('R); print({`After chase`});
+    ((fullSimplify; andL('L)*)*); print({`Simplified`}); normalize; done; print({`Generalization holds done`})
+    ,
+    /*use*/
+    print({`Generalization Strong Enough`});
+    /* todo refactor to instantiate with t=0 after solve  */
+    cut({`!evolutionDomain(w,dhf,dhfM,dhd,ao) | evolutionDomain(w,dhf,dhfM,dhd,ao)`}); <(
+      nil,
+      cohideR('R=={`!evolutionDomain(w,dhf,dhfM,dhd,ao) | evolutionDomain(w,dhf,dhfM,dhd,ao)`});
+      prop;
+      done
+    );
+    orL('L=={`!evolutionDomain(w,dhf,dhfM,dhd,ao) | evolutionDomain(w,dhf,dhfM,dhd,ao)`}); <(
+      /*hideL('L=={`loopInv(w, dhf, dhfM, dhd, r, h)`});*/ /* doesn't find but don't know why */
+      print({`Before DI`});
+      hideL(-2);
+      cut({`[motion;]0=1`}); <(
+        nil,
+        hideR('R=={`[motion;]loopInv(w, dhf, dhfM, dhd, r, h)`}); dI('Rlast); done; print({`dI done`})
+      );
+      hideL('L=={`!evolutionDomain(w,dhf,dhfM,dhd,ao)`});
+      print({`After DI`});
+      dC({`0=1`},'R); <(
+        /*use*/ print({`After DC 2`}); dW('R); print({`after DW`}); QE; done; print({`DC 2 done`}),
+        /*show*/ print({`After DC 1`}); closeId; done; print({`DC 1 done`})
+      );
+      done;
+      print({`Use cut done`})
+      ,
+      print({`Before diff. solution`});
+      abbrv({`max((0,w*(dhf-dhd)))`}, {`maxI`});
+      abbrv({`max((0,w*(dhfM-dhd)))`}, {`maxIM`});
+      solveEnd('R);
+      print({`Diff. Solution`});
+      allR('R);
+      implyR('R)*2; (andL('L) *);
+      andR('R); <(
+        andR('R); <(
+          closeId,
+          print({`bla2`}); orR('R);
+            orL('L=={`\forall t \forall ro \forall ho (0<=t&t < maxI/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=maxI/a&ro=rv*t&ho=dhf*t-w*maxI^2/(2*a)->abs(r-ro)>rp|w*h < w*ho-hp)|\forall t \forall ro \forall ho (0<=t&t < maxIM/aM&ro=rv*t&ho=w*aM/2*t^2+dhd*t|t>=maxIM/aM&ro=rv*t&ho=(dhd+w*maxIM)*t-w*maxIM^2/(2*aM)->abs(r-ro)>rp|w*h>w*ho+hp)`});
+            /*orL('L~={`C(w,dhf,dhd,r,h)|CM(w,dhfM,dhd,r,h)`});*/ <(
+              hideL('L=={`maxIM=maxI(w,dhfM,dhd)`});
+              hideL('L=={`aM>0`});
+              hideL('L=={`w*dhd<=w*dhfM&w*ao<=aM|w*ao<=0`});
+              hideL('L=={`w*(ao*t_+dhd)<=w*dhfM&w*ao<=aM|w*ao<=0`});
+              hideR('R=={`\forall t \forall ro \forall ho (0<=t&t < max((0,w*(dhfM-(ao*t_+dhd))))/aM&ro=rv*t&ho=w*aM/2*t^2+(ao*t_+dhd)*t|t>=max((0,w*(dhfM-(ao*t_+dhd))))/aM&ro=rv*t&ho=((ao*t_+dhd)+w*max((0,w*(dhfM-(ao*t_+dhd)))))*t-w*max((0,w*(dhfM-(ao*t_+dhd))))^2/(2*aM)->abs((-rv)*t_+r-ro)>rp|w*(-(ao/2*t_^2+dhd*t_)+h)>w*ho+hp)`});
+              print({`lower lemma`});
+              useLemma({`Thm 3: Safe Implicit Low`}, {`allL2R(-1); prop`});
+              done;
+              print({`Lower lemma done`})
+              ,
+              hideL('L=={`maxI=maxI(w,dhf,dhd)`});
+              hideL('L=={`a()>0`});
+              hideL('L=={`w*dhd>=w*dhf|w*ao>=a`});
+              hideL('L=={`w*(ao*t_+dhd)>=w*dhf|w*ao>=a`});
+              hideR('R=={`\forall t \forall ro \forall ho (0<=t&t < max((0,w*(dhf-(ao*t_+dhd))))/a&ro=rv*t&ho=w*a/2*t^2+(ao*t_+dhd)*t|t>=max((0,w*(dhf-(ao*t_+dhd))))/a&ro=rv*t&ho=dhf*t-w*max((0,w*(dhf-(ao*t_+dhd))))^2/(2*a)->abs((-rv)*t_+r-ro)>rp|w*(-(ao/2*t_^2+dhd*t_)+h) < w*ho-hp)`});
+              print({`upper lemma`});
+              useLemma({`Thm 3: Safe Implicit Up`}, {`allL2R(-1); prop`});
+              done;
+              print({`Upper lemma done`})
+            )
+        )
+        ,
+        QE; done;
+        print({`Generalization strong enough done`})
+      )
+    ) /* end orL */
+    /* End cutUseLbl "Generalization strong enough" */
   )
 )
 End.
