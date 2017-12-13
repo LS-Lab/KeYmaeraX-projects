@@ -25,7 +25,7 @@ cut({`r=0|r < 0`}) <(hideL(-1), hideR(1) ; QE); orL(-1) <(
       dI(1),
       dG({`{z'=(x-s)/2*z}`}, {`z^2*y=1`}, 1) ; existsR({`1`}, 1) ; dI(1)
     ),
-    hideR(1) ; QE
+    hideR(1) ; QE({`Mathematica`})
   )
 )
 End.

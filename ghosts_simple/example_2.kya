@@ -11,7 +11,7 @@ Problem.
 End.
 
 Tactic "Differential Ghosts Blog Post Example 2: Proof 1".
-  implyR(1) ; dG({`{y'=x/2*y}`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE
+  implyR(1) ; dG({`{y'=x/2*y}`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE({`Mathematica`})
 End.
        
 

@@ -12,7 +12,7 @@ Problem.
 End.
 
 Tactic "Exponential Decay from tactic".
-  implyR(1) ; dG({`y'=1/2*y`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE
+  implyR(1) ; dG({`y'=1/2*y`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE({`Mathematica`})
 End.
  
 Tactic "Exponential Decay: Automatic".
@@ -41,7 +41,6 @@ Tactic "Exponential Growth from tactic".
 End.
 
 Tactic "Exponential Growth: Automatic".
-  /* needs QE({`Mathematica`}) */
   master
 End.
 

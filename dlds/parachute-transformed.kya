@@ -42,7 +42,7 @@ Tactic "Parachute: Transformed: Interactive Proof".
         dW(1) ; QE,
         dI(1)
         ),
-      dG({`y'=(-1/2*1^2*(v-g()/p()))*y`}, {`y^2*(v+g()/p())=1`}, 1) ; dI(1.0) ; QE
+      dG({`y'=(-1/2*1^2*(v-g()/p()))*y`}, {`y^2*(v+g()/p())=1`}, 1) ; dI(1.0) ; QE({`Mathematica`})
       )
     )
   )

@@ -117,7 +117,7 @@ Tactic "Proof Theorem 1: Static safety".
     print({`Transforming...`});
     transform({`abs(x_0-xo)>v_0^2/(2*b())+(A()/b()+1)*(A()/2*t^2+t*v_0)`}, 'L=={`abs(x_0-xo)>admissibleSeparation(v_0)`});
     hideR('R=={`abs(y-yo)>stopDist(v)`});
-    smartQE; /* needs QE({`Mathematica`}) */
+    smartQE;
     print({`Proved acc arithmetic`})
   );
 
@@ -126,7 +126,7 @@ Tactic "Proof Theorem 1: Static safety".
     print({`Transforming...`});
     transform({`abs(y_0-yo)>v_0^2/(2*b())+(A()/b()+1)*(A()/2*t^2+t*v_0)`}, 'L=={`abs(y_0-yo)>admissibleSeparation(v_0)`});
     hideR('R=={`abs(x-xo)>stopDist(v)`});
-    smartQE; /* needs QE({`Mathematica`}) */
+    smartQE;
     print({`Proved acc arithmetic`})
   );
 
@@ -290,7 +290,7 @@ Tactic "Proof Theorem 2: Passive safety".
     print({`Transforming...`});
     transform({`abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()+(A()/b()+1)*(A()/2*t^2+t*(v_0+V()))`}, 'L=={`abs(x_0-xo_0)>admissibleSeparation(v_0)`});
     hideR('R=={`abs(y-yo)>stopDist(v)`});
-    smartQE; /* needs QE({`Mathematica`}) */
+    smartQE;
     print({`Proved acc arithmetic`})
   );
 
@@ -299,7 +299,7 @@ Tactic "Proof Theorem 2: Passive safety".
     print({`Transforming...`});
     transform({`abs(y_0-yo_0)>v_0^2/(2*b())+V()*v_0/b()+(A()/b()+1)*(A()/2*t^2+t*(v_0+V()))`}, 'L=={`abs(y_0-yo_0)>admissibleSeparation(v_0)`});
     hideR('R=={`abs(x-xo)>stopDist(v)`});
-    smartQE; /* needs QE({`Mathematica`}) */
+    smartQE;
     print({`Proved acc arithmetic`})
   );
 
@@ -754,7 +754,7 @@ Tactic "Proof Theorem 4: Passive orientation safety".
       unfold;
       dia; dw;
       print({`Acceleration arithmetic`});
-      implyR(1) ; andL('L)* ; fullSimplify ; implyR(1) ; orR(1) ; notGreater(2.0) ; orR(1) ;
+      implyR(1) ; andL('L)* ; fullSimplify ; implyR(1) ; orR(1) ; orR(1) ;
       implyL('L=={`isVisible(visDeg) -> ( abs(x_0-xo_0) > admissibleSeparation(v_0) | abs(y_0-yo_0) > admissibleSeparation(v_0))`}) ; <(
         hideR('R=={`abs(x-xo)>stopMargin(v)`}) ; hideR('R=={`abs(y-yo)>stopMargin(v)`}) ; andR(1) ; doall(smartQE)
         ,
@@ -918,7 +918,7 @@ Tactic "Proof Theorem 5: Passive safety with actual acceleration".
     print({`Transforming...`});
     ?(transform({`abs(x_0-xo_0)>stopDist(v_0) + (a/b+1)*(a/2*t^2 + t*(v_0+V))`}, 'L=={`abs(x_0-xo_0)>stopDist(v_0) + (a/b+1)*(a/2*ep^2 + ep*(v_0+V))`}));
     hideR('R=={`abs(y-yo)>stopDist(v)`});
-    smartQE; /* needs QE({`Mathematica`}) */
+    smartQE;
     print({`Proved acc arithmetic`})
   );
 
@@ -927,7 +927,7 @@ Tactic "Proof Theorem 5: Passive safety with actual acceleration".
     print({`Transforming...`});
     ?(transform({`abs(y_0-yo_0)>stopDist(v_0) + (a/b+1)*(a/2*t^2 + t*(v_0+V))`}, 'L=={`abs(y_0-yo_0)>stopDist(v_0) + (a/b+1)*(a/2*ep^2 + ep*(v_0+V))`}));
     hideR('R=={`abs(x-xo)>stopDist(v)`});
-    smartQE; /* needs QE({`Mathematica`}) */
+    smartQE;
     print({`Proved acc arithmetic`})
   );
 
@@ -1109,7 +1109,7 @@ Tactic "Proof Theorem 6: Passive safety despite location uncertainty".
     print({`Transforming...`});
     transform({`abs(mx-xo_0)>v_0^2/(2*b())+V()*v_0/b()+(A()/b()+1)*(A()/2*t^2+t*(v_0+V()))+Dp()`}, 'L=={`abs(mx-xo_0)>admissibleSeparation(v_0)`});
     hideR('R=={`abs(y-yo)>stopDist(v)`});
-    smartQE; /* needs QE({`Mathematica`}) */
+    smartQE;
     print({`Proved acc arithmetic`})
   );
 
@@ -1118,7 +1118,7 @@ Tactic "Proof Theorem 6: Passive safety despite location uncertainty".
     print({`Transforming...`});
     transform({`abs(my-yo_0)>v_0^2/(2*b())+V()*v_0/b()+(A()/b()+1)*(A()/2*t^2+t*(v_0+V()))+Dp()`}, 'L=={`abs(my-yo_0)>admissibleSeparation(v_0)`});
     hideR('R=={`abs(x-xo)>stopDist(v)`});
-    smartQE; /* needs QE({`Mathematica`}) */
+    smartQE;
     print({`Proved acc arithmetic`})
   );
 
@@ -1305,7 +1305,7 @@ Tactic "Proof Theorem 7: Passive safety despite actuator perturbation".
     hideL('L=={`y-y_0<=t*(v_0+A()/2*t)`});
     hideL('L=={`-t*V()<=yo-yo_0`});
     hideL('L=={`yo-yo_0<=t*V()`});
-    smartQE; /* needs QE({`Mathematica`}) */
+    smartQE;
     print({`Proved acc arithmetic`})
   );
 
@@ -1329,7 +1329,7 @@ Tactic "Proof Theorem 7: Passive safety despite actuator perturbation".
     hideL('L=={`x-x_0<=t*(v_0+A()/2*t)`});
     hideL('L=={`-t*V()<=xo-xo_0`});
     hideL('L=={`xo-xo_0<=t*V()`});
-    smartQE; /* needs QE({`Mathematica`}) */
+    smartQE;
     print({`Proved acc arithmetic`})
   );
 
@@ -1510,7 +1510,7 @@ Tactic "Proof Theorem 8: Passive safety despite velocity uncertainty".
     hideL('L=={`ep()>0`});
     hideR('R=={`abs(y-yo)>stopDist(v)`});
     transform({`abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()+(A()/b()+1)*(A()/2*t^2+t*(v_0+V()))`}, 'L=={`abs(x_0-xo_0)>(mv+Dv())^2/(2*b())+V()*(mv+Dv())/b()+(A()/b()+1)*(A()/2*t^2+t*((mv+Dv())+V()))`});
-    smartQE; /* needs QE({`Mathematica`}) */
+    smartQE;
     print({`Proved acc arithmetic`})
   );
 
@@ -1529,7 +1529,7 @@ Tactic "Proof Theorem 8: Passive safety despite velocity uncertainty".
     hideL('L=={`ep()>0`});
     hideR('R=={`abs(x-xo)>stopDist(v)`});
     transform({`abs(y_0-yo_0)>v_0^2/(2*b())+V()*v_0/b()+(A()/b()+1)*(A()/2*t^2+t*(v_0+V()))`}, 'L=={`abs(y_0-yo_0)>(mv+Dv())^2/(2*b())+V()*(mv+Dv())/b()+(A()/b()+1)*(A()/2*t^2+t*((mv+Dv())+V()))`});
-    smartQE; /* needs QE({`Mathematica`}) */
+    smartQE;
     print({`Proved acc arithmetic`})
   );
 
@@ -1756,15 +1756,15 @@ Tactic "Proof Theorem 9: Passive safety for asynchronous controllers".
           implyR(1) ; orR(1) ;
           orL('L=={`abs(x_0-xo_0) > admissibleSeparation(v_0) | abs(y_0-yo_0) > admissibleSeparation(v_0)`}); <(
             transform({`abs(x_0-xo_0) > v_0^2/(2*b())+V()*v_0/b()+(A()/b()+1)*(A()/2*t^2+t*(v_0+V()))`}, 'L=={`abs(x_0-xo_0)>admissibleSeparation(v_0)`});
-            hideR('R=={`abs(y-yo) > stopDist(v)`}); smartQE /* needs QE({`Mathematica`}) */
+            hideR('R=={`abs(y-yo) > stopDist(v)`}); smartQE
             ,
             transform({`abs(y_0-yo_0) > v_0^2/(2*b())+V()*v_0/b()+(A()/b()+1)*(A()/2*t^2+t*(v_0+V()))`}, 'L=={`abs(y_0-yo_0)>admissibleSeparation(v_0)`});
-            hideR('R=={`abs(x-xo) > stopDist(v)`}); smartQE /* needs QE({`Mathematica`}) */
+            hideR('R=={`abs(x-xo) > stopDist(v)`}); smartQE
           )
         )
       ),
       unfold; hideL('L=={`abs(x_0-xo_0) > admissibleSeparation(v_0) | abs(y_0-yo_0) > admissibleSeparation(v_0)`});
-      dia; dw; unfold; doall(smartQE  /* needs QE({`Mathematica`}) */)
+      dia; dw; unfold; doall(smartQE)
     )
   );
 

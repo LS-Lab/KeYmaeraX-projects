@@ -224,7 +224,7 @@ Problem.
 End.
 
 Tactic "Exponential Decay from tactic".
-  implyR(1) ; dG({`y'=1/2*y`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE
+  implyR(1) ; dG({`y'=1/2*y`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE({`Mathematica`})
 End.
 
 End.
@@ -273,7 +273,7 @@ Tactic "Parachute: Proof 1".
         dW(1) ; QE,
         dI(1)
         ),
-      dG({`y'=(-1/2*1*(v-(9/1)^(1/2)))*y`}, {`y^2*(v+(9/1)^(1/2))=1`}, 1) ; dI(1.0) ; QE
+      dG({`y'=(-1/2*1*(v-(9/1)^(1/2)))*y`}, {`y^2*(v+(9/1)^(1/2))=1`}, 1) ; dI(1.0) ; QE({`Mathematica`})
       )
     )
   )
