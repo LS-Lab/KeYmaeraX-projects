@@ -109,7 +109,7 @@ implyR('R);
 loopAuto('R) ; <(                                        /* prove loop by induction with invariant annotated in model */
   prop,                                                  /* induction initial case */
   QE,                                                    /* induction use case */
-  unfold; doall(solve('R); QE({`Mathematica`}))          /* induction step: symbolically execute programs, solve ODE */
+  unfold; doall(solveEnd('R); QE; done)                  /* induction step: symbolically execute programs, solve ODE */
 )
 End.
 
@@ -130,7 +130,7 @@ loopAuto('R) ; <(                                             /* prove loop by i
     diffInvariant({`t>=old(t)`}, 'R);
     diffInvariant({`v=old(v)+A*t`}, 'R);
     diffInvariant({`z=old(z)+old(v)*t+A/2*t^2`}, 'R)
-  ) ; doall(dW('R) ; QE({`Mathematica`}))                       /* prove safety from just the differential invariants */
+  ) ; doall(dW('R) ; QE)                                   /* prove safety from just the differential invariants */
 )
 End.
 
@@ -161,6 +161,7 @@ Problem.
 End.
 
 Tactic "Controllability Automated Proof".
+  /* requires QE({`Mathematica`}) */
   master
 End.
 
@@ -237,6 +238,7 @@ Problem.
 End.
 
 Tactic "Proposition 2: RBC Preserves Train Controllability (Automated Proof)".
+  /* requires QE({`Mathematica`}) */
   chase(1.1.1.1.0.0.0); /* symbolically execute <m:=mo;d:=do;> */
   master
 End.
@@ -377,7 +379,6 @@ Controllable(m,z,v,d) & em = emOff() & A()>=0 & ep()>=0
 End.
 
 Tactic "Proof Proposition 5: Safety".
-  /* requires QE({`Mathematica`}) */
   master
 End.
 

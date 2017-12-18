@@ -37,7 +37,7 @@ Problem.
 End.
 
 Tactic "Exponential Growth from tactic".
-  implyR(1) ; dG({`y'=-1/2*y`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE
+  implyR(1) ; dG({`y'=-1/2*y`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE({`Mathematica`})
 End.
 
 Tactic "Exponential Growth: Automatic".
@@ -63,7 +63,7 @@ End.
 
 
 Tactic "Exponential at Equilibrium from tactic".
- implyR(1) ; dG({`y'=-1*y`}, {`y>0&x*y=0`}, 1) ; boxAnd(1.0) ; dI(1.0.1) ; dG({`z'=1/2*z`}, {`y*z^2=1`}, 1.0.0) ; dI(1.0.0.0) ; QE
+ implyR(1) ; dG({`y'=-1*y`}, {`y>0&x*y=0`}, 1) ; boxAnd(1.0) ; dI(1.0.1) ; dG({`z'=1/2*z`}, {`y*z^2=1`}, 1.0.0) ; dI(1.0.0.0) ; QE({`Mathematica`})
 End.
 
 Tactic "Exponential at Equilibrium: top-level proof".
@@ -96,7 +96,7 @@ End.
 
 
 Tactic "Exponential difference from tactic".
-  implyR(1) ; dG({`y'=-1*y`}, {`x*y=1`}, 1) ; dI(1.0) ; QE
+  implyR(1) ; dG({`y'=-1*y`}, {`x*y=1`}, 1) ; dI(1.0) ; QE({`Mathematica`})
 End.
    
 Tactic "Exponential difference: top-level proof".

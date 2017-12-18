@@ -723,7 +723,7 @@ Tactic "Proof Theorem 4: Passive orientation safety".
     hideL('L=={`yo-yo_0<=t*V()`});
     print({`Transforming...`});
     transform({`abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()+((A()/b()+1)*(A()/2*t^2+t*v_0)+(A()/b()+1)*t*V())`}, 'L=={`abs(x_0-xo_0)>admissibleSeparation(v_0)`});
-    smartQE; /* needs QE({`Mathematica`}) */
+    smartQE;
     print({`Proved acc arithmetic`})
   );
 
@@ -735,7 +735,7 @@ Tactic "Proof Theorem 4: Passive orientation safety".
     hideL('L=={`xo-xo_0<=t*V()`});
     print({`Transforming...`});
     transform({`abs(y_0-yo_0)>v_0^2/(2*b())+V()*v_0/b()+((A()/b()+1)*(A()/2*t^2+t*v_0)+(A()/b()+1)*t*V())`}, 'L=={`abs(y_0-yo_0)>admissibleSeparation(v_0)`});
-    smartQE; /* needs QE({`Mathematica`}) */
+    smartQE;
     print({`Proved acc arithmetic`})
   );
 
@@ -2700,7 +2700,7 @@ Problem.
 End.
 
 Tactic "Proof Theorem 14: Reach waypoint with deadline".
-/* Some of the QE need QE({`Mathematica`}) */
+  /* Some of the QE need QE({`Mathematica`}) */
   implyR(1) ; andR(1) ; <(
     loop({`0<=vr&vr<=Vmax()&xr+vr^2/(2*b()) < xg+GDelta()&(xg-GDelta() < xr->vr=0|T>=vr/b())&(xr<=xg-GDelta()->vr>=A()*ep()&T>(xg-xr-GDelta())/(A()*ep())+ep()+Vmax()/b()|vr<=A()*ep()&T>ep()-vr/A()+(xg-xr-GDelta())/(A()*ep())+ep()+Vmax()/b())`}, 1) ; <(
       QE,
@@ -2772,7 +2772,7 @@ Tactic "Proof Theorem 14: Reach waypoint with deadline".
                 )
               )
             ),
-          implyR(1) ; allR(1) ; implyR(1) ; implyR(1) ; notLess(-11.0) ; notLessEqual(-11.1) ; andR(1) ; <(
+          implyR(1) ; allR(1) ; implyR(1) ; implyR(1) ; andR(1) ; <(
             hideL(-9=={`vr>=A()*ep()&T>(xg-xr-GDelta())/(A()*ep())+ep()+Vmax()/b()|vr<=A()*ep()&T>ep()-vr/A()+(xg-xr-GDelta())/(A()*ep())+ep()+Vmax()/b()`}) ; hideL(-10=={`xr+vr^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*vr)>=xg+GDelta()|vr+A()*ep()>Vmax()`}) ; QE,
             andR(1) ; <(
               hideL(-8=={`xr+vr^2/(2*b()) < xg+GDelta()`}) ; allL({`t_`}, -12) ; implyL(-12) ; <(
@@ -2833,7 +2833,7 @@ Tactic "Proof Theorem 14: Reach waypoint with deadline".
                         assignd(3) ; assignd(3) ; existsR({`ep()`}, 3) ; fullSimplify ; QE
                         ),
                       assignd(2) ; assignd(2) ; composed(3) ; testd(3) ; andR(3) ; <(
-                        fullSimplify ; orR(3) ; notR(3) ; notR(3) ; existsR({`ep()`}, 2) ; andR(2) ; <(
+                        fullSimplify ; orR(3) ; existsR({`ep()`}, 2) ; andR(2) ; <(
                           QE,
                           andR(2) ; <(
                             QE,
