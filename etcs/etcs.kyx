@@ -15,9 +15,11 @@ SharedDefinitions.
 
   /* Initial states */
   B initial(R m, R z, R v) <-> (
+    v >= 0 &
     m-z >= stopDist(v) &         /* train has sufficient distance to the end of the movement authority to stop safely */
     b()>0 &                                                                                     /* brakes are working */
-    A()>=0                                                                                       /* engine is working */
+    A()>=0 &                                                                                     /* engine is working */
+    ep()>=0
   ).
 
   B safe(R m, R z, R v, R d) <-> (
@@ -68,7 +70,8 @@ Definitions.
   R accCompensation(R v) = (((A()/b()) + 1)*((A()/2)*ep()^2 + ep()*v)).     /* Distance to compensate speed increase. */
   R SB(R v)       = (stopDist(v) + accCompensation(v)).      /* Distance needed to stop safely when accelerating once */
 
-  B loopInv(R m, R z, R v) <-> (m-z >= stopDist(v)).  /* loop invariant: always maintain sufficient stopping distance */
+  /* loop invariant: always maintain sufficient stopping distance */
+  B loopInv(R m, R z, R v) <-> (v >= 0 & m-z >= stopDist(v)).
 
   /* train controller */
   HP ctrl ::= {
@@ -136,6 +139,76 @@ End.
 
 End.
 
+ArchiveEntry "ETCS Essentials with Unconditional Train Protection".
+
+/**
+ * Essentials of European Train Control System (ETCS)
+ * @see "Andre Platzer. Differential dynamic logic for hybrid systems. Journal of Automated Reasoning,
+ *                      41(2), pages 143-189, 2008."
+ */
+Definitions.
+  R m().  /* End of movement authority (train must not drive past m) */
+
+  /* loop invariant: always maintain sufficient stopping distance */
+  B loopInv(R m, R z, R v) <-> (v >= 0 & 2*b()*(m-z) >= v*v).
+
+  /* train controller */
+  HP ctrl ::= {
+        a := -b();                       /* train protection: emergency brake when close to end of movement authority */
+     ++ ?2*b()*(m() - z) >= v*v + (A()+b())*(A()*ep()*ep() + 2*ep()*v); a :=  A();    /* free driving: accelerate when sufficient distance */
+  }.
+End.
+
+ProgramVariables.
+  R a.  /* Actual acceleration -b <= a <= A */
+  R v.  /* Current velocity */
+  R z.  /* Train position */
+  R t.  /* Actual control cycle duration t <= ep */
+End.
+
+/* Safety specification of the form: initial -> [{ctrl;plant}*]safe
+ * Starting in any state where initial is true,
+ * any number of repetitions of running a controller 'ctrl' and then driving according to 'plant'
+ * keeps the system safe (end up only in states where 'safe' is true).
+ */
+Problem.
+    v >= 0 &
+    2*b()*(m()-z) >= v*v &
+    b()>0 &
+    A()>=0 &
+    ep()>=0
+->
+    [
+      {
+        ctrl;
+        drive;
+      }*@invariant(loopInv(m(),z,v))                       /* repeat, loop invariant documents system design property */
+    ] (z <= m())                        /* safety property: train 'z' never drives past end of movement authority 'm' */
+End.
+
+Tactic "ETCS Essentials Proof with Differential Invariants".
+implyR('R);
+(andL('L)*);
+loop({`loopInv(m(),z,v)`},1) ; <(                             /* prove loop by induction with invariant loopInv */
+  prop,                                                       /* induction initial case */
+  QE,                                                         /* induction use case */
+  unfold ; <(                                                 /* induction step, symbolically execute program until ODE */
+    /* prove ODE in train protection branch (a=-b) */
+    diffInvariant({`t>=old(t)`}, 'R);                         /* intuition: time progresses */
+    diffInvariant({`v=old(v)-b()*t`}, 'R);                 /* intuition: new speed is old speed - decrease by braking */
+    diffInvariant({`2*z=2*old(z)+2*old(v)*t-b()*t*t`}, 'R)     /* intuition: new position is old position + distance
+                                                                         travelled with mean speed */
+    ,
+    /* prove ODE in free driving branch (a=A) */
+    diffInvariant({`t>=old(t)`}, 'R);
+    diffInvariant({`v=old(v)+A*t`}, 'R);
+    diffInvariant({`2*z=2*old(z)+2*old(v)*t+A*t*t`}, 'R)
+  ) ; doall(dW('R) ; QE)                                   /* prove safety from just the differential invariants */
+)
+End.
+
+End.
+
 Lemma "Proposition 1: Controllability".
 
 /**
@@ -161,7 +234,6 @@ Problem.
 End.
 
 Tactic "Controllability Automated Proof".
-  /* requires QE({`Mathematica`}) */
   master
 End.
 
@@ -238,7 +310,6 @@ Problem.
 End.
 
 Tactic "Proposition 2: RBC Preserves Train Controllability (Automated Proof)".
-  /* requires QE({`Mathematica`}) */
   chase(1.1.1.1.0.0.0); /* symbolically execute <m:=mo;d:=do;> */
   master
 End.
@@ -379,6 +450,7 @@ Controllable(m,z,v,d) & em = emOff() & A()>=0 & ep()>=0
 End.
 
 Tactic "Proof Proposition 5: Safety".
+  /* requires QE({`Mathematica`}) */
   master
 End.
 
