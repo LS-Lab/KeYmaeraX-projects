@@ -75,9 +75,21 @@ assumptions() ->
       }
 
       /* dynamics */
+      {
       { x' = v * dx, y' = v * dy, v' = a,        /* accelerate/decelerate and move */
         dx' = -w * dy, dy' = w * dx, w' = a/r,   /* follow curve */
         t' = 1 & t <= ep & v >= 0
+      }@invariant(t>=0, isWellformedDir(),
+         (v'=-b() -> v = old(v) - b()*t),
+         (v'=-b() -> (-t * (old(v) - b()/2*t) <= x - old(x) & x - old(x) <= t * (old(v) - b()/2*t))),
+         (v'=-b() -> (-t * (old(v) - b()/2*t) <= y - old(y) & y - old(y) <= t * (old(v) - b()/2*t))),
+         (v'=0 -> v = old(v)),
+         (v'=0 -> x = old(x)),
+         (v'=0 -> y = old(y)),
+         (v'=A() -> v = old(v) + A()*t),
+         (v'=A() -> (-t * (old(v) + A()/2*t) <= x - old(x) & x - old(x) <= t * (old(v) + A()/2*t))),
+         (v'=A() -> (-t * (old(v) + A()/2*t) <= y - old(y) & y - old(y) <= t * (old(v) + A()/2*t)))
+       )
       }
     }*@invariant(loopinv())
   ](x - xo)^2 + (y - yo)^2 > 0
@@ -154,6 +166,10 @@ Tactic "Proof Theorem 1: Static safety".
   done;
   print({`Proof done`})
 
+End.
+
+Tactic "Proof Theorem 1: Static safety from annotations".
+  master
 End.
 
 End.
@@ -245,10 +261,24 @@ assumptions() ->
       }
 
       /* dynamics */
+      {
       { x' = v * dx, y' = v * dy, v' = a,        /* accelerate/decelerate and move */
         dx' = -w * dy, dy' = w * dx, w' = a/r,   /* follow curve */
         xo' = vxo, yo' = vyo,                    /* obstacle moves */
         t' = 1 & t <= ep & v >= 0
+      }@invariant(t>=0, isWellformedDir(),
+          (-t*V() <= xo - old(xo) & xo - old(xo) <= t*V()),
+          (-t*V() <= yo - old(yo) & yo - old(yo) <= t*V()),
+          (v'=-b() -> v = old(v) - b()*t),
+          (v'=-b() -> (-t * (old(v) - b()/2*t) <= x - old(x) & x - old(x) <= t * (old(v) - b()/2*t))),
+          (v'=-b() -> (-t * (old(v) - b()/2*t) <= y - old(y) & y - old(y) <= t * (old(v) - b()/2*t))),
+          (v'=0 -> v = old(v)),
+          (v'=0 -> x = old(x)),
+          (v'=0 -> y = old(y)),
+          (v'=A() -> v = old(v) + A()*t),
+          (v'=A() -> (-t * (old(v) + A()/2*t) <= x - old(x) & x - old(x) <= t * (old(v) + A()/2*t))),
+          (v'=A() -> (-t * (old(v) + A()/2*t) <= y - old(y) & y - old(y) <= t * (old(v) + A()/2*t)))
+        )
       }
     }*@invariant(loopinv())
   ](v>0 -> (x - xo)^2 + (y - yo)^2 > 0)
