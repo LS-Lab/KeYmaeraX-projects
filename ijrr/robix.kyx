@@ -2505,133 +2505,143 @@ End.
 Tactic "Proof Theorem 13: Passive safety with trajectory distance measurement".
 /* Some of the QE need QE({`Mathematica`}) */
 implyR(1) ; loop({`v>=0&(r!=0&r^2=(x-xc)^2+(y-yc)^2&dx^2+dy^2=1&dx=-(y-yc)/r&dy=(x-xc)/r&w*r=v)&(v>0->abs(x-xo)>v^2/(2*b())+V()*v/b()|abs(y-yo)>v^2/(2*b())+V()*v/b()|abs(abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2))>V()*v/b())`}, 1) ; <(
-  QE,
-  unfold ; fullSimplify ; hideL(-6) ; hideL(-7) ; hideL(-7) ; hideL(-7) ; hideL(-7) ; hideL(-3) ; hideL(-1) ; orL(-3) ; <(
-    QE,
-    orL(-3) ; <(
-      QE,
-      absExp(-3.0) ; absExp(-6.0.0.0.0) ; orL(-7) ; <(
+  print({`Base Case`}); QE; print({`Base Case Done`}),
+  print({`Use Case`}); unfold ; fullSimplify ; hideL(-11=={`w*r=v`}) ; hideL(-10=={`dy=(x-xc)/r`}) ; hideL(-9=={`dx=-(y-yc)/r`}) ; hideL(-8=={`dx^2+dy^2=1`}) ; hideL(-3=={`ep()>0`}) ; orL(-4) ; <(
+    hideL(-6=={`r^2=(x-xc)^2+(y-yc)^2`}) ; hideL(-5=={`r!=0`}) ; QE,
+    orL(-4) ; <(
+      hideL(-6=={`r^2=(x-xc)^2+(y-yc)^2`}) ; hideL(-5=={`r!=0`}) ; QE,
+      edit({`expand(abs(abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2)))>V()*v/b()`}, -4) ; edit({`expand(abs(r))-((xo-xc)^2+(yo-yc)^2)^(1/2)>=0&abs_0=abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2)|abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2) < 0&abs_0=-(abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2))`}, -8) ; orL(-9) ; <(
         QE,
         QE
         )
       )
-    ),
+    ); print({`Use Case Done`}),
   unfold ; <(
+    print({`Induction Step (1)`});
     dC({`t>=0&dx^2+dy^2=1&v=old(v)-b()*t&w*r=v`}, 1) ; <(
       dC({`dx=-(y-yc)/r&dy=(x-xc)/r`}, 1) ; <(
         dC({`xo=old(xo)+vxo*t&yo=old(yo)+vyo*t`}, 1) ; <(
           dC({`-t*(v+b()/2*t)<=x-old(x)&x-old(x)<=t*(v+b()/2*t)`}, 1) ; <(
             dC({`-t*(v+b()/2*t)<=y-old(y)&y-old(y)<=t*(v+b()/2*t)`}, 1) ; <(
+              print({`Induction Step (1) Differential Invariants Established`});
               dW(1) ; implyR(1) ; andL('L)* ; fullSimplify ; andR(1) ; <(
-                hideL(-6) ; QE,
-                implyR(1) ; orR(1) ; orR(2) ; hideL(-1) ; hideL(-6) ; hideL(-6) ; hideL(-13) ; hideL(-13) ; hideL(-16) ; hideL(-17) ; hideL(-13) ; hideL(-2) ; implyL(-4) ; <(
-                  hideR(1) ; hideR(1) ; hideR(1) ; QE,
+                hideL(-6=={`v_0>0->abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()|abs(y_0-yo_0)>v_0^2/(2*b())+V()*v_0/b()|abs(abs(r)-((xo_0-xc)^2+(yo_0-yc)^2)^(1/2))>V()*v_0/b()`}) ; QE,
+                implyR(1) ; orR(1) ; orR(2) ; hideL(-1=={`A()>=0`}) ; hideL(-2=={`ep()>0`}) ; hideL(-21=={`t<=ep()`}) ; hideL(-23=={`dx^2+dy^2=1`}) ; hideL(-20=={`dy=(x-xc)/r`}) ; hideL(-19=={`dx=-(y-yc)/r`}) ; hideL(-9=={`dy_0=(x_0-xc)/r`}) ; hideL(-8=={`dx_0=-(y_0-yc)/r`}) ; hideL(-7=={`dx_0^2+dy_0^2=1`}) ; implyL(-4) ; <(
+                  hideR(3=={`abs(abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2))>V()*v/b()`}) ; hideR(2=={`abs(y-yo)>v^2/(2*b())+V()*v/b()`}) ; hideR(1=={`abs(x-xo)>v^2/(2*b())+V()*v/b()`}) ; QE,
                   orL(-4) ; <(
-                    hideR(2) ; hideR(2) ; smartQE,
+                    hideR(3=={`abs(abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2))>V()*v/b()`}) ; hideR(2=={`abs(y-yo)>v^2/(2*b())+V()*v/b()`}) ; smartQE,
                     orL(-4) ; <(
-                      hideR(1) ; hideR(2) ; smartQE,
-                      hideR(1) ; hideR(1) ; edit({`abs(abs(r)-abbrv((((xo_0-xc)^2+(yo_0-yc)^2)^(1/2),oldCDist)))>V()*v_0/b()`}, -4) ; edit({`abs(abs(r)-abbrv((((xo-xc)^2+(yo-yc)^2)^(1/2),cDist)))>V()*v/b()`}, 1) ; cut({`abs(cDist-oldCDist)<=t*V()`}) ; <(
-                        hideL(-16) ; hideL(-16) ; hideL(-5) ; hideL(-5) ; hideL(-5) ; hideL(-5) ; hideL(-5) ; hideL(-5) ; hideL(-5) ; smartQE,
-                        hideR(1) ; hideL(-4) ; hideL(-5) ; hideL(-5) ; hideL(-5) ; hideL(-5) ; hideL(-3) ; hideL(-6) ; hideL(-7) ; hideL(-7) ; cut({`abs(cDist-oldCDist)<=t*(vxo^2+vyo^2)^(1/2)`}) ; <(
-                          hideL(-7) ; hideL(-7) ; hideL(-4) ; hideL(-4) ; hideL(-1) ; QE,
-                          hideR(1) ; hideL(-3) ; hideL(-2) ; hideL(-1) ; smartQE
+                      hideR(3=={`abs(abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2))>V()*v/b()`}) ; hideR(1=={`abs(x-xo)>v^2/(2*b())+V()*v/b()`}) ; smartQE,
+                      hideR(2=={`abs(y-yo)>v^2/(2*b())+V()*v/b()`}) ; hideR(1=={`abs(x-xo)>v^2/(2*b())+V()*v/b()`}) ; edit({`abs(abs(r)-abbrv((((xo_0-xc)^2+(yo_0-yc)^2)^(1/2),oldCDist)))>V()*v_0/b()`}, -4) ; edit({`abs(abs(r)-abbrv((((xo-xc)^2+(yo-yc)^2)^(1/2),cDist)))>V()*v/b()`}, 1) ; cut({`abs(cDist-oldCDist)<=t*V()`}) ; <(
+                        hideL(-22=={`cDist=((xo-xc)^2+(yo-yc)^2)^(1/2)`}) ; hideL(-21=={`oldCDist=((xo_0-xc)^2+(yo_0-yc)^2)^(1/2)`}) ; hideL(-6=={`r^2=(x_0-xc)^2+(y_0-yc)^2`}) ; hideL(-6=={`w_0*r=v_0`}) ; hideL(-6=={`vxo^2+vyo^2<=V()^2`}) ; smartQE,
+                        hideR(1=={`abs(abs(r)-cDist)>V()*v/b()`}) ; hideL(-4=={`abs(abs(r)-oldCDist)>V()*v_0/b()`}) ; hideL(-5=={`r^2=(x_0-xc)^2+(y_0-yc)^2`}) ; hideL(-5=={`w_0*r=v_0`}) ; hideL(-4=={`r!=0`}) ; hideL(-3=={`v_0>=0`}) ; hideL(-14=={`w*r=v`}) ; cut({`abs(cDist-oldCDist)<=t*(vxo^2+vyo^2)^(1/2)`}) ; <(
+                          hideL(-16=={`cDist=((xo-xc)^2+(yo-yc)^2)^(1/2)`}) ; hideL(-15=={`oldCDist=((xo_0-xc)^2+(yo_0-yc)^2)^(1/2)`}) ; smartQE,
+                          hideR(1=={`abs(cDist-oldCDist)<=t*V()`}) ; hideL(-3=={`vxo^2+vyo^2<=V()^2`}) ; hideL(-2=={`V()>=0`}) ; hideL(-2=={`t_0=0`}) ; smartQE
                           )
                         )
                       )
                     )
                   )
                 ),
-              hideL(-6) ; dI(1)
+              hideL(-6=={`v_0>0->abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()|abs(y_0-yo_0)>v_0^2/(2*b())+V()*v_0/b()|abs(abs(r)-((xo_0-xc)^2+(yo_0-yc)^2)^(1/2))>V()*v_0/b()`}) ; dI(1)
               ),
-            hideL(-6) ; dI(1)
+            hideL(-6=={`v_0>0->abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()|abs(y-yo_0)>v_0^2/(2*b())+V()*v_0/b()|abs(abs(r)-((xo_0-xc)^2+(yo_0-yc)^2)^(1/2))>V()*v_0/b()`}) ; dI(1)
             ),
-          hideL(-6) ; dI(1)
+          hideL(-6=={`v_0>0->abs(x-xo_0)>v_0^2/(2*b())+V()*v_0/b()|abs(y-yo_0)>v_0^2/(2*b())+V()*v_0/b()|abs(abs(r)-((xo_0-xc)^2+(yo_0-yc)^2)^(1/2))>V()*v_0/b()`}) ; dI(1)
           ),
-        hideL(-6) ; dI(1)
+        hideL(-6=={`v_0>0->abs(x-xo)>v_0^2/(2*b())+V()*v_0/b()|abs(y-yo)>v_0^2/(2*b())+V()*v_0/b()|abs(abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2))>V()*v_0/b()`}) ; dI(1)
         ),
-      hideL(-6) ; dI(1)
-      ),
+      hideL(-6=={`v_0>0->abs(x-xo)>v_0^2/(2*b())+V()*v_0/b()|abs(y-yo)>v_0^2/(2*b())+V()*v_0/b()|abs(abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2))>V()*v_0/b()`}) ; dI(1)
+      ); print({`Induction Step (1) Done`}),
+    print({`Induction Step (2)`});
     dC({`t>=0&dx^2+dy^2=1&v=old(v)&w*r=v`}, 1) ; <(
       dC({`dx=-(y-yc)/r&dy=(x-xc)/r`}, 1) ; <(
-        dW(1) ; implyR(1) ; allL2R(-10) ; hideL(-10) ; andL('L)* ; fullSimplify ; QE,
-        hideL(-6) ; dI(1)
+        print({`Induction Step (2) Differential Invariants Established`});
+        dW(1) ; implyR(1) ; andL('L)* ; fullSimplify ; QE,
+        hideL(-6=={`v_0>0->abs(x-xo)>v_0^2/(2*b())+V()*v_0/b()|abs(y-yo)>v_0^2/(2*b())+V()*v_0/b()|abs(abs(r_0)-((xo-xc_0)^2+(yo-yc_0)^2)^(1/2))>V()*v_0/b()`}) ; dI(1)
         ),
-      hideL(-6) ; dI(1)
-      ),
-    hideL(-6) ; hideL(-6) ; hideL(-6) ; hideL(-7) ; hideL(-7) ; hideL(-7) ; hideL(-9) ; hideL(-9) ; hideL(-9) ; hideL(-1) ; dC({`t>=0&dx^2+dy^2=1&v=old(v)+a*t&w*r=v`}, 1) ; <(
+      hideL(-6=={`v_0>0->abs(x-xo)>v_0^2/(2*b())+V()*v_0/b()|abs(y-yo)>v_0^2/(2*b())+V()*v_0/b()|abs(abs(r_0)-((xo-xc_0)^2+(yo-yc_0)^2)^(1/2))>V()*v_0/b()`}) ; dI(1)
+      ); print({`Induction Step (2) Done`}),
+    print({`Induction Step (3)`});
+    hideL(-6=={`v>0->abs(x-xo_0)>v^2/(2*b())+V()*v/b()|abs(y-yo_0)>v^2/(2*b())+V()*v/b()|abs(abs(r_0)-((xo_0-xc_0)^2+(yo_0-yc_0)^2)^(1/2))>V()*v/b()`}) ; hideL(-6=={`r_0!=0`}) ; hideL(-6=={`r_0^2=(x-xc_0)^2+(y-yc_0)^2`}) ; hideL(-7=={`dx=-(y-yc_0)/r_0`}) ; hideL(-7=={`dy=(x-xc_0)/r_0`}) ; hideL(-7=={`w_0*r_0=v`}) ; dC({`t>=0&dx^2+dy^2=1&v=old(v)+a*t&w*r=v`}, 1) ; <(
       dC({`dx=-(y-yc)/r&dy=(x-xc)/r`}, 1) ; <(
         dC({`xo=old(xo)+vxo*t&yo=old(yo)+vyo*t`}, 1) ; <(
           dC({`-t*(v-a/2*t)<=x-old(x)&x-old(x)<=t*(v-a/2*t)`}, 1) ; <(
             dC({`-t*(v-a/2*t)<=y-old(y)&y-old(y)<=t*(v-a/2*t)`}, 1) ; <(
-              dW(1) ; implyR(1) ; andL('L)* ; fullSimplify ; andR(1) ; <(
-                hideL(-10) ; QE,
-                implyR(1) ; orR(1) ; orR(2) ; hideL(-7) ; hideL(-7) ; hideL(-15) ; hideL(-15) ; hideL(-18) ; hideL(-19) ; hideL(-19) ; orL(-8) ; <(
-                  hideR(2) ; hideR(2) ; edit({`abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()+(a/b()+1)*(a/2*t^2+t*(v_0+V()))`}, -8) ; hideL(-7) ; hideL(-2) ; hideL(-13) ; smartQE,
-                  orL(-8) ; <(
-                    hideR(1) ; hideR(2) ; edit({`abs(y_0-yo_0)>v_0^2/(2*b())+V()*v_0/b()+(a/b()+1)*(a/2*t^2+t*(v_0+V()))`}, -8) ; hideL(-7) ; hideL(-2) ; hideL(-13) ; smartQE,
-                    hideR(1) ; hideR(1) ; hideL(-9) ; hideL(-9) ; hideL(-9) ; hideL(-9) ; edit({`abs(abs(r)-abbrv((((xo-xc)^2+(yo-yc)^2)^(1/2),cDist)))>V()*v/b()`}, 1) ; edit({`abs(abs(r)-abbrv((((xo_0-xc)^2+(yo_0-yc)^2)^(1/2),oldCDist)))>V()*(ep()+(v_0+a*ep())/b())`}, -8) ; cut({`abs(cDist-oldCDist)<=t*V()`}) ; <(
-                      hideL(-15) ; hideL(-15) ; edit({`abs(abs(r)-oldCDist)>V()*(t+(v_0+a*t)/b())`}, -8) ; hideL(-11) ; hideL(-7) ; hideL(-2) ; hideL(-4) ; hideL(-4) ; hideL(-5) ; hideL(-5) ; smartQE,
-                      hideR(1) ; hideL(-8) ; hideL(-7) ; hideL(-12) ; hideL(-9) ; hideL(-2) ; hideL(-5) ; hideL(-3) ; hideL(-6) ; cut({`abs(cDist-oldCDist)<=t*(vxo^2+vyo^2)^(1/2)`}) ; <(
-                        hideL(-7) ; hideL(-7) ; hideL(-4) ; hideL(-4) ; hideL(-1) ; edit({`abbrv((abs(cDist-oldCDist),X))<=t*V()`}, 1) ; hideL(-5) ; QE,
-                        hideR(1) ; hideL(-3) ; hideL(-2) ; hideL(-1) ; smartQE
+              print({`Induction Step (3) Differential Invariants Established`});
+              dW(1) ; implyR(1) ; andL('L)* ; fullSimplify ; hideL(-10=={`-W()<=w_0`}) ; hideL(-10=={`w_0<=W()`}) ; andR(1) ; <(
+                hideL(-16=={`abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()+(a/b()+1)*(a/2*ep()^2+ep()*(v_0+V()))|abs(y_0-yo_0)>v_0^2/(2*b())+V()*v_0/b()+(a/b()+1)*(a/2*ep()^2+ep()*(v_0+V()))|abs(abs(r)-((xo_0-xc)^2+(yo_0-yc)^2)^(1/2))>V()*(ep()+(v_0+a*ep())/b())`}) ; QE,
+                implyR(1) ; orR(1) ; orR(2) ; hideL(-29=={`dx^2+dy^2=1`}) ; hideL(-25=={`dy=(x-xc)/r`}) ; hideL(-24=={`dx=-(y-yc)/r`}) ; hideL(-13=={`dy_0=(x_0-xc)/r`}) ; hideL(-12=={`dx_0=-(y_0-yc)/r`}) ; hideL(-6=={`dx_0^2+dy_0^2=1`}) ; hideL(-14=={`t_0=0`}) ; orL(-13) ; <(
+                  edit({`abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()+(a/b()+1)*(a/2*t^2+t*(v_0+V()))`}, -13) ; hideL(-12=={`v_0+a*ep()>=0`}) ; hideL(-19=={`t<=ep()`}) ; hideL(-3=={`ep()>0`}) ; hideR(3=={`abs(abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2))>V()*v/b()`}) ; hideR(2=={`abs(y-yo)>v^2/(2*b())+V()*v/b()`}) ; smartQE,
+                  orL(-13) ; <(
+                    hideR(3=={`abs(abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2))>V()*v/b()`}) ; hideR(1=={`abs(x-xo)>v^2/(2*b())+V()*v/b()`}) ; edit({`abs(y_0-yo_0)>v_0^2/(2*b())+V()*v_0/b()+(a/b()+1)*(a/2*t^2+t*(v_0+V()))`}, -13) ; hideL(-12=={`v_0+a*ep()>=0`}) ; hideL(-3=={`ep()>0`}) ; hideL(-18=={`t<=ep()`}) ; smartQE,
+                    hideR(2=={`abs(y-yo)>v^2/(2*b())+V()*v/b()`}) ; hideR(1=={`abs(x-xo)>v^2/(2*b())+V()*v/b()`}) ; edit({`abs(abs(r)-abbrv((((xo_0-xc)^2+(yo_0-yc)^2)^(1/2),oldCDist)))>V()*(ep()+(v_0+a*ep())/b())`}, -13) ; edit({`abs(abs(r)-abbrv((((xo-xc)^2+(yo-yc)^2)^(1/2),cDist)))>V()*v/b()`}, 1) ; hideL(-9=={`r!=0`}) ; hideL(-9=={`r^2=(x_0-xc)^2+(y_0-yc)^2`}) ; hideL(-9=={`r*w_0=v_0`}) ; hideL(-9=={`v_0+a*ep()>=0`}) ; cut({`abs(cDist-oldCDist)<=t*V()`}) ; <(
+                      hideL(-22=={`oldCDist=((xo_0-xc)^2+(yo_0-yc)^2)^(1/2)`}) ; hideL(-22=={`cDist=((xo-xc)^2+(yo-yc)^2)^(1/2)`}) ; edit({`abs(abs(r)-oldCDist)>V()*(t+(v_0+a*t)/b())`}, -9) ; hideL(-3=={`ep()>0`}) ; hideL(-15=={`t<=ep()`}) ; smartQE,
+                      hideR(1=={`abs(abs(r)-cDist)>V()*v/b()`}) ; hideL(-9=={`abs(abs(r)-oldCDist)>V()*(ep()+(v_0+a*ep())/b())`}) ; hideL(-15=={`t<=ep()`}) ; hideL(-3=={`ep()>0`}) ; cut({`abs(cDist-oldCDist)<=t*(vxo^2+vyo^2)^(1/2)`}) ; <(
+                        hideL(-19=={`oldCDist=((xo_0-xc)^2+(yo_0-yc)^2)^(1/2)`}) ; hideL(-19=={`cDist=((xo-xc)^2+(yo-yc)^2)^(1/2)`}) ; edit({`abbrv((abs(cDist-oldCDist),X))<=t*V()`}, 1) ; hideL(-20=={`X=abs(cDist-oldCDist)`}) ; hideL(-1=={`A()>=0`}) ; hideL(-3=={`v_0>=0`}) ; hideL(-4=={`-b()<=a`}) ; hideL(-4=={`a<=A()`}) ; hideL(-4=={`-t*(v-a/2*t)<=y-y_0`}) ; hideL(-4=={`y-y_0<=t*(v-a/2*t)`}) ; hideL(-4=={`-t*(v-a/2*t)<=x-x_0`}) ; hideL(-4=={`x-x_0<=t*(v-a/2*t)`}) ; hideL(-4=={`xo=xo_0+vxo*t`}) ; hideL(-4=={`yo=yo_0+vyo*t`}) ; hideL(-6=={`v=v_0+a*t`}) ; hideL(-4=={`v>=0`}) ; hideL(-5=={`w*r=v`}) ; hideL(-5=={`v>0`}) ; hideL(-1=={`b()>0`}) ; QE,
+                        hideR(1=={`abs(cDist-oldCDist)<=t*V()`}) ; hideL(-5=={`vxo^2+vyo^2<=V()^2`}) ; hideL(-3=={`V()>=0`}) ; hideL(-15=={`w*r=v`}) ; hideL(-5=={`a<=A()`}) ; hideL(-1=={`A()>=0`}) ; hideL(-4=={`-t*(v-a/2*t)<=y-y_0`}) ; hideL(-4=={`y-y_0<=t*(v-a/2*t)`}) ; hideL(-4=={`-t*(v-a/2*t)<=x-x_0`}) ; hideL(-4=={`x-x_0<=t*(v-a/2*t)`}) ; hideL(-8=={`v=v_0+a*t`}) ; hideL(-8=={`v>0`}) ; hideL(-6=={`v>=0`}) ; hideL(-3=={`-b()<=a`}) ; hideL(-1=={`b()>0`}) ; smartQE
                         )
                       )
                     )
                   )
                 ),
-              hideL(-14) ; dI(1)
+              hideL(-18=={`abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()+(a/b()+1)*(a/2*ep()^2+ep()*(v_0+V()))|abs(y_0-yo_0)>v_0^2/(2*b())+V()*v_0/b()+(a/b()+1)*(a/2*ep()^2+ep()*(v_0+V()))|abs(abs(r)-((xo_0-xc)^2+(yo_0-yc)^2)^(1/2))>V()*(ep()+(v_0+a*ep())/b())`}) ; dI(1)
               ),
-            hideL(-14) ; dI(1)
+            hideL(-18=={`abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()+(a/b()+1)*(a/2*ep()^2+ep()*(v_0+V()))|abs(y-yo_0)>v_0^2/(2*b())+V()*v_0/b()+(a/b()+1)*(a/2*ep()^2+ep()*(v_0+V()))|abs(abs(r)-((xo_0-xc)^2+(yo_0-yc)^2)^(1/2))>V()*(ep()+(v_0+a*ep())/b())`}) ; dI(1)
             ),
-          hideL(-14) ; dI(1)
+          hideL(-18=={`abs(x-xo_0)>v_0^2/(2*b())+V()*v_0/b()+(a/b()+1)*(a/2*ep()^2+ep()*(v_0+V()))|abs(y-yo_0)>v_0^2/(2*b())+V()*v_0/b()+(a/b()+1)*(a/2*ep()^2+ep()*(v_0+V()))|abs(abs(r)-((xo_0-xc)^2+(yo_0-yc)^2)^(1/2))>V()*(ep()+(v_0+a*ep())/b())`}) ; dI(1)
           ),
-        hideL(-14) ; dI(1)
+        hideL(-18=={`abs(x-xo)>v_0^2/(2*b())+V()*v_0/b()+(a/b()+1)*(a/2*ep()^2+ep()*(v_0+V()))|abs(y-yo)>v_0^2/(2*b())+V()*v_0/b()+(a/b()+1)*(a/2*ep()^2+ep()*(v_0+V()))|abs(abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2))>V()*(ep()+(v_0+a*ep())/b())`}) ; dI(1)
         ),
-      hideL(-14) ; dI(1)
-      ),
+      hideL(-18=={`abs(x-xo)>v_0^2/(2*b())+V()*v_0/b()+(a/b()+1)*(a/2*ep()^2+ep()*(v_0+V()))|abs(y-yo)>v_0^2/(2*b())+V()*v_0/b()+(a/b()+1)*(a/2*ep()^2+ep()*(v_0+V()))|abs(abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2))>V()*(ep()+(v_0+a*ep())/b())`}) ; dI(1)
+      ); print({`Induction Step (3) Done`}),
+    print({`Induction Step (4)`});
     dC({`t>=0&dx^2+dy^2=1&v=old(v)&w*r=v`}, 1) ; <(
       dC({`dx=-(y-yc)/r&dy=(x-xc)/r`}, 1) ; <(
-        dW(1) ; implyR(1) ; allL2R(-9) ; hideL(-9) ; andL('L)* ; fullSimplify ; QE,
-        hideL(-6) ; dI(1)
+        print({`Induction Step (4) Differential Invariants Established`});
+        dW(1) ; implyR(1) ; andL('L)* ; fullSimplify ; QE,
+        hideL(-6=={`v_0>0->abs(x-xo)>v_0^2/(2*b())+V()*v_0/b()|abs(y-yo)>v_0^2/(2*b())+V()*v_0/b()|abs(abs(r_0)-((xo-xc_0)^2+(yo-yc_0)^2)^(1/2))>V()*v_0/b()`}) ; dI(1)
         ),
-      hideL(-6) ; dI(1)
-      ),
-    edit({`!v+a*ep() < 0`}, 1) ; notR(1) ; hideL(-6) ; hideL(-6) ; hideL(-6) ; hideL(-7) ; hideL(-7) ; hideL(-7) ; hideL(-10) ; hideL(-10) ; hideL(-9) ; hideL(-1) ; cut({`a < 0`}) ; <(
-      dC({`t>=0&dx^2+dy^2=1&v=old(v)+a*t&w*r=v`}, 1) ; <(
+      hideL(-6=={`v_0>0->abs(x-xo)>v_0^2/(2*b())+V()*v_0/b()|abs(y-yo)>v_0^2/(2*b())+V()*v_0/b()|abs(abs(r_0)-((xo-xc_0)^2+(yo-yc_0)^2)^(1/2))>V()*v_0/b()`}) ; dI(1)
+      ); print({`Induction Step (4) Done`}),
+    print({`Induction Step (5)`});
+    edit({`!v+a*ep() < 0`}, 1) ; notR(1) ; hideL(-6=={`v>0->abs(x-xo_0)>v^2/(2*b())+V()*v/b()|abs(y-yo_0)>v^2/(2*b())+V()*v/b()|abs(abs(r_0)-((xo_0-xc_0)^2+(yo_0-yc_0)^2)^(1/2))>V()*v/b()`}) ; hideL(-6=={`r_0!=0`}) ; hideL(-6=={`r_0^2=(x-xc_0)^2+(y-yc_0)^2`}) ; hideL(-7=={`dx=-(y-yc_0)/r_0`}) ; hideL(-7=={`dy=(x-xc_0)/r_0`}) ; hideL(-7=={`w_0*r_0=v`}) ; hideL(-10=={`-W()<=w`}) ; hideL(-10=={`w<=W()`}) ; cut({`a < 0`}) ; <(
+      hideL(-9=={`a<=A()`}) ; hideL(-1=={`A()>=0`}) ; dC({`t>=0&dx^2+dy^2=1&v=old(v)+a*t&w*r=v`}, 1) ; <(
         dC({`dx=-(y-yc)/r&dy=(x-xc)/r`}, 1) ; <(
           dC({`xo=old(xo)+vxo*t&yo=old(yo)+vyo*t`}, 1) ; <(
             dC({`-t*(v-a/2*t)<=x-old(x)&x-old(x)<=t*(v-a/2*t)`}, 1) ; <(
               dC({`-t*(v-a/2*t)<=y-old(y)&y-old(y)<=t*(v-a/2*t)`}, 1) ; <(
+                print({`Induction Step (5) Differential Invariants Established`});
                 dW(1) ; implyR(1) ; andL('L)* ; fullSimplify ; andR(1) ; <(
-                  hideL(-9) ; QE,
-                  implyR(1) ; orR(1) ; orR(2) ; hideL(-26) ; hideL(-25) ; hideL(-23) ; hideL(-19) ; hideL(-18) ; hideL(-18) ; hideL(-10) ; hideL(-8) ; hideL(-7) ; hideL(-2) ; orL(-6) ; <(
-                    hideR(2) ; hideR(2) ; smartQE,
-                    orL(-6) ; <(
-                      hideR(1) ; hideR(2) ; smartQE,
-                      hideR(1) ; hideR(1) ; edit({`abs(abs(r)-abbrv((((xo-xc)^2+(yo-yc)^2)^(1/2),cDist)))>V()*v/b()`}, 1) ; edit({`abs(abs(r)-abbrv((((xo_0-xc)^2+(yo_0-yc)^2)^(1/2),oldCDist)))>-V()*v_0/a`}, -6) ; cut({`abs(cDist-oldCDist)<=t*V()`}) ; <(
-                        hideL(-17) ; hideL(-17) ; hideL(-8) ; hideL(-8) ; hideL(-8) ; hideL(-8) ; hideL(-8) ; hideL(-8) ; hideL(-4) ; smartQE,
-                        hideR(1) ; hideL(-8) ; hideL(-8) ; hideL(-8) ; hideL(-8) ; hideL(-6) ; hideL(-11) ; hideL(-9) ; hideL(-5) ; hideL(-5) ; hideL(-3) ; hideL(-1) ; cut({`abs(cDist-oldCDist)<=t*(vxo^2+vyo^2)^(1/2)`}) ; <(
-                          hideL(-6) ; hideL(-6) ; hideL(-3) ; hideL(-3) ; edit({`abbrv((abs(cDist-oldCDist),X))<=t*V()`}, 1) ; hideL(-5) ; QE,
-                          hideR(1) ; hideL(-2) ; hideL(-1) ; smartQE
+                  hideL(-13=={`abs(x_0-xo_0)>-v_0^2/(2*a)-V()*v_0/a|abs(y_0-yo_0)>-v_0^2/(2*a)-V()*v_0/a|abs(abs(r)-((xo_0-xc)^2+(yo_0-yc)^2)^(1/2))>-V()*v_0/a`}) ; QE,
+                  implyR(1) ; orR(1) ; orR(2) ; hideL(-28=={`dx^2+dy^2=1`}) ; hideL(-24=={`dy=(x-xc)/r`}) ; hideL(-23=={`dx=-(y-yc)/r`}) ; hideL(-11=={`dy_0=(x_0-xc)/r`}) ; hideL(-10=={`dx_0=-(y_0-yc)/r`}) ; hideL(-5=={`dx_0^2+dy_0^2=1`}) ; orL(-10) ; <(
+                    hideR(3=={`abs(abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2))>V()*v/b()`}) ; hideR(2=={`abs(y-yo)>v^2/(2*b())+V()*v/b()`}) ; smartQE,
+                    orL(-10) ; <(
+                      hideR(3=={`abs(abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2))>V()*v/b()`}) ; hideR(1=={`abs(x-xo)>v^2/(2*b())+V()*v/b()`}) ; smartQE,
+                      hideR(2=={`abs(y-yo)>v^2/(2*b())+V()*v/b()`}) ; hideR(1=={`abs(x-xo)>v^2/(2*b())+V()*v/b()`}) ; edit({`abs(abs(r)-abbrv((((xo_0-xc)^2+(yo_0-yc)^2)^(1/2),oldCDist)))>-V()*v_0/a`}, -10) ; edit({`abs(abs(r)-abbrv((((xo-xc)^2+(yo-yc)^2)^(1/2),cDist)))>V()*v/b()`}, 1) ; cut({`abs(cDist-oldCDist)<=t*V()`}) ; <(
+                        hideL(-27=={`cDist=((xo-xc)^2+(yo-yc)^2)^(1/2)`}) ; hideL(-26=={`oldCDist=((xo_0-xc)^2+(yo_0-yc)^2)^(1/2)`}) ; smartQE,
+                        hideR(1=={`abs(abs(r)-cDist)>V()*v/b()`}) ; hideL(-14=={`-t*(v-a/2*t)<=y-y_0`}) ; hideL(-14=={`y-y_0<=t*(v-a/2*t)`}) ; hideL(-14=={`-t*(v-a/2*t)<=x-x_0`}) ; hideL(-14=={`x-x_0<=t*(v-a/2*t)`}) ; hideL(-19=={`v=v_0+a*t`}) ; hideL(-19=={`w*r=v`}) ; hideL(-19=={`v>0`}) ; hideL(-17=={`v>=0`}) ; hideL(-12=={`v_0+a*ep() < 0`}) ; hideL(-15=={`t<=ep()`}) ; hideL(-2=={`ep()>0`}) ; hideL(-6=={`r!=0`}) ; hideL(-6=={`r^2=(x_0-xc)^2+(y_0-yc)^2`}) ; hideL(-8=={`t_0=0`}) ; hideL(-6=={`r*w_0=v_0`}) ; hideL(-5=={`-b()<=a`}) ; hideL(-1=={`b()>0`}) ; cut({`abs(cDist-oldCDist)<=t*(vxo^2+vyo^2)^(1/2)`}) ; <(
+                          hideL(-9=={`oldCDist=((xo_0-xc)^2+(yo_0-yc)^2)^(1/2)`}) ; hideL(-9=={`cDist=((xo-xc)^2+(yo-yc)^2)^(1/2)`}) ; edit({`abbrv((abs(cDist-oldCDist),X))<=t*V()`}, 1) ; hideL(-10=={`X=abs(cDist-oldCDist)`}) ; hideL(-4=={`abs(abs(r)-oldCDist)>-V()*v_0/a`}) ; QE,
+                          hideR(1=={`abs(cDist-oldCDist)<=t*V()`}) ; hideL(-3=={`vxo^2+vyo^2<=V()^2`}) ; hideL(-3=={`abs(abs(r)-oldCDist)>-V()*v_0/a`}) ; hideL(-3=={`a < 0`}) ; hideL(-1=={`V()>=0`}) ; hideL(-1=={`v_0>=0`}); smartQE
                           )
                         )
                       )
                     )
                   ),
-                hideL(-13) ; dI(1)
+                hideL(-13=={`abs(x_0-xo_0)>-v_0^2/(2*a)-V()*v_0/a|abs(y_0-yo_0)>-v_0^2/(2*a)-V()*v_0/a|abs(abs(r)-((xo_0-xc)^2+(yo_0-yc)^2)^(1/2))>-V()*v_0/a`}) ; dI(1)
                 ),
-              hideL(-13) ; dI(1)
+              hideL(-13=={`abs(x_0-xo_0)>-v_0^2/(2*a)-V()*v_0/a|abs(y-yo_0)>-v_0^2/(2*a)-V()*v_0/a|abs(abs(r)-((xo_0-xc)^2+(yo_0-yc)^2)^(1/2))>-V()*v_0/a`}) ; dI(1)
               ),
-            hideL(-13) ; dI(1)
+            hideL(-13=={`abs(x-xo_0)>-v_0^2/(2*a)-V()*v_0/a|abs(y-yo_0)>-v_0^2/(2*a)-V()*v_0/a|abs(abs(r)-((xo_0-xc)^2+(yo_0-yc)^2)^(1/2))>-V()*v_0/a`}) ; dI(1)
             ),
-          hideL(-13) ; dI(1)
+          hideL(-13=={`abs(x-xo)>-v_0^2/(2*a)-V()*v_0/a|abs(y-yo)>-v_0^2/(2*a)-V()*v_0/a|abs(abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2))>-V()*v_0/a`}) ; dI(1)
           ),
-        hideL(-13) ; dI(1)
+        hideL(-13=={`abs(x-xo)>-v_0^2/(2*a)-V()*v_0/a|abs(y-yo)>-v_0^2/(2*a)-V()*v_0/a|abs(abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2))>-V()*v_0/a`}) ; dI(1)
         ),
-      hideR(1) ; hideL(-13) ; QE
+      hideR(1=={`[{x'=v*dx,y'=v*dy,v'=a,dx'=-w*dy,dy'=w*dx,w'=a/r,xo'=vxo,yo'=vyo,t'=1&t<=ep()&v>=0}](v>=0&(r!=0&r^2=(x-xc)^2+(y-yc)^2&dx^2+dy^2=1&dx=-(y-yc)/r&dy=(x-xc)/r&w*r=v)&(v>0->abs(x-xo)>v^2/(2*b())+V()*v/b()|abs(y-yo)>v^2/(2*b())+V()*v/b()|abs(abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2))>V()*v/b()))`}) ; hideL(-15=={`abs(x-xo)>-v^2/(2*a)-V()*v/a|abs(y-yo)>-v^2/(2*a)-V()*v/a|abs(abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2))>-V()*v/a`}) ; QE
       )
-    )
-  )
+    ); print({`Induction Step (5) Done`})
+  ); print({`Proof Done`})
 End.
 
 Theorem "Theorem 14: Reach waypoint with deadline".
