@@ -1,0 +1,1249 @@
+ArchiveEntry "STTT Tutorial: Example 1".
+
+Description "A simple system in which a car starts at some nonnegative velocity and accelerates at a constant rate along a straight lane. The requirement we want to prove is that the car never travels backward in space.".
+Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
+Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=7".
+
+Functions.
+  R A.
+End.
+
+ProgramVariables.
+  R x.
+  R v.
+End.
+
+Problem.
+  v >= 0 & A > 0 -> [ { x' = v, v' = A } ] v >= 0
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "STTT Tutorial: Example 2".
+
+Description "A hybrid system model of a car with discrete control choices: accelerate, stay stopped, or brake. The requirement to prove is that the car never travels backwards in space.".
+Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
+Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=8".
+
+Functions.
+  R A.
+  R B.
+End.
+
+ProgramVariables.
+  R x.
+  R v.
+  R a.
+End.
+
+Problem.
+    v >= 0 & A > 0 & B > 0
+ -> [
+      { {a := A; ++ a := 0; ++ a := -B;};
+        { x' = v, v' = a & v >= 0 }
+      }*@invariant(v >= 0)
+    ] v >= 0
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "STTT Tutorial: Example 3a".
+
+Description "A hybrid car model where the controller runs when the car is about to run a stop sign. The requirement to prove is that the car never runs the stop sign.".
+Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
+Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=10".
+
+Functions.
+  R A.
+  R B.
+  R S.
+End.
+
+ProgramVariables.
+  R x.
+  R v.
+  R a.
+End.
+
+Problem.
+    v >= 0 & A > 0 & B > 0 & x+v^2/(2*B) < S
+ -> [
+      { {   ?x+v^2/(2*B) < S; a := A;
+         ++ ?v=0; a := 0;
+         ++ a := -B;
+        }
+
+        {
+           {x' = v, v' = a & v >= 0 & x+v^2/(2*B) <= S}
+        ++ {x' = v, v' = a & v >= 0 & x+v^2/(2*B) >= S}
+        }
+      }*@invariant(v >= 0 & x+v^2/(2*B) <= S)
+    ] x <= S
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "STTT Tutorial: Example 4a".
+
+Description "A hybrid car model where the controller runs when the car is about to run a stop sign. The example illustrates that certain modeling pitfalls result in vacuous proofs.".
+Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
+Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=12".
+
+Functions.
+  R A.
+  R V.
+End.
+
+ProgramVariables.
+  R x.
+  R v.
+  R a.
+End.
+
+Problem.
+    v <= V & A > 0
+ -> [
+      { {
+           ?v=V; a:=0;
+        ++ ?v!=V; a:=A;
+        }
+
+        {x' = v, v' = a & v <= V}
+      }*@invariant(v <= V)
+    ] v <= V
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "STTT Tutorial: Example 4b".
+
+Description "A hybrid car model where the controller runs when the car is about to run a stop sign. The example illustrates that overly strong evolution domain constraints can result in a vacuous proof.".
+Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
+Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=12".
+
+Functions.
+  R A.
+  R V.
+End.
+
+ProgramVariables.
+  R x.
+  R v.
+  R a.
+End.
+
+Problem.
+    v <= V & A > 0
+ -> [
+      { a := A;
+
+        {x' = v, v' = a & v <= V}
+      }*@invariant(v <= V)
+    ] v <= V
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "STTT Tutorial: Example 4c".
+
+Description "A hybrid car model where the controller runs when the car is about to run a stop sign. The example illustrates the correct modeling idiom to prevent vacuous proofs from evolution domain constraints.".
+Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
+Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=12".
+
+Functions.
+  R A.
+  R V.
+End.
+
+ProgramVariables.
+  R x.
+  R v.
+  R a.
+End.
+
+Problem.
+    v <= V & A > 0
+ -> [
+      { {
+           ?v=V; a:=0;
+        ++ ?v!=V; a:=A;
+        }
+
+        {  {x' = v, v' = a & v <= V}
+        ++ {x' = v, v' = a & v >= V}}
+      }*@invariant(v <= V)
+    ] v <= V
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "STTT Tutorial: Example 5".
+
+Description "A hybrid car model where the controller runs periodically at some maximum time interval between executions. The requirement to prove is that the car never runs the stop sign.".
+Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
+Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=13".
+Functions.
+  R A.
+  R B.
+  R S.
+  R ep.
+End.
+
+ProgramVariables.
+  R x.
+  R v.
+  R a.
+  R c.
+End.
+
+Problem.
+    v >= 0 & A > 0 & B > 0 & x+v^2/(2*B) <= S & ep > 0
+ -> [
+      { {   ?x+v^2/(2*B) + (A/B+1)*(A/2*ep^2+ep*v) <= S; a := A;
+         ++ ?v=0; a := 0;
+         ++ a := -B;
+        };
+
+        c := 0;
+        { x' = v, v' = a, c' = 1 & v >= 0 & c <= ep }
+      }*@invariant(v >= 0 & x+v^2/(2*B) <= S)
+    ] x <= S
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "STTT Tutorial: Example 6".
+
+Description "A hybrid car model where the controller can make non-deterministic decisions on acceleration. The requirement to prove is that the controller never runs the stop sign.".
+Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
+Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=14".
+
+Functions.
+  R A.
+  R B.
+  R S.
+  R ep.
+End.
+
+ProgramVariables.
+  R x.
+  R v.
+  R a.
+  R c.
+End.
+
+Problem.
+    v >= 0 & A > 0 & B > 0 & x+v^2/(2*B) <= S & ep > 0
+ -> [
+      { {   ?x+v^2/(2*B) + (A/B+1)*(A/2*ep^2+ep*v) <= S; a :=*; ?-B <= a & a <= A;
+         ++ ?v=0; a := 0;
+         ++ a := -B;
+        };
+
+        c := 0;
+        { x' = v, v' = a, c' = 1 & v >= 0 & c <= ep }
+      }*@invariant(v >= 0 & x+v^2/(2*B) <= S)
+    ] x <= S
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "STTT Tutorial: Example 7".
+
+Description "A hybrid car model with non-deterministic braking characteristics. The requirement to prove is that the car never runs a stop sign.".
+Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
+Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=15".
+
+Functions.
+  R A.
+  R B.
+  R b.
+  R S.
+  R ep.
+End.
+
+ProgramVariables.
+  R x.
+  R v.
+  R a.
+  R c.
+End.
+
+Problem.
+    v >= 0 & A > 0 & B >= b & b > 0 & x+v^2/(2*b) <= S & ep > 0
+ -> [
+      { {   ?x+v^2/(2*b) + (A/b+1)*(A/2*ep^2+ep*v) <= S; a :=*; ?-B <= a & a <= A;
+         ++ ?v=0; a := 0;
+         ++ a :=*; ?-B <=a & a <= -b;
+        };
+
+        c := 0;
+        { x' = v, v' = a, c' = 1 & v >= 0 & c <= ep }
+      }*@invariant(v >= 0 & x+v^2/(2*b) <= S)
+    ] x <= S
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "STTT Tutorial: Example 9a".
+
+Description "A PD controlled car. The requirement to prove is that the Lyapunov function is a differential invariant.".
+Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
+Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=17".
+
+Functions.
+  R Kp().
+  R Kd().
+  R xr().
+  R c().
+End.
+
+ProgramVariables.
+  R x.
+  R v.
+End.
+
+Problem.
+    v >= 0 & c() > 0 & Kp() = 2 & Kd() = 3 & 5/4*(x-xr())^2 + (x-xr())*v/2 + v^2/4 < c()
+ -> [
+      { x' = v, v' = -Kp()*(x-xr()) - Kd()*v }
+    ] 5/4*(x-xr())^2 + (x-xr())*v/2 + v^2/4 < c()
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "STTT Tutorial: Example 9b".
+
+Description "A PD controlled car with a trajectory generator for setting target speeds. The requirement to prove is that the car never runs a stop sign.".
+Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
+Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=18".
+
+Functions.
+  R Kp.
+  R Kd.
+  R S.
+End.
+
+ProgramVariables.
+  R x.
+  R xm.
+  R xr.
+  R v.
+End.
+
+Problem.
+    v >= 0 & xm <= x & x <= S & xr = (xm + S)/2 & Kp = 2 & Kd = 3
+           & 5/4*(x-xr)^2 + (x-xr)*v/2 + v^2/4 < ((S - xm)/2)^2
+ -> [ { {  xm := x;
+           xr := (xm + S)/2;
+           ?5/4*(x-xr)^2 + (x-xr)*v/2 + v^2/4 < ((S - xm)/2)^2;
+        ++ ?true;
+        };
+        { x' = v, v' = -Kp*(x-xr) - Kd*v & v >= 0 }
+      }*@invariant(v >= 0 & xm <= x & xr = (xm + S)/2 & 5/4*(x-xr)^2 + (x-xr)*v/2 + v^2/4 < ((S - xm)/2)^2)
+    ] x <= S
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "STTT Tutorial: Example 10".
+
+Description "A car with steering. The requirement to prove is that the car always stays inside the lane boundaries.".
+Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
+Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=20".
+
+Functions.
+  R A.
+  R B.
+  R b.
+  R ep.
+  R lw.
+  R ly.
+  R abs(R).
+End.
+
+ProgramVariables.
+  R x.
+  R y.
+  R v.
+  R a.
+  R r.
+  R dx.
+  R dy.
+  R w.
+  R c.
+End.
+
+Problem.
+    v >= 0 & A > 0 & B >= b & b > 0 & ep > 0 & lw > 0 & y = ly & r != 0 & dx^2 + dy^2 = 1
+           & abs(y-ly) + v^2/(2*b) < lw
+ -> [
+      { {   ?abs(y-ly) + v^2/(2*b) + (A/b+1)*(A/2*ep^2+ep*v) < lw;
+            a :=*; ?-B <= a & a <= A;
+            w :=*; r :=*; ?r != 0 & w*r = v;
+         ++ ?v=0; a := 0; w := 0;
+         ++ a :=*; ?-B <=a & a <= -b;
+        }
+
+        c := 0;
+        {
+        { x' = v*dx, y' = v*dy, v' = a, dx' = -dy*w, dy' = dx*w, w'=a/r, c' = 1 & v >= 0 & c <= ep }
+        @invariant(c>=0, dx^2+dy^2=1,
+          (v'=a -> v=old(v)+a*c),
+          (v'=a -> -c*(v-a/2*c) <= y - old(y) & y - old(y) <= c*(v-a/2*c)),
+          (v'=0 -> v=old(v)),
+          (v'=0 -> -c*v <= y - old(y) & y - old(y) <= c*v)
+        )
+        }
+      }*@invariant(v >= 0 & dx^2+dy^2 = 1 & r != 0 & abs(y-ly) + v^2/(2*b) < lw)
+    ] abs(y-ly) < lw
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "LICS: Example 1 Continuous car accelerates forward".
+
+Citation "André Platzer. Logics of dynamical systems. ACM/IEEE Symposium on Logic in Computer Science, LICS 2012, June 25–28, 2012, Dubrovnik, Croatia, pp. 13-24. IEEE 2012.".
+Link "http://symbolaris.com/pub/lds-lics.pdf#page=4".
+
+ProgramVariables. /* program variables may change their value over time */
+  R x.            /* position of the car */
+  R v.            /* velocity of the car */
+  R a.            /* acceleration of the car */
+End.
+
+Problem.          /* differential dynamic logic formula */
+    v>=0 & a>=0
+ -> [
+      {x'=v, v'=a & v>=0}
+    ] v>=0
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "LICS: Example 2 Single car drives forward".
+
+Citation "André Platzer. Logics of dynamical systems. ACM/IEEE Symposium on Logic in Computer Science, LICS 2012, June 25–28, 2012, Dubrovnik, Croatia, pp. 13-24. IEEE 2012.".
+Link "http://symbolaris.com/pub/lds-lics.pdf#page=5".
+
+Functions.        /* function symbols cannot change their value */
+  R b().          /* braking capabilities */
+  R A().          /* maximum acceleration */
+End.
+
+ProgramVariables. /* program variables may change their value over time */
+  R x.            /* position of the car */
+  R v.            /* velocity of the car */
+  R a.            /* acceleration of the car */
+End.
+
+Problem.          /* differential dynamic logic formula */
+    v>=0  & A>=0 & b>0
+ -> [
+      {
+        {a:=A; ++ a:=-b;}
+        {x'=v, v'=a & v>=0}
+      }*@invariant(v>=0)
+    ] v>=0
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "LICS: Example 3a event-triggered car drives forward".
+
+Citation "André Platzer. Logics of dynamical systems. ACM/IEEE Symposium on Logic in Computer Science, LICS 2012, June 25–28, 2012, Dubrovnik, Croatia, pp. 13-24. IEEE 2012.".
+Link "http://symbolaris.com/pub/lds-lics.pdf#page=7".
+
+ProgramVariables.
+	R x.  /* x position of car */
+	R v.  /* v velocity of car */
+	R a.  /* a acceleration of car */
+	R b.  /* A max acceleration */
+	R A.  /* b max braking */
+	R m.  /* m position of Stop Sign */
+End.
+
+Problem.
+   ( v >= 0
+	 & A >= 0
+	 & b > 0 )
+->
+  [
+    {
+      {  ?(m-x>=2); a := A;
+      ++ a := -b;
+      };
+      {x' = v, v' = a & v >= 0}
+    }*@invariant(v >= 0)
+  ]v >= 0
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "LICS: Example 3b event-triggered car is unsafe".
+
+Citation "André Platzer. Logics of dynamical systems. ACM/IEEE Symposium on Logic in Computer Science, LICS 2012, June 25–28, 2012, Dubrovnik, Croatia, pp. 13-24. IEEE 2012.".
+Link "http://symbolaris.com/pub/lds-lics.pdf#page=7".
+
+ProgramVariables.
+	R x.  /* x position of car */
+	R v.  /* v velocity of car */
+	R a.  /* a acceleration of car */
+	R b.  /* A max acceleration */
+	R A.  /* b max braking */
+	R m.  /* m position of Stop Sign */
+End.
+
+Problem.
+   ( v >= 0
+	 & A >= 0
+	 & b > 0 )
+->
+  [
+    {
+      {  ?(m-x>=2); a := A;
+      ++ a := -b;
+      };
+      {x' = v, v' = a & v >= 0}
+    }*@invariant(x<=m)
+  ]x<=m
+End.
+
+Tactic "Proof should fail".
+  /* assert tactic that checks master leaves open goals with counterexample/false */
+  master
+End.
+
+End.
+
+ArchiveEntry "LICS: Example 4a safe stopping of time-triggered car".
+
+Functions.        /* function symbols cannot change their value */
+  R b().          /* braking capabilities */
+  R A().          /* maximum acceleration */
+  R ep().         /* reaction time */
+End.
+
+ProgramVariables. /* program variables may change their value over time */
+  R x.            /* position of the car */
+  R v.            /* velocity of the car */
+  R a.            /* acceleration of the car */
+  R m.            /* stop sign position */
+  R t.            /* clock variable */
+End.
+
+Problem.          /* differential dynamic logic formula */
+    v^2<=2*b*(m-x) & v>=0  & A>=0 & b>0
+ -> [
+      {
+        {?(2*b*(m-x) >= v^2+(A+b)*(A*ep^2+2*ep*v)); a:=A; ++ a:=-b; }
+        t := 0;
+        {x'=v, v'=a, t'=1 & v>=0 & t<=ep}
+      }*@invariant(v^2<=2*b*(m-x))
+    ] x <= m
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "LICS: Example 4b progress of time-triggered car"
+
+Definitions.      /* function symbols cannot change their value */
+  R b().          /* braking capabilities */
+  R A().          /* maximum acceleration */
+  R ep().         /* reaction time */
+End.
+
+ProgramVariables. /* program variables may change their value over time */
+  R x.            /* position of the car */
+  R v.            /* velocity of the car */
+  R a.            /* acceleration of the car */
+  R m.            /* stop sign position */
+  R t.            /* clock variable */
+End.
+
+Problem.
+  ep > 0 & A > 0 & b > 0
+->
+  \forall p \exists m
+  <
+    {
+        {?(2*b*(m-x) >= v^2+(A+b)*(A*ep^2+2*ep*v)); a:=A; ++ a:=-b; }
+        t := 0;
+        {x'=v, v'=a, t'=1 & v>=0 & t<=ep}
+    }* /*@variant(x + (.)*ep*old(v) >= p & v>=old(v))*/
+  > (x >= p)
+End.
+
+End.
+
+ArchiveEntry "LICS: Example 4c relative safety of time-triggered car".
+
+Definitions.      /* function symbols cannot change their value */
+  R b().          /* braking capabilities */
+  R A().          /* maximum acceleration */
+  R ep().         /* reaction time */
+  R m().          /* stop sign position */
+End.
+
+ProgramVariables. /* program variables may change their value over time */
+  R x.            /* position of the car */
+  R v.            /* velocity of the car */
+  R a.            /* acceleration of the car */
+  R t.            /* clock variable */
+End.
+
+Problem.
+   ( [{x' = v, v' = -b}]x<=m
+   & v >= 0
+	 & A() >= 0
+	 & b() > 0 )
+->
+  [
+    {
+      {  ?(2*b()*(m()-x) >= v^2 + (A() + b())*(A()*ep()^2 + 2*ep()*v)); a := A();
+      ++ a := -b();
+      };
+      t := 0;
+      {x' = v, v' = a, t' = 1 & v >= 0 & t <= ep()}
+    }*@invariant(v^2<=2*b()*(m()-x))
+  ]x<=m
+End.
+
+End.
+
+ArchiveEntry "LICS: Example 5 Controllability Equivalence".
+
+Definitions.
+  R b.
+  R m.
+End.
+
+ProgramVariables.
+	R v.
+	R x.
+End.
+
+Problem.
+  v>=0 & b>0 -> ( v^2<=2*b*(m-x) <-> [{x'=v, v'=-b}]x<=m )
+End.
+
+End.
+
+ArchiveEntry "LICS: Example 6 MPC Acceleration Equivalence".
+
+Definitions.
+  R b.
+  R A.
+  R m.
+  R ep.
+End.
+
+ProgramVariables.
+	R v.
+	R x.
+	R t.
+End.
+
+Problem.
+  v>=0 & b>0 & A>=0 & ep>=0 -> (
+    [t:=0; {x'=v, v'=A, t'=1 & t<=ep}][{x'=v, v'=-b}]x<=m
+    <->
+    2*b*(m-x) >= v^2 + (A + b)*(A*ep^2 + 2*ep*v)
+   )
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "LICS: Example 7 Model-Predictive Control Design Car".
+
+Definitions.      /* function symbols cannot change their value */
+  R b().          /* braking capabilities */
+  R A().          /* maximum acceleration */
+  R ep().         /* reaction time */
+End.
+
+ProgramVariables. /* program variables may change their value over time */
+  R x.            /* position of the car */
+  R v.            /* velocity of the car */
+  R a.            /* acceleration of the car */
+  R m.            /* stop sign position */
+  R t.            /* clock variable */
+End.
+
+Problem.          /* differential dynamic logic formula */
+  [{x'=v, v'=-b}](x<=m)
+   & v >= 0
+   & A >= 0
+   & b > 0
+->
+  [
+    {
+    {{?([t:=0; {x'=v, v'=A, t'=1 & v >= 0 & t<=ep}] [{x'=v, v'=-b}](x<=m));
+       a := A;}
+    ++ a := -b;}
+      t := 0;
+      {x'=v, v'=a, t'=1 & v>=0 & t<=ep}
+    }*@invariant([{x'=v, v'=-b}](x<=m))
+  ] (x <= m)
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "ETCS: Essentials".
+
+Description "Essentials of European Train Control System (ETCS)".
+Citation "Andre Platzer. Differential dynamic logic for hybrid systems. Journal of Automated Reasoning, 41(2), pages 143-189, 2008.".
+Link "http://symbolaris.com/pub/freedL.pdf#page=14".
+
+Definitions.
+  R ep(). /* Control cycle duration upper bound */
+  R b().  /* Braking force */
+  R A().  /* Maximum acceleration */
+  R m().  /* End of movement authority (train must not drive past m) */
+
+  R stopDist(R v) = (v^2/(2*b())).                     /* Train stopping distance from speed (.) with braking force b */
+  R accCompensation(R v) = (((A()/b()) + 1)*((A()/2)*ep()^2 + ep()*v)).     /* Distance to compensate speed increase. */
+  R SB(R v)       = (stopDist(v) + accCompensation(v)).      /* Distance needed to stop safely when accelerating once */
+
+  /* Initial states */
+  B initial(R m, R z, R v) <-> (
+    v >= 0 &
+    m-z >= stopDist(v) &         /* train has sufficient distance to the end of the movement authority to stop safely */
+    b()>0 &                                                                                     /* brakes are working */
+    A()>=0 &                                                                                     /* engine is working */
+    ep()>=0
+  ).
+
+  B safe(R m, R z, R v, R d) <-> (
+    z >= m -> v <= d      /* train 'z' drives past end of movement authority 'm' only with appropriate speed 'v'<='d' */
+  ).
+
+  /* loop invariant: always maintain sufficient stopping distance */
+  B loopInv(R m, R z, R v) <-> (v >= 0 & m-z >= stopDist(v)).
+
+  /* train controller */
+  HP ctrl ::= {
+        ?m() - z <= SB(v); a := -b();    /* train protection: emergency brake when close to end of movement authority */
+     ++ ?m() - z >= SB(v); a :=  A();    /* free driving: accelerate when sufficient distance */
+  }.
+
+  HP drive ::= {
+    t := 0;                                                  /* reset control cycle timer */
+    {z'=v, v'=a, t'=1  & v >= 0 & t <= ep()}                 /* drive (not backwards v>=0)
+                                                                for at most ep time (t<=ep) until next controller run */
+  }.
+End.
+
+ProgramVariables.
+  R a.  /* Actual acceleration -b <= a <= A */
+  R v.  /* Current velocity */
+  R z.  /* Train position */
+  R t.  /* Actual control cycle duration t <= ep */
+End.
+
+/* Safety specification of the form: initial -> [{ctrl;plant}*]safe
+ * Starting in any state where initial is true,
+ * any number of repetitions of running a controller 'ctrl' and then driving according to 'plant'
+ * keeps the system safe (end up only in states where 'safe' is true).
+ */
+Problem.
+initial(m(),z,v)  ->
+    [
+      {
+        ctrl;
+        drive;
+      }*@invariant(loopInv(m(),z,v))                       /* repeat, loop invariant documents system design property */
+    ] (z <= m())                        /* safety property: train 'z' never drives past end of movement authority 'm' */
+End.
+
+Tactic "Automated Proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "ETCS: Proposition 1 (Controllability)".
+
+Description "Proposition 1: Controllability.".
+Citation "Andre Platzer and Jan-David Quesel. European Train Control System: A case study in formal verification. In Karin Breitman and Ana Cavalcanti, editors, 11th International Conference on Formal Engineering Methods, ICFEM, Rio de Janeiro, Brasil, Proceedings, volume 5885 of LNCS, pages 246-265. Springer, 2009.".
+Link "http://symbolaris.com/pub/ETCS.pdf#page=10".
+
+Definitions.
+  R b().  /* Braking force */
+
+  B Assumptions(R v, R d) <-> ( v>=0 & d>=0 & b()>0 ).                                               /* Assumptions A */
+End.
+
+ProgramVariables.
+  R m.
+  R z.
+  R v.
+  R d.
+End.
+
+Problem.
+  Assumptions(v,d) & z<=m
+  ->
+  ( [ {z'=v, v'=-b() & v>=0 } ](z>=m -> v<=d)
+    <->
+    v^2-d^2 <= 2*b()*(m-z)
+  )
+End.
+
+Tactic "Controllability Automated Proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "ETCS: Proposition 4 (Reactivity)".
+
+Description "Proposition 4: Reactivity constraint".
+Citation "Andre Platzer and Jan-David Quesel. European Train Control System: A case study in formal verification. In Karin Breitman and Ana Cavalcanti, editors, 11th International Conference on Formal Engineering Methods, ICFEM, Rio de Janeiro, Brasil, Proceedings, volume 5885 of LNCS, pages 246-265. Springer, 2009.".
+Link "http://symbolaris.com/pub/ETCS.pdf#page=12".
+
+Definitions.
+  R ep(). /* Control cycle duration upper bound */
+  R b().  /* Braking force */
+  R A().  /* Maximum acceleration */
+
+  B Assumptions(R v, R d) <-> ( v>=0 & d>=0 & b()>0 ).                                               /* Assumptions A */
+
+  B Controllable(R m, R z, R v, R d) <-> (                                            /* Controllability constraint C */
+    v^2-d^2 <= 2*b()*(m-z) & Assumptions(v,d)
+  ).
+
+  HP drive ::= {
+    t := 0;                                                  /* reset control cycle timer */
+    {z'=v, v'=a, t'=1  & v >= 0 & t <= ep()}                 /* drive (not backwards v>=0)
+                                                                for at most ep time (t<=ep) until next controller run */
+  }.
+
+End.
+
+ProgramVariables.
+  R vdes.
+  R sb.
+  R mo.
+  R t.
+  R a.
+  R v.
+  R z.
+  R m.
+  R d.
+  R do.
+  R em.
+End.
+
+Problem.
+em = 0 & d >= 0 & b() > 0 & ep() > 0 & A() > 0 & v>=0
+  -> ((\forall m \forall z (m-z>= sb & Controllable(m,z,v,d) -> [ a:=A(); drive; ]Controllable(m,z,v,d)) )
+      <->
+      sb >= (v^2 - d^2) /(2*b()) + (A()/b() + 1) * (A()/2 * ep()^2 + ep()*v)
+     )
+End.
+
+Tactic "Automated proof".
+  /* requires QE({`Mathematica`}) */
+  master
+End.
+
+Tactic "Proof Proposition 4: Reactivity Constraint".
+  /* requires QE({`Mathematica`}) */
+  implyR(1); equivR(1); <(
+    composeb(-2.0.0.1); composeb(-2.0.0.1.1); solve(-2.0.0.1.1.1); assignb(-2.0.0.1.1); assignb(-2.0.0.1); master,
+    composeb(1.0.0.1); composeb(1.0.0.1.1); solve(1.0.0.1.1.1); master
+  )
+End.
+
+End.
+
+ArchiveEntry "ATC: 2 Aircraft Tangential Roundabout Maneuver".
+
+Description "Essentials of Tangential Roundabout Maneuver (TRM) in Air Traffic Control (ATC)".
+Citation "Andre Platzer. Differential-algebraic dynamic logic for differential-algebraic programs. Journal of Logic and Computation, 20(1), pages 309-352, 2010.".
+Link "https://doi.org/10.1093/logcom/exn070".
+
+Definitions.
+  R p().  /* protected zone radius */
+
+  B safeSeparation(R x1, R y1, R x2, R y2) <-> ( (x1-y1)^2 + (x2-y2)^2 >= p()^2 ).
+End.
+
+ProgramVariables.
+  R x1.   /* x-position of aircraft 1 */
+  R x2.   /* y-position of aircraft 1 */
+  R d1.   /* x-direction of aircraft 1 */
+  R d2.   /* y-direction of aircraft 1 */
+  R y1.   /* x-position of aircraft 2 */
+  R y2.   /* y-position of aircraft 2 */
+  R e1.   /* x-direction of aircraft 2 */
+  R e2.   /* y-direction of aircraft 2 */
+  R om.   /* angular velocity of aircraft 1 */
+  R omy.  /* angular velocity of aircraft 2 */
+  R c1.   /* x-position of center of roundabout circle */
+  R c2.   /* y-position of center of roundabout circle */
+End.
+
+Problem.
+  safeSeparation(x1, y1, x2, y2)
+  ->
+   [{
+      {
+         om:=*;omy:=*;
+         {x1'=d1,x2'=d2, d1'=-om*d2,d2'=om*d1, y1'=e1,y2'=e2, e1'=-omy*e2,e2'=omy*e1
+          & safeSeparation(x1, y1, x2, y2)}
+       }*@invariant(safeSeparation(x1, y1, x2, y2));
+       c1:=*;c2:=*; om:=*;
+       d1:=-om*(x2-c2); d2:=om*(x1-c1);
+       e1:=-om*(y2-c2); e2:=om*(y1-c1);
+       {
+       {x1'=d1,x2'=d2, d1'=-om*d2,d2'=om*d1, y1'=e1,y2'=e2, e1'=-om*e2,e2'=om*e1}
+       @invariant(d1-e1=-om*(x2-y2)&d2-e2=om*(x1-y1))
+       }
+    }*@invariant(safeSeparation(x1, y1, x2, y2))
+  ]safeSeparation(x1, y1, x2, y2)
+End.
+
+Tactic "Automated Proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "ATC: 3 Aircraft Tangential Roundabout Maneuver".
+
+Description "Essentials of Tangential Roundabout Maneuver (TRM) in Air Traffic Control (ATC)".
+Citation "Andre Platzer. Differential-algebraic dynamic logic for differential-algebraic programs. Journal of Logic and Computation, 20(1), pages 309-352, 2010.".
+Link "https://doi.org/10.1093/logcom/exn070".
+
+Definitions.
+  R p().  /* protected zone radius */
+
+  B safeSeparation(R x1, R y1, R x2, R y2) <-> ( (x1-y1)^2 + (x2-y2)^2 >= p()^2 ).
+
+  B safeSeparation3(R x1, R y1, R x2, R y2, R z1, R z2) <-> (
+      safeSeparation(x1, y1, x2, y2)
+    & safeSeparation(y1, z1, y2, z2)
+    & safeSeparation(x1, z1, x2, z2)
+  ).
+
+End.
+
+ProgramVariables.
+  R x1.   /* x-position of aircraft 1 */
+  R x2.   /* y-position of aircraft 1 */
+  R d1.   /* x-direction of aircraft 1 */
+  R d2.   /* y-direction of aircraft 1 */
+  R y1.   /* x-position of aircraft 2 */
+  R y2.   /* y-position of aircraft 2 */
+  R e1.   /* x-direction of aircraft 2 */
+  R e2.   /* y-direction of aircraft 2 */
+  R z1.   /* x-position of aircraft 3 */
+  R z2.   /* y-position of aircraft 3 */
+  R f1.   /* x-direction of aircraft 3 */
+  R f2.   /* y-direction of aircraft 3 */
+  R om.   /* angular velocity of aircraft 1 */
+  R omy.  /* angular velocity of aircraft 2 */
+  R omz.  /* angular velocity of aircraft 3 */
+  R c1.   /* x-position of center of roundabout circle */
+  R c2.   /* y-position of center of roundabout circle */
+End.
+
+Problem.
+  safeSeparation3(x1, y1, x2, y2, z1, z2)
+  ->
+   [{
+       {
+         om:=*;omy:=*;omz:=*;
+         {x1'=d1,x2'=d2, d1'=-om*d2,d2'=om*d1,
+          y1'=e1,y2'=e2, e1'=-omy*e2,e2'=omy*e1,
+          z1'=f1,z2'=f2, f1'=-omz*f2,f2'=omz*f1 & safeSeparation3(x1, y1, x2, y2, z1, z2) }
+       }*@invariant(safeSeparation3(x1, y1, x2, y2, z1, z2));
+       c1:=*;c2:=*; om:=*;
+       d1:=-om*(x2-c2); d2:=om*(x1-c1);
+       e1:=-om*(y2-c2); e2:=om*(y1-c1);
+       f1:=-om*(z2-c2); f2:=om*(z1-c1);
+       {
+       {x1'=d1,x2'=d2, d1'=-om*d2,d2'=om*d1,
+        y1'=e1,y2'=e2, e1'=-om*e2,e2'=om*e1,
+        z1'=f1,z2'=f2, f1'=-om*f2,f2'=om*f1}
+       @invariant(
+          (d1=-om*(x2-c2)&d2=om*(x1-c1)),
+          (e1=-om*(y2-c2)&e2=om*(y1-c1)),
+          (f1=-om*(z2-c2)&f2=om*(z1-c1)))
+       }
+    }*@invariant(safeSeparation3(x1, y1, x2, y2, z1, z2))
+   ]safeSeparation3(x1, y1, x2, y2, z1, z2)
+End.
+
+Tactic "Automated Proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "ATC: 4 Aircraft Tangential Roundabout Maneuver".
+
+Description "Essentials of Tangential Roundabout Maneuver (TRM) in Air Traffic Control (ATC)".
+Citation "Andre Platzer. Differential-algebraic dynamic logic for differential-algebraic programs. Journal of Logic and Computation, 20(1), pages 309-352, 2010.".
+Link "https://doi.org/10.1093/logcom/exn070".
+
+Definitions.
+  R p().  /* protected zone radius */
+
+  B safeSeparation(R x1, R y1, R x2, R y2) <-> ( (x1-y1)^2 + (x2-y2)^2 >= p()^2 ).
+
+  B safeSeparation4(R x1, R y1, R x2, R y2, R z1, R z2, R u1, R u2) <-> (
+      safeSeparation(x1, y1, x2, y2)
+    & safeSeparation(y1, z1, y2, z2)
+    & safeSeparation(x1, z1, x2, z2)
+    & safeSeparation(x1, u1, x2, u2)
+    & safeSeparation(y1, u1, y2, u2)
+    & safeSeparation(z1, u1, z2, u2)
+  ).
+
+End.
+
+ProgramVariables.
+  R x1.   /* x-position of aircraft 1 */
+  R x2.   /* y-position of aircraft 1 */
+  R d1.   /* x-direction of aircraft 1 */
+  R d2.   /* y-direction of aircraft 1 */
+  R y1.   /* x-position of aircraft 2 */
+  R y2.   /* y-position of aircraft 2 */
+  R e1.   /* x-direction of aircraft 2 */
+  R e2.   /* y-direction of aircraft 2 */
+  R z1.   /* x-position of aircraft 3 */
+  R z2.   /* y-position of aircraft 3 */
+  R f1.   /* x-direction of aircraft 3 */
+  R f2.   /* y-direction of aircraft 3 */
+  R u1.   /* x-position of aircraft 4 */
+  R u2.   /* y-position of aircraft 4 */
+  R g1.   /* x-direction of aircraft 4 */
+  R g2.   /* y-direction of aircraft 4 */
+  R om.   /* angular velocity of aircraft 1 */
+  R omy.  /* angular velocity of aircraft 2 */
+  R omz.  /* angular velocity of aircraft 3 */
+  R omu.  /* angular velocity of aircraft 4 */
+  R c1.   /* x-position of center of roundabout circle */
+  R c2.   /* y-position of center of roundabout circle */
+End.
+
+Problem.
+  safeSeparation4(x1, y1, x2, y2, z1, z2, u1, u2)
+  ->
+   [{
+      {
+        om:=*;omy:=*;omz:=*;omu:=*;
+        {x1'=d1,x2'=d2, d1'=-om*d2,d2'=om*d1,
+         y1'=e1,y2'=e2, e1'=-omy*e2,e2'=omy*e1,
+         z1'=f1,z2'=f2, f1'=-omz*f2,f2'=omz*f1,
+         u1'=g1,u2'=g2, g1'=-omu*g2,g2'=omu*g1
+         & safeSeparation4(x1, y1, x2, y2, z1, z2, u1, u2) }
+      }*@invariant(safeSeparation4(x1, y1, x2, y2, z1, z2, u1, u2));
+      c1:=*;c2:=*; om:=*;
+      d1:=-om*(x2-c2); d2:=om*(x1-c1);
+      e1:=-om*(y2-c2); e2:=om*(y1-c1);
+      f1:=-om*(z2-c2); f2:=om*(z1-c1);
+      g1:=-om*(u2-c2); g2:=om*(u1-c1);
+      {
+      {x1'=d1,x2'=d2, d1'=-om*d2,d2'=om*d1,
+       y1'=e1,y2'=e2, e1'=-om*e2,e2'=om*e1,
+       z1'=f1,z2'=f2, f1'=-om*f2,f2'=om*f1,
+       u1'=g1,u2'=g2, g1'=-om*g2,g2'=om*g1}
+      @invariant((d1=-om*(x2-c2)&d2=om*(x1-c1)),
+                 (e1=-om*(y2-c2)&e2=om*(y1-c1)),
+                 (f1=-om*(z2-c2)&f2=om*(z1-c1)),
+                 (g1=-om*(u2-c2)&g2=om*(u1-c1)))
+      }
+    }*@invariant(safeSeparation4(x1, y1, x2, y2, z1, z2, u1, u2))
+   ]safeSeparation4(x1, y1, x2, y2, z1, z2, u1, u2)
+End.
+
+Tactic "Automated Proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Robot collision avoidance in two-dimensional space: Static safety".
+
+Description "Safety of collision avoidance in environments with all stationary obstacles.".
+Citation "Stefan Mitsch, Khalil Ghorbal, David Vogelbacher, and André Platzer. Formal verification of obstacle avoidance and navigation of ground robots. International Journal of Robotics Research. 36(12), pp. 1312-1340, 2017.".
+Link "http://symbolaris.com/pub/morerobix.pdf#page-8".
+
+Functions.
+  R ep().      /* time limit for control decisions */
+  R b().       /* minimum braking capability of the robot */
+  R A().       /* maximum acceleration -b <= a <= A */
+  R W().       /* maximum steering */
+  R abs(R).    /* predefined function of absolute value */
+
+  R stopDist(R v) = (v^2 / (2*b())).            /* The straight-line stopping distance from brake start to full stop. */
+  R accelComp(R v) = ((A()/b() + 1) * (A()/2 * ep()^2 + ep()*v))./* Straight-line distance to compensate acceleration */
+  R admissibleSeparation(R v) = (stopDist(v) + accelComp(v)).   /* Separation that allows accelerating on a new curve */
+
+  B isWellformedDir() <-> (dx^2 + dy^2 = 1).                        /* The orientation of the robot is a unit vector. */
+
+  B bounds() <-> (                                                                     /* Bounds for global constants */
+      A() >= 0                                                                                      /* Working engine */
+    & b() > 0                                                                                       /* Working brakes */
+    & ep() > 0                                                                            /* Controller reaction time */
+  ).
+
+  B initialState() <-> (                                                          /* Stopped somewhere safe initially */
+    v = 0
+    & (x-xo)^2 + (y-yo)^2 > 0
+    & isWellformedDir()
+  ).
+
+  B assumptions() <-> (bounds() & initialState()).                     /* Under these assumptions we guarantee safety */
+
+  B loopinv() <-> (                                                /* Conditions that are true on each loop iteration */
+    v >= 0
+    & isWellformedDir()
+    & (abs(x-xo) > stopDist(v) | abs(y-yo) > stopDist(v))
+  ).
+End.
+
+ProgramVariables.
+  R x.    /* robot position: x */
+  R y.    /* robot position: y */
+  R v.    /* robot translational velocity */
+  R a.    /* robot translational acceleration */
+  R dx.   /* robot orientation: x */
+  R dy.   /* robot orientation: y */
+  R w.    /* robot rotational velocity */
+  R r.    /* robot curve radius */
+  R xo.   /* position of closest obstacle on curve */
+  R yo.
+  R t.    /* time */
+End.
+
+Problem.
+assumptions() ->
+  [
+    {
+      {
+        {
+          /* brake on current curve or remain stopped */
+          { a := -b; }
+          ++
+          { ?v = 0; a := 0; w := 0; }
+      	  ++
+          /* or choose a new safe curve */
+          { a := A;
+            w := *; ?-W<=w & w<=W;       /* choose steering */
+            r := *;
+            xo := *; yo := *;            /* measure closest obstacle on the curve */
+
+            /* admissible curve */
+            ?r!=0 & r*w = v;
+
+            /* use that curve, if it is a safe one (admissible velocities) */
+            ? abs(x-xo) > admissibleSeparation(v)
+            | abs(y-yo) > admissibleSeparation(v);
+          }
+        };
+    	  t := 0;
+      }
+
+      /* dynamics */
+      {
+      { x' = v * dx, y' = v * dy, v' = a,        /* accelerate/decelerate and move */
+        dx' = -w * dy, dy' = w * dx, w' = a/r,   /* follow curve */
+        t' = 1 & t <= ep & v >= 0
+      }@invariant(t>=0, isWellformedDir(),
+        (v'=-b() -> v = old(v) - b()*t),
+        (v'=-b() -> (-t * (old(v) - b()/2*t) <= x - old(x) & x - old(x) <= t * (old(v) - b()/2*t))),
+        (v'=-b() -> (-t * (old(v) - b()/2*t) <= y - old(y) & y - old(y) <= t * (old(v) - b()/2*t))),
+        (v'=0 -> v = old(v)),
+        (v'=0 -> x = old(x)),
+        (v'=0 -> y = old(y)),
+        (v'=A() -> v = old(v) + A()*t),
+        (v'=A() -> (-t * (old(v) + A()/2*t) <= x - old(x) & x - old(x) <= t * (old(v) + A()/2*t))),
+        (v'=A() -> (-t * (old(v) + A()/2*t) <= y - old(y) & y - old(y) <= t * (old(v) + A()/2*t)))
+      )
+      }
+    }*@invariant(loopinv())
+  ](x - xo)^2 + (y - yo)^2 > 0
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.

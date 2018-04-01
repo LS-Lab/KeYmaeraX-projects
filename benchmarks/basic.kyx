@@ -1,0 +1,763 @@
+ArchiveEntry "Static semantics correctness: Assignment 1".
+
+Description "Basic assignment".
+
+ProgramVariables.
+  R x.
+End.
+
+Problem.
+  x>=0 -> [x:=x+1;]x>=1
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Static semantics correctness: Assignment 2".
+
+Description "Overwrite assignment on some branches".
+
+ProgramVariables.
+  R x.
+  R y.
+End.
+
+Problem.
+  x>=0 -> [x:=x+1;][x:=x+1; ++ y:=x+1;]x>=1
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+
+ArchiveEntry "Static semantics correctness: Assignment 3".
+
+Description "Overwrite assignment in loop".
+
+ProgramVariables.
+  R x.
+End.
+
+Problem.
+  x>=0 -> [x:=x+1;][{x:=x+1;}*@invariant(x>=1)]x>=1
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Static semantics correctness: Assignment 4".
+
+Description "Overwrite assignment in ODE".
+
+ProgramVariables.
+  R x.
+End.
+
+Problem.
+  x>=0 -> [x:=x+1;][{x'=2}]x>=1
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Static semantics correctness: Assignment 5".
+
+Description "Overwrite with nondeterministic assignment".
+
+ProgramVariables.
+  R x.
+End.
+
+Problem.
+  x>=0 -> [x:=x+1;][x:=*; ?x>=1;]x>=1
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Static semantics correctness: Assignment 6".
+
+Description "Tests and universal quantification".
+
+ProgramVariables.
+  R x.
+  R y.
+End.
+
+Problem.
+  x>=0 -> [x:=x+1;][?x>=2; x:=x-1; ++ ?\forall x (x>=1 -> y>=1); x:=y;]x>=1
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Static semantics correctness: Assignment 7".
+
+Description "Overwrite assignment several times".
+
+ProgramVariables.
+  R x.
+  R y.
+End.
+
+Problem.
+  x>=0 & y>=1 -> [x:=x+1;][{x:=x+1;}*@invariant(x>=1) ++ y:=x+1;][{y'=2}][x:=y;]x>=1
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Static semantics correctness: Assignment 8".
+
+Description "Potentially overwrite dynamics".
+
+ProgramVariables.
+  R x.
+  R y.
+End.
+
+Problem.
+  x>0 & y>0 -> [{x'=5}][{x:=x+3;}*@invariant(x>0) ++ y:=x;](x>0&y>0)
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Static semantics correctness: Assignment 9".
+
+Description "Potentially overwrite exponential decay".
+Note "TODO: Cannot prove automatically".
+
+ProgramVariables.
+  R x.
+  R y.
+End.
+
+Problem.
+  x>0 & y>0 -> [{x'=-x}][{x:=x+3;}*@invariant(x>0) ++ y:=x;](x>0&y>0)
+End.
+
+End.
+
+ArchiveEntry "Cascaded dynamics".
+
+ProgramVariables.
+  R x.
+  R y.
+End.
+
+Problem.
+  x>0 -> [{x'=5};{x'=2};{x'=x}]x>0
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Single integrator time".
+
+ProgramVariables.
+  R x.
+End.
+
+Problem.
+  x=0->[{x'=1}]x>=0
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Single integrator".
+
+ProgramVariables.
+  R x.
+  R y.
+End.
+
+Problem.
+  x>=0 & y>=0 -> [{x'=y}]x>=0
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Double integrator".
+
+ProgramVariables.
+  R x.
+  R y.
+  R z.
+End.
+
+Problem.
+  x>=0 & y>=0 & z>=0 -> [{x'=y,y'=z}]x>=0
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Triple integrator".
+
+ProgramVariables.
+  R x.
+  R y.
+  R z.
+  R j.
+End.
+
+Problem.
+  x>=0 & y>=0 & z>=0 & j>=0 -> [{x'=y,y'=z,z'=j,j'=j^2}]x>=0
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Exponential decay (1)".
+
+ProgramVariables.
+  R x.
+End.
+
+Problem.
+  x>0 -> [{x'=-x}]x>0
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Exponential decay (2)".
+
+ProgramVariables.
+  R x.
+End.
+
+Problem.
+  x>0 -> [{x'=-x+1}]x>0
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Exponential decay (3)".
+
+ProgramVariables.
+  R x.
+  R y.
+End.
+
+Problem.
+  x>0 & y>0->[{x'=-y*x}]x>0
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Exponential growth (1)".
+
+ProgramVariables.
+  R x.
+End.
+
+Problem.
+  x>=0 -> [{x'=x}]x>=0
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Exponential growth (2)".
+
+ProgramVariables.
+  R x.
+  R y.
+End.
+
+Problem.
+  x>=0 & y>=0 -> [{x'=y, y'=y^2}]x>=0
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Exponential growth (4)".
+
+ProgramVariables.
+  R x.
+End.
+
+Problem.
+  x>0 -> [{x'=x^x}]x>0
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Exponential growth (5)".
+
+ProgramVariables.
+  R x.
+End.
+
+Problem.
+  x>=1 -> [{x'=x^2+2*x^4}]x^3>=x^2
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Rotational dynamics (1)".
+
+ProgramVariables.
+  R x.
+  R y.
+End.
+
+Problem.
+  x^2+y^2=1 -> [{x'=-y, y'=x}]x^2+y^2=1
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Rotational dynamics (2)".
+
+ProgramVariables.
+  R x.
+  R y.
+  R e.
+End.
+
+Problem.
+  x^2+y^2=1 & e=x -> [{x'=-y, y'=e, e'=-y}](x^2+y^2=1 & e=x)
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Rotational dynamics (3)".
+
+ProgramVariables.
+  R x1.
+  R x2.
+  R d1.
+  R d2.
+  R w.
+  R p.
+End.
+
+Problem.
+  d1^2+d2^2=w^2*p^2 & d1=-w*x2 & d2=w*x1 ->
+    [{x1'=d1, x2'=d2, d1'=-w*d2, d2'=w*d1}](d1^2+d2^2=w^2*p^2 & d1=-w*x2 & d2=w*x1)
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Spiral to equilibrium".
+
+ProgramVariables.
+  R w.
+  R x.
+  R y.
+End.
+
+Problem.
+  w>=0 & x=0 & y=3 -> [{x'=y, y'=-w^2*x-2*w*y}]w^2*x^2+y^2<=9
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Open cases".
+
+ProgramVariables.
+  R x.
+  R y.
+End.
+
+Problem.
+  x^3>5 & y>2 -> [{x'=x^3+x^4, y'=5*y+y^2}](x^3>5 & y>2)
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Closed cases".
+
+ProgramVariables.
+  R x.
+  R y.
+  R z.
+End.
+
+Problem.
+  x>=1 & y=10 & z=-2 -> [{x'=y, y'=z+y^2-y & y>=0}](x>=1 & y>=0)
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Conserved quantity".
+
+ProgramVariables.
+  R x1.
+  R x2.
+  R c.
+End.
+
+Problem.
+  x1^4*x2^2+x1^2*x2^4-3*x1^2*x2^2+1 <= c ->
+    [{x1'=2*x1^4*x2+4*x1^2*x2^3-6*x1^2*x2, x2'=-4*x1^3*x2^2-2*x1*x2^4+6*x1*x2^2}] x1^4*x2^2+x1^2*x2^4-3*x1^2*x2^2+1 <= c
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Darboux equality".
+
+Definitions.
+  R B().
+End.
+
+ProgramVariables.
+  R x.
+  R y.
+  R z.
+  R A.
+End.
+
+Problem.
+  x+z=0 -> [{x'=(A*x^2+B()*x), z' = A*z*x+B()*z}] 0=-x-z
+End.
+
+Tactic "Manual proof".
+  implyR(1); dbx({`x*A+B()`},1)
+End.
+
+End.
+
+ArchiveEntry "Fractional Darboux equality".
+
+Definitions.
+  R B().
+End.
+
+ProgramVariables.
+  R x.
+  R y.
+  R z.
+  R A.
+End.
+
+Problem.
+  x+z=0 -> [{x'=(A*y+B()*x)/z^2, z' = (A*x+B())/z & y = x^2 & z^2 > 0}] x+z=0
+End.
+
+Tactic "Foo".
+  implyR(1); dbx({`(x*A+B())/z^2`}, 1)
+End.
+
+End.
+
+ArchiveEntry "Darboux inequality".
+
+Definitions.
+  R B().
+End.
+
+ProgramVariables.
+  R x.
+  R y.
+  R z.
+End.
+
+Problem.
+  x+z>=0 -> [{x'=x^2, z' = z*x+y & y = x^2}] x+z>=0
+End.
+
+Tactic "Foo".
+  implyR(1); dbx({`x`}, 1)
+End.
+
+End.
+
+ArchiveEntry "Bifurcation".
+
+ProgramVariables.
+  R r.
+  R x.
+End.
+
+Problem.
+  r <= 0 -> \exists f (x=f -> [{x'=r+x^2}]x=f)
+End.
+
+Tactic "Scripted proof".
+  implyR(1);
+  cut({`r=0 | r < 0`}); <(
+    hideL(-1)
+    ,
+    hideR(1) ; QE
+  );
+  orL(-1); <(
+    existsR({`0`}, 1);
+    implyR(1);
+    dG({`{y'=-x*y}`}, {`y*x=0&y>0`}, 1);
+    existsR({`1`}, 1);
+    boxAnd(1); andR(1); <(
+      dI(1)
+      ,
+      dG({`{z'=x/2*z}`}, {`z^2*y=1`}, 1);
+      existsR({`1`}, 1);
+      dI(1)
+    )
+    ,
+    cut({`\exists s r=-s*s`}); <(
+      existsL(-2);
+      existsR({`-s`}, 1);
+      implyR(1);
+      dG({`{y'=(-(x-s))*y}`}, {`y*(x+s)=0&y>0`}, 1);
+      existsR({`1`}, 1);
+      boxAnd(1); andR(1); <(
+        dI(1)
+        ,
+        dG({`{z'=(x-s)/2*z}`}, {`z^2*y=1`}, 1);
+        existsR({`1`}, 1);
+        dI(1)
+      ),
+      hideR(1);
+      QE
+    )
+  )
+End.
+
+End.
+
+ArchiveEntry "Parametric switching between two different damped oscillators".
+
+Description "Parametric switching between two different damped oscillators".
+Citation "Andre Platzer. Logical Analysis of Hybrid Systems: Proving Theorems for Complex Dynamics. Springer, 2010".
+
+ProgramVariables.
+  R x.
+  R y.
+  R w.
+  R d.
+  R c.
+  R a.
+  R b.
+End.
+
+Problem.
+    w>=0 & d>=0
+  & -2<=a&a<=2
+  & b^2>=1/3
+  & w^2*x^2+y^2 <= c
+->
+  [{
+    {x'=y, y'=-w^2*x-2*d*w*y};
+    {  { ?(x=y*a); w:=2*w; d:=d/2; c := c * ((2*w)^2+1^2) / (w^2+1^2); }
+    ++ { ?(x=y*b); w:=w/2; d:=2*d; c := c * (w^2+1^2) / ((2*w^2)+1^2); }
+    ++ { ?true; } }
+   }*@invariant(w^2*x^2+y^2<=c&d>=0&w>=0)
+  ] w^2*x^2+y^2 <= c
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Nonlinear 1".
+
+ProgramVariables.
+  R x.
+  R a.
+End.
+
+Problem.
+  x^3 >= -1 -> [{x'=(x-3)^4+a & a>=0}] x^3>=-1
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Nonlinear 2".
+
+Description "Example 2".
+Citation "Tiwari, A. & Khanna, G. Alur, R. & Pappas, G. J. (ed.) Nonlinear Systems: Approximating Reach Sets. HSCC, Springer, 2004, 2993, 600-614".
+
+ProgramVariables.
+  R x1.
+  R x2.
+  R a.
+End.
+
+Problem.
+  x1+x2^2/2=a -> [{x1'=x1*x2,x2'=-x1}]x1+x2^2/2=a
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Nonlinear 4".
+
+Description "Example 4".
+Citation "Tiwari, A. & Khanna, G. Alur, R. & Pappas, G. J. (ed.) Nonlinear Systems: Approximating Reach Sets. HSCC, Springer, 2004, 2993, 600-614".
+
+ProgramVariables.
+  R x1.
+  R x2.
+  R a.
+End.
+
+Problem.
+  x1^2/2-x2^2/2>=a -> [{x1'=x2+x1*x2^2, x2'=-x1+x1^2*x2 & x1>=0 & x2>=0}]x1^2/2-x2^2/2>=a
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Nonlinear 5".
+
+Description "Example 5".
+Citation "Tiwari, A. & Khanna, G. Alur, R. & Pappas, G. J. (ed.) Nonlinear Systems: Approximating Reach Sets. HSCC, Springer, 2004, 2993, 600-614".
+
+ProgramVariables.
+  R x1.
+  R x2.
+  R a.
+End.
+
+Problem.
+  -x1*x2>=a -> [{x1'=x1-x2+x1*x2, x2'=-x2-x2^2}]-x1*x2>=a
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Riccati".
+
+ProgramVariables.
+  R x.
+End.
+
+Problem.
+   2*x^3 >= 1/4 -> [{x'=x^2+x^4}] 2*x^3>=1/4
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
+
+ArchiveEntry "Nonlinear differential cut".
+
+ProgramVariables.
+  R x.
+  R y.
+End.
+
+Problem.
+  x^3 >= -1 & y^5 >= 0 -> [{x'=(x-3)^4+y^5, y'=y^2}] (x^3 >= -1 & y^5 >= 0)
+End.
+
+Tactic "Automated proof".
+  master
+End.
+
+End.
