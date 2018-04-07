@@ -2924,6 +2924,385 @@ End.
 
 End.
 
+Lemma "Cross intersection with deadline - Safety".
+
+/*
+ *	Robot must safely cross an intersection.
+ *
+ *  Robot
+ * 	- must cross intersection safely
+ *  - can only drive straight and forward
+ *  - ensures progress towards intersection
+ *
+ *  Obstacle
+ *  - Drives forward with minimum speed (does not block intersection)
+ *
+ *  Intersection
+ *  - At position 0 (on both the robot's and the obstacle's path)
+ *
+ *  Liveness property:
+ *  - Robot can cross intersection
+ *
+ *  Safety property:
+ *  - Robot always crosses intersection before deadline
+ *  - Robot and obstacle are not at the intersection at the same time
+ *
+ */
+
+Definitions.
+	R ep().      /* time limit for control decisions */
+  R b().       /* minimum braking capability of the robot */
+  R A().       /* maximum acceleration -b <= a <= A */
+	R Vmin().    /* obstacle minimum speed */
+	R ixr() = ( 0 ). /* position of intersection on path of robot */
+	R ixo() = ( 0 ). /* position of intersection on path of obstacle */
+	R D().       /* Deadline */
+
+	R min(R,R).
+	R max(R,R).
+
+	R minV() = ( A()*ep() ).
+
+	R stopDist(R v) = ( v^2/(2*b()) ).
+	R accComp(R v)  = ( (A()/b() + 1)*(A()/2*ep()^2 + ep()*v) ).
+
+	B OAfterX(R xo) <-> ( xo>ixo() ).
+	B RAfterX(R xr) <-> ( xr>ixr() ).
+
+	B bounds() <-> (                                                                     /* Bounds for global constants */
+      A() > 0                                                                                       /* Working engine */
+    & b() > 0                                                                                       /* Working brakes */
+    & ep() > 0                                                                            /* Controller reaction time */
+    & Vmin() > 0
+    & D() >= ep() & RAfterX(xr + A()/2*(D() - ep)^2)
+  ).
+  B initialState() <-> (                                                   /* Somewhere before intersection initially */
+    vr = 0
+    & vo>=Vmin()
+    & xr < ixr()
+    & ixr()-xr < A()/2*(D()-ep())^2
+    & T = min(0, (xo-ixo())/Vmin()) - ep()
+  ).
+  B assumptions() <-> (bounds() & initialState()).                     /* Under these assumptions we guarantee safety */
+
+	B safetyloopinv() <-> (
+	  0 <= vr & Vmin()<=vo & (RAfterX(xr) | OAfterX(xo) | xr + stopDist(vr) < ixr() |
+	    (vr>0 & ( xo+vo*(ixr()-xr)/vr+A/2*((ixr()-xr)/vr)^2 < ixo()
+              | ixo() < xo + Vmin()*(ixr()-xr)/vr))
+    )
+	).
+
+  B deadlineloopinv() <-> (
+    0 <= vr & Vmin()<=vo
+    & T <= (xo-ixo())/Vmin()
+    & ( T <= 0 & RAfterX(xr + A()/2*(D() - ep)^2)
+      | T > 0 & RAfterX(xr + vr*(max(0,D()-T)) + A()/2*(max(0,D()-T))^2) )
+  ).
+
+  HP obstacle ::= { ao := *; ?-b()<=ao&ao<=A(); }.
+
+  HP robot ::= {
+    if (OAfterX(xo)) {
+      ar := A();
+    } else { if (RAfterX(xr)) {
+      ar := *; ?-b()<=ar&ar<=A();
+    } else { if (/*PassFaster*/ vr>0 & ( xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()
+                                       | ixo() < xo + Vmin()*(ixr()-xr)/(vr+A()*ep()) ) ) {
+      ar := *; ?0<=ar&ar<=A();
+    } else { if (/*PassCoast*/ vr>0 & ixo() < xo + Vmin()*(ixr()-xr)/vr) {
+      ar := 0;
+    } else {         /* 1D Model 3 */
+        ar := -b();
+     ++ ?vr = 0; ar := 0;
+     ++ ?xr + stopDist(vr) + accComp(vr) < ixr(); ar := A();
+    }}}}
+  }.
+
+  HP dyn ::= { {xr' = vr, vr' = ar, xo'=vo, vo'=ao, t' = 1, T'=1 & t <= ep() & vr >= 0 & vo>=Vmin() } }.
+
+  HP dwcxd ::= {
+    {
+      obstacle;
+      { robot; t := 0; }
+      dyn;
+    }*@invariant(loopinv())
+  }.
+
+End.
+
+ProgramVariables.
+	R xr.		/* robot position: x */
+	R vr.		/* robot translational velocity */
+	R ar.		/* robot translational acceleration */
+	R xo.		/* obstacle position */
+	R vo.   /* obstacle velocity */
+	R ao.   /* obstacle acceleration */
+	R t.		/* control cycle time */
+	R T.    /* remaining time until robot must start driving (i.e., until obstacle has passed the intersection) */
+End.
+
+Problem.
+  assumptions() -> [ dwcxd; ]( (xr=ixr() -> xo!=ixo()) & (T>=D() -> RAfterX(xr)) )
+End.
+
+Tactic "Proof Lemma: Cross intersection with deadline - Safety".
+/* Some of the QE need QE({`Mathematica`}) */
+
+tactic leafQE as ( print({`Proving arithmetic`}); QE; done );
+tactic unfoldQEL as ( (doall(orL('L)))*; doall(leafQE; done); done );
+
+implyR(1) ; boxAnd(1) ; andR(1) ; <(
+loop({`0<=vr&Vmin()<=vo&(xr>0|xo>0|xr+vr^2/(2*b()) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr))`}, 1) ; <(
+  leafQE,
+  leafQE,
+  boxAnd(1) ; andR(1) ; <(
+    composeb(1) ; composeb(1.1) ; GV(1) ; GV(1.0) ; unfold ; dW(1) ; leafQE,
+    notAnd(1.0.1.0.0.1.1.1.1.1.1.1.0.0) ; notGreater(1.0.1.0.0.1.1.1.1.1.1.1.0.0.0) ; notLess(1.0.1.0.0.1.1.1.1.1.1.1.0.0.1) ; notAnd(1.0.1.0.0.1.1.1.1.1.0.0) ; notOr(1.0.1.0.0.1.1.1.1.1.0.0.1) ; notLess(1.0.1.0.0.1.1.1.1.1.0.0.1.0) ; notLess(1.0.1.0.0.1.1.1.1.1.0.0.1.1) ; notGreater(1.0.1.0.0.1.1.1.0.0) ; notGreater(1.0.1.0.0.1.1.1.1.1.0.0.0) ; unfold ; <(
+      diffInvariant({`xo>=old(xo)`}, 1) ; dW(1) ; leafQE
+      ,
+      diffInvariant({`xr>=old(xr)`}, 2) ; dW(2) ; leafQE
+      ,
+      fullSimplify ; hideL(-5=={`D()>=ep()`}) ;
+      diffInvariant({`t>=0&vr=old(vr)+ar*t&vo=old(vo)+ao*t`}, 2) ;
+      diffInvariant({`xr=old(xr)+old(vr)*t+ar*t^2/2&xo=old(xo)+old(vo)*t+ao*t^2/2`}, 2) ;
+      dW(2) ; implyR(2) ; andR(2) ; <(
+        hideL(-6=={`xo_0>0|xr_0+vr_0^2/(2*b()) < 0|xo_0+vo_0*(-xr_0)/vr_0+A()/2*((-xr_0)/vr_0)^2 < 0|0 < xo_0+Vmin()*(-xr_0)/vr_0`}) ; hideL(-10=={`xo_0+vo_0*(-xr_0)/vr_0+A()/2*((-xr_0)/vr_0)^2 < 0|0 < xo_0+Vmin()*(-xr_0)/(vr_0+A()*ep())`}) ; leafQE,
+        orR(2) ; orR(3) ; orR(4) ; hideL(-6=={`xo_0>0|xr_0+vr_0^2/(2*b()) < 0|xo_0+vo_0*(-xr_0)/vr_0+A()/2*((-xr_0)/vr_0)^2 < 0|0 < xo_0+Vmin()*(-xr_0)/vr_0`}) ; andR(5) ; <(
+          leafQE,
+          orR(5) ; andL('L)* ; orL(-10) ; <(
+            edit({`vr_0<=vr&vr<=vr_0+A()*t`}, -24) ; hideL(-20=={`t<=ep()`}) ; hideL(-3=={`ep()>0`}) ; edit({`xr_0+vr_0*t<=xr&xr<=xr_0+vr_0*t+A()*t^2/2`}, -17) ; edit({`xo_0+Vmin()*t<=xo&xo<=xo_0+vo_0*t+A()*t^2/2`}, -18) ; edit({`vo<=vo_0+A()*t`}, -23) ; hideL(-5=={`-b()<=ao`}) ; hideL(-5=={`ao<=A()`}) ; hideL(-8=={`0<=ar`}) ; hideL(-8=={`ar<=A()`}) ; edit({`vo>0`}, -17) ; edit({`vo_0>0`}, -4) ; hideL(-2=={`b()>0`}) ; allL2R(-7) ; hideL(-7=={`t_0=0`}) ; allL2R(-7) ; hideL(-7=={`vr_0=vr_1`}) ; allL2R(-7) ; hideL(-7=={`vo_0=vo_1`}) ; allL2R(-7) ; hideL(-7=={`xr_0=xr_1`}) ; allL2R(-7) ; hideL(-7=={`xo_0=xo_1`}) ; hideR(6=={`0 < xo+Vmin()*(-xr)/vr`}) ; hideR(4=={`xr+vr^2/(2*b()) < 0`}) ; hideR(3=={`xo>0`}) ; hideR(1=={`xo_1>0`}) ; leafQE,
+            edit({`0 < xo_0+Vmin()*(-xr_0)/(vr_0+A()*t)`}, -10) ; hideL(-20=={`t<=ep()`}) ; hideL(-3=={`ep()>0`}) ; hideR(1=={`xo_0>0`}) ; hideR(4=={`xo+vo*(-xr)/vr+A()/2*((-xr)/vr)^2 < 0`}) ; hideR(3=={`xr+vr^2/(2*b()) < 0`}) ; edit({`!xr<=0`}, 1) ; edit({`!xo<=0`}, 2) ; hideL(-5=={`-b()<=ao`}) ; hideL(-2=={`b()>0`}) ; notR(2) ; notR(1) ; edit({`vr_0<=vr&vr<=vr_0+A()*t`}, -20) ; edit({`xr_0+vr_0*t<=xr&xr<=xr_0+vr_0*t+A()*t^2/2`}, -15) ; edit({`xo_0+Vmin()*t<=xo&xo<=xo_0+vo_0*t+A()*t^2/2`}, -16) ; edit({`vo<=vo_0+A()*t`}, -21) ; hideL(-8=={`0<=ar`}) ; hideL(-8=={`ar<=A()`}) ; hideL(-4=={`ao<=A()`}) ; hideL(-7=={`t_0=0`}) ; edit({`0 < vr`}, -14) ; allL2R(-7) ; hideL(-7=={`vr_0=vr_1`}) ; allL2R(-7) ; hideL(-7=={`vo_0=vo_1`}) ; allL2R(-7) ; hideL(-7=={`xr_0=xr_1`}) ; allL2R(-7) ; hideL(-7=={`xo_0=xo_1`}) ; andL(-12) ; hideL(-15=={`vr_1<=vr`}) ; leafQE
+            )
+          )
+        )
+      ,
+      fullSimplify ; andL(-11) ; fullSimplify ; hideR(1=={`xo>0`}) ;
+      diffInvariant({`t>=0&vr=old(vr)&vo=old(vo)+ao*t`}, 1) ;
+      diffInvariant({`xr=old(xr)+old(vr)*t&xo=old(xo)+old(vo)*t+ao*t^2/2`}, 1) ;
+      dW(1) ; implyR(1) ; andR(1) ; <(
+        leafQE,
+        orR(1) ; orR(2) ; orR(3) ; hideR(1=={`xr>0`}) ; hideR(1=={`xo>0`}) ; hideR(1=={`xr+vr^2/(2*b()) < 0`}) ; andR(1) ; <(
+          leafQE,
+          orR(1) ; hideR(1=={`xo+vo*(-xr)/vr+A()/2*((-xr)/vr)^2 < 0`}) ; hideL(-13=={`xo_0+vo_0*(-xr_0)/vr_0+A()/2*((-xr_0)/vr_0)^2>=0`}) ; leafQE
+          )
+        )
+      ,
+      fullSimplify ; orL(-8) ; <(
+        diffInvariant({`t>=0&vr=old(vr)-b()*t`}, 2) ;
+        diffInvariant({`xr=old(xr)+old(vr)*t-b()*t^2/2`}, 2) ;
+        dW(2) ; leafQE
+        ,
+        diffInvariant({`t>=0&vr=old(vr)-b()*t`}, 2) ;
+        diffInvariant({`xr=old(xr)+old(vr)*t-b()*t^2/2`}, 2) ;
+        dW(2) ; leafQE
+        ),
+      hideL(-13=={`vr<=0|0>=xo+Vmin()*(0-xr)/vr`}) ;
+      hideL(-12=={`vr<=0|xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2>=0&0>=xo+Vmin()*(0-xr)/(vr+A()*ep())`}) ;
+      diffInvariant({`vr=old(vr)`}, 2) ;
+      diffInvariant({`xr=old(xr)`}, 2) ;
+      orL(-8) ; <(
+        hideR(2=={`[{xr'=vr,vr'=0,xo'=vo,vo'=ao,t'=1,T'=1&((t<=ep()&vr>=0&vo>=Vmin())&vr=vr_0)&xr=xr_0}](Vmin()<=vo&(xr>0|xo>0|xr+vr^2/(2*b()) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))`}) ; leafQE,
+        orL(-8) ; <(
+          closeId,
+          dW(2) ; orL(-8) ; <(
+            leafQE,
+            andL(-8) ; hideR(2=={`((t<=ep()&vr>=0&vo>=Vmin())&vr=vr_0)&xr=xr_0->Vmin()<=vo&(xr>0|xo>0|xr+vr^2/(2*b()) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr))`}) ; leafQE
+            )
+          )
+        ),
+      diffInvariant({`t>=0&vr=old(vr)+A()*t`}, 2) ;
+      diffInvariant({`xr=old(xr)+old(vr)*t+A()*t^2/2`}, 2) ;
+      dW(2) ; implyR(2) ; andR(2) ; <(
+        leafQE,
+        orR(2) ; orR(3) ; orR(4) ; hideL(-15=={`t_0=0`}) ; allL2R(-15) ; hideL(-15=={`vr_0=vr_1`}) ; allL2R(-15) ; hideL(-15=={`xr_0=xr_1`}) ; hideL(-9=={`-b()<=ao`}) ; hideL(-9=={`ao<=A()`}) ; hideL(-5=={`D()>=ep()`}) ; hideR(1=={`xo_0>0`}) ; hideR(4=={`vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)`}) ; hideR(1=={`xr>0`}) ; hideR(1=={`xo>0`}) ; orL(-7) ; <(
+          hideR(1=={`xr+vr^2/(2*b()) < 0`}) ; leafQE,
+          hideL(-7=={`xo_0>0|xr_1+vr_1^2/(2*b()) < 0|vr_1>0&(xo_0+vo_0*(0-xr_1)/vr_1+A()/2*((0-xr_1)/vr_1)^2 < 0|0 < xo_0+Vmin()*(0-xr_1)/vr_1)`}) ; orL(-9) ; <(
+            fullSimplify ; leafQE,
+            orL(-8) ; <(
+              leafQE,
+              hideL(-8=={`xo_0+vo_0*(0-xr_1)/vr_1+A()/2*((0-xr_1)/vr_1)^2>=0&0>=xo_0+Vmin()*(0-xr_1)/(vr_1+A()*ep())`}) ; leafQE
+              )
+            )
+          )
+        )
+      )
+    )
+  ),
+loop({`0<=vr&Vmin()<=vo&T<=(xo-0)/Vmin()&(T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max((0,D()-T))+A()/2*max((0,D()-T))^2>0)`}, 1) ; <(
+  leafQE,
+  leafQE,
+  notAnd(1.0.1.0.0.1.1.1.1.1.1.1.0.0) ; notGreater(1.0.1.0.0.1.1.1.1.1.1.1.0.0.0) ; notLess(1.0.1.0.0.1.1.1.1.1.1.1.0.0.1) ; notAnd(1.0.1.0.0.1.1.1.1.1.0.0) ; notOr(1.0.1.0.0.1.1.1.1.1.0.0.1) ; notLess(1.0.1.0.0.1.1.1.1.1.0.0.1.0) ; notLess(1.0.1.0.0.1.1.1.1.1.0.0.1.1) ; notGreater(1.0.1.0.0.1.1.1.0.0) ; notGreater(1.0.1.0.0.1.1.1.1.1.0.0.0) ; boxAnd(1) ; andR(1) ; <(
+    composeb(1) ; composeb(1.1) ; GV(1) ; GV(1.0) ; unfold ; dW(1) ; leafQE,
+    boxAnd(1) ; andR(1) ; <(
+      composeb(1) ; composeb(1.1) ; GV(1) ; GV(1.0) ; unfold ; dW(1) ; leafQE,
+      boxAnd(1) ; andR(1) ; <(
+        composeb(1) ; composeb(1.1) ; composeb(1.1) ; GV(1.1) ; unfold ;
+        diffInvariant({`t>=0&T=old(T)+t&vo=old(vo)+ao*t`}, 1) ;
+        diffInvariant({`xo=old(xo)+old(vo)*t+ao*t^2/2`}, 1) ;
+        dW(1) ; leafQE
+        ,
+        unfold ; <(
+          diffInvariant({`t>=0&T=old(T)+t&vr=old(vr)+A()*t`}, 1) ;
+          diffInvariant({`xr=old(xr)+old(vr)*t+A()*t^2/2`}, 1) ;
+          dW(1) ; leafQE
+          ,
+          hideR(1=={`xo>0`}) ;
+          diffInvariant({`t>=0&T=old(T)+t&vr=old(vr)+ar*t&vo=old(vo)+ao*t`}, 1) ;
+          diffInvariant({`xr=old(xr)+old(vr)*t+ar*t^2/2&xo=old(xo)+old(vo)*t+ao*t^2/2`}, 1) ;
+          dW(1) ; implyR(1) ; orR(1) ; edit({`T>0&xr+vr*abbrv(max((0,D()-T)))+A()/2*max((0,D()-T))^2>0`}, 2) ; edit({`abbrv=expand(max((0,D()-T)))`}, -17) ; edit({`T_0<=0&xr_0+A()/2*(D()-ep())^2>0|T_0>0&xr_0+vr_0*max((0,D()-T_0))+A()/2*abbrv(max((0,D()-T_0)))^2>0`}, -9) ; edit({`abbrv_0=expand(max((0,D()-T_0)))`}, -19) ; andR(1) ; <(
+            andR(2) ; <(
+              leafQE,
+              hideR(1=={`T<=0`}) ; hideL(-9=={`T_0<=0&xr_0+A()/2*(D()-ep())^2>0|T_0>0&xr_0+vr_0*abbrv_0+A()/2*abbrv_0^2>0`}) ; hideL(-19=={`0>=D()-T_0&max_1=0|0 < D()-T_0&max_1=D()-T_0`}) ; orL(-17) ; <(
+                leafQE,
+                leafQE
+                )
+              ),
+            orL(-9) ; <(
+              orL(-18) ; <(
+                orL(-20) ; <(
+                  leafQE,
+                  leafQE
+                  ),
+                hideR(2=={`T>0&xr+vr*abbrv+A()/2*abbrv^2>0`}) ; leafQE
+                ),
+              hideR(2=={`T>0&xr+vr*abbrv+A()/2*abbrv^2>0`}) ; orL(-18) ; <(
+                orL(-20) ; <(
+                  leafQE,
+                  leafQE
+                  ),
+                orL(-20) ; <(
+                  leafQE,
+                  leafQE
+                  )
+                )
+              )
+            ),
+          diffInvariant({`t>=0&T=old(T)+t&vr>=old(vr)&vo=old(vo)+ao*t`}, 2) ;
+          diffInvariant({`xr>=old(xr)+old(vr)*t&xo=old(xo)+old(vo)*t+ao*t^2/2`}, 2) ;
+          dW(2) ; implyR(2) ; orR(2) ; hideL(-14=={`xo_0+vo_0*(0-xr_0)/vr_0+A()/2*((0-xr_0)/vr_0)^2 < 0|0 < xo_0+Vmin()*(0-xr_0)/(vr_0+A()*ep())`}) ; edit({`T>0&xr+vr*abbrv(max((0,D()-T)))+A()/2*max((0,D()-T))^2>0`}, 3) ; edit({`abbrv=expand(max((0,D()-T)))`}, -23) ; edit({`T_0<=0&xr_0+A()/2*(D()-ep())^2>0|T_0>0&xr_0+vr_0*abbrv(max((0,D()-T_0)))+A()/2*max((0,D()-T_0))^2>0`}, -9) ; edit({`abbrv_0=expand(max((0,D()-T_0)))`}, -25) ; andR(2) ; <(
+            andR(3) ; <(
+              leafQE,
+              unfoldQEL
+              ),
+            andR(3) ; <(
+              hideL(-26=={`0>=D()-T_0&max_1=0|0 < D()-T_0&max_1=D()-T_0`}) ; hideL(-24=={`0>=D()-T&max_0=0|0 < D()-T&max_0=D()-T`}) ; orL(-9) ; <(
+                leafQE,
+                leafQE
+                ),
+              hideR(2=={`xr+A()/2*(D()-ep())^2>0`}) ;
+              unfoldQEL
+              )
+            ),
+          diffInvariant({`t>=0&T=old(T)+t&vr=old(vr)&vo=old(vo)+ao*t`}, 2) ;
+          diffInvariant({`xr=old(xr)+old(vr)*t&xo=old(xo)+old(vo)*t+ao*t^2/2`}, 2) ;
+          dW(2) ; hideR(1=={`xo_0>0`}) ; implyR(1) ; orR(1) ; edit({`T>0&xr+vr*abbrv(max((0,D()-T)))+A()/2*max((0,D()-T))^2>0`}, 2) ; edit({`abbrv=expand(max((0,D()-T)))`}, -23) ; edit({`T_0<=0&xr_0+A()/2*(D()-ep())^2>0|T_0>0&xr_0+vr_0*max((0,D()-T_0))+A()/2*abbrv(max((0,D()-T_0)))^2>0`}, -9) ; edit({`abbrv_0=expand(max((0,D()-T_0)))`}, -25) ; andR(1) ; <(
+            andR(2) ; <(
+              leafQE,
+              hideL(-26=={`0>=D()-T_0&max_1=0|0 < D()-T_0&max_1=D()-T_0`}) ; orL(-9) ; <(
+                orL(-24) ; <(
+                  leafQE,
+                  hideL(-13=={`vr_0<=0|xo_0+vo_0*(0-xr_0)/vr_0+A()/2*((0-xr_0)/vr_0)^2>=0&0>=xo_0+Vmin()*(0-xr_0)/(vr_0+A()*ep())`}) ; leafQE
+                  ),
+                orL(-24) ; <(
+                  leafQE,
+                  leafQE
+                  )
+                )
+              ),
+            andR(2) ; <(
+              hideL(-13=={`vr_0<=0|xo_0+vo_0*(0-xr_0)/vr_0+A()/2*((0-xr_0)/vr_0)^2>=0&0>=xo_0+Vmin()*(0-xr_0)/(vr_0+A()*ep())`}) ; hideL(-25=={`0>=D()-T_0&max_1=0|0 < D()-T_0&max_1=D()-T_0`}) ;
+              unfoldQEL,
+              unfoldQEL
+              )
+            ),
+          diffInvariant({`t>=0&T=old(T)+t&vr=old(vr)-b()*t&vo=old(vo)+ao*t`}, 2) ;
+          diffInvariant({`xr=old(xr)+old(vr)*t-b()*t^2/2&xo=old(xo)+old(vo)*t+ao*t^2/2`}, 2) ;
+          dW(2) ; hideR(1=={`xo_0>0`}) ; implyR(1) ; orR(1) ; hideL(-15=={`t_0=0`}) ; edit({`T>0&xr+vr*abbrv(max((0,D()-T)))+A()/2*max((0,D()-T))^2>0`}, 2) ; edit({`abbrv=expand(max((0,D()-T)))`}, -21) ; edit({`T_0<=0&xr_0+A()/2*(D()-ep())^2>0|T_0>0&xr_0+vr_0*abbrv(max((0,D()-T_0)))+A()/2*max((0,D()-T_0))^2>0`}, -9) ; edit({`abbrv_0=expand(max((0,D()-T_0)))`}, -23) ; andR(1) ; <(
+            andR(2) ; <(
+              leafQE,
+              hideL(-13=={`vr_0<=0|xo_0+vo_0*(0-xr_0)/vr_0+A()/2*((0-xr_0)/vr_0)^2>=0&0>=xo_0+Vmin()*(0-xr_0)/(vr_0+A()*ep())`}) ;
+              orL(-9) ; <(
+                orL(-21) ; <(
+                  orL(-23) ; <(
+                    leafQE,
+                    leafQE
+                    ),
+                  orL(-23) ; <(
+                    leafQE,
+                    orL(-13) ; <(
+                      leafQE,
+                      hideL(-10=={`-b()<=ao`}) ; hideR(1=={`T<=0`}) ; leafQE
+                      )
+                    )
+                  ),
+                hideR(1=={`T<=0`}) ; orL(-23) ; <(
+                  orL(-21) ; <(
+                    leafQE,
+                    leafQE
+                    ),
+                  orL(-21) ; <(
+                    leafQE,
+                    leafQE
+                    )
+                  )
+                )
+              ),
+            andR(2) ; <(
+              hideL(-13=={`vr_0<=0|xo_0+vo_0*(0-xr_0)/vr_0+A()/2*((0-xr_0)/vr_0)^2>=0&0>=xo_0+Vmin()*(0-xr_0)/(vr_0+A()*ep())`}) ; hideL(-13=={`vr_0<=0|0>=xo_0+Vmin()*(0-xr_0)/vr_0`}) ; orL(-9) ; <(
+                leafQE,
+                leafQE
+                ),
+              hideL(-13=={`vr_0<=0|xo_0+vo_0*(0-xr_0)/vr_0+A()/2*((0-xr_0)/vr_0)^2>=0&0>=xo_0+Vmin()*(0-xr_0)/(vr_0+A()*ep())`}) ;
+              orL(-9) ; <(
+                orL(-21) ; <(
+                  orL(-23) ; <(
+                    leafQE,
+                    leafQE
+                    ),
+                  orL(-23) ; <(
+                    leafQE,
+                    hideL(-10=={`-b()<=ao`}) ; orL(-12) ; <(
+                      leafQE,
+                      hideR(2=={`xr+vr*abbrv+A()/2*abbrv^2>0`}) ; leafQE
+                      )
+                    )
+                  ),
+                hideR(1=={`xr+A()/2*(D()-ep())^2>0`}) ;
+                unfoldQEL
+                )
+              )
+            )
+            ,
+            diffInvariant({`t>=0&T=old(T)+t&vr=old(vr)`}, 2) ;
+            diffInvariant({`xr=old(xr)+old(vr)*t`}, 2) ;
+            diffInvariant({`vo=old(vo)+ao*t`}, 2) ;
+            diffInvariant({`xo=old(xo)+old(vo)*t+ao*t^2/2`}, 2) ;
+            dW(2) ; implyR(2) ; orR(2) ; leafQE
+            ,
+            diffInvariant({`t>=0&T=old(T)+t&vr=old(vr)+A()*t`}, 2) ;
+            diffInvariant({`xr=old(xr)+old(vr)*t+A()*t^2/2`}, 2) ;
+            dW(2) ; implyR(2) ; hideR(1=={`xo>0`}) ; orR(1) ; hideL(-13=={`vr_0<=0|xo+vo_0*(0-xr_0)/vr_0+A()/2*((0-xr_0)/vr_0)^2>=0&0>=xo+Vmin()*(0-xr_0)/(vr_0+A()*ep())`}) ; edit({`T>0&xr+vr*abbrv(max((0,D()-T)))+A()/2*max((0,D()-T))^2>0`}, 2) ; edit({`abbrv=expand(max((0,D()-T)))`}, -20) ; edit({`T_0<=0&xr_0+A()/2*(D()-ep())^2>0|T_0>0&xr_0+vr_0*max((0,D()-T_0))+A()/2*abbrv(max((0,D()-T_0)))^2>0`}, -9) ; edit({`abbrv_0=expand(max((0,D()-T_0)))`}, -22) ; andR(1) ; <(
+            andR(2) ; <(
+              leafQE,
+              hideR(1=={`T<=0`}) ; hideL(-13=={`vr_0<=0|0>=xo+Vmin()*(0-xr_0)/vr_0`}) ;
+              unfoldQEL
+              ),
+            andR(2) ; <(
+              hideL(-13=={`vr_0<=0|0>=xo+Vmin()*(0-xr_0)/vr_0`}) ; hideL(-20=={`0>=D()-T&max_0=0|0 < D()-T&max_0=D()-T`}) ; hideL(-21=={`0>=D()-T_0&max_1=0|0 < D()-T_0&max_1=D()-T_0`}) ; leafQE,
+              hideR(1=={`xr+A()/2*(D()-ep())^2>0`}) ; hideL(-13=={`vr_0<=0|0>=xo+Vmin()*(0-xr_0)/vr_0`}) ;
+              unfoldQEL
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+)
+End.
+
+End.
+
 Theorem "Theorem 15: Cross intersection with deadline".
 
 /*
@@ -2949,7 +3328,7 @@ Theorem "Theorem 15: Cross intersection with deadline".
  *
  */
 
-Functions.
+Definitions.
 	R ep().      /* time limit for control decisions */
   R b().       /* minimum braking capability of the robot */
   R A().       /* maximum acceleration -b <= a <= A */
@@ -3053,640 +3432,160 @@ End.
 
 Tactic "Proof Theorem 15: Cross intersection with deadline (single convergence condition)".
 /* Some of the QE need QE({`Mathematica`}) */
+
+tactic leafQE as ( print({`Proving arithmetic`}); QE; done );
+
 implyR(1) ; andR(1) ; <(
-  boxAnd(1) ; andR(1) ; <(
-    loop({`0<=vr&Vmin()<=vo&(xr>0|xo>0|xr+vr^2/(2*b()) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr))`}, 1) ; <(
-      QE,
-      QE,
-      boxAnd(1) ; andR(1) ; <(
-        composeb(1) ; composeb(1.1) ; GV(1) ; GV(1.0) ; unfold ; dW(1) ; QE,
-        boxAnd(1) ; andR(1) ; <(
-          composeb(1) ; composeb(1.1) ; GV(1) ; GV(1.0) ; unfold ; dW(1) ; QE,
-          notGreater(1.0.1.0.0.1.0.0) ; notGreater(1.0.1.0.0.1.1.1.0.0) ; notAnd(1.0.1.0.0.1.1.1.1.1.0.0) ; notAnd(1.0.1.0.0.1.1.1.1.1.1.1.0.0) ; notGreater(1.0.1.0.0.1.1.1.1.1.0.0.0) ; notOr(1.0.1.0.0.1.1.1.1.1.0.0.1) ; notLess(1.0.1.0.0.1.1.1.1.1.0.0.1.0) ; notLess(1.0.1.0.0.1.1.1.1.1.0.0.1.1) ; notGreater(1.0.1.0.0.1.1.1.1.1.1.1.0.0.0) ; notLess(1.0.1.0.0.1.1.1.1.1.1.1.0.0.1) ; unfold ; <(
-            dC({`xo>=old(xo)`}, 1) ; <(
-              dW(1) ; QE,
-              dI(1)
-              ),
-            dC({`xr>=old(xr)`}, 1) ; <(
-              dW(1) ; QE,
-              dI(1)
-              ),
-            fullSimplify ; hideL(-5) ; dC({`t>=0&vr=old(vr)+ar*t&vo=old(vo)+ao*t`}, 1) ; <(
-              dC({`xr=old(xr)+old(vr)*t+ar*t^2/2&xo=old(xo)+old(vo)*t+ao*t^2/2`}, 1) ; <(
-                dW(1) ; implyR(1) ; orR(1) ; orR(2) ; orR(3) ; hideL(-6) ; andR(4) ; <(
-                  QE,
-                  orR(4) ; andL('L)* ; orL(-11) ; <(
-                    hideL(-16) ; hideL(-3) ; hideR(3) ; hideR(4) ; edit({`vr_0<=vr&vr<=vr_0+A()*t`}, -18) ; edit({`xr_0+vr_0*t<=xr&xr<=xr_0+vr_0*t+A()*t^2/2`}, -13) ; edit({`xo_0+Vmin()*t<=xo&xo<=xo_0+vo_0*t+A()*t^2/2`}, -14) ; edit({`vo<=vo_0+A()*t`}, -19) ; hideL(-5) ; hideL(-5) ; hideL(-9) ; hideL(-9) ; hideL(-2) ; andL('L)* ; hideL(-14) ; edit({`vo>0`}, -10) ; edit({`vo_0>0`}, -3) ; hideL(-2) ; hideL(-15) ; hideL(-12) ; QE,
-                    edit({`0 < xo_0+Vmin()*(-xr_0)/(vr_0+A()*t)`}, -11) ; hideL(-3) ; hideL(-15) ; hideR(4) ; hideR(3) ; hideL(-5) ; hideL(-2) ; edit({`!xr<=0`}, 1) ; edit({`!xo<=0`}, 2) ; notR(1) ; notR(1) ; edit({`vr_0<=vr&vr<=vr_0+A()*t`}, -16) ; edit({`xr_0+vr_0*t<=xr&xr<=xr_0+vr_0*t+A()*t^2/2`}, -11) ; edit({`xo_0+Vmin()*t<=xo&xo<=xo_0+vo_0*t+A()*t^2/2`}, -12) ; edit({`vo<=vo_0+A()*t`}, -17) ; hideL(-4) ; hideL(-8) ; hideL(-8) ; andL('L)* ; hideL(-17) ; edit({`0 < vr`}, -17) ; hideL(-14) ; hideL(-10) ; hideL(-10) ; hideL(-3) ; QE
-                    )
-                  ),
-                dI(1)
-                ),
-              dI(1)
-              ),
-            fullSimplify ; andL(-12) ; fullSimplify ; dC({`t>=0&vr=old(vr)&vo=old(vo)+ao*t`}, 1) ; <(
-              dC({`xr=old(xr)+old(vr)*t&xo=old(xo)+old(vo)*t+ao*t^2/2`}, 1) ; <(
-                dW(1) ; implyR(1) ; orR(1) ; orR(2) ; orR(3) ; hideR(1) ; hideR(1) ; hideR(1) ; andR(1) ; <(
-                  QE,
-                  orR(1) ; hideR(1) ; hideL(-13) ; QE
-                  ),
-                dI(1)
-                ),
-              dI(1)
-              ),
-            fullSimplify ; orL(-8) ; <(
-              dC({`t>=0&vr=old(vr)-b()*t`}, 1) ; <(
-                dC({`xr=old(xr)+old(vr)*t-b()*t^2/2`}, 1) ; <(
-                  dW(1) ; QE,
-                  dI(1)
-                  ),
-                dI(1)
-                ),
-              andL(-8) ; fullSimplify ; hideR(1) ; QE
-              ),
-            hideL(-14) ; hideL(-13) ; dC({`vr=old(vr)`}, 1) ; <(
-              dC({`xr=old(xr)`}, 1) ; <(
-                orL(-8) ; <(
-                  hideR(1) ; QE,
-                  orL(-8) ; <(
-                    hideR(1) ; QE,
-                    orL(-8) ; <(
-                      dW(1) ; QE,
-                      hideR(1) ; QE
-                      )
-                    )
-                  ),
-                dI(1)
-                ),
-              dI(1)
-              ),
-            hideL(-13) ; hideL(-13) ; hideL(-8) ; dC({`t>=0&vr=old(vr)+A()*t`}, 1) ; <(
-              dC({`xr=old(xr)+old(vr)*t+A()*t^2/2`}, 1) ; <(
-                dW(1) ; implyR(1) ; orR(1) ; orR(2) ; orR(3) ; hideR(4) ; hideR(1) ; hideR(1) ; smartQE,
-                dI(1)
-                ),
-              dI(1)
-              )
-            )
-          )
-        )
-      ),
-    loop({`0<=vr&Vmin()<=vo&T<=(xo-0)/Vmin()&(T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max((0,D()-T))+A()/2*max((0,D()-T))^2>0)`}, 1) ; <(
-      QE,
-      QE,
-      notAnd(1.0.1.0.0.1.1.1.1.1.0.0) ; notGreater(1.0.1.0.0.1.1.1.1.1.0.0.0) ; notGreater(1.0.1.0.0.1.0.0) ; notGreater(1.0.1.0.0.1.1.1.0.0) ; notOr(1.0.1.0.0.1.1.1.1.1.0.0.1) ; notLess(1.0.1.0.0.1.1.1.1.1.0.0.1.0) ; notLess(1.0.1.0.0.1.1.1.1.1.0.0.1.1) ; notAnd(1.0.1.0.0.1.1.1.1.1.1.1.0.0) ; notGreater(1.0.1.0.0.1.1.1.1.1.1.1.0.0.0) ; notLess(1.0.1.0.0.1.1.1.1.1.1.1.0.0.1) ; boxAnd(1) ; andR(1) ; <(
-        composeb(1) ; composeb(1.1) ; GV(1) ; GV(1.0) ; allR(1) ; allR(1) ; allR(1) ; dW(1) ; QE,
-        boxAnd(1) ; andR(1) ; <(
-          composeb(1) ; composeb(1.1) ; GV(1) ; GV(1.0) ; allR(1) ; allR(1) ; allR(1) ; dW(1) ; QE,
-          boxAnd(1) ; andR(1) ; <(
-            composeb(1) ; composeb(1.1) ; composeb(1.1) ; GV(1.1) ; unfold ; dC({`t>=0&T=old(T)+t&vo=old(vo)+ao*t`}, 1) ; <(
-              dC({`xo=old(xo)+old(vo)*t+ao*t^2/2`}, 1) ; <(
-                dW(1) ; QE,
-                dI(1)
-                ),
-              dI(1)
-              ),
-            unfold ; <(
-              dC({`t>=0&T=old(T)+t&vr=old(vr)+A()*t`}, 1) ; <(
-                dC({`xr=old(xr)+old(vr)*t+A()*t^2/2`}, 1) ; <(
-                  dW(1) ; implyR(1) ; orR(1) ; QE,
-                  dI(1)
-                  ),
-                dI(1)
-                ),
-              orL(-9) ; <(
-                dC({`t>=0&T=old(T)+t&vr=old(vr)+ar*t&vo=old(vo)+ao*t`}, 1) ; <(
-                  dC({`xr=old(xr)+old(vr)*t+ar*t^2/2&xo=old(xo)+old(vo)*t+ao*t^2/2`}, 1) ; <(
-                    dW(1) ; implyR(1) ; orR(1) ; edit({`T>0&xr+vr*abbrv(max((0,D()-T)))+A()/2*max((0,D()-T))^2>0`}, 2) ; edit({`abbrv=expand(max((0,D()-T)))`}, -17) ; orL(-18) ; <(
-                      andR(1) ; <(
-                        andR(2) ; <(
-                          QE,
-                          smartQE
-                          ),
-                        andR(2) ; <(
-                          smartQE,
-                          smartQE
-                          )
-                        ),
-                      andR(1) ; <(
-                        andR(2) ; <(
-                          QE,
-                          smartQE
-                          ),
-                        andR(2) ; <(
-                          smartQE,
-                          smartQE
-                          )
-                        )
-                      ),
-                    dI(1)
-                    ),
-                  dI(1)
-                  ),
-                hideR(1) ; QE
-                ),
-              dC({`t>=0&T=old(T)+t&vr>=old(vr)&vo=old(vo)+ao*t`}, 1) ; <(
-                dC({`xr>=old(xr)+old(vr)*t&xo=old(xo)+old(vo)*t+ao*t^2/2`}, 1) ; <(
-                  dW(1) ; hideL(-15) ; implyR(1) ; orR(1) ; edit({`T>0&xr+vr*abbrv(max((0,D()-T)))+A()/2*max((0,D()-T))^2>0`}, 2) ; edit({`abbrv=expand(max((0,D()-T)))`}, -18) ; andR(1) ; <(
-                    andR(2) ; <(
-                      QE,
-                      orL(-9) ; <(
-                        orL(-19) ; <(
-                          smartQE,
-                          smartQE
-                          ),
-                        hideR(1) ; hideR(1) ; QE
-                        )
-                      ),
-                    orL(-9) ; <(
-                      andR(2) ; <(
-                        orL(-19) ; <(
-                          smartQE,
-                          smartQE
-                          ),
-                        orL(-19) ; <(
-                          smartQE,
-                          smartQE
-                          )
-                        ),
-                      hideR(1) ; hideR(1) ; QE
-                      )
-                    ),
-                  dI(1)
-                  ),
-                dI(1)
-                ),
-              dC({`t>=0&T=old(T)+t&vr=old(vr)&vo=old(vo)+ao*t`}, 1) ; <(
-                dC({`xr=old(xr)+old(vr)*t&xo=old(xo)+old(vo)*t+ao*t^2/2`}, 1) ; <(
-                  dW(1) ; implyR(1) ; orR(1) ; andR(1) ; <(
-                    andR(2) ; <(
-                      QE,
-                      edit({`xr+vr*abbrv(max((0,D()-T)))+A()/2*max((0,D()-T))^2>0`}, 2) ; edit({`abbrv=expand(max((0,D()-T)))`}, -18) ; orL(-19) ; <(
-                        orL(-9) ; <(
-                          hideL(-14) ; smartQE,
-                          hideL(-14) ; smartQE
-                          ),
-                        hideL(-14) ; orL(-9) ; <(
-                          smartQE,
-                          smartQE
-                          )
-                        )
-                      ),
-                    andR(2) ; <(
-                      smartQE,
-                      smartQE
-                      )
-                    ),
-                  dI(1)
-                  ),
-                dI(1)
-                ),
-              dC({`t>=0&T=old(T)+t&vr=old(vr)-b()*t&vo=old(vo)+ao*t`}, 1) ; <(
-                dC({`xr=old(xr)+old(vr)*t-b()*t^2/2&xo=old(xo)+old(vo)*t+ao*t^2/2`}, 1) ; <(
-                  dW(1) ; implyR(1) ; orR(1) ; hideL(-15) ; hideL(-14) ; orL(-9) ; <(
-                    andR(1) ; <(
-                      andR(2) ; <(
-                        QE,
-                        edit({`xr+vr*abbrv(max((0,D()-T)))+A()/2*max((0,D()-T))^2>0`}, 2) ; edit({`abbrv=expand(max((0,D()-T)))`}, -15) ; orL(-16) ; <(
-                          QE,
-                          QE
-                          )
-                        ),
-                      edit({`T>0&xr+vr*abbrv(max((0,D()-T)))+A()/2*max((0,D()-T))^2>0`}, 2) ; edit({`abbrv=expand(max((0,D()-T)))`}, -15) ; orL(-16) ; <(
-                        QE,
-                        andR(2) ; <(
-                          smartQE,
-                          smartQE
-                          )
-                        )
-                      ),
-                    hideR(1) ; andR(1) ; <(
-                      QE,
-                      QE
-                      )
-                    ),
-                  dI(1)
-                  ),
-                dI(1)
-                ),
-              dC({`t>=0&T=old(T)+t&vr=old(vr)`}, 1) ; <(
-                dC({`xr=old(xr)+old(vr)*t`}, 1) ; <(
-                  dC({`vo=old(vo)+ao*t`}, 1) ; <(
-                    dC({`xo=old(xo)+old(vo)*t+ao*t^2/2`}, 1) ; <(
-                      dW(1) ; implyR(1) ; orR(1) ; QE,
-                      dI(1)
-                      ),
-                    dI(1)
-                    ),
-                  dI(1)
-                  ),
-                dI(1)
-                ),
-              dC({`t>=0&T=old(T)+t&vr=old(vr)+A()*t`}, 1) ; <(
-                dC({`xr=old(xr)+old(vr)*t+A()*t^2/2`}, 1) ; <(
-                  dW(1) ; hideL(-11) ; QE,
-                  dI(1)
-                  ),
-                dI(1)
-                )
-              )
-            )
-          )
-        )
-      )
-    ),
+  useLemma({`Cross intersection with deadline - Safety`}, {`prop`}),
   con({`A()>0&b()>0&ep()>0&Vmin()>0&vo>=Vmin()&vr>=0&(xo<=0->vr=0|xr>0)&\exists n (n>=2&xo+(v-n)*ep()*Vmin()>0&vr+(min((v,n-1))-(n-2))*ep()*A()>=A()*ep()&xr+min((v,n-2))*ep()*(A()*ep())>0)`}, 1) ; <(
-    QE,
+    leafQE,
     composed(1) ; composed(1.1) ; solve(1.1.1) ; composed(1) ; randomd(1) ; existsR({`0`}, 1) ; testd(1) ; andR(1) ; <(
-      QE,
-      composed(1) ; choiced(1) ; orR(1) ; andL('L)* ; existsL(-9) ; andL('L)* ; implyL(-8) ; <(
-        edit({`!xo>0`}, 3) ; notR(3) ; composed(1) ; testd(1) ; simplify(1) ; hideR(2) ; assignd(1) ; assignd(1) ; existsR({`ep()`}, 1) ; simplify(1) ; andR(1) ; <(
-          QE,
+      leafQE,
+      andL('L)* ; composed(1) ; choiced(1) ; orR(1) ; existsL(-9) ; andL('L)* ; implyL(-8) ; <(
+        edit({`!xo>0`}, 3) ; notR(3) ; composed(1) ; testd(1) ; simplify(1) ; hideR(2=={`<?!xo>0;{?xr>0;ar:=*;?-b()<=ar&ar<=A();++?!xr>0;{?vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep())));{?vr>0&0 < xo+Vmin()*(0-xr)/vr;ar:=0;++?!(vr>0&0 < xo+Vmin()*(0-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+vr^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*vr) < 0;ar:=A();}}}}><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&0*s_+vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(0/2*t_^2+vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&0/2*t_^2+vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; assignd(1) ; assignd(1) ; existsR({`ep()`}, 1) ; fullSimplify ; andR(1) ; <(
+          leafQE,
           andR(1) ; <(
-            QE,
-            existsR({`n`}, 1) ; simplify(1) ; andR(1) ; <(
-              QE,
-              QE
-              )
+            implyR(1) ; leafQE,
+            existsR({`n`}, 1) ; fullSimplify ; leafQE
             )
           ),
-        composed(1) ; testd(1) ; andR(1) ; <(
-          composed(2) ; testd(2) ; andR(2) ; <(
-            QE,
-            choiced(2) ; orR(2) ; composed(2) ; testd(2) ; orL(-8) ; <(
-              composed(3) ; testd(3) ; andR(2) ; <(
+        composed(1) ; testd(1) ; composed(2) ; testd(2) ; andR(1) ; <(
+          andR(2) ; <(
+            prop,
+            choiced(2) ; orR(2) ; composed(2) ; testd(2) ; composed(3) ; testd(3) ; orL(-8) ; <(
+              andR(2) ; <(
                 andR(3) ; <(
-                  QE,
-                  choiced(3) ; orR(3) ; hideR(3) ; composed(3) ; testd(3) ; fullSimplify ; choiced(3) ; orR(3) ; hideR(3) ; composed(3) ; testd(3) ; fullSimplify ; choiced(3) ; orR(3) ; choiced(4) ; orR(4) ; composed(4) ; testd(4) ; hideR(3) ; hideR(4) ; simplify(3) ; assignd(3) ; assignd(3) ; existsR({`ep()`}, 3) ; fullSimplify ; existsR({`n`}, 3) ; simplify(3) ; QE
+                  prop,
+                  choiced(3) ; orR(3) ; hideR(3=={`<?vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&0*s_+vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(0/2*t_^2+vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&0/2*t_^2+vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; composed(3) ; testd(3) ; simplify(3) ; choiced(3) ; orR(3) ; hideR(3=={`<?vr>0&0 < xo+Vmin()*(0-xr)/vr;ar:=0;><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; composed(3) ; testd(3) ; simplify(3) ; choiced(3) ; orR(3) ; hideR(3=={`<ar:=-b();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; choiced(3) ; orR(3) ; hideR(4=={`<?xr+vr^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*vr) < 0;ar:=A();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; composed(3) ; testd(3) ; simplify(3) ; assignd(3) ; assignd(3) ; existsR({`ep()`}, 3) ; fullSimplify ; existsR({`n`}, 3) ; fullSimplify ; leafQE
                   ),
                 andR(3) ; <(
                   composed(2) ; randomd(2) ; existsR({`0`}, 2) ; testd(2) ; andR(2) ; <(
-                    QE,
-                    assignd(2) ; existsR({`ep()`}, 2) ; fullSimplify ; existsR({`n`}, 2) ; fullSimplify ; QE
+                    leafQE,
+                    assignd(2) ; existsR({`ep()`}, 2) ; fullSimplify ; existsR({`n`}, 2) ; fullSimplify ; leafQE
                     ),
-                  choiced(3) ; orR(3) ; hideR(3) ; composed(3) ; testd(3) ; fullSimplify ; choiced(3) ; orR(3) ; hideR(3) ; composed(3) ; testd(3) ; fullSimplify ; choiced(3) ; orR(3) ; choiced(4) ; orR(4) ; hideR(5) ; hideR(3) ; composed(3) ; testd(3) ; fullSimplify ; assignd(3) ; assignd(3) ; existsR({`ep()`}, 3) ; hideR(2) ; fullSimplify ; existsR({`n`}, 2) ; fullSimplify ; QE
+                  choiced(3) ; orR(3) ; hideR(3=={`<?vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&0*s_+vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(0/2*t_^2+vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&0/2*t_^2+vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; composed(3) ; testd(3) ; simplify(3) ; choiced(3) ; orR(3) ; hideR(3=={`<?vr>0&0 < xo+Vmin()*(0-xr)/vr;ar:=0;><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; composed(3) ; testd(3) ; simplify(3) ; choiced(3) ; orR(3) ; hideR(3=={`<ar:=-b();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; choiced(3) ; orR(3) ; hideR(4=={`<?xr+vr^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*vr) < 0;ar:=A();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; composed(3) ; testd(3) ; simplify(3) ; assignd(3) ; assignd(3) ; existsR({`ep()`}, 3) ; hideR(2=={`<ar:=*;?-b()<=ar&ar<=A();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&0*s_+vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(0/2*t_^2+vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&0/2*t_^2+vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; fullSimplify ; existsR({`n`}, 2) ; fullSimplify ; leafQE
                   )
                 ),
-              simplify(2) ; hideR(3) ; fullSimplify ; composed(2) ; randomd(2) ; existsR({`0`}, 2) ; testd(2) ; andR(2) ; <(
-                QE,
-                assignd(2) ; existsR({`ep()`}, 2) ; simplify(2) ; andR(2) ; <(
-                  QE,
-                  existsR({`n`}, 2) ; simplify(2) ; QE
+              simplify(2) ; hideR(3=={`!xr>0&<?vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep())));{?vr>0&0 < xo+Vmin()*(0-xr)/vr;ar:=0;++?!(vr>0&0 < xo+Vmin()*(0-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+vr^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*vr) < 0;ar:=A();}}><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&0*s_+vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(0/2*t_^2+vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&0/2*t_^2+vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; composed(2) ; randomd(2) ; existsR({`0`}, 2) ; testd(2) ; andR(2) ; <(
+                leafQE,
+                assignd(2) ; existsR({`ep()`}, 2) ; fullSimplify ; andR(2) ; <(
+                  leafQE,
+                  existsR({`n`}, 2) ; fullSimplify ; leafQE
                   )
                 )
               )
             ),
           orL(-8) ; <(
-            composed(2) ; testd(2) ; andR(2) ; <(
-              assignd(1) ; assignd(1) ; existsR({`ep()`}, 1) ; simplify(1) ; andR(1) ; <(
-                QE,
+            andR(2) ; <(
+              assignd(1) ; assignd(1) ; existsR({`ep()`}, 1) ; fullSimplify ; andR(1) ; <(
+                leafQE,
                 andR(1) ; <(
-                  QE,
-                  existsR({`n`}, 1) ; simplify(1) ; QE
+                  leafQE,
+                  existsR({`n`}, 1) ; fullSimplify ; leafQE
                   )
                 ),
-              choiced(2) ; orR(2) ; composed(2) ; testd(2) ; andR(2) ; <(
-                composed(3) ; testd(3) ; andR(3) ; <(
-                  hideR(1) ; QE,
-                  choiced(3) ; orR(3) ; hideR(3) ; composed(3) ; testd(3) ; simplify(3) ; choiced(3) ; orR(3) ; hideR(3) ; composed(3) ; testd(3) ; simplify(3) ; choiced(3) ; orR(3) ; hideR(3) ; choiced(3) ; orR(3) ; hideR(4) ; composed(3) ; testd(3) ; simplify(3) ; assignd(3) ; assignd(3) ; existsR({`ep()`}, 3) ; simplify(3) ; existsR({`n`}, 3) ; assignd(1) ; assignd(1) ; existsR({`ep()`}, 1) ; simplify(1) ; simplify(3) ; andR(1) ; <(
-                    hideR(3) ; QE,
+              choiced(2) ; orR(2) ; composed(2) ; testd(2) ; composed(3) ; testd(3) ; andR(2) ; <(
+                andR(3) ; <(
+                  prop,
+                  choiced(3) ; orR(3) ; hideR(3=={`<?vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&0*s_+vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(0/2*t_^2+vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&0/2*t_^2+vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; composed(3) ; testd(3) ; simplify(3) ; choiced(3) ; orR(3) ; hideR(3=={`<?vr>0&0 < xo+Vmin()*(0-xr)/vr;ar:=0;><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; composed(3) ; testd(3) ; simplify(3) ; choiced(3) ; orR(3) ; hideR(3=={`<ar:=-b();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; choiced(3) ; orR(3) ; hideR(4=={`<?xr+vr^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*vr) < 0;ar:=A();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; composed(3) ; testd(3) ; simplify(3) ; assignd(3) ; assignd(3) ; assignd(1) ; assignd(1) ; existsR({`ep()`}, 1) ; existsR({`ep()`}, 3) ; fullSimplify ; andR(1) ; <(
+                    leafQE,
                     andR(1) ; <(
-                      QE,
-                      existsR({`n`}, 1) ; hideR(3) ; simplify(1) ; QE
+                      leafQE,
+                      existsR({`n`}, 3) ; existsR({`n`}, 1) ; fullSimplify ; leafQE
                       )
                     )
                   ),
-                hideR(1) ; composed(1) ; randomd(1) ; composed(2) ; testd(2) ; andR(2) ; <(
-                  existsR({`A()`}, 1) ; testd(1) ; andR(1) ; <(
-                    QE,
-                    assignd(1) ; existsR({`ep()`}, 1) ; simplify(1) ; andR(1) ; <(
-                      QE,
+                hideR(1=={`<ar:=A();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&0*s_+vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(0/2*t_^2+vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&0/2*t_^2+vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; composed(1) ; randomd(1) ; existsR({`A()`}, 1) ; testd(1) ; andR(1) ; <(
+                  hideR(2=={`!xr>0&<?vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep())));{?vr>0&0 < xo+Vmin()*(0-xr)/vr;ar:=0;++?!(vr>0&0 < xo+Vmin()*(0-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+vr^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*vr) < 0;ar:=A();}}><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&0*s_+vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(0/2*t_^2+vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&0/2*t_^2+vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; leafQE,
+                  assignd(1) ; existsR({`ep()`}, 1) ; andR(2) ; <(
+                    fullSimplify ; andR(1) ; <(
+                      leafQE,
                       andR(1) ; <(
-                        QE,
-                        existsR({`n`}, 1) ; simplify(1) ; QE
+                        leafQE,
+                        existsR({`n`}, 1) ; fullSimplify ; leafQE
                         )
-                      )
-                    ),
-                  choiced(2) ; existsR({`A()`}, 1) ; testd(1) ; andR(1) ; <(
-                    hideR(2) ; QE,
-                    assignd(1) ; existsR({`ep()`}, 1) ; simplify(1) ; andR(1) ; <(
-                      hideR(2) ; QE,
+                      ),
+                    choiced(2) ; orR(2) ; hideR(2=={`<?vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&0*s_+vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(0/2*t_^2+vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&0/2*t_^2+vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; composed(2) ; testd(2) ; fullSimplify ; choiced(2) ; orR(2) ; hideR(2=={`<?vr>0&0 < xo+Vmin()*(0-xr)/vr;ar:=0;><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; composed(2) ; testd(2) ; simplify(2) ; choiced(2) ; orR(2) ; hideR(2=={`<ar:=-b();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; choiced(2) ; orR(2) ; hideR(3=={`<?xr+vr^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*vr) < 0;ar:=A();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; chase(2) ; simplify(2) ; existsR({`ep()`}, 2) ; fullSimplify ; existsR({`n`}, 2) ; andR(1) ; <(
+                      leafQE,
                       andR(1) ; <(
-                        orR(2) ; hideR(2) ; composed(2) ; testd(2) ; simplify(2) ; choiced(2) ; orR(2) ; hideR(2) ; composed(2) ; testd(2) ; simplify(2) ; choiced(2) ; orR(2) ; hideR(2) ; choiced(2) ; orR(2) ; hideR(3) ; composed(2) ; testd(2) ; simplify(2) ; assignd(2) ; assignd(2) ; existsR({`ep()`}, 2) ; simplify(2) ; existsR({`n`}, 2) ; simplify(2) ; QE,
-                        hideR(2) ; existsR({`n`}, 1) ; simplify(1) ; QE
+                        leafQE,
+                        existsR({`n`}, 1) ; fullSimplify ; leafQE
                         )
                       )
                     )
                   )
                 )
               ),
-            hideR(2) ; assignd(1) ; assignd(1) ; existsR({`ep()`}, 1) ; simplify(1) ; andR(1) ; <(
-              QE,
+            chase(1) ; existsR({`ep()`}, 1) ; simplify(1) ; andR(1) ; <(
+              hideR(2=={`!xo>0&<?xr>0;ar:=*;?-b()<=ar&ar<=A();++?!xr>0;{?vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep())));{?vr>0&0 < xo+Vmin()*(0-xr)/vr;ar:=0;++?!(vr>0&0 < xo+Vmin()*(0-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+vr^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*vr) < 0;ar:=A();}}}><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&0*s_+vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(0/2*t_^2+vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&0/2*t_^2+vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; leafQE,
               andR(1) ; <(
-                QE,
-                existsR({`n`}, 1) ; simplify(1) ; QE
+                hideR(2=={`!xo>0&<?xr>0;ar:=*;?-b()<=ar&ar<=A();++?!xr>0;{?vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep())));{?vr>0&0 < xo+Vmin()*(0-xr)/vr;ar:=0;++?!(vr>0&0 < xo+Vmin()*(0-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+vr^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*vr) < 0;ar:=A();}}}><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&0*s_+vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(0/2*t_^2+vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&0/2*t_^2+vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; leafQE,
+                existsR({`n`}, 1) ; simplify(1) ; hideR(2=={`!xo>0&<?xr>0;ar:=*;?-b()<=ar&ar<=A();++?!xr>0;{?vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep())));{?vr>0&0 < xo+Vmin()*(0-xr)/vr;ar:=0;++?!(vr>0&0 < xo+Vmin()*(0-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+vr^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*vr) < 0;ar:=A();}}}><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&0*s_+vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(0/2*t_^2+vo*t_+xo<=0->ar*t_+vr=0|ar/2*t_^2+vr*t_+xr>0)&\exists n (n>=2&0/2*t_^2+vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min((v-1,n-1))-(n-2))*ep()*A()>=A()*ep()&ar/2*t_^2+vr*t_+xr+min((v-1,n-2))*ep()*(A()*ep())>0))`}) ; leafQE
                 )
               )
             )
           )
         )
       ),
-    QE
+    leafQE
     )
   )
 End.
 
 Tactic "Proof Theorem 15: Cross intersection with deadline (loop split and unroll)".
 /* Some of the QE need QE({`Mathematica`}) */
+
+tactic leafQE as ( print({`Proving arithmetic`}); QE; done );
+
 implyR(1) ; andL('L)* ; andR(1) ; <(
-  boxAnd(1) ; andR(1) ; <(
-    loop({`0<=vr&Vmin()<=vo&(xr>0|xo>0|xr+vr^2/(2*b()) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr))`}, 1) ; <(
-      QE,
-      QE,
-      boxAnd(1) ; andR(1) ; <(
-        composeb(1) ; composeb(1.1) ; GV(1) ; GV(1.0) ; unfold ; dW(1) ; QE,
-        boxAnd(1) ; andR(1) ; <(
-          composeb(1) ; composeb(1.1) ; GV(1) ; GV(1.0) ; unfold ; dW(1) ; QE,
-          notGreater(1.0.1.0.0.1.0.0) ; notGreater(1.0.1.0.0.1.1.1.0.0) ; notAnd(1.0.1.0.0.1.1.1.1.1.0.0) ; notAnd(1.0.1.0.0.1.1.1.1.1.1.1.0.0) ; notGreater(1.0.1.0.0.1.1.1.1.1.0.0.0) ; notOr(1.0.1.0.0.1.1.1.1.1.0.0.1) ; notLess(1.0.1.0.0.1.1.1.1.1.0.0.1.0) ; notLess(1.0.1.0.0.1.1.1.1.1.0.0.1.1) ; notGreater(1.0.1.0.0.1.1.1.1.1.1.1.0.0.0) ; notLess(1.0.1.0.0.1.1.1.1.1.1.1.0.0.1) ; unfold ; <(
-            dC({`xo>=old(xo)`}, 1) ; <(
-              dW(1) ; QE,
-              dI(1)
-              ),
-            dC({`xr>=old(xr)`}, 1) ; <(
-              dW(1) ; QE,
-              dI(1)
-              ),
-            fullSimplify ; hideL(-5) ; dC({`t>=0&vr=old(vr)+ar*t&vo=old(vo)+ao*t`}, 1) ; <(
-              dC({`xr=old(xr)+old(vr)*t+ar*t^2/2&xo=old(xo)+old(vo)*t+ao*t^2/2`}, 1) ; <(
-                dW(1) ; implyR(1) ; orR(1) ; orR(2) ; orR(3) ; hideL(-6) ; andR(4) ; <(
-                  QE,
-                  orR(4) ; andL('L)* ; orL(-11) ; <(
-                    hideL(-16) ; hideL(-3) ; hideR(3) ; hideR(4) ; edit({`vr_0<=vr&vr<=vr_0+A()*t`}, -18) ; edit({`xr_0+vr_0*t<=xr&xr<=xr_0+vr_0*t+A()*t^2/2`}, -13) ; edit({`xo_0+Vmin()*t<=xo&xo<=xo_0+vo_0*t+A()*t^2/2`}, -14) ; edit({`vo<=vo_0+A()*t`}, -19) ; hideL(-5) ; hideL(-5) ; hideL(-9) ; hideL(-9) ; hideL(-2) ; andL('L)* ; hideL(-14) ; edit({`vo>0`}, -10) ; edit({`vo_0>0`}, -3) ; hideL(-2) ; hideL(-15) ; hideL(-12) ; QE,
-                    edit({`0 < xo_0+Vmin()*(-xr_0)/(vr_0+A()*t)`}, -11) ; hideL(-3) ; hideL(-15) ; hideR(4) ; hideR(3) ; hideL(-5) ; hideL(-2) ; edit({`!xr<=0`}, 1) ; edit({`!xo<=0`}, 2) ; notR(1) ; notR(1) ; edit({`vr_0<=vr&vr<=vr_0+A()*t`}, -16) ; edit({`xr_0+vr_0*t<=xr&xr<=xr_0+vr_0*t+A()*t^2/2`}, -11) ; edit({`xo_0+Vmin()*t<=xo&xo<=xo_0+vo_0*t+A()*t^2/2`}, -12) ; edit({`vo<=vo_0+A()*t`}, -17) ; hideL(-4) ; hideL(-8) ; hideL(-8) ; andL('L)* ; hideL(-17) ; edit({`0 < vr`}, -17) ; hideL(-14) ; hideL(-10) ; hideL(-10) ; hideL(-3) ; QE
-                    )
-                  ),
-                dI(1)
-                ),
-              dI(1)
-              ),
-            fullSimplify ; andL(-12) ; fullSimplify ; dC({`t>=0&vr=old(vr)&vo=old(vo)+ao*t`}, 1) ; <(
-              dC({`xr=old(xr)+old(vr)*t&xo=old(xo)+old(vo)*t+ao*t^2/2`}, 1) ; <(
-                dW(1) ; implyR(1) ; orR(1) ; orR(2) ; orR(3) ; hideR(1) ; hideR(1) ; hideR(1) ; andR(1) ; <(
-                  QE,
-                  orR(1) ; hideR(1) ; hideL(-13) ; QE
-                  ),
-                dI(1)
-                ),
-              dI(1)
-              ),
-            fullSimplify ; orL(-8) ; <(
-              dC({`t>=0&vr=old(vr)-b()*t`}, 1) ; <(
-                dC({`xr=old(xr)+old(vr)*t-b()*t^2/2`}, 1) ; <(
-                  dW(1) ; QE,
-                  dI(1)
-                  ),
-                dI(1)
-                ),
-              andL(-8) ; fullSimplify ; hideR(1) ; QE
-              ),
-            hideL(-14) ; hideL(-13) ; dC({`vr=old(vr)`}, 1) ; <(
-              dC({`xr=old(xr)`}, 1) ; <(
-                orL(-8) ; <(
-                  hideR(1) ; QE,
-                  orL(-8) ; <(
-                    hideR(1) ; QE,
-                    orL(-8) ; <(
-                      dW(1) ; QE,
-                      hideR(1) ; QE
-                      )
-                    )
-                  ),
-                dI(1)
-                ),
-              dI(1)
-              ),
-            hideL(-13) ; hideL(-13) ; hideL(-8) ; dC({`t>=0&vr=old(vr)+A()*t`}, 1) ; <(
-              dC({`xr=old(xr)+old(vr)*t+A()*t^2/2`}, 1) ; <(
-                dW(1) ; implyR(1) ; orR(1) ; orR(2) ; orR(3) ; hideR(4) ; hideR(1) ; hideR(1) ; smartQE,
-                dI(1)
-                ),
-              dI(1)
-              )
-            )
-          )
-        )
-      ),
-    loop({`0<=vr&Vmin()<=vo&T<=(xo-0)/Vmin()&(T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max((0,D()-T))+A()/2*max((0,D()-T))^2>0)`}, 1) ; <(
-      QE,
-      QE,
-      notAnd(1.0.1.0.0.1.1.1.1.1.0.0) ; notGreater(1.0.1.0.0.1.1.1.1.1.0.0.0) ; notGreater(1.0.1.0.0.1.0.0) ; notGreater(1.0.1.0.0.1.1.1.0.0) ; notOr(1.0.1.0.0.1.1.1.1.1.0.0.1) ; notLess(1.0.1.0.0.1.1.1.1.1.0.0.1.0) ; notLess(1.0.1.0.0.1.1.1.1.1.0.0.1.1) ; notAnd(1.0.1.0.0.1.1.1.1.1.1.1.0.0) ; notGreater(1.0.1.0.0.1.1.1.1.1.1.1.0.0.0) ; notLess(1.0.1.0.0.1.1.1.1.1.1.1.0.0.1) ; boxAnd(1) ; andR(1) ; <(
-        composeb(1) ; composeb(1.1) ; GV(1) ; GV(1.0) ; allR(1) ; allR(1) ; allR(1) ; dW(1) ; QE,
-        boxAnd(1) ; andR(1) ; <(
-          composeb(1) ; composeb(1.1) ; GV(1) ; GV(1.0) ; allR(1) ; allR(1) ; allR(1) ; dW(1) ; QE,
-          boxAnd(1) ; andR(1) ; <(
-            composeb(1) ; composeb(1.1) ; composeb(1.1) ; GV(1.1) ; unfold ; dC({`t>=0&T=old(T)+t&vo=old(vo)+ao*t`}, 1) ; <(
-              dC({`xo=old(xo)+old(vo)*t+ao*t^2/2`}, 1) ; <(
-                dW(1) ; QE,
-                dI(1)
-                ),
-              dI(1)
-              ),
-            unfold ; <(
-              dC({`t>=0&T=old(T)+t&vr=old(vr)+A()*t`}, 1) ; <(
-                dC({`xr=old(xr)+old(vr)*t+A()*t^2/2`}, 1) ; <(
-                  dW(1) ; implyR(1) ; orR(1) ; QE,
-                  dI(1)
-                  ),
-                dI(1)
-                ),
-              orL(-9) ; <(
-                dC({`t>=0&T=old(T)+t&vr=old(vr)+ar*t&vo=old(vo)+ao*t`}, 1) ; <(
-                  dC({`xr=old(xr)+old(vr)*t+ar*t^2/2&xo=old(xo)+old(vo)*t+ao*t^2/2`}, 1) ; <(
-                    dW(1) ; implyR(1) ; orR(1) ; edit({`T>0&xr+vr*abbrv(max((0,D()-T)))+A()/2*max((0,D()-T))^2>0`}, 2) ; edit({`abbrv=expand(max((0,D()-T)))`}, -17) ; orL(-18) ; <(
-                      andR(1) ; <(
-                        andR(2) ; <(
-                          QE,
-                          smartQE
-                          ),
-                        andR(2) ; <(
-                          smartQE,
-                          smartQE
-                          )
-                        ),
-                      andR(1) ; <(
-                        andR(2) ; <(
-                          QE,
-                          smartQE
-                          ),
-                        andR(2) ; <(
-                          smartQE,
-                          smartQE
-                          )
-                        )
-                      ),
-                    dI(1)
-                    ),
-                  dI(1)
-                  ),
-                hideR(1) ; QE
-                ),
-              dC({`t>=0&T=old(T)+t&vr>=old(vr)&vo=old(vo)+ao*t`}, 1) ; <(
-                dC({`xr>=old(xr)+old(vr)*t&xo=old(xo)+old(vo)*t+ao*t^2/2`}, 1) ; <(
-                  dW(1) ; hideL(-15) ; implyR(1) ; orR(1) ; edit({`T>0&xr+vr*abbrv(max((0,D()-T)))+A()/2*max((0,D()-T))^2>0`}, 2) ; edit({`abbrv=expand(max((0,D()-T)))`}, -18) ; andR(1) ; <(
-                    andR(2) ; <(
-                      QE,
-                      orL(-9) ; <(
-                        orL(-19) ; <(
-                          smartQE,
-                          smartQE
-                          ),
-                        hideR(1) ; hideR(1) ; QE
-                        )
-                      ),
-                    orL(-9) ; <(
-                      andR(2) ; <(
-                        orL(-19) ; <(
-                          smartQE,
-                          smartQE
-                          ),
-                        orL(-19) ; <(
-                          smartQE,
-                          smartQE
-                          )
-                        ),
-                      hideR(1) ; hideR(1) ; QE
-                      )
-                    ),
-                  dI(1)
-                  ),
-                dI(1)
-                ),
-              dC({`t>=0&T=old(T)+t&vr=old(vr)&vo=old(vo)+ao*t`}, 1) ; <(
-                dC({`xr=old(xr)+old(vr)*t&xo=old(xo)+old(vo)*t+ao*t^2/2`}, 1) ; <(
-                  dW(1) ; implyR(1) ; orR(1) ; andR(1) ; <(
-                    andR(2) ; <(
-                      QE,
-                      edit({`xr+vr*abbrv(max((0,D()-T)))+A()/2*max((0,D()-T))^2>0`}, 2) ; edit({`abbrv=expand(max((0,D()-T)))`}, -18) ; orL(-19) ; <(
-                        orL(-9) ; <(
-                          hideL(-14) ; smartQE,
-                          hideL(-14) ; smartQE
-                          ),
-                        hideL(-14) ; orL(-9) ; <(
-                          smartQE,
-                          smartQE
-                          )
-                        )
-                      ),
-                    andR(2) ; <(
-                      smartQE,
-                      smartQE
-                      )
-                    ),
-                  dI(1)
-                  ),
-                dI(1)
-                ),
-              dC({`t>=0&T=old(T)+t&vr=old(vr)-b()*t&vo=old(vo)+ao*t`}, 1) ; <(
-                dC({`xr=old(xr)+old(vr)*t-b()*t^2/2&xo=old(xo)+old(vo)*t+ao*t^2/2`}, 1) ; <(
-                  dW(1) ; implyR(1) ; orR(1) ; hideL(-15) ; hideL(-14) ; orL(-9) ; <(
-                    andR(1) ; <(
-                      andR(2) ; <(
-                        QE,
-                        edit({`xr+vr*abbrv(max((0,D()-T)))+A()/2*max((0,D()-T))^2>0`}, 2) ; edit({`abbrv=expand(max((0,D()-T)))`}, -15) ; orL(-16) ; <(
-                          QE,
-                          QE
-                          )
-                        ),
-                      edit({`T>0&xr+vr*abbrv(max((0,D()-T)))+A()/2*max((0,D()-T))^2>0`}, 2) ; edit({`abbrv=expand(max((0,D()-T)))`}, -15) ; orL(-16) ; <(
-                        QE,
-                        andR(2) ; <(
-                          smartQE,
-                          smartQE
-                          )
-                        )
-                      ),
-                    hideR(1) ; andR(1) ; <(
-                      QE,
-                      QE
-                      )
-                    ),
-                  dI(1)
-                  ),
-                dI(1)
-                ),
-              dC({`t>=0&T=old(T)+t&vr=old(vr)`}, 1) ; <(
-                dC({`xr=old(xr)+old(vr)*t`}, 1) ; <(
-                  dC({`vo=old(vo)+ao*t`}, 1) ; <(
-                    dC({`xo=old(xo)+old(vo)*t+ao*t^2/2`}, 1) ; <(
-                      dW(1) ; implyR(1) ; orR(1) ; QE,
-                      dI(1)
-                      ),
-                    dI(1)
-                    ),
-                  dI(1)
-                  ),
-                dI(1)
-                ),
-              dC({`t>=0&T=old(T)+t&vr=old(vr)+A()*t`}, 1) ; <(
-                dC({`xr=old(xr)+old(vr)*t+A()*t^2/2`}, 1) ; <(
-                  dW(1) ; hideL(-11) ; QE,
-                  dI(1)
-                  ),
-                dI(1)
-                )
-              )
-            )
-          )
-        )
-      )
-    ),
+  useLemma({`Cross intersection with deadline - Safety`}, {`prop`}),
   useAt({`<*> merge`}, {`1`}, 1) ; con({`A()>0&b()>0&ep()>0&Vmin()>0&vo>=Vmin()&vr>=0&(xo>0|vr=0)&xo+v*ep()*Vmin()>0`}, 1) ; <(
-    QE,
+    leafQE,
     composed(1) ; composed(1.1) ; solve(1.1.1) ; composed(1) ; randomd(1) ; existsR({`0`}, 1) ; testd(1) ; andR(1) ; <(
-      QE,
-      composed(1) ; andL('L)* ; choiced(1) ; orR(1) ; composed(1) ; testd(1) ; orL(-8) ; <(
-        simplify(1) ; hideR(2) ; assignd(1) ; assignd(1) ; existsR({`ep()`}, 1) ; simplify(1) ; QE,
+      leafQE,
+      andL('L)* ; composed(1) ; choiced(1) ; orR(1) ; composed(1) ; testd(1) ; orL(-8) ; <(
+        fullSimplify ; hideR(2=={`<?!xo>0;{?xr>0;ar:=*;?-b()<=ar&ar<=A();++?!xr>0;{?vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep())));{?vr>0&0 < xo+Vmin()*(0-xr)/vr;ar:=0;++?!(vr>0&0 < xo+Vmin()*(0-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+vr^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*vr) < 0;ar:=A();}}}}><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(vo*t_+xo>0|ar*t_+vr=0)&vo*t_+xo+(v-1)*ep()*Vmin()>0)`}) ; assignd(1) ; assignd(1) ; existsR({`ep()`}, 1) ; fullSimplify ; leafQE,
         composed(2) ; testd(2) ; andR(1) ; <(
           andR(2) ; <(
-            QE,
-            choiced(2) ; orR(2) ; composed(3) ; testd(3) ; composed(2) ; testd(2) ; andR(2) ; <(
+            prop,
+            choiced(2) ; orR(2) ; composed(2) ; testd(2) ; composed(3) ; testd(3) ; andR(2) ; <(
               andR(3) ; <(
-                QE,
-                choiced(3) ; orR(3) ; hideR(3) ; composed(3) ; testd(3) ; simplify(3) ; choiced(3) ; orR(3) ; hideR(3) ; composed(3) ; testd(3) ; simplify(3) ; choiced(3) ; orR(3) ; hideR(3) ; choiced(3) ; orR(3) ; hideR(4) ; composed(3) ; testd(3) ; simplify(3) ; assignd(3) ; assignd(3) ; existsR({`ep()`}, 3) ; simplify(3) ; QE
+                prop,
+                choiced(3) ; orR(3) ; hideR(3=={`<?vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&0*s_+vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(0/2*t_^2+vo*t_+xo>0|ar*t_+vr=0)&0/2*t_^2+vo*t_+xo+(v-1)*ep()*Vmin()>0)`}) ; composed(3) ; testd(3) ; fullSimplify ; choiced(3) ; orR(3) ; hideR(3=={`<?vr>0&0 < xo+Vmin()*(0-xr)/vr;ar:=0;><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(vo*t_+xo>0|ar*t_+vr=0)&vo*t_+xo+(v-1)*ep()*Vmin()>0)`}) ; composed(3) ; testd(3) ; fullSimplify ; choiced(3) ; orR(3) ; hideR(3=={`<ar:=-b();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(vo*t_+xo>0|ar*t_+vr=0)&vo*t_+xo+(v-1)*ep()*Vmin()>0)`}) ; choiced(3) ; orR(3) ; hideR(4=={`<?xr+vr^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*vr) < 0;ar:=A();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(vo*t_+xo>0|ar*t_+vr=0)&vo*t_+xo+(v-1)*ep()*Vmin()>0)`}) ; composed(3) ; testd(3) ; fullSimplify ; assignd(3) ; assignd(3) ; existsR({`ep()`}, 3) ; fullSimplify ; leafQE
                 ),
-              hideR(3) ; composed(2) ; randomd(2) ; existsR({`0`}, 2) ; testd(2) ; andR(2) ; <(
-                QE,
-                assignd(2) ; existsR({`ep()`}, 2) ; simplify(2) ; QE
+              composed(2) ; randomd(2) ; existsR({`0`}, 2) ; hideR(3=={`!xr>0&<?vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep())));{?vr>0&0 < xo+Vmin()*(0-xr)/vr;ar:=0;++?!(vr>0&0 < xo+Vmin()*(0-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+vr^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*vr) < 0;ar:=A();}}><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&0*s_+vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(0/2*t_^2+vo*t_+xo>0|ar*t_+vr=0)&0/2*t_^2+vo*t_+xo+(v-1)*ep()*Vmin()>0)`}) ; testd(2) ; andR(2) ; <(
+                leafQE,
+                assignd(2) ; existsR({`ep()`}, 2) ; fullSimplify ; leafQE
                 )
               )
             ),
           andR(2) ; <(
-            notR(2) ; assignd(1) ; assignd(1) ; existsR({`ep()`}, 1) ; simplify(1) ; QE,
-            choiced(2) ; orR(2) ; composed(2) ; testd(2) ; andR(2) ; <(
-              composed(3) ; hideR(1) ; testd(2) ; andR(2) ; <(
+            assignd(1) ; assignd(1) ; notR(2) ; existsR({`ep()`}, 1) ; fullSimplify ; leafQE,
+            choiced(2) ; orR(2) ; composed(2) ; testd(2) ; composed(3) ; testd(3) ; andR(2) ; <(
+              andR(3) ; <(
                 prop,
-                choiced(2) ; orR(2) ; hideR(2) ; composed(2) ; testd(2) ; simplify(2) ; choiced(2) ; orR(2) ; hideR(2) ; composed(2) ; testd(2) ; simplify(2) ; choiced(2) ; orR(2) ; hideR(2) ; choiced(2) ; orR(2) ; hideR(3) ; composed(2) ; testd(2) ; simplify(2) ; assignd(2) ; assignd(2) ; existsR({`ep()`}, 2) ; simplify(2) ; QE
+                hideR(1=={`<ar:=A();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&0*s_+vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(0/2*t_^2+vo*t_+xo>0|ar*t_+vr=0)&0/2*t_^2+vo*t_+xo+(v-1)*ep()*Vmin()>0)`}) ; choiced(2) ; orR(2) ; hideR(2=={`<?vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&0*s_+vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(0/2*t_^2+vo*t_+xo>0|ar*t_+vr=0)&0/2*t_^2+vo*t_+xo+(v-1)*ep()*Vmin()>0)`}) ; composed(2) ; testd(2) ; fullSimplify ; choiced(2) ; orR(2) ; hideR(2=={`<?vr>0&0 < xo+Vmin()*(0-xr)/vr;ar:=0;><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(vo*t_+xo>0|ar*t_+vr=0)&vo*t_+xo+(v-1)*ep()*Vmin()>0)`}) ; composed(2) ; testd(2) ; fullSimplify ; choiced(2) ; orR(2) ; hideR(2=={`<ar:=-b();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(vo*t_+xo>0|ar*t_+vr=0)&vo*t_+xo+(v-1)*ep()*Vmin()>0)`}) ; choiced(2) ; orR(2) ; hideR(3=={`<?xr+vr^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*vr) < 0;ar:=A();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(vo*t_+xo>0|ar*t_+vr=0)&vo*t_+xo+(v-1)*ep()*Vmin()>0)`}) ; composed(2) ; testd(2) ; fullSimplify ; assignd(2) ; assignd(2) ; existsR({`ep()`}, 2) ; fullSimplify ; leafQE
                 ),
-              hideR(1) ; hideR(2) ; composed(1) ; randomd(1) ; existsR({`0`}, 1) ; testd(1) ; andR(1) ; <(
-                QE,
-                assignd(1) ; existsR({`ep()`}, 1) ; simplify(1) ; QE
+              hideR(1=={`<ar:=A();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&0*s_+vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(0/2*t_^2+vo*t_+xo>0|ar*t_+vr=0)&0/2*t_^2+vo*t_+xo+(v-1)*ep()*Vmin()>0)`}) ; hideR(2=={`!xr>0&<?vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep())));{?vr>0&0 < xo+Vmin()*(0-xr)/vr;ar:=0;++?!(vr>0&0 < xo+Vmin()*(0-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+vr^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*vr) < 0;ar:=A();}}><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&0*s_+vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&(0/2*t_^2+vo*t_+xo>0|ar*t_+vr=0)&0/2*t_^2+vo*t_+xo+(v-1)*ep()*Vmin()>0)`}) ; composed(1) ; randomd(1) ; existsR({`0`}, 1) ; testd(1) ; andR(1) ; <(
+                leafQE,
+                assignd(1) ; existsR({`ep()`}, 1) ; fullSimplify ; leafQE
                 )
               )
             )
           )
         )
       ),
-    andL('L)* ; iterated(1) ; orR(1) ; edit({`xo>0`}, -9) ; fullSimplify ; composed(2) ; composed(2) ; randomd(2) ; existsR({`0`}, 2) ; testd(2) ; hideL(-1) ; andR(2) ; <(
-      QE,
-      composed(2) ; composed(2) ; choiced(2) ; orR(2) ; hideR(3) ; composed(2) ; testd(2) ; simplify(2) ; assignd(2) ; assignd(2) ; allR(2) ; implyR(2) ; solve(2) ; existsR({`ep()`}, 2) ; simplify(2) ; andR(2) ; <(
-        QE,
-        print({`Solved`}); existsR({`ep()+T_1`}, 2) ; simplify(2) ; existsR({`vo_1+0`}, 2) ; fullSimplify ; existsR({`A()*ep()+vr_1`}, 2) ; simplify(2) ; existsR({`vo_1*ep()+xo_1`}, 2) ; simplify(2) ; existsR({`A()/2*ep()^2+vr_1*ep()+xr_1`}, 2) ; simplify(2) ; hideL('L=={`T=ep()+T_1`}) ; edit({`vr>=A()*ep()`}, 'L=={`vr=A()*ep()+vr_1`}) ; edit({`xo>0`}, 'L=={`xo=vo_1*ep()+xo_1`}) ; edit({`xr>=xr_1`}, 'L=={`xr=A()/2*ep()^2+vr_1*ep()+xr_1`}) ; hideL('L=={`vr_1>=0`}) ; con({`A()>0&b()>0&ep()>0&Vmin()>0&vo>=Vmin()&xo>0&vr>=A()*ep()&xr+v*ep()*(A()*ep())>0`}, 2) ; <(
-          QE,
-          andL('L)* ; composed(1) ; composed(1) ; randomd(1) ; existsR({`0`}, 1) ; testd(1) ; andR(1) ; <(
-            QE,
-            composed(1) ; solve(1.1) ; composed(1) ; choiced(1) ; orR(1) ; hideR(2) ; composed(1) ; testd(1) ; simplify(1) ; assignd(1) ; assignd(1) ; existsR({`ep()`}, 1) ; simplify(1) ; QE
+    andL('L)* ; iterated(1) ; orR(1) ; edit({`xo>0`}, -9) ; fullSimplify ; composed(2) ; composed(2) ; randomd(2) ; existsR({`0`}, 2) ; testd(2) ; hideL(-1=={`v<=0`}) ; andR(2) ; <(
+      leafQE,
+      composed(2) ; composed(2) ; choiced(2) ; orR(2) ; hideR(3=={`<?!xo>0;{?xr>0;ar:=*;?-b()<=ar&ar<=A();++?!xr>0;{?vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep())));{?vr>0&0 < xo+Vmin()*(0-xr)/vr;ar:=0;++?!(vr>0&0 < xo+Vmin()*(0-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+vr^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*vr) < 0;ar:=A();}}}}><t:=0;><{xr'=vr,vr'=ar,xo'=vo,vo'=0,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}><{{ao:=*;?-b()<=ao&ao<=A();}{{?xo>0;ar:=A();++?!xo>0;{?xr>0;ar:=*;?-b()<=ar&ar<=A();++?!xr>0;{?vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep())));{?vr>0&0 < xo+Vmin()*(0-xr)/vr;ar:=0;++?!(vr>0&0 < xo+Vmin()*(0-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+vr^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*vr) < 0;ar:=A();}}}}}t:=0;}{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}}*>xr>0`}) ; composed(2) ; testd(2) ; fullSimplify ; assignd(2) ; assignd(2) ; allR(2) ; implyR(2) ; solve(2) ; existsR({`ep()`}, 2) ; fullSimplify ; andR(2) ; <(
+        leafQE,
+        existsR({`ep()+T_1`}, 2) ; fullSimplify ; existsR({`vo_1+0`}, 2) ; fullSimplify ; existsR({`A()*ep()+vr_1`}, 2) ; simplify(2) ; existsR({`vo_1*ep()+xo_1`}, 2) ; simplify(2) ; existsR({`A()/2*ep()^2+vr_1*ep()+xr_1`}, 2) ; simplify(2) ; hideL(-9=={`T=ep()+T_1`}) ; edit({`vr>=A()*ep()`}, -10) ; edit({`xo>0`}, -11) ; edit({`xr>=xr_1`}, -12) ; hideL(-6=={`vr_1>=0`}) ; con({`A()>0&b()>0&ep()>0&Vmin()>0&vo>=Vmin()&xo>0&vr>=A()*ep()&xr+v*ep()*(A()*ep())>0`}, 2) ; <(
+          leafQE,
+          composed(1) ; composed(1) ; randomd(1) ; andL('L)* ; existsR({`0`}, 1) ; testd(1) ; andR(1) ; <(
+            leafQE,
+            composed(1) ; solve(1.1) ; composed(1) ; choiced(1) ; orR(1) ; hideR(2=={`<?!xo>0;{?xr>0;ar:=*;?-b()<=ar&ar<=A();++?!xr>0;{?vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/(vr+A()*ep())));{?vr>0&0 < xo+Vmin()*(0-xr)/vr;ar:=0;++?!(vr>0&0 < xo+Vmin()*(0-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+vr^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*vr) < 0;ar:=A();}}}}><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&vo*t_+xo>0&ar*t_+vr>=A()*ep()&ar/2*t_^2+vr*t_+xr+(v-1)*ep()*(A()*ep())>0)`}) ; composed(1) ; testd(1) ; simplify(1) ; assignd(1) ; assignd(1) ; existsR({`ep()`}, 1) ; fullSimplify ; leafQE
             ),
-          QE
+          leafQE
           )
         )
       )
