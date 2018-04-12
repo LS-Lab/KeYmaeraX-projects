@@ -1,0 +1,99 @@
+hrbounds :==
+	MR({`HRmin<=x&x<=HRmax&HRmin<=a&a<=HRmax`}, 1) ; <(
+  	master
+    , 
+    xBoundsPrf
+  )
+
+domconstraint :==
+	composeb(1) ; assignb(1) ; composeb(1) ; assignb(1) ; composeb(1) ; assignb(1) ; composeb(1) ; composeb(1.1) ; composeb(1.1.1) ; assignb(1.1.1.1) ; 
+	dC({`HRmin<=x&x<=HRmax`}, 1.1.1) ; <(
+		nil
+		,
+		hrbounds
+	)
+
+main :== 
+  unfold;
+  loop({`(0 < HRmin&HRmin < HRmax&HRmin<=a&a<=HRmax&b>0&tau>0&vAsc < 0&vDesc>0&d=d0+v*c&c>=0&C>0)&(d>=0&HRmin<=x&x<=HRmax)&tau*HRmax*(-d/vAsc) < t&tApprox<=t`}, 1) ; <(
+    QE,
+    QE,
+    domconstraint
+  )
+
+
+xBoundsPrf :==
+  assignb(1) ;
+  MR({`HRmin <= x & x <= HRmax & HRmin <= a & a <= HRmax`},1) <(
+    master
+    ,
+    composeb(1) ; composeb(1.1) ; assignb(1.1) ; assignb(1.1) ; composeb(1) ; assignb(1);
+    unfold;
+    boxAnd(1); andR(1) <(xHRminBoundPrf, xHRmaxBoundPrf)
+  )
+
+/* Proves that x <= HRmin from reasonable assumptions */
+xHRminBoundPrf :==
+  cut({`x >= a | x < a`}) <(nil, hideR(1); QE);
+  orL('Llast) <(
+    MR({`x >= a`},1) <(nil, QE);
+    cut({`x = a | x > a`}) <(nil, hideR(1); QE);
+    orL('Llast) <(
+      MR({`x=a`}, 1) <(nil,QE);
+      xeqaPrf
+      ,
+      xgtaPrf
+    )
+    ,
+    dC({`x < a`},1) <(dI(1),nil);
+    xltaPrf
+  )
+
+/* Proves that x <= HRmax */
+xHRmaxBoundPrf :==
+  cut({`x <= a | x > a`}) <(nil, hideR(1); QE);
+  orL('Llast) <(
+    MR({`x <= a`},1) <(nil, QE);
+    cut({`x = a | x < a`}) <(nil, hideR(1); QE);
+    orL('Llast) <(
+      MR({`x=a`}, 1) <(nil,QE);
+      xeqaPrf
+      ,
+      MR({`x < a`}, 1) <(nil,QE);
+      xltaPrf
+    )
+    ,
+    dC({`x > a`},1) <(dI(1), nil);
+    xgtaPrf
+  )
+
+xeqaPrf :==
+  dG({`y'=b*y`}, {`y*(x-a)=0&y>0`},1);
+  cut({`\exists y (y*(x-a)=0&y>0)`}) ; <(nil, hideR(1) ; QE);
+  existsL('Llast);
+  existsR({`y`}, 1);
+  boxAnd(1); andR(1) <(
+    dI(1)
+    ,
+    dG({`z' = (-b/2)*z`}, {`y*z^2=1`}, 1);
+    cut({`\exists z y*z^2=1`}) <(nil, hideR(1); QE);
+    existsL('Llast);
+    existsR({`z`}, 1) ;
+    dI(1)
+  )
+
+xltaPrf :==
+  dG({`y'=(b/2)*y`}, {`y^2*(x-a)=-1`}, 1);
+  cut({`\exists y y^2*(x-a)=-1`}) <(nil, hideR(1); QE);
+  existsL('Llast); existsR({`y`}, 1);
+  dI(1);
+  QE
+
+xgtaPrf :==
+  dG({`y'=(b/2)*y`}, {`y^2*(x-a)=1`}, 1);
+  cut({`\exists y (y^2*(x-a)=1)`}) ; <(nil, hideR(1) ; QE);
+  existsL('Llast);
+  existsR({`y`}, 1);
+  dI(1)
+
+//endregion

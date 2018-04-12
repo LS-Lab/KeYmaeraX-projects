@@ -1,0 +1,228 @@
+﻿unfold ; loop({`(0 < HRmin&HRmin < HRmax&HRmin<=a&a<=HRmax&b>0&tau>0&vAsc < 0&vDesc>0&d=d0+v*c&c>=0&C>0&stopTime>0&stopDepth>0)&(d>=0&HRmin<=x&x<=HRmax)&tau*HRmax*(-d/vAsc)+tau*HRmax*(stopTime-stoppedTimer) < t&tApprox<=t&stopTime>=stoppedTimer&(d>=stopDepth|stoppedTimer>=stopTime)`}, 1) ; <(
+QE, 
+QE, 
+composeb(1) ; assignb(1) ; composeb(1) ; assignb(1) ; composeb(1) ; assignb(1) ; composeb(1) ; MR({`tApprox<=t`}, 1) ; <(
+master, 
+  (andL('L)* ; composeb(1) ; composeb(1.1) ; composeb(1.1.1) ; assignb(1.1.1.1) ; dC({`HRmin<=x&x<=HRmax`}, 1.1.1)) ; <(
+  unfold, 
+    nil
+  )
+)
+) ; <(
+  (boxAnd(1) ; andR(1)) ; <(
+dI(1), 
+(boxAnd(1) ; andR(1)) ; <(
+dW(1) ; QE, 
+  (boxAnd(1) ; andR(1)) ; <(
+  nil, 
+    (boxAnd(1) ; andR(1)) ; <(
+    nil, 
+      (boxAnd(1) ; andR(1)) ; <(
+      dW(1) ; QE, 
+        nil
+      )
+    )
+  )
+)
+) ; <(
+    dC({`t>=old(t)-tau*HRmax*c&d=old(d)+vDesc*c`}, 1) ; <(
+dC({`old(t)-tau*HRmax*c>=tApprox-tau*HRmax*c&tApprox-tau*HRmax*c>tau*HRmax*(-(d_0+vDesc*C)/vAsc)+tau*HRmax*C+tau*HRmax*(stopTime-stoppedTimer)-tau*HRmax*c&tau*HRmax*(-(d_0+vDesc*C)/vAsc)+tau*HRmax*C+tau*HRmax*(stopTime-stoppedTimer)-tau*HRmax*c>=tau*HRmax*(-d/vAsc)+tau*HRmax*C+tau*HRmax*(stopTime-stoppedTimer)-tau*HRmax*c&tau*HRmax*(-d/vAsc)+tau*HRmax*C+tau*HRmax*(stopTime-stoppedTimer)-tau*HRmax*c>=tau*HRmax*(-d/vAsc)+tau*HRmax*(stopTime-stoppedTimer)`}, 1) ; <(
+dW(1) ; QE, 
+  boxAnd(1) ; andR(1) ; <(
+  dI(1), 
+    boxAnd(1) ; andR(1) ; <(
+    dI(1), 
+      boxAnd(1) ; andR(1) ; <(
+      dW(1) ; QE, 
+        dW(1) ; QE
+      )
+    )
+  )
+), 
+dI(1)
+),
+    dC({`tApprox<=old(t)&old(t)-tau*HRmax*c<=t`}, 1) ; <(
+dW(1) ; QE, 
+dI(1)
+),
+    orL('L) ; <(
+ODE(1), 
+ODE(1)
+)
+    ),
+  MR({`HRmin<=x&x<=HRmax&HRmin<=a&a<=HRmax`}, 1) ; <(
+master, 
+assignb(1) ; boxAnd(1) ; andR(1) ; <(
+unfold ; ((cut({`x>=a|x < a`}) ; <(
+  nil, 
+    hideR(1) ; QE
+  )) ; orL('Llast)) ; <(
+  ((((MR({`x>=a`}, 1) ; <(
+    nil, 
+      QE
+    )) ; cut({`x=a|x>a`})) ; <(
+    nil, 
+      hideR(1) ; QE
+    )) ; orL('Llast)) ; <(
+    ((MR({`x=a`}, 1) ; <(
+      nil, 
+        QE
+      )) ; dG({`{y'=b*y}`}, {`y*(x-a)=0&y>0`}, 1) ; (cut({`\exists y (y*(x-a)=0&y>0)`}) ; <(
+      nil, 
+        hideR(1) ; QE
+      )) ; existsL('Llast) ; existsR({`y`}, 1) ; boxAnd(1) ; andR(1)) ; <(
+      dI(1), 
+        ((dG({`{z'=(-b/2)*z}`}, {`y*z^2=1`}, 1) ; cut({`\exists z y*z^2=1`})) ; <(
+        nil, 
+          hideR(1) ; QE
+        )) ; existsL('Llast) ; existsR({`z`}, 1) ; dI(1)
+      ), 
+      dG({`{y'=b/2*y}`}, {`y^2*(x-a)=1`}, 1) ; (cut({`\exists y y^2*(x-a)=1`}) ; <(
+      nil, 
+        hideR(1) ; QE
+      )) ; existsL('Llast) ; existsR({`y`}, 1) ; dI(1)
+    ), 
+    (((dC({`x < a`}, 1) ; <(
+    dI(1), 
+      nil
+    )) ; dG({`{y'=b/2*y}`}, {`y^2*(x-a)=-1`}, 1) ; cut({`\exists y y^2*(x-a)=-1`})) ; <(
+    nil, 
+      hideR(1) ; QE
+    )) ; existsL('Llast) ; existsR({`y`}, 1) ; dI(1) ; QE
+  ), 
+  unfold ; ((cut({`x<=a|x>a`}) ; <(
+  nil, 
+    hideR(1) ; QE
+  )) ; orL('Llast)) ; <(
+  ((((MR({`x<=a`}, 1) ; <(
+    nil, 
+      QE
+    )) ; cut({`x=a|x < a`})) ; <(
+    nil, 
+      hideR(1) ; QE
+    )) ; orL('Llast)) ; <(
+    ((MR({`x=a`}, 1) ; <(
+      nil, 
+        QE
+      )) ; dG({`{y'=b*y}`}, {`y*(x-a)=0&y>0`}, 1) ; (cut({`\exists y (y*(x-a)=0&y>0)`}) ; <(
+      nil, 
+        hideR(1) ; QE
+      )) ; existsL('Llast) ; existsR({`y`}, 1) ; boxAnd(1) ; andR(1)) ; <(
+      dI(1), 
+        ((dG({`{z'=(-b/2)*z}`}, {`y*z^2=1`}, 1) ; cut({`\exists z y*z^2=1`})) ; <(
+        nil, 
+          hideR(1) ; QE
+        )) ; existsL('Llast) ; existsR({`z`}, 1) ; dI(1)
+      ), 
+      (((MR({`x < a`}, 1) ; <(
+      nil, 
+        QE
+      )) ; dG({`{y'=b/2*y}`}, {`y^2*(x-a)=-1`}, 1) ; cut({`\exists y y^2*(x-a)=-1`})) ; <(
+      nil, 
+        hideR(1) ; QE
+      )) ; existsL('Llast) ; existsR({`y`}, 1) ; dI(1) ; QE
+    ), 
+    (dC({`x>a`}, 1) ; <(
+    dI(1), 
+      nil
+    )) ; dG({`{y'=b/2*y}`}, {`y^2*(x-a)=1`}, 1) ; (cut({`\exists y y^2*(x-a)=1`}) ; <(
+    nil, 
+      hideR(1) ; QE
+    )) ; existsL('Llast) ; existsR({`y`}, 1) ; dI(1)
+  )
+)
+),
+  (boxAnd(1) ; andR(1)) ; <(
+dI(1), 
+(boxAnd(1) ; andR(1)) ; <(
+dW(1) ; QE, 
+  (boxAnd(1) ; andR(1)) ; <(
+  nil, 
+    (boxAnd(1) ; andR(1)) ; <(
+    nil, 
+      (boxAnd(1) ; andR(1)) ; <(
+      dW(1) ; QE, 
+        nil
+      )
+    )
+  )
+)
+) ; <(
+    dC({`tApprox<=old(t)&old(t)-tau*HRmax*c<=t`}, 1) ; <(
+dI(1), 
+dI(1)
+),
+    dC({`tApprox<=old(t)&old(t)-tau*HRmax*c<=t`}, 1) ; <(
+dW(1) ; QE, 
+dI(1)
+),
+    master
+    ),
+  (boxAnd(1) ; andR(1)) ; <(
+dI(1), 
+(boxAnd(1) ; andR(1)) ; <(
+dW(1) ; QE, 
+  (boxAnd(1) ; andR(1)) ; <(
+  nil, 
+    (boxAnd(1) ; andR(1)) ; <(
+    nil, 
+      (boxAnd(1) ; andR(1)) ; <(
+      dW(1) ; QE, 
+        nil
+      )
+    )
+  )
+)
+) ; <(
+    dC({`d=old(d)+vAsc*c`}, 1) ; <(
+dC({`t>=old(t)-tau*HRmax*c`}, 1) ; <(
+dI(1), 
+  dI(1)
+), 
+dI(1)
+),
+    dC({`tApprox<=old(t)&old(t)-tau*HRmax*c<=t`}, 1) ; <(
+dW(1) ; QE, 
+dI(1)
+),
+    orL(-31) ; <(
+dC({`stoppedTimer=stopTime`}, 1) ; <(
+dW(1) ; QE, 
+  dC({`stoppedTimer=old(stoppedTimer)`}, 1) ; <(
+  dW(1) ; QE, 
+    dI(1)
+  )
+), 
+dC({`d0=old(d)&old(d)>stopDepth`}, 1) ; <(
+dW(1) ; QE, 
+  dI(1)
+)
+)
+    ),
+  (boxAnd(1) ; andR(1)) ; <(
+dI(1), 
+(boxAnd(1) ; andR(1)) ; <(
+dW(1) ; QE, 
+  (boxAnd(1) ; andR(1)) ; <(
+  nil, 
+    (boxAnd(1) ; andR(1)) ; <(
+    nil, 
+      (boxAnd(1) ; andR(1)) ; <(
+      dW(1) ; QE, 
+        nil
+      )
+    )
+  )
+)
+) ; <(
+    dC({`t>=old(t)-tau*HRmax*c&old(t)-tau*HRmax*c>=tApprox-tau*HRmax*c&tApprox>tau*HRmax*(-d/vAsc)+tau*HRmax*C+tau*HRmax*(stopTime-stoppedTimer)`}, 1) ; <(
+dW(1) ; QE, 
+ODE(1)
+),
+    dC({`tApprox<=old(t)&old(t)-tau*HRmax*c<=t`}, 1) ; <(
+dW(1) ; QE, 
+dI(1)
+),
+    master
+    )
+  )
