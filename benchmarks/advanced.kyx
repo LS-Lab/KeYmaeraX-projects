@@ -1143,7 +1143,7 @@ ArchiveEntry "Robot collision avoidance in two-dimensional space: Static safety"
 
 Description "Safety of collision avoidance in environments with all stationary obstacles.".
 Citation "Stefan Mitsch, Khalil Ghorbal, David Vogelbacher, and André Platzer. Formal verification of obstacle avoidance and navigation of ground robots. International Journal of Robotics Research. 36(12), pp. 1312-1340, 2017.".
-Link "http://symbolaris.com/pub/morerobix.pdf#page-8".
+Link "http://symbolaris.com/pub/morerobix.pdf#page=8".
 
 Functions.
   R ep().      /* time limit for control decisions */
@@ -1244,6 +1244,123 @@ End.
 
 Tactic "Automated proof".
   master
+End.
+
+End.
+
+ArchiveEntry "Robot collision avoidance in two-dimensional space: Passive safety".
+
+Description "Safety of collision avoidance in environments with moving obstacles of known maximum speed.".
+Citation "Stefan Mitsch, Khalil Ghorbal, David Vogelbacher, and André Platzer. Formal verification of obstacle avoidance and navigation of ground robots. International Journal of Robotics Research. 36(12), pp. 1312-1340, 2017.".
+Link "http://symbolaris.com/pub/morerobix.pdf#page=11".
+
+
+Functions.
+  R ep().      /* time limit for control decisions */
+  R b().       /* minimum braking capability of the robot */
+  R A().       /* maximum acceleration -b <= a <= A */
+  R W().       /* maximum steering */
+  R V().       /* maximum obstacle velocity */
+  R abs(R).    /* predefined function of absolute value */
+
+  R stopDist(R v) = (v^2 / (2*b()) + V()*v/b()).
+  R accelComp(R v) = ((A()/b() + 1) * (A()/2 * ep()^2 + ep()*(v+V))).
+  R admissibleSeparation(R v) = (stopDist(v) + accelComp(v)).
+
+  B isWellformedDir() <-> (dx^2 + dy^2 = 1).                        /* The orientation of the robot is a unit vector. */
+
+  B bounds() <-> (                                                                     /* Bounds for global constants */
+      A() >= 0                                                                                      /* Working engine */
+    & b() > 0                                                                                       /* Working brakes */
+    & ep() > 0                                                                            /* Controller reaction time */
+    & V() >= 0
+  ).
+  B initialState() <-> (                                                          /* Stopped somewhere safe initially */
+    v = 0
+    & (x-xo)^2 + (y-yo)^2 > 0
+    & isWellformedDir()
+  ).
+  B assumptions() <-> (bounds() & initialState()).                     /* Under these assumptions we guarantee safety */
+
+  B loopinv() <-> (                                                /* Conditions that are true on each loop iteration */
+    v >= 0
+    & isWellformedDir()
+    & (v>0 -> abs(x-xo) > stopDist(v) | abs(y-yo) > stopDist(v))
+  ).
+End.
+
+ProgramVariables.
+  R x.    /* robot position: x */
+  R y.    /* robot position: y */
+  R v.    /* robot translational velocity */
+  R a.    /* robot translational acceleration */
+  R dx.   /* robot orientation: x */
+  R dy.   /* robot orientation: y */
+  R w.    /* robot rotational velocity */
+  R r.    /* robot curve radius */
+  R xo.   /* position of closest obstacle on curve */
+  R yo.
+  R vxo.  /* velocity vector of obstacle */
+  R vyo.
+  R t.    /* time */
+End.
+
+Problem.
+assumptions() ->
+  [
+    {
+      {
+        /* obstacle control */
+        {
+          vxo := *; vyo := *;
+          ?vxo^2+vyo^2<=V^2;
+        }
+        /* robot control */
+        {
+          /* brake on current curve or remain stopped */
+          { a := -b; }
+          ++
+          { ?v = 0; a := 0; w := 0; }
+      	  ++
+          /* or choose a new safe curve */
+          { a := A;
+            w := *; ?-W<=w & w<=W;       /* choose steering */
+            r := *;
+            xo := *; yo := *;            /* measure closest obstacle on the curve */
+
+            /* admissible curve */
+            ?r!=0 & r*w = v;
+
+            /* use that curve, if it is a safe one (admissible velocities) */
+            ? abs(x-xo) > admissibleSeparation(v)
+            | abs(y-yo) > admissibleSeparation(v);
+          }
+        };
+    	  t := 0;
+      }
+
+      /* dynamics */
+      {
+      { x' = v * dx, y' = v * dy, v' = a,        /* accelerate/decelerate and move */
+        dx' = -w * dy, dy' = w * dx, w' = a/r,   /* follow curve */
+        xo' = vxo, yo' = vyo,                    /* obstacle moves */
+        t' = 1 & t <= ep & v >= 0
+      }@invariant(t>=0, isWellformedDir(),
+          (-t*V() <= xo - old(xo) & xo - old(xo) <= t*V()),
+          (-t*V() <= yo - old(yo) & yo - old(yo) <= t*V()),
+          (v'=-b() -> v = old(v) - b()*t),
+          (v'=-b() -> (-t * (old(v) - b()/2*t) <= x - old(x) & x - old(x) <= t * (old(v) - b()/2*t))),
+          (v'=-b() -> (-t * (old(v) - b()/2*t) <= y - old(y) & y - old(y) <= t * (old(v) - b()/2*t))),
+          (v'=0 -> v = old(v)),
+          (v'=0 -> x = old(x)),
+          (v'=0 -> y = old(y)),
+          (v'=A() -> v = old(v) + A()*t),
+          (v'=A() -> (-t * (old(v) + A()/2*t) <= x - old(x) & x - old(x) <= t * (old(v) + A()/2*t))),
+          (v'=A() -> (-t * (old(v) + A()/2*t) <= y - old(y) & y - old(y) <= t * (old(v) + A()/2*t)))
+        )
+      }
+    }*@invariant(loopinv())
+  ](v>0 -> (x - xo)^2 + (y - yo)^2 > 0)
 End.
 
 End.
