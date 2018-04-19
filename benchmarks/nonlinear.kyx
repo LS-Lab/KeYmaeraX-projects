@@ -71,6 +71,20 @@ End.
 
 End.
 
+ArchiveEntry "1D Saddle Node".
+
+ProgramVariables.
+  R x.
+  R r.
+  R s.
+End.
+
+Problem.
+  r <= 0 -> \exists f (x=f -> [{x'=r+x^2}]x=f)
+End.
+
+End.
+
 ArchiveEntry "Ahmadi Parrilo Kristic".
 
 ProgramVariables.
