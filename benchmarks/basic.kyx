@@ -1373,7 +1373,7 @@ End.
 
 End.
 
-ArchiveEntry "LICS: Example 4b progress of time-triggered car"
+ArchiveEntry "LICS: Example 4b progress of time-triggered car".
 
 Definitions.      /* function symbols cannot change their value */
   R b().          /* braking capabilities */
@@ -1385,20 +1385,19 @@ ProgramVariables. /* program variables may change their value over time */
   R x.            /* position of the car */
   R v.            /* velocity of the car */
   R a.            /* acceleration of the car */
-  R m.            /* stop sign position */
   R t.            /* clock variable */
 End.
 
 Problem.
-  ep > 0 & A > 0 & b > 0
+  ep() > 0 & A() > 0 & b() > 0
 ->
   \forall p \exists m
   <
     {
-        {?(2*b*(m-x) >= v^2+(A+b)*(A*ep^2+2*ep*v)); a:=A; ++ a:=-b; }
+        {?(2*b()*(m-x) >= v^2+(A()+b())*(A()*ep()^2+2*ep()*v)); a:=A(); ++ a:=-b(); }
         t := 0;
-        {x'=v, v'=a, t'=1 & v>=0 & t<=ep}
-    }* /*@variant(x + (.)*ep*old(v) >= p & v>=old(v))*/
+        {x'=v, v'=a, t'=1 & v>=0 & t<=ep()}
+    }*
   > (x >= p)
 End.
 
@@ -1421,7 +1420,7 @@ ProgramVariables. /* program variables may change their value over time */
 End.
 
 Problem.
-   ( [{x' = v, v' = -b}]x<=m
+   ( [{x' = v, v' = -b()}]x<=m()
    & v >= 0
 	 & A() >= 0
 	 & b() > 0 )
@@ -1434,7 +1433,7 @@ Problem.
       t := 0;
       {x' = v, v' = a, t' = 1 & v >= 0 & t <= ep()}
     }*@invariant(v^2<=2*b()*(m()-x))
-  ]x<=m
+  ]x<=m()
 End.
 
 End.
