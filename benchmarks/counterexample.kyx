@@ -297,3 +297,39 @@ Problem.
 End.
 
 End.
+
+ArchiveEntry "LICS: Example 3b event-triggered car is unsafe".
+
+Citation "André Platzer. Logics of dynamical systems. ACM/IEEE Symposium on Logic in Computer Science, LICS 2012, June 25–28, 2012, Dubrovnik, Croatia, pp. 13-24. IEEE 2012.".
+Link "http://symbolaris.com/pub/lds-lics.pdf#page=7".
+
+ProgramVariables.
+	R x.  /* x position of car */
+	R v.  /* v velocity of car */
+	R a.  /* a acceleration of car */
+	R b.  /* A max acceleration */
+	R A.  /* b max braking */
+	R m.  /* m position of Stop Sign */
+End.
+
+Problem.
+   ( v >= 0
+	 & A >= 0
+	 & b > 0 )
+->
+  [
+    {
+      {  ?(m-x>=2); a := A;
+      ++ a := -b;
+      };
+      {x' = v, v' = a & v >= 0}
+    }*@invariant(x<=m)
+  ]x<=m
+End.
+
+Tactic "Proof should fail".
+  /* assert tactic that checks master leaves open goals with counterexample/false */
+  master
+End.
+
+End.
