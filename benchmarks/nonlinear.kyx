@@ -93,7 +93,11 @@ ProgramVariables.
 End.
 
 Problem.
-  1/2*x<=x & x<=7/10 & 0<=y & y<=3/10 -> [{x'=-x+x*y, y'=-y}@invariant(y>=0)]!(-8/10>=x & x>=-1 & -7/10>=y & y>=-1)
+  1/2*x<=x & x<=7/10 & 0<=y & y<=3/10
+  ->
+  [{x'=-x+x*y, y'=-y}
+   @invariant((((-1*y<=0&-1/2*x<=0)&-7/10+x<=0)&-3/10+y<=0), (-1*y<=0), (-1/2*x<=0), (-7/10+x<=0), (-3/10+y<=0))
+  ]!(-8/10>=x & x>=-1 & -7/10>=y & y>=-1)
 End.
 
 Tactic "Automated proof".
@@ -111,7 +115,9 @@ ProgramVariables.
 End.
 
 Problem.
-  x=1 & y=0 & z=0 -> [{x'=x*z, y'=y*z, z'=x^2+y^2 & x^2+y^2+z^2=1}@invariant(x^2+y^2+z^2=1)]!(x>1 | z>1)
+  x=1 & y=0 & z=0
+  ->
+  [{x'=x*z, y'=y*z, z'=x^2+y^2 & x^2+y^2+z^2=1}@invariant((-1+x<=0&-1+z<=0), (-1+x<=0), (-1+z<=0))]!(x>1 | z>1)
 End.
 
 Tactic "Automated proof".
@@ -128,7 +134,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x=0 & y=-1 -> [{x'=x, y'=y^2}@invariant(x>=0, y<=0, x>=0&y<=0)]!(y>0)
+  x=0 & y=-1 -> [{x'=x, y'=y^2}@invariant(y<=0)]!(y>0)
 End.
 
 Tactic "Automated proof".
@@ -145,7 +151,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x=1 & y=0 -> [{x'=y^2, y'=x}@invariant(x>=0)]!(x<0)
+  x=1 & y=0 -> [{x'=y^2, y'=x}@invariant(-1*x<=0)]!(x<0)
 End.
 
 Tactic "Automated proof".
@@ -162,7 +168,11 @@ ProgramVariables.
 End.
 
 Problem.
-  x=-1 & y=1 -> [{x'=x^2, y'=(2*x-y)*y}@invariant(y>=0, x<=0, x < 0, x^2>0, y>0, (((y>=0&x<=0)&x < 0)&x^2>0)&y>0)]!(x>0 | y<=0)
+  x=-1 & y=1 -> [{x'=x^2, y'=(2*x-y)*y}@invariant((-1*y < 0&x<=0), (-1*y < 0), (x<=0))]!(x>0 | y<=0)
+End.
+
+Tactic "Automated proof".
+  master
 End.
 
 End.
@@ -175,7 +185,11 @@ ProgramVariables.
 End.
 
 Problem.
-  x=-1 & y=1 -> [{x'=x*y, y'=x^2+y^2}@invariant(y>=0, x<=0, x < 0, y>0, ((y>=0&x<=0)&x < 0)&y>0)]!(x>0 | y<=0)
+  x=-1 & y=1 -> [{x'=x*y, y'=x^2+y^2}@invariant((-1*y < 0&x<=0), (-1*y < 0), (x<=0))]!(x>0 | y<=0)
+End.
+
+Tactic "Automated proof".
+  master
 End.
 
 End.
@@ -188,7 +202,11 @@ ProgramVariables.
 End.
 
 Problem.
-  x=1 & y=1 -> [{x'=x*(2-x-2*y), y'=(2-2*x-y)*y}@invariant(x>=0, y>=0, x>0, y>0, ((x>=0&y>=0)&x>0)&y>0)]!(x<=0 | y<=0)
+  x=1 & y=1 -> [{x'=x*(2-x-2*y), y'=(2-2*x-y)*y}@invariant((-1*x < 0&-1*y < 0), (-1*x < 0), (-1*y < 0))]!(x<=0 | y<=0)
+End.
+
+Tactic "Automated proof".
+  master
 End.
 
 End.
@@ -201,7 +219,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x^2+y^2<=1/5 -> [{x'=-4*y+x*(1-x^2-y^2)-y*(x^2+y^2), y'=4*x+y*(1-x^2-y^2)+x*(x^2+y^2)}@invariant(x^2+y^2<=1)]!(x^2+y^2>1)
+  x^2+y^2<=1/5 -> [{x'=-4*y+x*(1-x^2-y^2)-y*(x^2+y^2), y'=4*x+y*(1-x^2-y^2)+x*(x^2+y^2)}@invariant(-1+x^2+y^2<=0)]!(x^2+y^2>1)
 End.
 
 Tactic "Automated proof".
@@ -218,7 +236,11 @@ ProgramVariables.
 End.
 
 Problem.
-  x^2+y^2>=1 -> [{x'=x-y^3, y'=x^3+y}@invariant(2*(x^2+y^2)>=1)]!(x^2+y^2<1/2)
+  x^2+y^2>=1 -> [{x'=x-y^3, y'=x^3+y}@invariant(1/2+-1*x^2+-1*y^2<=0)]!(x^2+y^2<1/2)
+End.
+
+Tactic "Automated proof".
+  master
 End.
 
 End.
@@ -231,7 +253,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x=1 & y=-1 -> [{x'=x^2+(x+y)/2, y'=(-x+3*y)/2}@invariant(((y < 0|3*y>x)|x+2*x^2+y>0), (x!=3*y|y!=0&x+2*x^2+y!=0), ((y < 0|3*y>x)|x+2*x^2+y>0)&(x!=3*y|y!=0&x+2*x^2+y!=0))]!(y>0)
+  x=1 & y=-1 -> [{x'=x^2+(x+y)/2, y'=(-x+3*y)/2}]!(y>0)
 End.
 
 End.
@@ -244,7 +266,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x=1 & y=-1 -> [{x'=x*(x+2*y), y'=y*(2*x+y)}@invariant(x>=0, y<=0, x>=0&y<=0)]!(x<0 | y>0)
+  x=1 & y=-1 -> [{x'=x*(x+2*y), y'=y*(2*x+y)}@invariant((-1*x<=0&y<=0), (-1*x<=0), (y<=0))]!(x<0 | y>0)
 End.
 
 Tactic "Automated proof".
@@ -261,7 +283,11 @@ ProgramVariables.
 End.
 
 Problem.
-  x=-1 & y=-1 -> [{x'=x*(x-2*y), y'=-(2*x-y)*y}@invariant(x<=0, x^2<=2*x*y, y<=0, (x<=0&x^2<=2*x*y)&y<=0)]!(x>0 | y>0)
+  x=-1 & y=-1 -> [{x'=x*(x-2*y), y'=-(2*x-y)*y}@invariant((x<=0&y<=0), (x<=0), (y<=0))]!(x>0 | y>0)
+End.
+
+Tactic "Automated proof".
+  master
 End.
 
 End.
@@ -274,7 +300,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x=1 & y=1/8 -> [{x'=x-y^2, y'=y*(x-y^2)}@invariant(x>=y^2)]!(x<0)
+  x=1 & y=1/8 -> [{x'=x-y^2, y'=y*(x-y^2)}@invariant(x+-1*y^2>=0)]!(x<0)
 End.
 
 Tactic "Automated proof".
@@ -293,9 +319,7 @@ End.
 Problem.
   -1/5000 + (1/20+x)^2 + (3/200 + y)^2 <= 0
   ->
-  [{x'=(-3*x^2)/2-x^3/2-y, y'=3*x-y}
-   @invariant((3*x < y&3*x^2+x^3+2*y < 0|49/100+x+x^2+y+y^2>0), (3*x!=y|3*x^2+x^3+2*y!=0), (3*x < y&3*x^2+x^3+2*y < 0|49/100+x+x^2+y+y^2>0)&(3*x!=y|3*x^2+x^3+2*y!=0))
-  ]!(49/100 + x + x^2 + y + y^2 <= 0)
+  [{x'=(-3*x^2)/2-x^3/2-y, y'=3*x-y}]!(49/100 + x + x^2 + y + y^2 <= 0)
 End.
 
 End.
@@ -310,9 +334,7 @@ End.
 Problem.
   -1/20 + (5/4+x)^2 + (-5/4+y)^2 <= 0
   ->
-  [{x'=7/8+x-x^3/3-y, y'=(2*(7/10+x-(4*y)/5))/25}
-   @invariant((7+10*x < 8*y&x^3+3*y < 21/8+3*x|36/5+5*x+x^2+2*y+y^2>0), (7+10*x!=8*y|x^3+3*y!=21/8+3*x), (7+10*x < 8*y&x^3+3*y < 21/8+3*x|36/5+5*x+x^2+2*y+y^2>0)&(7+10*x!=8*y|x^3+3*y!=21/8+3*x))
-  ]!(36/5 + 5*x + x^2 + 2*y + y^2 <= 0)
+  [{x'=7/8+x-x^3/3-y, y'=(2*(7/10+x-(4*y)/5))/25}]!(36/5 + 5*x + x^2 + 2*y + y^2 <= 0)
 End.
 
 End.
@@ -325,11 +347,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x^2+(-1/2 + y)^2 < 1/24 -> [{x'=x+2*x^3*y^2, y'=-y & x^2*y^2<=1}@invariant(y>0, x^2*y^2<=1, y>0&x^2*y^2<=1)]!(x<=-2 | y<=-1)
-End.
-
-Tactic "Automated proof".
-  master
+  x^2+(-1/2 + y)^2 < 1/24 -> [{x'=x+2*x^3*y^2, y'=-y & x^2*y^2<=1}]!(x<=-2 | y<=-1)
 End.
 
 End.
@@ -342,10 +360,9 @@ ProgramVariables.
 End.
 
 Problem.
-  (2+x)^2 + (-1+y)^2 <= 1/4 ->
-    [{x'=x^2+2*x*y+3*y^2, y'=2*y*(2*x+y)}
-     @invariant(y>=0, x^2+2*x*y+3*y^2>0, 5*x^2+8*x*y+5*y^2>=0, (x < 0|y*(2*x+y)>0), ((y>=0&x^2+2*x*y+3*y^2>0)&5*x^2+8*x*y+5*y^2>=0)&(x < 0|y*(2*x+y)>0))
-    ]!(x>0)
+  (2+x)^2 + (-1+y)^2 <= 1/4
+  ->
+  [{x'=x^2+2*x*y+3*y^2, y'=2*y*(2*x+y)}]!(x>0)
 End.
 
 End.
@@ -358,7 +375,7 @@ ProgramVariables.
 End.
 
 Problem.
-  1/100 - x^2 - y^2 >= 0 -> [{x'=-2*x+x^2+y, y'=x-2*y+y^2}@invariant(x*y<=x^2+y^2, x+y<=2, 4*(x^2+y^2)<=1, -1+4*x^2+4*y^2 < 0, ((x*y<=x^2+y^2&x+y<=2)&4*(x^2+y^2)<=1)&-1+4*x^2+4*y^2 < 0)]!(x^2+y^2 >= 1/4)
+  1/100 - x^2 - y^2 >= 0 -> [{x'=-2*x+x^2+y, y'=x-2*y+y^2}@invariant(-1/4+x^2+y^2 < 0)]!(x^2+y^2 >= 1/4)
 End.
 
 Tactic "Automated proof".
@@ -375,8 +392,9 @@ ProgramVariables.
 End.
 
 Problem.
-  x^2 + (2+y)^2 <= 1 ->
-    [{x'=2*x-x*y, y'=2*x^2-y}@invariant((2*x^2!=y|x*y!=2*x), (2*x^2 < y|91/100+x^2+y^2>2*y), (2*x^2!=y|x*y!=2*x)&(2*x^2 < y|91/100+x^2+y^2>2*y))]!(x^2+(-1+y)^2 <= 9/100)
+  x^2 + (2+y)^2 <= 1
+  ->
+  [{x'=2*x-x*y, y'=2*x^2-y}]!(x^2+(-1+y)^2 <= 9/100)
 End.
 
 End.
@@ -389,10 +407,9 @@ ProgramVariables.
 End.
 
 Problem.
-  (1+x)^2 + (-2+y)^2 <= 4/25 ->
-    [{x'=y, y'=2*x-x^3-y-x^2*y}
-     @invariant((y!=0|x^3+y+x^2*y!=2*x), (x^3+y+x^2*y < 2*x|24/25+x^2+y^2>2*x), (y!=0|x^3+y+x^2*y!=2*x)&(x^3+y+x^2*y < 2*x|24/25+x^2+y^2>2*x))
-    ]!((-1+x)^2 + y^2 <= 1/25)
+  (1+x)^2 + (-2+y)^2 <= 4/25
+  ->
+  [{x'=y, y'=2*x-x^3-y-x^2*y}]!((-1+x)^2 + y^2 <= 1/25)
 End.
 
 End.
@@ -405,9 +422,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x^2+y^2<=1 -> [{x'=3*(-4+x^2), y'=3+x*y-y^2}
-                 @invariant(-2 < x, x < 2, y < 4, (4+y>0|3+x*y < y^2), ((-2 < x&x < 2)&y < 4)&(4+y>0|3+x*y < y^2))
-                ]!(x < -4 | y < -4 | x>4 | y>4)
+  x^2+y^2<=1 -> [{x'=3*(-4+x^2), y'=3+x*y-y^2}]!(x < -4 | y < -4 | x>4 | y>4)
 End.
 
 End.
@@ -420,10 +435,7 @@ ProgramVariables.
 End.
 
 Problem.
-  -1/20 + (5/4+x)^2 + (-5/4+y)^2 <= 0 ->
-    [{x'=x+y, y'=x*y-y^2}
-     @invariant(y>=0, (x*y < y^2&(x+y < 0|171/5+25*x+5*x^2+5*y^2>8*y)|x+y>0&171/5+25*x+5*x^2+5*y^2>8*y), y>=0&(x*y < y^2&(x+y < 0|171/5+25*x+5*x^2+5*y^2>8*y)|x+y>0&171/5+25*x+5*x^2+5*y^2>8*y))
-    ]!((5/2+x)^2 + (-4/5 + y)^2 <= 1/20)
+  -1/20 + (5/4+x)^2 + (-5/4+y)^2 <= 0 -> [{x'=x+y, y'=x*y-y^2}]!((5/2+x)^2 + (-4/5 + y)^2 <= 1/20)
 End.
 
 End.
@@ -436,10 +448,9 @@ ProgramVariables.
 End.
 
 Problem.
-  x>-1/2 & x < -1/3 & y<0 & y>=-1/2 ->
-  [{x'=x*(1-x^2-y^2)+y*((-1+x^2)^2+y^2), y'=y*(1-x^2-y^2)-y*((-1+x^2)^2+y^2)}
-   @invariant(x<=0, y<=0, x < 0, (x<=0&y<=0)&x < 0)
-  ]!(x>=0)
+  x>-1/2 & x < -1/3 & y<0 & y>=-1/2
+  ->
+  [{x'=x*(1-x^2-y^2)+y*((-1+x^2)^2+y^2), y'=y*(1-x^2-y^2)-y*((-1+x^2)^2+y^2)}]!(x>=0)
 End.
 
 Tactic "Automated proof".
@@ -458,7 +469,7 @@ End.
 Problem.
   a>-1/2 & a < -1/3 & y<0 & y>=-1/2 ->
   [{a'=a*(1-a^2-y^2)+y*((-1+a^2)^2+y^2), y'=y*(1-a^2-y^2)-y*((-1+a^2)^2+y^2)}
-   @invariant(a^2+2*y^2<=2)
+   @invariant(-2+a^2+2*y^2<=0)
   ]!(a^2+2*y^2 > 2)
 End.
 
@@ -476,7 +487,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x > -1/2 & x < -1/3 & y < 0 & y >= -1/2 -> [{x'=2*x-x^5-x*y^4, y'=y-x^2*y-y^3}@invariant(x<=0, y<=0, x<=0&y<=0)]!(x + y > 0)
+  x > -1/2 & x < -1/3 & y < 0 & y >= -1/2 -> [{x'=2*x-x^5-x*y^4, y'=y-x^2*y-y^3}@invariant((x<=0&y<=0), (x<=0), (y<=0))]!(x + y > 0)
 End.
 
 Tactic "Automated proof".
@@ -493,7 +504,7 @@ ProgramVariables.
 End.
 
 Problem.
-  (-1 + x)^2 + (1 + y)^2 < 1/4 -> [{x'=1+x+x^2+x^3+2*y+2*x^2*y, y'=-y+2*x*y+x^2*y+2*x*y^2}@invariant(y<=0)]!(y >= 1)
+  (-1 + x)^2 + (1 + y)^2 < 1/4 -> [{x'=1+x+x^2+x^3+2*y+2*x^2*y, y'=-y+2*x*y+x^2*y+2*x*y^2}@invariant((1+x^2>=0&y<=0), (1+x^2>=0), (y<=0))]!(y >= 1)
 End.
 
 Tactic "Automated proof".
@@ -510,7 +521,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x > -1 & x < 0 & y < 0 & y >= -1 -> [{x'=-1+x^2+y^2, y'=5*(-1+x*y)}@invariant(x+y<=1)]!(x + y > 1)
+  x > -1 & x < 0 & y < 0 & y >= -1 -> [{x'=-1+x^2+y^2, y'=5*(-1+x*y)}@invariant(-1+x+y<=0)]!(x + y > 1)
 End.
 
 Tactic "Automated proof".
@@ -527,8 +538,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x > -4/5 & x < -1/3 & y < 0 & y >= -1 ->
-    [{x'=2*x-2*x*y, y'=-x^2+2*y+y^2}@invariant(x<=0, y<=0, y*(2+y)<=x^2, x < 0, ((x<=0&y<=0)&y*(2+y)<=x^2)&x < 0)]!((x = 0 & y = 0) | x + y > 1)
+  x > -4/5 & x < -1/3 & y < 0 & y >= -1 -> [{x'=2*x-2*x*y, y'=-x^2+2*y+y^2}]!((x = 0 & y = 0) | x + y > 1)
 End.
 
 Tactic "Automated proof".
@@ -545,7 +555,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x > -1/2 & x < 0 & y < 0 & y >= -1/2 -> [{x'=y, y'=2*(-1-y)*y}@invariant(y<=2)]!(y>2)
+  x > -1/2 & x < 0 & y < 0 & y >= -1/2 -> [{x'=y, y'=2*(-1-y)*y}@invariant(-2+y<=0)]!(y>2)
 End.
 
 Tactic "Automated proof".
@@ -584,7 +594,7 @@ End.
 Problem.
   x^2 + y^2 < 1/4 ->
   [{x'=-70-100*x+70*x^2+100*x^3-200*y+200*x^2*y, y'=146*x+100*y+140*x*y+100*x^2*y+200*x*y^2}
-   @invariant(-1<=x, x<=1, -1<=x&x<=1)
+   @invariant((-1+x<=0&1+x>=0), (-1+x<=0), (1+x>=0))
   ]!(2*x >= 3 | x <= -3/2)
 End.
 
@@ -602,7 +612,7 @@ ProgramVariables.
 End.
 
 Problem.
-  a > -1/2 & a < -1/3 & y < 0 & y >= -1/2 -> [{a'=2*a-a^5-a*y^4, y'=y-a^2*y-y^3}@invariant(a^2+y^2<=5)]!(a^2 + y^2 > 5)
+  a > -1/2 & a < -1/3 & y < 0 & y >= -1/2 -> [{a'=2*a-a^5-a*y^4, y'=y-a^2*y-y^3}@invariant(-5+a^2+y^2<=0)]!(a^2 + y^2 > 5)
 End.
 
 Tactic "Automated proof".
@@ -622,7 +632,7 @@ Problem.
   x > -1 & x < -3/4 & y <= 3/2 & y >= 1 ->
   [{x'=-42*x^7+50*x^2*y+156*x^3*y+258*x^4*y-46*x^5*y+68*x^6*y+20*x*y^6-8*y^7,
     y'=y*(1110*x^6-3182*x^4*y-220*x^5*y+478*x^3*y^3+487*x^2*y^4-102*x*y^5-12*y^6)}
-   @invariant(y>=0, x<=1+y, y>=0&x<=1+y)
+   @invariant((y>=0&-1+x+-1*y<=0), (y>=0), (-1+x+-1*y<=0))
   ]!(x > 1 + y)
 End.
 
@@ -643,8 +653,12 @@ Problem.
   x > -1 & x < -1/2 & y <= -1/10 & y >= -3/10 ->
   [{x'=315*x^7+477*x^6*y-113*x^5*y^2+301*x^4*y^3-300*x^3*y^4-192*x^2*y^5+128*x*y^6-16*y^7,
     y'=y*(2619*x^6-99*x^5*y-3249*x^4*y^2+1085*x^3*y^3+596*x^2*y^4-416*x*y^5+64*y^6)}
-   @invariant(y<=0, x<=0, 3*x<=2*y, x<=1+y, ((y<=0&x<=0)&3*x<=2*y)&x<=1+y)
+   @invariant((((y<=0&3*x+-2*y<=0)&7*x+-2*y<=0)&-1+x+-1*y<=0), (y<=0), (3*x+-2*y<=0), (7*x+-2*y<=0), (-1+x+-1*y<=0))
   ]!(x > 1 + y)
+End.
+
+Tactic "Automated proof".
+  master
 End.
 
 End.
@@ -657,7 +671,9 @@ ProgramVariables.
 End.
 
 Problem.
-  x > -1 & x < -1/2 & y < -1/2 & y >= -1 -> [{x'=y, y'=x^5-x*y}@invariant(x^5<=(x+4*x^3)*y, y<=0, x^5<=(x+4*x^3)*y&y<=0)]!(x + y > 1)
+  x > -1 & x < -1/2 & y < -1/2 & y >= -1
+  ->
+  [{x'=y, y'=x^5-x*y}@invariant((x^5+-1*x*y+-4*x^3*y<=0&y<=0), (x^5+-1*x*y+-4*x^3*y<=0), (y<=0))]!(x + y > 1)
 End.
 
 End.
@@ -683,7 +699,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x^2 + (-2 + y)^2 < 1/24 -> [{x'=-x+2*x^2*y, y'=-y}@invariant(2+x>=0, y>=0, 2*x*y<=1, 2+x>0, ((2+x>=0&y>=0)&2*x*y<=1)&2+x>0)]!(x <= -2 | y <= -1)
+  x^2 + (-2 + y)^2 < 1/24 -> [{x'=-x+2*x^2*y, y'=-y}]!(x <= -2 | y <= -1)
 End.
 
 End.
@@ -713,7 +729,7 @@ ProgramVariables.
 End.
 
 Problem.
-  (2/3 + x)^2 + y^2 <= 1/24 -> [{x'=-2*y, y'=-2*x-3*x^2}@invariant(x < 0|y < 0&(x<=0|x*(2+3*x)>0))]!(x>0)
+  (2/3 + x)^2 + y^2 <= 1/24 -> [{x'=-2*y, y'=-2*x-3*x^2}]!(x>0)
 End.
 
 End.
@@ -740,7 +756,9 @@ ProgramVariables.
 End.
 
 Problem.
-  x^3 >= -1 & y^5 >= 0 -> [{x'=(-3+x)^4+y^5, y'=y^2}@invariant(y>=0, 1+x>=0, y>=0&1+x>=0)]!(1 + x < 0 | y < 0)
+  x^3 >= -1 & y^5 >= 0
+  ->
+  [{x'=(-3+x)^4+y^5, y'=y^2}@invariant((-1+-1*x<=0&-1*y<=0), (-1+-1*x<=0), (-1*y<=0))]!(1 + x < 0 | y < 0)
 End.
 
 Tactic "Automated proof".
@@ -757,7 +775,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x^3 >= -1 -> [{x'=a+(-3+x)^4, a'=0 & a>=0}@invariant(a>=0, a+(-3+x)^4>=0, 1+x>=0, (a>=0&a+(-3+x)^4>=0)&1+x>=0)]!(x^3 < -1)
+  x^3 >= -1 -> [{x'=a+(-3+x)^4, a'=0 & a>=0}@invariant(-1+-1*x^3<=0)]!(x^3 < -1)
 End.
 
 Tactic "Automated proof".
@@ -774,7 +792,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x + y >= 0 -> [{x'=-2*y, y'=x^2}@invariant(y>0|1+x>0)]!(x < -1 & y <= -1/2)
+  x + y >= 0 -> [{x'=-2*y, y'=x^2}@invariant(-1/2+-1*y < 0|-1+-1*x<=0)]!(x < -1 & y <= -1/2)
 End.
 
 End.
@@ -787,7 +805,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x = 0 & y = 1 -> [{x'=x*(1-y), y'=-((1-x)*y) & x>=0 & y>=0}@invariant(x>=0, y>=0, x>=0&y>=0)]!(y < 0)
+  x = 0 & y = 1 -> [{x'=x*(1-y), y'=-((1-x)*y) & x>=0 & y>=0}@invariant(-1*y<=0)]!(y < 0)
 End.
 
 Tactic "Automated proof".
@@ -804,7 +822,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x^2 + y^2 <= 1/4 -> [{x'=-y+2*x^2*y, y'=y+2*x*y^2}@invariant(2*x^2<=1)]!(x > 3)
+  x^2 + y^2 <= 1/4 -> [{x'=-y+2*x^2*y, y'=y+2*x*y^2}@invariant(-1+2*x^2<=0)]!(x > 3)
 End.
 
 Tactic "Automated proof".
@@ -824,6 +842,10 @@ Problem.
   (-3/2 + x)^2 + y^2 <= 1/4 -> [{x'=x, y'=-x+x^3/3-y}@invariant(x>=0)]!((1 + x)^2 + (1 + y)^2 <= 4/25)
 End.
 
+Tactic "Automated proof".
+  master
+End.
+
 End.
 
 ArchiveEntry "Shimizu Morioka System".
@@ -835,7 +857,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x = 5 & y = 3 & z = -4 -> [{x'=y, y'=x-y-x*z, z'=x^2-z}@invariant(5+z>=0)]!(z < -5)
+  x = 5 & y = 3 & z = -4 -> [{x'=y, y'=x-y-x*z, z'=x^2-z}@invariant(-5+-1*z<=0)]!(z < -5)
 End.
 
 Tactic "Automated proof".
@@ -852,7 +874,13 @@ ProgramVariables.
 End.
 
 Problem.
-  x^2 + y^2 < 1/16 -> [{x'=x-x^3+y-x*y^2, y'=-x+y-x^2*y-y^3}@invariant(2+x>=0, y<=2, 2+x>0, (2+x>=0&y<=2)&2+x>0)]!(x <= -2 | y > 2)
+  x^2 + y^2 < 1/16
+  ->
+  [{x'=x-x^3+y-x*y^2, y'=-x+y-x^2*y-y^3}@invariant((-2+-1*x < 0&-2+y<=0), (-2+-1*x < 0), (-2+y<=0))]!(x <= -2 | y > 2)
+End.
+
+Tactic "Automated proof".
+  master
 End.
 
 End.
@@ -909,7 +937,7 @@ End.
 
 Problem.
   x > -4/5 & x < -1/3 & y < 3/2 & y >= 1 ->
-  [{x'=-x+x*(x^2+y^2), y'=x+y*(x^2+y^2)}@invariant(x<=0, x+x^2*y+y^3>=0, x<=0&x+x^2*y+y^3>=0)]!(x < -1/3 & y >= 0 & 2*y < 1 & x > -4/5)
+  [{x'=-x+x*(x^2+y^2), y'=x+y*(x^2+y^2)}@invariant((x<=0&x+x^2*y+y^3>=0), (x<=0), (x+x^2*y+y^3>=0))]!(x < -1/3 & y >= 0 & 2*y < 1 & x > -4/5)
 End.
 
 Tactic "Automated proof".
@@ -926,7 +954,7 @@ ProgramVariables.
 End.
 
 Problem.
-  (-1/3 + x)^2 + (-1/3 + y)^2 < 1/16 -> [{x'=(1-x^2)*y, y'=1-y^2}@invariant(-1<=x, x<=1, -1<=x&x<=1)]!(x >= 2 | x <= -2)
+  (-1/3 + x)^2 + (-1/3 + y)^2 < 1/16 -> [{x'=(1-x^2)*y, y'=1-y^2}@invariant(((-1+x<=0&-2+x<=0)&1+x>=0), (-1+x<=0), (-2+x<=0), (1+x>=0))]!(x >= 2 | x <= -2)
 End.
 
 Tactic "Automated proof".
@@ -943,10 +971,7 @@ ProgramVariables.
 End.
 
 Problem.
-  (-1/3 + x)^2 + (-1/3 + y)^2 < 1/16 ->
-    [{x'=y, y'=-x+y*(1-x^2-y^2)}
-     @invariant(x^2+y^2<=1, -2<=x, x<=2, -2+x < 0, 2+x>0, x^2+y^2>0, (((x^2+y^2<=1&-2<=x&x<=2)&-2+x < 0)&2+x>0)&x^2+y^2>0)
-    ]!(x^2 + y^2 = 0 | x >= 2 | x <= -2)
+  (-1/3 + x)^2 + (-1/3 + y)^2 < 1/16 -> [{x'=y, y'=-x+y*(1-x^2-y^2)}]!(x^2 + y^2 = 0 | x >= 2 | x <= -2)
 End.
 
 End.
@@ -989,7 +1014,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x = 0 & y = 0 -> [{x'=-1+x^2+y^2, y'=x^2}@invariant(y>=0)]!(y < 0)
+  x = 0 & y = 0 -> [{x'=-1+x^2+y^2, y'=x^2}@invariant(-1*y<=0)]!(y < 0)
 End.
 
 Tactic "Automated proof".
@@ -1006,7 +1031,7 @@ ProgramVariables.
 End.
 
 Problem.
-  a = 0 & y = 1/2 -> [{a'=-a+a^3-y+a*y^2, y'=a-y+a^2*y+y^3}@invariant(a^2+y^2<=1)]!(a^2 + y^2 > 1)
+  a = 0 & y = 1/2 -> [{a'=-a+a^3-y+a*y^2, y'=a-y+a^2*y+y^3}@invariant(-1+a^2+y^2<=0)]!(a^2 + y^2 > 1)
 End.
 
 Tactic "Automated proof".
@@ -1023,7 +1048,7 @@ ProgramVariables.
 End.
 
 Problem.
-  b = 1/2 & y = 1/2 -> [{b'=-b+b^3-y+b*y^2, y'=b-y+b^2*y+y^3}@invariant((b^2+y^2)^2<=b^2+y^2)]!(b^2 + y^2 > 2)
+  b = 1/2 & y = 1/2 -> [{b'=-b+b^3-y+b*y^2, y'=b-y+b^2*y+y^3}@invariant(-2*b^2+2*b^4+-2*y^2+4*b^2*y^2+2*y^4<=0)]!(b^2 + y^2 > 2)
 End.
 
 Tactic "Automated proof".
@@ -1040,7 +1065,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x = 0 & y = 1/2 -> [{x'=-x+x^3-y+x*y^2, y'=x-y+x^2*y+y^3 & x>=0 & y>=0}@invariant(x>=0, y>=0, x^2+y^2<=1, (x>=0&y>=0)&x^2+y^2<=1)]!(x^2 + y^2 > 1)
+  x = 0 & y = 1/2 -> [{x'=-x+x^3-y+x*y^2, y'=x-y+x^2*y+y^3 & x>=0 & y>=0}@invariant(-1+x^2+y^2<=0)]!(x^2 + y^2 > 1)
 End.
 
 Tactic "Automated proof".
@@ -1057,7 +1082,7 @@ ProgramVariables.
 End.
 
 Problem.
-  x = 0 & y = 1 -> [{x'=y, y'=-x+(1-x^2)*y & x<=0 & y>=0}]!(x^2 + y^2 > 10)
+  x = 0 & y = 1 -> [{x'=y, y'=-x+(1-x^2)*y & x<=0 & y>=0}@invariant((x=0&-1+y=0), (x=0), (-1+y=0))]!(x^2 + y^2 > 10)
 End.
 
 End.
@@ -1070,7 +1095,11 @@ ProgramVariables.
 End.
 
 Problem.
-  x = 1 & y = 0 -> [{x'=y^5+x^2*(-x+y), y'=y^2*(-2*x+y)}]!(y > 0 | y < 0)
+  x = 1 & y = 0 -> [{x'=y^5+x^2*(-x+y), y'=y^2*(-2*x+y)}@invariant((-1*y<=0&y<=0), (-1*y<=0), (y<=0))]!(y > 0 | y < 0)
+End.
+
+Tactic "Automated proof".
+  master
 End.
 
 End.
@@ -1100,7 +1129,7 @@ ProgramVariables.
 End.
 
 Problem.
-  (-1/3 + x)^2 + (-1/3 + y)^2 < 1/16 -> [{x'=-x^6-x*y, y'=x^2-y}@invariant(x>=0, 1+y>=0, x^5+y>=0, 1+y>0, ((x>=0&1+y>=0)&x^5+y>=0)&1+y>0)]!(y <= -1)
+  (-1/3 + x)^2 + (-1/3 + y)^2 < 1/16 -> [{x'=-x^6-x*y, y'=x^2-y}@invariant(-1+-1*y < 0)]!(y <= -1)
 End.
 
 Tactic "Automated proof".
