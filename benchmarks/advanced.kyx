@@ -152,12 +152,7 @@ em = 0 & d >= 0 & b() > 0 & ep() > 0 & A() > 0 & v>=0
      )
 End.
 
-Tactic "Automated proof".
-  /* requires QE({`Mathematica`}) */
-  master
-End.
-
-Tactic "Proof Proposition 4: Reactivity Constraint".
+Tactic "Interactive Proof".
   /* requires QE({`Mathematica`}) */
   implyR(1); equivR(1); <(
     composeb(-2.0.0.1); composeb(-2.0.0.1.1); solve(-2.0.0.1.1.1); assignb(-2.0.0.1.1); assignb(-2.0.0.1); master,
@@ -598,6 +593,177 @@ assumptions() ->
       }
     }*@invariant(loopinv())
   ](v>0 -> (x - xo)^2 + (y - yo)^2 > 0)
+End.
+
+End.
+
+ArchiveEntry "Chinese Train Control System Level 3 (CTCS-3)".
+
+Citation "Liang Zou, Jidong Lv, Shuling Wang, Naijun Zhan, Tao Tang, Lei Yuan, Yu Liu. Verifying Chinese Train Control System under a Combined Scenario by Theorem Proving. VSTTE 2013, pp. 262-280".
+Link "https://doi.org/10.1007/978-3-642-54108-7_14".
+
+Definitions.
+
+  R Cb().
+  R Ca().
+  R CA().
+  R T().
+  R x1().
+  R x2().
+  R e21().
+  R e22().
+  R e23().
+  R e31().
+  R e32().
+  R e33().
+
+  R min(R,R).
+
+  B initial() <-> (CA()=1
+               & Ca()=-0.2
+               & Cb()=-1
+               & T()=0.125
+               & x1()=3200
+               & x2()=6400
+               & e21()=3200
+               & e22()=6400
+               & e23()=9600
+               & e31()=3200
+               & e32()=6400
+               & e33()=9600
+               & a=0
+               & v=0
+               & s=0
+               & i=0
+               & lvl=2
+               & lu=0
+               & COswitched=0
+               & conf=0
+               & v211=105/3.6
+               & v212=100/3.6
+               & v221=105/3.6
+               & v222=100/3.6
+               & v231=45/3.6
+               & v232=40/3.6
+               & v311=255/3.6
+               & v312=250/3.6
+               & v321=255/3.6
+               & v322=250/3.6
+               & v331=0
+               & v332=0).
+
+  B testCO(R COswitched,R s) <-> (COswitched=0 & s<e32() & s>e32()-300).
+
+  R fv(R v) = ((v+CA()*T())^2).
+
+  HP FB2 ::= {
+     vr1:=(v211+CA()*T())^2;
+     vr1:=min(vr1,(v221*v221-2*Cb()*e21()+2*Cb()*s+Cb()*CA()*T()*T()+2*Cb()*v*T()));
+     vr1:=min(vr1,(v231*v231-2*Cb()*e22()+2*Cb()*s+Cb()*CA()*T()*T()+2*Cb()*v*T()));
+     vr1:=min(vr1,(2*Cb()*s-2*Cb()*e23()+Cb()*CA()*T()*T()+2*Cb()*v*T()));
+     vr2:=(v212+CA()*T())^2;
+     vr2:=min(vr2,(v222*v222-2*Cb()*e21()+2*Cb()*s+Cb()*CA()*T()*T()+2*Cb()*v*T()));
+     vr2:=min(vr2,(v232*v232-2*Cb()*e22()+2*Cb()*s+Cb()*CA()*T()*T()+2*Cb()*v*T()));
+     vr2:=min(vr2,(2*Cb()*s-2*Cb()*e23()+Cb()*CA()*T()*T()+2*Cb()*v*T()));
+  }.
+
+  HP FB22 ::= {
+     vr1:=(v221+CA()*T())^2;
+     vr1:=min(vr1,(v231*v231-2*Cb()*e22()+2*Cb()*s+Cb()*CA()*T()*T()+2*Cb()*v*T()));
+     vr1:=min(vr1,(2*Cb()*s-2*Cb()*e23()+Cb()*CA()*T()*T()+2*Cb()*v*T()));
+     vr2:=(v222+CA()*T())^2;
+     vr2:=min(vr2,(v232*v232-2*Cb()*e22()+2*Cb()*s+Cb()*CA()*T()*T()+2*Cb()*v*T()));
+     vr2:=min(vr2,(2*Cb()*s-2*Cb()*e23()+Cb()*CA()*T()*T()+2*Cb()*v*T()));
+
+     vr1:=min(vr1,(v321+CA*T())^2);
+     vr1:=min(vr1,(v331*v331-2*Cb()*e32()+2*Cb()*s+Cb()*CA()*T()*T()+2*Cb()*v*T()));
+     vr1:=min(vr1,(2*Cb()*s-2*Cb()*e33()+Cb()*CA()*T()*T()+2*Cb()*v*T()));
+     vr2:=min(vr2,(v322+CA*T())^2);
+     vr2:=min(vr2,(v332*v332-2*Cb()*e32()+2*Cb()*s+Cb()*CA()*T()*T()+2*Cb()*v*T()));
+     vr2:=min(vr2,(2*Cb()*s-2*Cb()*e33()+Cb()*CA()*T()*T()+2*Cb()*v*T()));
+  }.
+
+  HP FB3 ::= {
+     vr1:=(v331+CA()*T())^2;
+     vr1:=min(vr1,(2*Cb()*s-2*Cb()*e33()+Cb()*CA()*T()*T()+2*Cb()*v*T()));
+     vr2:=(v332+CA()*T())^2;
+     vr2:=min(vr2,(2*Cb()*s-2*Cb()*e33()+Cb()*CA()*T()*T()+2*Cb()*v*T()));
+  }.
+
+  HP switchCO ::= {
+     v331:=45/3.6; v332:=40/3.6;
+  }.
+
+  HP accl ::= {
+     ? fv(v)>=vr1 ; a:=Cb();
+  ++ ? fv(v)>=vr2 & fv(v)<vr1; a:=Ca();
+  ++ ? fv(v)<vr1  & fv(v)<vr2; a:=CA();
+  }.
+
+  HP I2 ::= {
+     ? i=2 & s>=x1(); lvl:=2.5; I2a;
+  ++ ? i=0 & s>200; i:=1; lu:=1; i:=2; FB2; accl;
+  ++ ? (i=0 & s<=200) | (i=2 & s<x1()); FB2; accl;
+  }.
+
+  HP I2a ::= {
+     ? s>x2(); lvl:=3; I3;
+  ++ ? s<=x2(); FB22; accl;
+  }.
+
+  HP I3 ::= {
+     ?  testCO(COswitched,s); conf:=1; COswitched:=1; switchCO; FB3; accl;
+  ++ ? !testCO(COswitched,s); FB3; accl;
+  }.
+
+  HP ctrl ::= {
+     ? lvl=2; I2;
+  ++ ? lvl=2.5; I2a;
+  ++ ? lvl=3; I3;
+  }.
+
+  HP drive ::= {
+    t := 0;
+    {s'=v, v'=a, t'=1 & v>=0 & t<=T()}
+  }.
+
+End.
+
+ProgramVariables.
+
+  R a.
+  R v.
+  R s.
+  R lvl.
+  R lu.
+  R i.
+  R COswitched.
+  R conf.
+  R t.
+  R vr1.
+  R vr2.
+  R v211.
+  R v212.
+  R v221.
+  R v222.
+  R v231.
+  R v232.
+  R v311.
+  R v312.
+  R v321.
+  R v322.
+  R v331.
+  R v332.
+
+End.
+
+Problem.
+
+initial() ->
+[
+  {ctrl; drive;}*
+](s<=x2())
+
 End.
 
 End.
