@@ -85,7 +85,11 @@ End.
 
 End.
 
-ArchiveEntry "Ahmadi Parrilo Kristic".
+ArchiveEntry "Ahmadi Parrilo Krstic".
+
+Description "Theorem 1.1 (1)".
+Citation "Amir Ali Ahmadi, Miroslav Krstic, and Pablo A. Parrilo. A globally asymptotically stable polynomial vector field with no polynomial Lyapunov function. CDC-ECE 2011".
+Link "https://doi.org/10.1109/CDC.2011.6161499".
 
 ProgramVariables.
   R x.
@@ -108,6 +112,9 @@ End.
 
 ArchiveEntry "Alongi Nelson Ex_4_1_9 page 143".
 
+Description "Ex 4.1.9 Page 143".
+Citation "John M. Alongi and Gail S. Nelson. Recurrence and Topology".
+
 ProgramVariables.
   R x.
   R y.
@@ -128,6 +135,9 @@ End.
 
 ArchiveEntry "Arrowsmith Place Fig_1_29 page 14".
 
+Description "Fig 1.29 Page 14".
+Citation "D. K. Arrowsmith and C. M. Place. An Introduction to Dynamical Systems".
+
 ProgramVariables.
   R x.
   R y.
@@ -144,6 +154,9 @@ End.
 End.
 
 ArchiveEntry "Arrowsmith Place Fig_1_30 page 14".
+
+Description "Fig 1.30 Page 14".
+Citation "D. K. Arrowsmith and C. M. Place. An Introduction to Dynamical Systems".
 
 ProgramVariables.
   R x.
@@ -162,6 +175,9 @@ End.
 
 ArchiveEntry "Arrowsmith Place Fig_1_31 page 14".
 
+Description "Fig 1.31 Page 14".
+Citation "D. K. Arrowsmith and C. M. Place. An Introduction to Dynamical Systems".
+
 ProgramVariables.
   R x.
   R y.
@@ -178,6 +194,9 @@ End.
 End.
 
 ArchiveEntry "Arrowsmith Place Fig_1_32 page 14".
+
+Description "Fig 1.32 Page 14".
+Citation "D. K. Arrowsmith and C. M. Place. An Introduction to Dynamical Systems".
 
 ProgramVariables.
   R x.
@@ -196,6 +215,9 @@ End.
 
 ArchiveEntry "Arrowsmith Place Fig_1_35 page 17".
 
+Description "Fig 1.35 Page 17".
+Citation "D. K. Arrowsmith and C. M. Place. An Introduction to Dynamical Systems".
+
 ProgramVariables.
   R x.
   R y.
@@ -212,6 +234,9 @@ End.
 End.
 
 ArchiveEntry "Arrowsmith Place Fig_3_1 page 72".
+
+Description "Fig 3.1 Page 72".
+Citation "D. K. Arrowsmith and C. M. Place. An Introduction to Dynamical Systems".
 
 ProgramVariables.
   R x.
@@ -230,6 +255,9 @@ End.
 
 ArchiveEntry "Arrowsmith Place Fig_3_5c page 79".
 
+Description "Fig 3.5c Page 79".
+Citation "D. K. Arrowsmith and C. M. Place. An Introduction to Dynamical Systems".
+
 ProgramVariables.
   R x.
   R y.
@@ -247,6 +275,9 @@ End.
 
 ArchiveEntry "Arrowsmith Place Fig_3_5e page 79".
 
+Description "Fig 3.5e Page 79".
+Citation "D. K. Arrowsmith and C. M. Place. An Introduction to Dynamical Systems".
+
 ProgramVariables.
   R x.
   R y.
@@ -259,6 +290,9 @@ End.
 End.
 
 ArchiveEntry "Arrowsmith Place Fig_3_8 page 82".
+
+Description "Fig 3.8 Page 82".
+Citation "D. K. Arrowsmith and C. M. Place. An Introduction to Dynamical Systems".
 
 ProgramVariables.
   R x.
@@ -277,6 +311,9 @@ End.
 
 ArchiveEntry "Arrowsmith Place Fig_3_9 page 83".
 
+Description "Fig 3.9 Page 83".
+Citation "D. K. Arrowsmith and C. M. Place. An Introduction to Dynamical Systems".
+
 ProgramVariables.
   R x.
   R y.
@@ -294,6 +331,9 @@ End.
 
 ArchiveEntry "Arrowsmith Place Fig_3_11 page 83".
 
+Description "Fig 3.11 Page 83".
+Citation "D. K. Arrowsmith and C. M. Place. An Introduction to Dynamical Systems".
+
 ProgramVariables.
   R x.
   R y.
@@ -309,7 +349,11 @@ End.
 
 End.
 
-ArchiveEntry "Ben Sassi Girard 20104 More Greitzer Jet".
+ArchiveEntry "Ben Sassi Girard 20104 Moore-Greitzer Jet".
+
+Description "6.1 Moore-Greitzer jet engine model".
+Citation "Mohamed Amin Ben Sassi, Antoine Girard. Controller synthesis for robust invariance of polynomial dynamical systems using linear programming".
+Link "https://doi.org/10.1016/j.sysconle.2012.01.004".
 
 ProgramVariables.
   R x.
@@ -326,6 +370,10 @@ End.
 
 ArchiveEntry "Ben Sassi Girard Sankaranarayanan 2014 Fitzhugh-Nagumo".
 
+Description "Fitzhugh-Nagumo system".
+Citation "Mohamed Amin Ben Sassi, Antoine Girard, Sriram Sankaranarayanan. Iterative computation of polyhedral invariants sets for polynomial dynamical systems".
+Link "10.1109/CDC.2014.7040384".
+
 ProgramVariables.
   R x.
   R y.
@@ -340,6 +388,9 @@ End.
 End.
 
 ArchiveEntry "Bhatia Szego Ex_2_4 page 68".
+
+Description "Ex 2.4 Page 68".
+Citation "Bhatia, N. P. and Szego, G. P.. Stability Theory of Dynamical Systems".
 
 ProgramVariables.
   R x.
@@ -367,7 +418,11 @@ End.
 
 End.
 
-ArchiveEntry "Dai Ghan Xhia Zhan JSC14 Ex. 1".
+ArchiveEntry "Dai Gan Xia Zhan JSC14 Ex. 1".
+
+Description "Example 1".
+Citation "Liyun Dai, Ting Gan, Bican Xia, Naijun Zhan. Barrier certificates revisited. J. Symb. Comput.".
+Link "https://doi.org/10.1016/j.jsc.2016.07.010".
 
 ProgramVariables.
   R x.
@@ -384,7 +439,11 @@ End.
 
 End.
 
-ArchiveEntry "Dai Gan Xhia Zhan JSC14 Ex. 2".
+ArchiveEntry "Dai Gan Xia Zhan JSC14 Ex. 2".
+
+Description "Example 2".
+Citation "Liyun Dai, Ting Gan, Bican Xia, Naijun Zhan. Barrier certificates revisited. J. Symb. Comput.".
+Link "https://doi.org/10.1016/j.jsc.2016.07.010".
 
 ProgramVariables.
   R x.
@@ -399,7 +458,11 @@ End.
 
 End.
 
-ArchiveEntry "Dai Gan Xhia Zhan JSC14 Ex. 5".
+ArchiveEntry "Dai Gan Xia Zhan JSC14 Ex. 5".
+
+Description "Example 5".
+Citation "Liyun Dai, Ting Gan, Bican Xia, Naijun Zhan. Barrier certificates revisited. J. Symb. Comput.".
+Link "https://doi.org/10.1016/j.jsc.2016.07.010".
 
 ProgramVariables.
   R x.
@@ -427,7 +490,11 @@ End.
 
 End.
 
-ArchiveEntry "Djaballah Chaputot Kieffer Boussou 2015 Ex. 1".
+ArchiveEntry "Djaballah Chapoutot Kieffer Bouissou 2015 Ex. 1".
+
+Description "Example 1 (modified)".
+Citation "Adel Djaballah, Alexandre Chapoutot, Michel Kieffer, Olivier Bouissou. Construction of parametric barrier functions for dynamical systems using interval analysis. Automatica 78".
+Link "https://doi.org/10.1016/j.automatica.2016.12.013".
 
 ProgramVariables.
   R x.
@@ -441,6 +508,9 @@ End.
 End.
 
 ArchiveEntry "Dumortier Llibre Artes Ex. 1_9a".
+
+Description "Example 1.9a".
+Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
 
 ProgramVariables.
   R x.
@@ -460,6 +530,9 @@ End.
 End.
 
 ArchiveEntry "Dumortier Llibre Artes Ex. 1_9b".
+
+Description "Example 1.9b".
+Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
 
 ProgramVariables.
   R a.
@@ -481,6 +554,9 @@ End.
 
 ArchiveEntry "Dumortier Llibre Artes Ex. 1_11a".
 
+Description "Exercise 1.11".
+Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
+
 ProgramVariables.
   R x.
   R y.
@@ -497,6 +573,9 @@ End.
 End.
 
 ArchiveEntry "Dumortier Llibre Artes Ex. 1_11b".
+
+Description "Exercise 1.11 (modified)".
+Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
 
 ProgramVariables.
   R x.
@@ -515,6 +594,9 @@ End.
 
 ArchiveEntry "Dumortier Llibre Artes Ex. 5_1_ii".
 
+Description "Exercise 5.1 ii".
+Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
+
 ProgramVariables.
   R x.
   R y.
@@ -531,6 +613,9 @@ End.
 End.
 
 ArchiveEntry "Dumortier Llibre Artes Ex. 5_2_ii".
+
+Description "Exercise 5.2 ii".
+Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
 
 ProgramVariables.
   R x.
@@ -549,6 +634,9 @@ End.
 
 ArchiveEntry "Dumortier Llibre Artes Ex. 5_13".
 
+Description "Equation (5.13)".
+Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
+
 ProgramVariables.
   R x.
   R y.
@@ -565,6 +653,9 @@ End.
 End.
 
 ArchiveEntry "Dumortier Llibre Artes Ex. 10_9".
+
+Description "Exercise 10.9".
+Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
 
 ProgramVariables.
   R x.
@@ -586,6 +677,9 @@ End.
 
 ArchiveEntry "Dumortier Llibre Artes Ex. 10_11".
 
+Description "Exercise 10.11".
+Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
+
 ProgramVariables.
   R x.
   R y.
@@ -606,6 +700,9 @@ End.
 
 ArchiveEntry "Dumortier Llibre Artes Ex. 10_11b".
 
+Description "Exercise 10.11 (modified)".
+Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
+
 ProgramVariables.
   R a.
   R y.
@@ -622,6 +719,9 @@ End.
 End.
 
 ArchiveEntry "Dumortier Llibre Artes Ex. 10_15_i".
+
+Description "Exercise 10.15".
+Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
 
 ProgramVariables.
   R x.
@@ -644,6 +744,9 @@ End.
 
 ArchiveEntry "Dumortier Llibre Artes Ex. 10_15_ii".
 
+Description "Exercise 10.15 (modified)".
+Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
+
 ProgramVariables.
   R x.
   R y.
@@ -665,6 +768,9 @@ End.
 
 ArchiveEntry "Dumortier Llibre Artes Ex. 5_2".
 
+Description "Example 5.2".
+Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
+
 ProgramVariables.
   R x.
   R y.
@@ -679,6 +785,10 @@ End.
 End.
 
 ArchiveEntry "Fitzhugh Nagumo Ben Sassi Girard 2".
+
+Description "Fitzhugh-Nagumo system (modified)".
+Citation "Mohamed Amin Ben Sassi, Antoine Girard, Sriram Sankaranarayanan. Iterative computation of polyhedral invariants sets for polynomial dynamical systems".
+Link "10.1109/CDC.2014.7040384".
 
 ProgramVariables.
   R a.
@@ -786,6 +896,10 @@ End.
 
 ArchiveEntry "Liu Zhan Zhao Emsoft11 Example 25".
 
+Description "Example 25".
+Citation "Jiang Liu, Naijun Zhan, Hengjun Zhao. Computing semi-algebraic invariants for polynomial dynamical systems. EMSOFT 2011".
+Link "http://doi.acm.org/10.1145/2038642.2038659".
+
 ProgramVariables.
   R x.
   R y.
@@ -832,6 +946,10 @@ End.
 End.
 
 ArchiveEntry "Prajna PhD Thesis 2-4-1 Page 31".
+
+Description "Page 31".
+Citation "Prajna, Stephen (2005) Optimization-based methods for nonlinear and hybrid systems verification. Dissertation (Ph.D.), California Institute of Technology.".
+Link "http://resolver.caltech.edu/CaltechETD:etd-05272005-144358".
 
 ProgramVariables.
   R x.
@@ -898,7 +1016,10 @@ End.
 
 End.
 
-ArchiveEntry "Strogatz Example 6_1_5".
+ArchiveEntry "Strogatz Exercise 6_1_5".
+
+Description "Exercise 6.1.5".
+Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
 
 ProgramVariables.
   R x.
@@ -911,7 +1032,10 @@ End.
 
 End.
 
-ArchiveEntry "Strogatz Example 6_1_9 Dipole".
+ArchiveEntry "Strogatz Exercise 6_1_9 Dipole".
+
+Description "Exercise 6.1.9".
+Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
 
 ProgramVariables.
   R x.
@@ -930,6 +1054,9 @@ End.
 
 ArchiveEntry "Strogatz Example 6_3_2".
 
+Description "Example 6.3.2".
+Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
+
 ProgramVariables.
   R x.
   R y.
@@ -946,7 +1073,10 @@ End.
 
 End.
 
-ArchiveEntry "Strogatz Example 6_6_1 Reversible System".
+ArchiveEntry "Strogatz Exercise 6_6_1 Reversible System".
+
+Description "Exercise 6.6.1".
+Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
 
 ProgramVariables.
   R x.
@@ -963,7 +1093,10 @@ End.
 
 End.
 
-ArchiveEntry "Strogatz Example 6_6_2 Limit Cycle".
+ArchiveEntry "Strogatz Exercise 6_6_2 Limit Cycle".
+
+Description "Exercise 6.6.2".
+Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
 
 ProgramVariables.
   R x.
@@ -977,6 +1110,9 @@ End.
 End.
 
 ArchiveEntry "Strogatz Example 6_8_3".
+
+Description "Example 6.8.3".
+Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
 
 ProgramVariables.
   R x.
@@ -993,7 +1129,10 @@ End.
 
 End.
 
-ArchiveEntry "Strogatz Example 7_3_5".
+ArchiveEntry "Strogatz Exercise 7_3_5".
+
+Description "Exercise 7.3.5".
+Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
 
 ProgramVariables.
   R x.
