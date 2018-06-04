@@ -83,6 +83,29 @@ Problem.
   r <= 0 -> \exists f (x=f -> [{x'=r+x^2}]x=f)
 End.
 
+Tactic "Scripted proof".
+  implyR(1);
+  transform({`r=0|r < 0`},-1); orL(-1) <(
+    existsR({`0`}, 1);
+    implyR(1);
+    dG({`{y'=-x*y}`}, {`y*x=0&y>0`}, 1);
+    existsR({`1`}, 1);
+    boxAnd(1); andR(1); <(
+      dI(1),
+      dG({`{z'=x/2*z}`}, {`z^2*y=1`}, 1); existsR({`1`}, 1); dI(1)
+    )
+    ,
+    cut({`\exists s r=-s*s`}); <(
+      existsL(-2); existsR({`-s`}, 1); implyR(1); dG({`{y'=(-(x-s))*y}`}, {`y*(x+s)=0&y>0`}, 1);
+      existsR({`1`}, 1); boxAnd(1); andR(1); <(
+        dI(1),
+        dG({`{z'=(x-s)/2*z}`}, {`z^2*y=1`}, 1); existsR({`1`}, 1); dI(1)
+      ),
+      hideR(1); QE({`Mathematica`})
+    )
+  )
+End.
+
 End.
 
 ArchiveEntry "Ahmadi Parrilo Krstic".
@@ -875,6 +898,10 @@ Tactic "Scripted proof".
   - 0.0046604*x^3*y + 0.33388*x^2*y^2 + 0.40916*x*y^3 + 2.3187*y^4
   - 0.057327*x^3 - 0.32922*x^2*y - 0.52499*x*y^2 - 2.8116*y^3 + 0.25861
   *x^2 + 0.5952*x*y + 1.6165*y^2 + 0.084216*x + 0.053609*y - 0.80654 <= 0 & x <= 5`},1)&<( (dW(1)&QE), master)))
+End.
+
+Tactic "Automated proof".
+  master
 End.
 
 End.
