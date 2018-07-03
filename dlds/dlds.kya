@@ -209,6 +209,7 @@ composeb(1) ; choiceb(1.1) ; composeb(1.1.0) ; testb(1.1.0) ; assignb(1.1.0.1) ;
 End.
        
 Tactic "Bouncing Ball: automatic".
+  /* needs QE({`Mathematica`}) */
   master
 End.
        
@@ -347,6 +348,7 @@ Problem.
 End.
 
 Tactic "Parachute: Proof 1".
+  /* needs QE({`Mathematica`}) */
   implyR(1) ; loop({`(x>=0&v < 0)&v>-(9/1)^(1/2)`}, 1) ; <(
   QE,
   QE,
@@ -357,7 +359,7 @@ Tactic "Parachute: Proof 1".
         dW(1) ; QE,
         dI(1)
         ),
-      dG({`y'=(-1/2*1*(v-(9/1)^(1/2)))*y`}, {`y^2*(v+(9/1)^(1/2))=1`}, 1) ; dI(1.0) ; QE({`Mathematica`})
+      dG({`y'=(-1/2*1*(v-(9/1)^(1/2)))*y`}, {`y^2*(v+(9/1)^(1/2))=1`}, 1) ; dI(1.0) ; QE
       )
     )
   )
@@ -460,11 +462,11 @@ Tactic "Wall-E & Eve: Clever Proof".
   implyR(1) ; dualDirectd(1) ; loop({`(w-e)^2<=1&v=f`}, 1) ; <(
   prop ; done,
   dualDirectb(1) ; composed(1) ; dualDirectd(1) ; choiceb(1) ; andR(1) ; <(
-    assignb(1) ; composed(1) ; choiced(1) ; orR(1) ; hideR(2) ; assignd(1) ; composed(1) ; assignd(1) ; allR(1) ; implyR(1) ; dualDirectd(1) ; dC({`v=f`}, 1) ; <(
+    assignb(1) ; composed(1) ; choiced(1) ; orR(1) ; hideR(2) ; assignd(1) ; composed(1) ; assignd(1) ; dualDirectd(1) ; dC({`v=f`}, 1) ; <(
       dI(1),
       dI(1)
       ),
-    assignb(1) ; composed(1) ; choiced(1) ; orR(1) ; hideR(1) ; assignd(1) ; composed(1) ; assignd(1) ; allR(1) ; implyR(1) ; dualDirectd(1) ; dC({`v=f`}, 1) ; <(
+    assignb(1) ; composed(1) ; choiced(1) ; orR(1) ; hideR(1) ; assignd(1) ; composed(1) ; assignd(1) ; dualDirectd(1) ; dC({`v=f`}, 1) ; <(
       dI(1),
       dI(1)
       )
@@ -477,8 +479,8 @@ Tactic "Wall-E & Eve: Standard Proof".
   implyR(1) ; dualDirectd(1) ; loop({`(w-e)^2<=1&v=f`}, 1) ; <(
   prop ; done,
   dualDirectb(1) ; composed(1) ; dualDirectd(1) ; choiceb(1) ; andR(1) ; <(
-    assignb(1) ; composed(1) ; choiced(1) ; orR(1) ; hideR(2) ; assignd(1) ; composed(1) ; assignd(1) ; allR(1) ; implyR(1) ; dualDirectd(1) ; solve(1) ; QE,
-    assignb(1) ; composed(1) ; choiced(1) ; orR(1) ; hideR(1) ; assignd(1) ; composed(1) ; assignd(1) ; allR(1) ; implyR(1) ; dualDirectd(1) ; solve(1) ; QE
+    assignb(1) ; composed(1) ; choiced(1) ; orR(1) ; hideR(2) ; assignd(1) ; composed(1) ; assignd(1) ; dualDirectd(1) ; solve(1) ; QE,
+    assignb(1) ; composed(1) ; choiced(1) ; orR(1) ; hideR(1) ; assignd(1) ; composed(1) ; assignd(1) ; dualDirectd(1) ; solve(1) ; QE
     ),
   prop ; done
   )
