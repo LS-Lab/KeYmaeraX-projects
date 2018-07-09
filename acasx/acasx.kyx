@@ -12,7 +12,7 @@ SharedDefinitions.
   R max(R, R).
 
   /* todo: abbreviate to maxI */
-  B C(R w, R dhf, R dhd, R r, R h) <-> (
+  B C(R w, R dhf, R dhd, R r, R rv, R h) <-> (
     \forall t \forall ro \forall ho (
         (0 <= t & t < max(0, w * (dhf - dhd))/a() & ro = rv * t & ho = (w * a())/2 * t^2 + dhd * t)
       | (t >= max(0, w * (dhf - dhd))/a() & ro = rv * t & ho = dhf * t - w * max(0, w * (dhf - dhd))^2/(2*a()))
@@ -22,7 +22,7 @@ SharedDefinitions.
 
   B init() <-> ( hp()>0 & rp()>=0 & rv>=0 & a()>0 ).
 
-  B loopInv() <-> ( (w=wUp() | w=wLo()) & C(w,dhf,dhd,r,h) ).
+  B loopInv() <-> ( (w=wUp() | w=wLo()) & C(w,dhf,dhd,r,rv,h) ).
 
   /* todo: abbreviate evolution domain to "advisory" */
   HP motion ::= { {r' = -rv, h' = -dhd, dhd' = ao & w*dhd>=w*dhf|w*ao>=a() } }.
@@ -98,10 +98,10 @@ End.
 Problem.
     (w*dhd>=w*dhf|w*ao>=a())
   & (w=wUp()|w=wLo())
-  & C(w,dhf,dhd,r,h)
+  & C(w,dhf,dhd,r,rv,h)
   & init()
   ->
-  [motion;]((w=wUp()|w=wLo()) & C(w,dhf,dhd,r,h))
+  [motion;]((w=wUp()|w=wLo()) & C(w,dhf,dhd,r,rv,h))
 
 End.
 
@@ -151,21 +151,21 @@ End.
 
 Problem.
     init()
-  & ( (w=wUp() | w=wLo()) & C(w,dhf,dhd,r,h) )
+  & ( (w=wUp() | w=wLo()) & C(w,dhf,dhd,r,rv,h) )
   ->
   [{ {
      { ?true;
        ++
        {dhf := *;
         { w:=wUp(); ++ w:=wLo(); }
-        ?C(w,dhf,dhd,r,h);
+        ?C(w,dhf,dhd,r,rv,h);
        }
      }
      ao := *;
      }
      motion;
    }*@invariant(loopInv())
-  ] ( (abs(r) > rp() | abs(h) > hp()) & C(w,dhf,dhd,r,h) )
+  ] ( (abs(r) > rp() | abs(h) > hp()) & C(w,dhf,dhd,r,rv,h) )
 End.
 
 Tactic "Proof ACAS X Theorem 1: Correctness of Implicit Safe Regions".
@@ -237,7 +237,7 @@ ProgramVariables.
 End.
 
 Problem.
-  init() & (w=wUp() | w=wLo()) -> ( Lexpl() <-> C(w,dhf,dhd,r,h) )
+  init() & (w=wUp() | w=wLo()) -> ( Lexpl() <-> C(w,dhf,dhd,r,rv,h) )
 End.
 
 Tactic "Proof Lemma 1: Equivalence between implicit and explicit region formulation".
