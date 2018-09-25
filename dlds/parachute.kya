@@ -1,21 +1,21 @@
-﻿ArchiveEntry "Parachute".
+﻿ArchiveEntry "Parachute"
 
-Functions.
-  R g() = (9).  /* gravity */
-  R p() = (1).  /* parachute drag coefficient */
-  R a().        /* skydiver air drag coefficient */
-  R m().        /* impact velocity */
-  R T().        /* skydiver reaction time */
+Definitions
+  Real g = 9;    /* gravity */
+  Real p = 1;    /* parachute drag coefficient */
+  Real a;        /* skydiver air drag coefficient */
+  Real m;        /* impact velocity */
+  Real T;        /* skydiver reaction time */
 End.
 
-ProgramVariables.
-  R x.    /* skydiver altitude */
-  R v.    /* skydiver speed (< 0, so lower is faster) */
-  R r.    /* skydiver current drag coefficient (depends on parachute open/closed) */
-  R t.    /* time */
+ProgramVariables
+  Real x;        /* skydiver altitude */
+  Real v;        /* skydiver speed (< 0, so lower is faster) */
+  Real r;        /* skydiver current drag coefficient (depends on parachute open/closed) */
+  Real t;        /* time */
 End.
 
-Problem.
+Problem
   g()>0 & p()>a() & a()>0 & T()>0 & m()< -(g()/p())^(1/2) &
   x>=0 & v<0 & v> -(g()/p())^(1/2) & r=a()
 ->
@@ -27,11 +27,11 @@ Problem.
     }
     t := 0;
     {x'=v, v'=-g()+r*v^2, t'=1 & t<=T() & x>=0 & v<0}
-  }*@invariant((x>=0 & v<0) & v>-(g()/p())^(1/2))
+  }* @invariant((x>=0 & v<0) & v>-(g()/p())^(1/2))
 ](x=0 -> v>=m())
 End.
 
-Tactic "Parachute: Proof 1".
+Tactic "Parachute: Proof 1"
   implyR(1) ; loop({`(x>=0&v < 0)&v>-(9/1)^(1/2)`}, 1) ; <(
   QE,
   QE,
@@ -47,7 +47,6 @@ Tactic "Parachute: Proof 1".
     )
   )
 End.
-       
 
 End.
        
