@@ -1,19 +1,18 @@
-﻿ArchiveEntry "Simple rotational dynamics".
+﻿ArchiveEntry "Simple rotational dynamics"
 
-ProgramVariables.
-  R v.  /* direction in x-axis */
-  R w.  /* direction in y-axis */
-  R r.  /* radius r of circle around origin */
+ProgramVariables
+  Real v;  /* direction in x-axis */
+  Real w;  /* direction in y-axis */
+  Real r;  /* radius r of circle around origin */
 End.
 
-Problem.
+Problem
   v^2+w^2-r^2=0 -> 
     [{v'=w,w'=-v}@invariant(v^2+w^2-r^2=0)] v^2+w^2-r^2=0
 End.
 
-Tactic "10: Simple rotational dynamics: Proof 1".
+Tactic "10: Simple rotational dynamics: Proof 1"
   implyR(1) ; dI(1)
 End.
-       
 
 End.
