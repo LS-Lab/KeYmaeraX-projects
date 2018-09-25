@@ -1,46 +1,45 @@
-ArchiveEntry "LICS: 1 Continuous car accelerates forward".
+ArchiveEntry "LICS: 1 Continuous car accelerates forward"
 
-ProgramVariables. /* program variables may change their value over time */
-  R x.            /* position of the car */
-  R v.            /* velocity of the car */
-  R a.            /* acceleration of the car */
+ProgramVariables  /* program variables may change their value over time */
+  Real x;         /* position of the car */
+  Real v;         /* velocity of the car */
+  Real a;         /* acceleration of the car */
 End.
 
-Problem.          /* differential dynamic logic formula */
+Problem           /* differential dynamic logic formula */
     v>=0 & a>=0
  -> [
       {x'=v, v'=a & v>=0}
     ] v>=0
 End.
 
-Tactic "LICS: 1 Continuous car accelerates forward: Clever Proof".
+Tactic "LICS: 1 Continuous car accelerates forward: Clever Proof"
   implyR(1) ; dW(1) ; prop; done
 End.
 
-Tactic "LICS: 1 Continuous car accelerates forward: Interactive Proof".
+Tactic "LICS: 1 Continuous car accelerates forward: Interactive Proof"
   implyR(1) ; solve(1) ; QE
 End.
        
-Tactic "LICS: 1 Continuous car accelerates forward: Proof 2".
+Tactic "LICS: 1 Continuous car accelerates forward: Automatic Proof"
   master
 End.
-       
 
 End.
-ArchiveEntry "LICS: 2 Single car drives forward".
+ArchiveEntry "LICS: 2 Single car drives forward"
 
-Functions.        /* function symbols cannot change their value */
-  R b().          /* braking capabilities */
-  R A().          /* maximum acceleration */
+Definitions       /* function symbols cannot change their value */
+  Real b;         /* braking capabilities */
+  Real A;         /* maximum acceleration */
 End.
 
-ProgramVariables. /* program variables may change their value over time */
-  R x.            /* position of the car */
-  R v.            /* velocity of the car */
-  R a.            /* acceleration of the car */
+ProgramVariables  /* program variables may change their value over time */
+  Real x;         /* position of the car */
+  Real v;         /* velocity of the car */
+  Real a;         /* acceleration of the car */
 End.
 
-Problem.          /* differential dynamic logic formula */
+Problem           /* differential dynamic logic formula */
     v>=0  & A>=0 & b>0
  -> [
       {
@@ -50,7 +49,7 @@ Problem.          /* differential dynamic logic formula */
     ] v>=0
 End.
 
-Tactic "LICS: 2 Single car drives forward: Clever Proof".
+Tactic "LICS: 2 Single car drives forward: Clever Proof"
 implyR(1) ; loop({`v>=0`}, 1) ; <(
   closeId,
   closeId,
@@ -61,7 +60,7 @@ implyR(1) ; loop({`v>=0`}, 1) ; <(
   )
 End.
 
-Tactic "LICS: 2 Single car drives forward: Interactive Proof".
+Tactic "LICS: 2 Single car drives forward: Interactive Proof"
   implyR(1) ; loop({`v>=0`}, 1) ; <(
   closeId,
   closeId,
@@ -72,29 +71,28 @@ Tactic "LICS: 2 Single car drives forward: Interactive Proof".
   )
 End.
        
-Tactic "LICS: 2 Single car drives forward: Automatic Proof".
+Tactic "LICS: 2 Single car drives forward: Automatic Proof"
   master
 End.
-       
 
 End.
-ArchiveEntry "LICS: 4a safe stopping of time-triggered car".
+ArchiveEntry "LICS: 4a safe stopping of time-triggered car"
 
-Functions.        /* function symbols cannot change their value */
-  R b().          /* braking capabilities */
-  R A().          /* maximum acceleration */
-  R ep().         /* reaction time */
+Definitions       /* function symbols cannot change their value */
+  Real b;         /* braking capabilities */
+  Real A;         /* maximum acceleration */
+  Real ep;        /* reaction time */
 End.
 
-ProgramVariables. /* program variables may change their value over time */
-  R x.            /* position of the car */
-  R v.            /* velocity of the car */
-  R a.            /* acceleration of the car */
-  R m.            /* stop sign position */
-  R t.            /* clock variable */
+ProgramVariables  /* program variables may change their value over time */
+  Real x;         /* position of the car */
+  Real v;         /* velocity of the car */
+  Real a;         /* acceleration of the car */
+  Real m;         /* stop sign position */
+  Real t;         /* clock variable */
 End.
 
-Problem.          /* differential dynamic logic formula */
+Problem           /* differential dynamic logic formula */
     v^2<=2*b*(m-x) & v>=0  & A>=0 & b>0
  -> [
       {
@@ -105,7 +103,7 @@ Problem.          /* differential dynamic logic formula */
     ] x <= m
 End.
 
-Tactic "LICS: 4a safety of time-triggered car: Clever Proof".
+Tactic "LICS: 4a safety of time-triggered car: Clever Proof"
 implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
   closeId,
   QE,
@@ -119,7 +117,7 @@ implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
   )
 End.
 
-Tactic "LICS: 4a safety of time-triggered car: Interactive Proof".
+Tactic "LICS: 4a safety of time-triggered car: Interactive Proof"
   implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
   QE,
   QE,
@@ -130,26 +128,24 @@ Tactic "LICS: 4a safety of time-triggered car: Interactive Proof".
   )
 End.
        
-Tactic "LICS: 4a safety of time-triggered car: Automatic Proof".
+Tactic "LICS: 4a safety of time-triggered car: Automatic Proof"
   master
 End.
-       
 
 End.
-ArchiveEntry "Bouncing Ball".
+ArchiveEntry "Bouncing Ball"
 
-Functions.        /* function symbols cannot change their value */
-  R H().          /* initial height */
-  R g().          /* gravity */
-  R c().          /* damping coefficient */
+Definitions       /* function symbols cannot change their value */
+  Real H;         /* initial height */
+  Real g;         /* gravity */
+  Real c;         /* damping coefficient */
 End.
 
-ProgramVariables. /* program variables may change their value over time */
-  R x.            /* height */
-  R v.            /* velocity */
+ProgramVariables  /* program variables may change their value over time */
+  Real x, v;      /* height and vertical velocity */
 End.
 
-Problem.
+Problem
   x>=0 & x=H
   & v=0 & g>0 & 1>=c&c>=0
  ->
@@ -157,11 +153,11 @@ Problem.
     {
       {x'=v,v'=-g&x>=0}
       {?x=0; v:=-c*v;  ++  ?x!=0;}
-    }*@invariant(2*g*x<=2*g*H-v^2 & x>=0)
+    }* @invariant(2*g*x<=2*g*H-v^2 & x>=0)
   ] (x>=0 & x<=H)
 End.
 
-Tactic "Bouncing Ball: Clever Proof".
+Tactic "Bouncing Ball: Clever Proof"
 implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
   QE,
   QE,
@@ -175,7 +171,7 @@ implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
   )
 End.
 
-Tactic "Bouncing Ball: generalizing as in book".
+Tactic "Bouncing Ball: generalizing as in book"
   implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
 QE, 
 QE, 
@@ -189,7 +185,7 @@ solveEnd(1) ; QE,
 )
 End.
        
-Tactic "Bouncing Ball: top-level".
+Tactic "Bouncing Ball: top-level"
   implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
 QE, 
 QE, 
@@ -200,7 +196,7 @@ composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE,
 )
 End.
 
-Tactic "Bouncing Ball: in-place proof".
+Tactic "Bouncing Ball: in-place proof"
   implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
 QE, 
 QE, 
@@ -208,69 +204,67 @@ composeb(1) ; choiceb(1.1) ; composeb(1.1.0) ; testb(1.1.0) ; assignb(1.1.0.1) ;
 )
 End.
        
-Tactic "Bouncing Ball: automatic".
+Tactic "Bouncing Ball: automatic"
   /* needs QE({`Mathematica`}) */
   master
 End.
-       
 
 End.
-ArchiveEntry "Simple rotational dynamics".
+ArchiveEntry "Simple rotational dynamics"
 
-ProgramVariables.
-  R v.  /* direction in x-axis */
-  R w.  /* direction in y-axis */
-  R r.  /* radius r of circle around origin */
+ProgramVariables
+  Real v;  /* direction in x-axis */
+  Real w;  /* direction in y-axis */
+  Real r;  /* radius r of circle around origin */
 End.
 
-Problem.
+Problem
   v^2+w^2-r^2=0 -> 
     [{v'=w,w'=-v}@invariant(v^2+w^2-r^2=0)] v^2+w^2-r^2=0
 End.
 
-Tactic "10: Simple rotational dynamics: Proof 1".
+Tactic "10: Simple rotational dynamics: Proof 1"
   implyR(1) ; dI(1)
 End.
-       
 
 End.
-ArchiveEntry "Damped Oscillator".
+ArchiveEntry "Damped Oscillator"
 
-Functions.        /* function symbols cannot change their value */
-  R w().          /* undamped angular frequency */
-  R c().          /* level of ellipse */
-  R d().          /* constant damping ratio */
+Definitions        /* function symbols cannot change their value */
+  Real w;          /* undamped angular frequency */
+  Real c;          /* level of ellipse */
+  Real d;          /* constant damping ratio */
 End.
 
-ProgramVariables. /* program variables may change their value over time */
-  R x.            /* position of spring/mass system */
-  R y.            /* velocity */
+ProgramVariables  /* program variables may change their value over time */
+  Real x;         /* position of spring/mass system */
+  Real y;         /* velocity */
 End.
 
-Problem.
+Problem
     w()^2*x^2 + y^2 <= c()^2
 ->
   [{x'=y, y'=-w()^2*x-2*d()*w()*y & w()>=0 & d()>=0}]w()^2*x^2 + y^2 <= c()^2
 End.
 
-Tactic "Damped Oscillator: Differential invariant proof".
+Tactic "Damped Oscillator: Differential invariant proof"
   implyR(1) ; dI(1)
 End.
 
 End.
 
 
-ArchiveEntry "Increasingly Damped Oscillator".
+ArchiveEntry "Increasingly Damped Oscillator"
 
-Functions.
-  R w().    /* undamped angular frequency */
-  R c().    /* level of ellipse */
+Definitions
+  Real w;    /* undamped angular frequency */
+  Real c;    /* level of ellipse */
 End.
 
-ProgramVariables.
-  R x.      /* position of spring/mass system */
-  R y.      /* velocity */
-  R d.      /* damping ratio */
+ProgramVariables
+  Real x;    /* position of spring/mass system */
+  Real y;    /* velocity */
+  Real d;    /* damping ratio */
 End.
 
 Problem.
@@ -280,58 +274,122 @@ Problem.
   [{x'=y, y'=-w()^2*x-2*d*w()*y, d'=7 & w()>=0}]w()^2*x^2 + y^2 <= c()^2
 End.
 
-Tactic "Increasingly Damped Oscillator: Differential cut proof".
+Tactic "Increasingly Damped Oscillator: Differential cut proof"
   implyR(1) ; dC({`d>=0`}, 1) ; <(
     dI(1), 
     dI(1)
   )
 End.
-       
 
 End.
-ArchiveEntry "Exponential Decay: [x'=-x]x>0".
+ArchiveEntry "Exponential Decay: [x'=-x]x>0"
 
-/**
- * Exponential Decay.
- */
-ProgramVariables.
-  R x.
+ProgramVariables
+  Real x;
 End.
 
-Problem.
+Problem
   x>1 -> [{x'=-x}]x>0
 End.
 
-Tactic "Exponential Decay from tactic".
+Tactic "Exponential Decay from tactic"
   implyR(1) ; dG({`y'=1/2*y`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE({`Mathematica`})
 End.
  
-Tactic "Exponential Decay: Automatic".
+Tactic "Exponential Decay: Automatic"
   /* needs QE({`Mathematica`}) */
   master
 End.
- 
 
 End.
 
-ArchiveEntry "Parachute".
+ArchiveEntry "Exponential Growth: [x'=x]x>0"
 
-Functions.
-  R g() = (9).  /* gravity */
-  R p() = (1).  /* parachute drag coefficient */
-  R a().        /* skydiver air drag coefficient */
-  R m().        /* impact velocity */
-  R T().        /* skydiver reaction time */
+ProgramVariables
+  Real x;
 End.
 
-ProgramVariables.
-  R x.    /* skydiver altitude */
-  R v.    /* skydiver speed (< 0, so lower is faster) */
-  R r.    /* skydiver current drag coefficient (depends on parachute open/closed) */
-  R t.    /* time */
+Problem
+  x>1 -> [{x'=x}]x>0
 End.
 
-Problem.
+Tactic "Exponential Growth from tactic"
+  implyR(1) ; dG({`y'=-1/2*y`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE({`Mathematica`})
+End.
+
+Tactic "Exponential Growth: Automatic"
+  master
+End.
+
+End.
+
+
+ArchiveEntry "Exponential at Equilibrium [x'=x]x=0"
+
+ProgramVariables
+ Real x;
+End.
+
+Problem
+ x=0 -> [{x'=x}]x=0
+End.
+
+
+Tactic "Exponential at Equilibrium from tactic"
+ implyR(1) ; dG({`y'=-1*y`}, {`y>0&x*y=0`}, 1) ; boxAnd(1.0) ; dI(1.0.1) ; dG({`z'=1/2*z`}, {`y*z^2=1`}, 1.0.0) ; dI(1.0.0.0) ; QE({`Mathematica`})
+End.
+
+Tactic "Exponential at Equilibrium: top-level proof"
+ implyR(1) ; dG({`y'=-1*y`}, {`y>0&x*y=0`}, 1) ; existsR({`1`}, 1) ; boxAnd(1) ; andR(1) ; <(
+ dG({`z'=1/2*z`}, {`z^2*y=1`}, 1) ; existsR({`1`}, 1) ; dI(1),
+ dI(1)
+ )
+End.
+
+Tactic "Exponential at Equilibrium: Automatic"
+ /* needs QE({`Mathematica`}) */
+ master
+End.
+
+End.
+
+ArchiveEntry "Exponential difference [x'=x]x!=0"
+
+ProgramVariables
+  Real x;
+End.
+
+Problem
+  x!=0 -> [{x'=x}]x!=0
+End.
+
+Tactic "Exponential difference from tactic"
+  implyR(1) ; dG({`y'=-1*y`}, {`x*y=1`}, 1) ; dI(1.0) ; QE({`Mathematica`})
+End.
+   
+Tactic "Exponential difference: top-level proof"
+  implyR(1) ; dG({`y'=-1*y`}, {`x*y=1`}, 1) ; existsR({`1/x`}, 1) ; dI(1)
+End.
+   
+End.
+ArchiveEntry "Parachute"
+
+Definitions
+  Real g = 9;    /* gravity */
+  Real p = 1;    /* parachute drag coefficient */
+  Real a;        /* skydiver air drag coefficient */
+  Real m;        /* impact velocity */
+  Real T;        /* skydiver reaction time */
+End.
+
+ProgramVariables
+  Real x;        /* skydiver altitude */
+  Real v;        /* skydiver speed (< 0, so lower is faster) */
+  Real r;        /* skydiver current drag coefficient (depends on parachute open/closed) */
+  Real t;        /* time */
+End.
+
+Problem
   g()>0 & p()>a() & a()>0 & T()>0 & m()< -(g()/p())^(1/2) &
   x>=0 & v<0 & v> -(g()/p())^(1/2) & r=a()
 ->
@@ -343,12 +401,11 @@ Problem.
     }
     t := 0;
     {x'=v, v'=-g()+r*v^2, t'=1 & t<=T() & x>=0 & v<0}
-  }*@invariant((x>=0 & v<0) & v>-(g()/p())^(1/2))
+  }* @invariant((x>=0 & v<0) & v>-(g()/p())^(1/2))
 ](x=0 -> v>=m())
 End.
 
-Tactic "Parachute: Proof 1".
-  /* needs QE({`Mathematica`}) */
+Tactic "Parachute: Proof 1"
   implyR(1) ; loop({`(x>=0&v < 0)&v>-(9/1)^(1/2)`}, 1) ; <(
   QE,
   QE,
@@ -359,56 +416,53 @@ Tactic "Parachute: Proof 1".
         dW(1) ; QE,
         dI(1)
         ),
-      dG({`y'=(-1/2*1*(v-(9/1)^(1/2)))*y`}, {`y^2*(v+(9/1)^(1/2))=1`}, 1) ; dI(1.0) ; QE
+      dG({`y'=(-1/2*1*(v-(9/1)^(1/2)))*y`}, {`y^2*(v+(9/1)^(1/2))=1`}, 1) ; dI(1.0) ; QE({`Mathematica`})
       )
     )
   )
 End.
-       
 
 End.
+       ArchiveEntry "Dual Filibuster Game"
 
-ArchiveEntry "Dual Filibuster Game".
-
-ProgramVariables.
-  R x.
+ProgramVariables
+  Real x;
 End.
 
-Problem.
+Problem
   x=0 -> <{{{x:=0;++x:=1;}^@}*@invariant(x=0)}^@> x=0
 End.
 
-Tactic "Dual Filibuster Game: Proof 1".
+Tactic "Dual Filibuster Game: Proof 1"
   implyR(1) ; dualDirectd(1) ; loop({`x=0`}, 1) ; <(
   closeId,
   dualDirectb(1) ; choiced(1) ; assignd(1.0) ; assignd(1.1) ; QE,
   closeId
   )
 End.
-       
 
 End.
-ArchiveEntry "Push-around cart".
+ArchiveEntry "Push-around cart"
 
-ProgramVariables.
-  R x.     /* cart position */
-  R v.     /* cart velocity */
-  R a.     /* Angel's acceleration */
-  R d.     /* Demon's acceleration */
+ProgramVariables
+  Real x;     /* cart position */
+  Real v;     /* cart velocity */
+  Real a;     /* Angel's acceleration */
+  Real d;     /* Demon's acceleration */
 End.
 
-Problem.
+Problem
   x>=0 & v>=0
 ->
   [{
     {d:=1;++d:=-1;}^@    /* Demon chooses push or pull */
     {a:=1;++a:=-1;}      /* Angel chooses push or pull */
     {x'=v,v'=a+d}
-   }*@invariant(x>=0 & v>=0)
+   }* @invariant(x>=0 & v>=0)
   ] x>=0
 End.
 
-Tactic "Push-around cart: Clever Proof".
+Tactic "Push-around cart: Clever Proof"
   implyR(1) ; loop({`x>=0&v>=0`}, 1) ; <(
   prop ; done,
   composeb(1) ; dualDirectb(1) ; choiced(1) ; orR(1) ; hideR(2) ; assignd(1) ; composeb(1) ; choiceb(1) ; assignb(1.0) ; assignb(1.1) ; andR(1) ; <(
@@ -425,7 +479,7 @@ Tactic "Push-around cart: Clever Proof".
   )
 End.
        
-Tactic "Push-around cart: Interactive Proof".
+Tactic "Push-around cart: Interactive Proof"
   implyR(1) ; loop({`x>=0&v>=0`}, 1) ; <(
     prop ; done, 
     composeb(1) ; dualDirectb(1) ; choiced(1) ; orR(1) ; hideR(2) ; assignd(1) ; composeb(1) ; choiceb(1) ; assignb(1.0) ; assignb(1.1) ; andR(1) ; <(
@@ -435,30 +489,29 @@ Tactic "Push-around cart: Interactive Proof".
     prop ; done
   )
 End.
-       
 
 End.
        
-ArchiveEntry "Wall-E & Eve".
+ArchiveEntry "Wall-E & Eve"
 
-ProgramVariables.
-  R w.    /* WALL-E position */
-  R v.    /* WALL-E velocity */
-  R u.    /* WALL-E acceleration */
-  R e.    /* EVE position */
-  R f.    /* EVE velocity */
-  R g.    /* EVE acceleration */
-  R t.    /* time */
+ProgramVariables
+  Real w;    /* WALL-E position */
+  Real v;    /* WALL-E velocity */
+  Real u;    /* WALL-E acceleration */
+  Real e;    /* EVE position */
+  Real f;    /* EVE velocity */
+  Real g;    /* EVE acceleration */
+  Real t;    /* time */
 End.
 
-Problem.
+Problem
   (w-e)^2<=1 & v=f -> <{{{ {u:=1;++u:=-1;}^@
                            {g:=1;++g:=-1;}
                            t:=0; {w'=v,v'=u, e'=f,f'=g, t'=1 & t<=1}^@
-                       }^@}*@invariant((w-e)^2<=1&v=f)}^@> (w-e)^2<=1
+                       }^@}* @invariant((w-e)^2<=1&v=f)}^@> (w-e)^2<=1
 End.
 
-Tactic "Wall-E & Eve: Clever Proof".
+Tactic "Wall-E & Eve: Clever Proof"
   implyR(1) ; dualDirectd(1) ; loop({`(w-e)^2<=1&v=f`}, 1) ; <(
   prop ; done,
   dualDirectb(1) ; composed(1) ; dualDirectd(1) ; choiceb(1) ; andR(1) ; <(
@@ -475,7 +528,7 @@ Tactic "Wall-E & Eve: Clever Proof".
   )
 End.
        
-Tactic "Wall-E & Eve: Standard Proof".
+Tactic "Wall-E & Eve: Standard Proof"
   implyR(1) ; dualDirectd(1) ; loop({`(w-e)^2<=1&v=f`}, 1) ; <(
   prop ; done,
   dualDirectb(1) ; composed(1) ; dualDirectd(1) ; choiceb(1) ; andR(1) ; <(
@@ -485,31 +538,25 @@ Tactic "Wall-E & Eve: Standard Proof".
   prop ; done
   )
 End.
-       
 
 End.
        
-ArchiveEntry "Goalie in robot soccer".
+ArchiveEntry "Goalie in robot soccer"
 
-/**
- * Goalie in robot soccer
- */
-ProgramVariables.
-  R x.   /* x-coordinate of ball */
-  R y.   /* y-coordinate of ball */
-  R v.   /* ball's velocity in x-direction */
-  R w.   /* ball's velocity in y-direction */
-  R g.   /* y-coordinate of goalie lateral in goal */
-  R u.   /* velocity of goalie */
+ProgramVariables
+  Real x, y;   /* x/y-coordinate of ball */
+  Real v, w;   /* ball's velocity in x/y-direction */
+  Real g;      /* y-coordinate of goalie lateral in goal */
+  Real u;      /* velocity of goalie */
 End.
 
-Problem.
+Problem
   (x/v)^2*(u-w)^2<=1 & x<0&v>0&y=g ->
   <{w:=w; ++ w:=-w;}^@;
    {{u:=u; ++ u:=-u;}; {x'=v,y'=w,g'=u}}*> x^2+(y-g)^2<=1
 End.
 
-Tactic "Goalie in robot soccer: Proof 1".
+Tactic "Goalie in robot soccer: Proof 1"
   implyR(1) ; composed(1) ; dualDirectd(1) ; choiceb(1) ; andR(1) ; <(
   assignb(1) ; iterated(1) ; orR(1) ; iterated(2.1) ; diamondOr(2) ; orR(2) ; hideR(3) ; composed(2) ; choiced(2) ; orR(2) ; hideR(3) ; assignd(2) ; solve(2) ; existsR({`-x/v`}, 2) ; QE,
   assignb(1) ; iterated(1) ; orR(1) ; iterated(2.1) ; diamondOr(2) ; orR(2) ; hideR(3) ; composed(2) ; choiced(2) ; orR(2) ; hideR(2) ; assignd(2) ; solve(2) ; existsR({`-x/v`}, 2) ; QE
