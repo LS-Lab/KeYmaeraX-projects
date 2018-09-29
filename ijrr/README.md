@@ -12,6 +12,6 @@ safety properties with liveness properties: we prove that provably safe motion i
 navigate waypoints and pass intersections.
 
 Stefan Mitsch, Khalil Ghorbal, David Vogelbacher, André Platzer.
-[Formal verification of obstacle avoidance and navigation of ground robots](http://dx.doi.org/10.1177/0278364917733549).
+[Formal verification of obstacle avoidance and navigation of ground robots](https://doi.org/10.1177/0278364917733549).
 International Journal of Robotics Research. 36(12), pp. 1312-1340, 2017. 
 

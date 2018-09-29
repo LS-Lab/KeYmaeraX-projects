@@ -9,5 +9,5 @@ of aircraft throughout their flight. We show that formal verification of hybrid 
 required in aircraft control applications. We introduce a fully flyable variant of the roundabout collision avoidance maneuver 
 and verify safety properties by compositional verification.
 
-André Platzer and Edmund M. Clarke. [Formal verification of curved flight collision avoidance maneuvers: A case study.](http://dx.doi.org/10.1007/978-3-642-05089-3_35)
+André Platzer and Edmund M. Clarke. [Formal verification of curved flight collision avoidance maneuvers: A case study.](https://doi.org/10.1007/978-3-642-05089-3_35)
 In Ana Cavalcanti and Dennis Dams, editors, 16th International Symposium on Formal Methods, FM, Eindhoven, Netherlands, Proceedings, volume 5850 of LNCS, pp. 547-562. Springer, 2009.
