@@ -1,24 +1,19 @@
-﻿ArchiveEntry "Goalie in robot soccer".
+﻿ArchiveEntry "Goalie in robot soccer"
 
-/**
- * Goalie in robot soccer
- */
-ProgramVariables.
-  R x.   /* x-coordinate of ball */
-  R y.   /* y-coordinate of ball */
-  R v.   /* ball's velocity in x-direction */
-  R w.   /* ball's velocity in y-direction */
-  R g.   /* y-coordinate of goalie lateral in goal */
-  R u.   /* velocity of goalie */
+ProgramVariables
+  Real x, y;   /* x/y-coordinate of ball */
+  Real v, w;   /* ball's velocity in x/y-direction */
+  Real g;      /* y-coordinate of goalie lateral in goal */
+  Real u;      /* velocity of goalie */
 End.
 
-Problem.
+Problem
   (x/v)^2*(u-w)^2<=1 & x<0&v>0&y=g ->
   <{w:=w; ++ w:=-w;}^@;
    {{u:=u; ++ u:=-u;}; {x'=v,y'=w,g'=u}}*> x^2+(y-g)^2<=1
 End.
 
-Tactic "Goalie in robot soccer: Proof 1".
+Tactic "Goalie in robot soccer: Proof 1"
   implyR(1) ; composed(1) ; dualDirectd(1) ; choiceb(1) ; andR(1) ; <(
   assignb(1) ; iterated(1) ; orR(1) ; iterated(2.1) ; diamondOr(2) ; orR(2) ; hideR(3) ; composed(2) ; choiced(2) ; orR(2) ; hideR(3) ; assignd(2) ; solve(2) ; existsR({`-x/v`}, 2) ; QE,
   assignb(1) ; iterated(1) ; orR(1) ; iterated(2.1) ; diamondOr(2) ; orR(2) ; hideR(3) ; composed(2) ; choiced(2) ; orR(2) ; hideR(2) ; assignd(2) ; solve(2) ; existsR({`-x/v`}, 2) ; QE

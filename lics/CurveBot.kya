@@ -1,30 +1,25 @@
-﻿ArchiveEntry "CurveBot".
+﻿ArchiveEntry "CurveBot"
+Description "CurveBot: run a robot round the bend".
 
-/**
- * CurveBot: run a robot round the bend
- */
-ProgramVariables.
-  R x.    /* robot position: x */
-  R y.    /* robot position: y */
-  R v.    /* robot orientation in x direction */
-  R w.    /* robot orientation in y direction */
-  R om.   /* robot rotational velocity */
-  R ox.   /* x position summary of obstacle */
-  R oy.   /* y position summary of obstacle */
+ProgramVariables
+  Real x, y;    /* robot x/y position */
+  Real v, w;    /* robot orientation in x/y direction */
+  Real om;      /* robot rotational velocity */
+  Real ox, oy;  /* x/y position summary of obstacle */
 End.
     
-Problem.
+Problem
   x!=ox | y!=oy ->
   [{
     {?(x+w/-1-ox)^2+(y-v/-1-oy)^2!=v^2+w^2; om:=-1;
     ++ ?(x+w-ox)^2+(y-v-oy)^2!=v^2+w^2; om:=1;
     ++ ?(ox-x)*w!=(oy-y)*v; om:=0;}
     {x'=v,y'=w,v'=om*w,w'=-om*v}
-   }*@invariant(!(x=ox & y=oy))
+   }* @invariant(!(x=ox & y=oy))
   ] !(x=ox & y=oy)
 End.
 
-Tactic "CurveBot: Proof".
+Tactic "CurveBot: Proof"
   implyR(1) ; loop({`!(x=ox&y=oy)`}, 1) ; <(
   QE,
   closeId,
@@ -52,6 +47,5 @@ Tactic "CurveBot: Proof".
     )
   )
 End.
-       
 
 End.

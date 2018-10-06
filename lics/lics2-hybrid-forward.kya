@@ -1,17 +1,17 @@
-﻿ArchiveEntry "LICS: 2 Single car drives forward".
+﻿ArchiveEntry "LICS: 2 Single car drives forward"
 
-Functions.        /* function symbols cannot change their value */
-  R b().          /* braking capabilities */
-  R A().          /* maximum acceleration */
+Definitions       /* function symbols cannot change their value */
+  Real b;         /* braking capabilities */
+  Real A;         /* maximum acceleration */
 End.
 
-ProgramVariables. /* program variables may change their value over time */
-  R x.            /* position of the car */
-  R v.            /* velocity of the car */
-  R a.            /* acceleration of the car */
+ProgramVariables  /* program variables may change their value over time */
+  Real x;         /* position of the car */
+  Real v;         /* velocity of the car */
+  Real a;         /* acceleration of the car */
 End.
 
-Problem.          /* differential dynamic logic formula */
+Problem           /* differential dynamic logic formula */
     v>=0  & A>=0 & b>0
  -> [
       {
@@ -21,7 +21,7 @@ Problem.          /* differential dynamic logic formula */
     ] v>=0
 End.
 
-Tactic "LICS: 2 Single car drives forward: Clever Proof".
+Tactic "LICS: 2 Single car drives forward: Clever Proof"
 implyR(1) ; loop({`v>=0`}, 1) ; <(
   closeId,
   closeId,
@@ -32,7 +32,7 @@ implyR(1) ; loop({`v>=0`}, 1) ; <(
   )
 End.
 
-Tactic "LICS: 2 Single car drives forward: Interactive Proof".
+Tactic "LICS: 2 Single car drives forward: Interactive Proof"
   implyR(1) ; loop({`v>=0`}, 1) ; <(
   closeId,
   closeId,
@@ -43,9 +43,8 @@ Tactic "LICS: 2 Single car drives forward: Interactive Proof".
   )
 End.
        
-Tactic "LICS: 2 Single car drives forward: Automatic Proof".
+Tactic "LICS: 2 Single car drives forward: Automatic Proof"
   master
 End.
-       
 
 End.

@@ -1,17 +1,16 @@
-ArchiveEntry "Bouncing Ball".
+ArchiveEntry "Bouncing Ball"
 
-Functions.        /* function symbols cannot change their value */
-  R H().          /* initial height */
-  R g().          /* gravity */
-  R c().          /* damping coefficient */
+Definitions       /* function symbols cannot change their value */
+  Real H;         /* initial height */
+  Real g;         /* gravity */
+  Real c;         /* damping coefficient */
 End.
 
-ProgramVariables. /* program variables may change their value over time */
-  R x.            /* height */
-  R v.            /* velocity */
+ProgramVariables  /* program variables may change their value over time */
+  Real x, v;      /* height and vertical velocity */
 End.
 
-Problem.
+Problem
   x>=0 & x=H
   & v=0 & g>0 & 1>=c&c>=0
  ->
@@ -19,11 +18,11 @@ Problem.
     {
       {x'=v,v'=-g&x>=0}
       {?x=0; v:=-c*v;  ++  ?x!=0;}
-    }*@invariant(2*g*x<=2*g*H-v^2 & x>=0)
+    }* @invariant(2*g*x<=2*g*H-v^2 & x>=0)
   ] (x>=0 & x<=H)
 End.
 
-Tactic "Bouncing Ball: Clever Proof".
+Tactic "Bouncing Ball: Clever Proof"
 implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
   QE,
   QE,
@@ -37,7 +36,7 @@ implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
   )
 End.
 
-Tactic "Bouncing Ball: generalizing as in book".
+Tactic "Bouncing Ball: generalizing as in book"
   implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
 QE, 
 QE, 
@@ -51,7 +50,7 @@ solveEnd(1) ; QE,
 )
 End.
        
-Tactic "Bouncing Ball: top-level".
+Tactic "Bouncing Ball: top-level"
   implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
 QE, 
 QE, 
@@ -62,7 +61,7 @@ composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE,
 )
 End.
 
-Tactic "Bouncing Ball: in-place proof".
+Tactic "Bouncing Ball: in-place proof"
   implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
 QE, 
 QE, 
@@ -70,10 +69,9 @@ composeb(1) ; choiceb(1.1) ; composeb(1.1.0) ; testb(1.1.0) ; assignb(1.1.0.1) ;
 )
 End.
        
-Tactic "Bouncing Ball: automatic".
+Tactic "Bouncing Ball: automatic"
   /* needs QE({`Mathematica`}) */
   master
 End.
-       
 
 End.
