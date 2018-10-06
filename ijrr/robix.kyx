@@ -174,7 +174,7 @@ End.
 
 End.
 
-ArchiveEntry "Corollary 1: Velocity-controlled passive safety".
+ArchiveEntry "Corollary 1.1: Velocity-controlled passive safety".
 
 Functions.
   R ep().      /* time limit for control decisions */
@@ -312,6 +312,478 @@ Tactic "Proof Corollary 1: Velocity-controlled passive safety".
   done;
   print({`Proof done`})
 
+End.
+
+End.
+
+Theorem "Corollary 1.2: Static safety with margin for imperfect trajectories".
+
+Functions.
+  R ep().      /* time limit for control decisions */
+  R b().       /* minimum braking capability of the robot */
+  R A().       /* maximum acceleration -b <= a <= A */
+  R W().       /* maximum steering */
+  R Ud().      /* direction uncertainty */
+  R abs(R).    /* predefined function of absolute value */
+
+  R stopDist(R v) = ((1+Ud()) * v^2 / (2*b())).            /* The straight-line stopping distance from brake start to full stop. */
+  R accelComp(R v) = ((1+Ud()) * (A()/b() + 1) * (A()/2 * ep()^2 + ep()*v)). /* Straight-line distance to compensate acceleration */
+  R admissibleSeparation(R v) = (stopDist(v) + accelComp(v)).   /* Separation that allows accelerating on a new curve */
+
+  B isWellformedDir() <-> (1-Ud() <= dx^2+dy^2 & dx^2 + dy^2 <= 1+Ud()). /* The orientation of the robot is approximately a unit vector. */
+
+  B bounds() <-> (                                                                     /* Bounds for global constants */
+      A() >= 0                                                                                      /* Working engine */
+    & b() > 0                                                                                       /* Working brakes */
+    & ep() > 0                                                                            /* Controller reaction time */
+    & 0<=Ud() & Ud() <= 1
+  ).
+  B initialState() <-> (                                                          /* Stopped somewhere safe initially */
+    v = 0
+    & (x-xo)^2 + (y-yo)^2 > 0
+    & isWellformedDir()
+  ).
+  B assumptions() <-> (bounds() & initialState()).                     /* Under these assumptions we guarantee safety */
+
+  B loopinv() <-> (                                                /* Conditions that are true on each loop iteration */
+    v >= 0
+    & isWellformedDir()
+    & (abs(x-xo) > stopDist(v) | abs(y-yo) > stopDist(v))
+  ).
+End.
+
+ProgramVariables.
+  R x.    /* robot position: x */
+  R y.    /* robot position: y */
+  R v.    /* robot translational velocity */
+  R a.    /* robot translational acceleration */
+  R dx.   /* robot orientation: x */
+  R dy.   /* robot orientation: y */
+  R w.    /* robot rotational velocity */
+  R r.    /* robot curve radius */
+  R xo.   /* position of closest obstacle on curve */
+  R yo.
+  R t.    /* time */
+End.
+
+Problem.
+assumptions() ->
+  [
+    {
+      {
+        {
+          /* brake on current curve or remain stopped */
+          { a := -b; }
+          ++
+          { ?v = 0; a := 0; w := 0; }
+      	  ++
+          /* or choose a new safe curve */
+          { a := A;
+            w := *; ?-W<=w & w<=W;       /* choose steering */
+            r := *;
+            xo := *; yo := *;            /* measure closest obstacle on the curve */
+
+            /* admissible curve */
+            ?r!=0 & r*w = v;
+
+            /* use that curve, if it is a safe one (admissible velocities) */
+            ? abs(x-xo) > admissibleSeparation(v)
+            | abs(y-yo) > admissibleSeparation(v);
+          }
+        };
+    	  t := 0;
+      }
+
+      /* dynamics */
+      {
+      { x' = v * dx, y' = v * dy, v' = a,        /* accelerate/decelerate and move */
+        dx' = -w * dy, dy' = w * dx, w' = a/r,   /* follow curve */
+        t' = 1 & t <= ep & v >= 0
+      }@invariant(t>=0, isWellformedDir(),
+         (v'=-b() -> v <= old(v) - b()*t),
+         (v'=-b() -> (-t * (old(v) - b()/2*t) * (1+Ud()) <= x - old(x) & x - old(x) <= t * (old(v) - b()/2*t) * (1+Ud()))),
+         (v'=-b() -> (-t * (old(v) - b()/2*t) * (1+Ud()) <= y - old(y) & y - old(y) <= t * (old(v) - b()/2*t) * (1+Ud()))),
+         (v'=0 -> v = old(v)),
+         (v'=0 -> x = old(x)),
+         (v'=0 -> y = old(y)),
+         (v'=A() -> v <= old(v) + A()*t),
+         (v'=A() -> (-t * (old(v) + A()/2*t) * (1+Ud()) <= x - old(x) & x - old(x) <= t * (old(v) + A()/2*t) * (1+Ud()))),
+         (v'=A() -> (-t * (old(v) + A()/2*t) * (1+Ud()) <= y - old(y) & y - old(y) <= t * (old(v) + A()/2*t) * (1+Ud())))
+       )
+      }
+    }*@invariant(loopinv())
+  ](x - xo)^2 + (y - yo)^2 > 0
+End.
+
+Tactic "Proof Theorem 1: Static safety".
+  tactic diall as (
+    diffInvariant({`t>=0`}, 1);
+    diffInvariant({`isWellformedDir()`}, 1)
+  );
+
+  tactic dib as (
+    diall;
+    diffInvariant({`v <= old(v) - b()*t`}, 1);
+    diffInvariant({`-t * (old(v) - b()/2*t) * (1+Ud()) <= x - old(x) & x - old(x) <= t * (old(v) - b()/2*t) * (1+Ud())`}, 1);
+    diffInvariant({`-t * (old(v) - b()/2*t) * (1+Ud()) <= y - old(y) & y - old(y) <= t * (old(v) - b()/2*t) * (1+Ud())`}, 1)
+  );
+
+  tactic di0 as (
+    diall;
+    diffInvariant({`v = old(v)`}, 1);
+    diffInvariant({`x = old(x)`}, 1);
+    diffInvariant({`y = old(y)`}, 1)
+  );
+
+  tactic dia as (
+    diall;
+    diffInvariant({`v <= old(v) + A()*t`}, 1);
+    diffInvariant({`-t * (old(v) + A()/2*t) * (1+Ud()) <= x - old(x) & x - old(x) <= t * (old(v) + A()/2*t) * (1+Ud())`}, 1);
+    diffInvariant({`-t * (old(v) + A()/2*t) * (1+Ud()) <= y - old(y) & y - old(y) <= t * (old(v) + A()/2*t) * (1+Ud())`}, 1)
+  );
+
+  tactic dw as (andL('L)*; dW(1));
+
+  tactic xAccArith as (
+    andL('L)*;
+    print({`Transforming...`});
+    transform({`abs(x_0-xo)>(1+Ud())*(v_0^2/(2*b())+(A()/b()+1)*(A()/2*t^2+t*v_0))`}, 'L=={`abs(x_0-xo)>admissibleSeparation(v_0)`});
+    hideR('R=={`abs(y-yo)>stopDist(v)`});
+    smartQE;
+    print({`Proved acc arithmetic`})
+  );
+
+  tactic yAccArith as (
+    andL('L)*;
+    print({`Transforming...`});
+    transform({`abs(y_0-yo)>(1+Ud())*(v_0^2/(2*b())+(A()/b()+1)*(A()/2*t^2+t*v_0))`}, 'L=={`abs(y_0-yo)>admissibleSeparation(v_0)`});
+    hideR('R=={`abs(x-xo)>stopDist(v)`});
+    smartQE;
+    print({`Proved acc arithmetic`})
+  );
+
+  implyR(1); andL('L)*; loop({`loopinv()`}, 1); <(
+    print({`Base case...`}); smartQE; print({`Base case done`})
+    ,
+    print({`Use case...`}); smartQE; print({`Use case done`})
+    ,
+    print({`Induction step`}); unfold; <(
+      print({`Braking branch`}); dib; dw; prop; doall(smartQE); print({`Braking branch done`})
+      ,
+      print({`Stopped branch`}); di0; dw; prop; doall(smartQE); print({`Stopped branch done`})
+      ,
+      print({`Acceleration branch`});
+      hideL('L == {`abs(x-xo_0)>stopDist(v)|abs(y-yo_0)>stopDist(v)`});
+      dia; dw;
+      prop; <(
+        xAccArith,
+        yAccArith
+      );
+      print({`Acceleration branch done`})
+    );
+    print({`Induction step done`})
+  );
+  done;
+  print({`Proof done`})
+
+End.
+
+End.
+
+Theorem "Corollary 1.3: Static safety with margin for imperfect trajectories (no division)".
+
+Functions.
+  R ep().      /* time limit for control decisions */
+  R b().       /* minimum braking capability of the robot */
+  R A().       /* maximum acceleration -b <= a <= A */
+  R W().       /* maximum steering */
+  R Ud().      /* direction uncertainty */
+  R abs(R).    /* predefined function of absolute value */
+
+  R stopDist(R v) = ((1+Ud()) * v^2).            /* The straight-line stopping distance from brake start to full stop. */
+  R accelComp(R v, R t) = ((1+Ud()) * (A() + b()) * (A() * t^2 + 2*t*v)). /* Straight-line distance to compensate acceleration */
+  R admissibleSeparation(R v, R t) = (stopDist(v) + accelComp(v,t)).   /* Separation that allows accelerating on a new curve */
+
+  B isWellformedDir() <-> (1-Ud() <= dx^2+dy^2 & dx^2 + dy^2 <= 1+Ud()). /* The orientation of the robot is approximately a unit vector. */
+
+  B bounds() <-> (                                                                     /* Bounds for global constants */
+      A() >= 0                                                                                      /* Working engine */
+    & b() > 0                                                                                       /* Working brakes */
+    & ep() > 0                                                                            /* Controller reaction time */
+    & 0<=Ud() & Ud() <= 1
+  ).
+  B initialState() <-> (                                                          /* Stopped somewhere safe initially */
+    v = 0 & a = 0 & w = 0 & r = 1 & t = 0
+    & (x-xo)^2 + (y-yo)^2 > 0
+    & isWellformedDir()
+  ).
+  B assumptions() <-> (bounds() & initialState()).                     /* Under these assumptions we guarantee safety */
+
+  B loopinv() <-> (                                                /* Conditions that are true on each loop iteration */
+    v >= 0
+    & isWellformedDir()
+    & (2*b()*abs(x-xo) > stopDist(v) | 2*b()*abs(y-yo) > stopDist(v))
+  ).
+End.
+
+ProgramVariables.
+  R x.    /* robot position: x */
+  R y.    /* robot position: y */
+  R v.    /* robot translational velocity */
+  R a.    /* robot translational acceleration */
+  R dx.   /* robot orientation: x */
+  R dy.   /* robot orientation: y */
+  R w.    /* robot rotational velocity */
+  R r.    /* robot curve radius */
+  R xo.   /* position of closest obstacle on curve */
+  R yo.
+  R t.    /* time */
+End.
+
+Problem.
+assumptions() ->
+  [
+    {
+      {
+        {
+          /* brake on current curve or remain stopped */
+          { a := -b(); }
+          ++
+          { ?v = 0; a := 0; w := 0; }
+      	  ++
+          /* or choose a new safe curve */
+          { a := A;
+            w := *; ?-W<=w & w<=W;       /* choose steering */
+            r := *;
+            xo := *; yo := *;            /* measure closest obstacle on the curve */
+
+            /* admissible curve */
+            ?r!=0 & r*w = v;
+
+            /* use that curve, if it is a safe one (admissible velocities) */
+            ? 2*b()*abs(x-xo) > admissibleSeparation(v,ep)
+            | 2*b()*abs(y-yo) > admissibleSeparation(v,ep);
+          }
+        };
+    	  t := 0;
+      }
+
+      /* dynamics */
+      {
+      { x' = v * dx, y' = v * dy, v' = a,        /* accelerate/decelerate and move */
+        dx' = -w * dy, dy' = w * dx, w' = a/r,   /* follow curve */
+        t' = 1 & t <= ep & v >= 0
+      }@invariant(t>=0, isWellformedDir(),
+         (v'=-b() -> v <= old(v) - b()*(t-old(t))),
+         (v'=-b() -> (-(t-old(t)) * (2*old(v) - b()*(t-old(t))) * (1+Ud()) <= 2*(x - old(x)) & 2*(x - old(x)) <= (t-old(t)) * (2*old(v) - b()*(t-old(t))) * (1+Ud()))),
+         (v'=-b() -> (-(t-old(t)) * (2*old(v) - b()*(t-old(t))) * (1+Ud()) <= 2*(y - old(y)) & 2*(y - old(y)) <= (t-old(t)) * (2*old(v) - b()*(t-old(t))) * (1+Ud()))),
+         (v'=0 -> v = old(v)),
+         (v'=0 -> x = old(x)),
+         (v'=0 -> y = old(y)),
+         (v'=0 -> w = old(w)), /* may not be necessary if we remove w=0 from throughout inv */
+         (v'=A() -> v <= old(v) + A()*(t-old(t))),
+         (v'=A() -> (-(t-old(t)) * (2*old(v) + A()*(t-old(t))) * (1+Ud()) <= 2*(x - old(x)) & 2*(x - old(x)) <= (t-old(t)) * (2*old(v) + A()*(t-old(t))) * (1+Ud()))),
+         (v'=A() -> (-(t-old(t)) * (2*old(v) + A()*(t-old(t))) * (1+Ud()) <= 2*(y - old(y)) & 2*(y - old(y)) <= (t-old(t)) * (2*old(v) + A()*(t-old(t))) * (1+Ud())))
+       )
+      }
+    }*@invariant(loopinv())
+  ](x - xo)^2 + (y - yo)^2 > 0
+End.
+
+Tactic "Proof Theorem 1: Static safety".
+  tactic diall as (
+    diffInvariant({`t>=0`}, 1);
+    diffInvariant({`isWellformedDir()`}, 1)
+  );
+
+  tactic dib as (
+    diall;
+    diffInvariant({`v <= old(v) - b()*t`}, 1);
+    diffInvariant({`-t * (2*old(v) - b()*t) * (1+Ud()) <= 2*(x - old(x)) & 2*(x - old(x)) <= t * (2*old(v) - b()*t) * (1+Ud())`}, 1);
+    diffInvariant({`-t * (2*old(v) - b()*t) * (1+Ud()) <= 2*(y - old(y)) & 2*(y - old(y)) <= t * (2*old(v) - b()*t) * (1+Ud())`}, 1)
+  );
+
+  tactic di0 as (
+    diall;
+    diffInvariant({`v = old(v)`}, 1);
+    diffInvariant({`x = old(x)`}, 1);
+    diffInvariant({`y = old(y)`}, 1)
+  );
+
+  tactic dia as (
+    diall;
+    diffInvariant({`v <= old(v) + A()*t`}, 1);
+    diffInvariant({`-t * (2*old(v) + A()*t) * (1+Ud()) <= 2*(x - old(x)) & 2*(x - old(x)) <= t * (2*old(v) + A()*t) * (1+Ud())`}, 1);
+    diffInvariant({`-t * (2*old(v) + A()*t) * (1+Ud()) <= 2*(y - old(y)) & 2*(y - old(y)) <= t * (2*old(v) + A()*t) * (1+Ud())`}, 1)
+  );
+
+  tactic dw as (andL('L)*; dW(1));
+
+  tactic xAccArith as (
+    andL('L)*;
+    print({`Transforming...`});
+    transform({`2*b()*abs(x_0-xo)>(1+Ud())*(v_0^2+(A()+b())*(A()*t^2+2*t*v_0))`}, 'L=={`2*b()*abs(x_0-xo)>admissibleSeparation(v_0,ep())`});
+    hideR('R=={`2*b()*abs(y-yo)>stopDist(v)`});
+    hideL('L=={`1-Ud()<=dx^2+dy^2`});
+    hideL('L=={`dx^2+dy^2<=1+Ud()`});
+    hideL('L=={`1-Ud()<=dx_0^2+dy_0^2`});
+    hideL('L=={`dx_0^2+dy_0^2<=1+Ud()`});
+    hideL('L=={`-W()<=w_0`});
+    hideL('L=={`w_0<=W()`});
+    hideL('L=={`r!=0`});
+    hideL('L=={`r*w_0=v_0`});
+    hideL('L=={`t_0=0`});
+    hideL('L=={`t<=ep()`});
+    hideL('L=={`ep()>0`});
+    print({`Transformed`});
+    smartQE;
+    print({`Proved acc arithmetic`})
+  );
+
+  tactic yAccArith as (
+    andL('L)*;
+    print({`Transforming...`});
+    transform({`2*b()*abs(y_0-yo)>(1+Ud())*(v_0^2+(A()+b())*(A()*t^2+2*t*v_0))`}, 'L=={`2*b()*abs(y_0-yo)>admissibleSeparation(v_0,ep())`});
+    hideR('R=={`2*b()*abs(x-xo)>stopDist(v)`});
+    hideL('L=={`1-Ud()<=dx^2+dy^2`});
+    hideL('L=={`dx^2+dy^2<=1+Ud()`});
+    hideL('L=={`1-Ud()<=dx_0^2+dy_0^2`});
+    hideL('L=={`dx_0^2+dy_0^2<=1+Ud()`});
+    hideL('L=={`-W()<=w_0`});
+    hideL('L=={`w_0<=W()`});
+    hideL('L=={`r!=0`});
+    hideL('L=={`r*w_0=v_0`});
+    hideL('L=={`t_0=0`});
+    hideL('L=={`t<=ep()`});
+    hideL('L=={`ep()>0`});
+    print({`Transformed`});
+    smartQE;
+    print({`Proved acc arithmetic`})
+  );
+
+  implyR(1); andL('L)*; loop({`loopinv()`}, 1); <(
+    print({`Base case...`}); smartQE; print({`Base case done`})
+    ,
+    print({`Use case...`}); smartQE; print({`Use case done`})
+    ,
+    print({`Induction step`}); unfold; <(
+      print({`Braking branch`}); dib; dw; prop; doall(smartQE); print({`Braking branch done`})
+      ,
+      print({`Stopped branch`}); di0; dw; prop; doall(smartQE); print({`Stopped branch done`})
+      ,
+      print({`Acceleration branch`});
+      hideL('L == {`2*b()*abs(x-xo_0)>stopDist(v)|2*b()*abs(y-yo_0)>stopDist(v)`});
+      dia; dw;
+      prop; <(
+        xAccArith,
+        yAccArith
+      );
+      print({`Acceleration branch done`})
+    );
+    print({`Induction step done`})
+  );
+  done;
+  print({`Proof done`})
+
+End.
+
+Tactic "Proof with throughout invariant".
+implyR(1) ; throughout({`(v>=0&(1-Ud()<=dx^2+dy^2&dx^2+dy^2<=1+Ud())&(2*b()*abs(x-xo)>(1+Ud())*v^2|2*b()*abs(y-yo)>(1+Ud())*v^2))&t>=0&(a=-b()|v=0&a=0|a=A()&(2*b()*abs(x-xo)>(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)|2*b()*abs(y-yo)>(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)))`}, 1) ; <(
+  simplify(1) ; smartQE,
+  andL(-1) ; hideL(-7=={`t>=0&(a=-b()|v=0&a=0|a=A()&(2*b()*abs(x-xo)>(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)|2*b()*abs(y-yo)>(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)))`}) ; andL(-6) ; andL(-7) ; hideL(-7=={`1-Ud()<=dx^2+dy^2&dx^2+dy^2<=1+Ud()`}) ; QE,
+  chase(1) ; simplify(1) ; andR(1) ; <(
+    prop,
+    allR(1) ; implyR(1) ; allR(1) ; allR(1) ; allR(1) ; implyR(1) ; implyR(1) ; orR(1) ; andL(-1) ; andL(-9) ; hideL(-11=={`(1-Ud()<=dx^2+dy^2&dx^2+dy^2<=1+Ud())&(2*b()*abs(x-xo_0)>(1+Ud())*v^2|2*b()*abs(y-yo_0)>(1+Ud())*v^2)`}) ; hideL(-9=={`t>=0&(a=-b()|v=0&a=0|a=A()&(2*b()*abs(x-xo_0)>(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)|2*b()*abs(y-yo_0)>(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)))`}) ; smartQE
+    ),
+  andL('L)* ; orL(-5) ; <(
+    allL2R(-5) ; hideL(-5=={`a=-b()`}) ; dC({`t>=old(t)`}, 1) ; <(
+      dC({`1-Ud()<=dx^2+dy^2&dx^2+dy^2<=1+Ud()`}, 1) ; <(
+        dC({`v<=old(v)-b()*(t-old(t))`}, 1) ; <(
+          dC({`-(t-old(t))*(2*old(v)-b()*(t-old(t)))*(1+Ud())<=2*(x-old(x))&2*(x-old(x))<=(t-old(t))*(2*old(v)-b()*(t-old(t)))*(1+Ud())`}, 1) ; <(
+            dC({`-(t-old(t))*(2*old(v)-b()*(t-old(t)))*(1+Ud())<=2*(y-old(y))&2*(y-old(y))<=(t-old(t))*(2*old(v)-b()*(t-old(t)))*(1+Ud())`}, 1) ; <(
+              dW(1) ; simplify(1) ; implyR(1) ; andR(1) ; <(
+                andL('L)* ; orR(1) ; hideL(-22=={`t<=ep()`}) ; hideL(-21=={`dx^2+dy^2<=1+Ud()`}) ; hideL(-20=={`1-Ud()<=dx^2+dy^2`}) ; hideL(-11=={`ep()>0`}) ; hideL(-9=={`dx_0^2+dy_0^2<=1+Ud()`}) ; hideL(-8=={`1-Ud()<=dx_0^2+dy_0^2`}) ; hideL(-7=={`A()>=0`}) ; hideL(-5=={`dx_0^2+dy_0^2<=1+Ud()`}) ; hideL(-3=={`v_0>=0`}) ; hideL(-2=={`1-Ud()<=dx_0^2+dy_0^2`}) ; orL(-3) ; <(
+                  hideR(2=={`2*b()*abs(y-yo)>(1+Ud())*v^2`}) ; hideL(-8=={`2*(y-y_0)<=(t-t_0)*(2*v_0-b()*(t-t_0))*(1+Ud())`}) ; hideL(-7=={`-(t-t_0)*(2*v_0-b()*(t-t_0))*(1+Ud())<=2*(y-y_0)`}) ; smartQE,
+                  hideR(1=={`2*b()*abs(x-xo)>(1+Ud())*v^2`}) ; hideL(-11=={`2*(x-x_0)<=(t-t_0)*(2*v_0-b()*(t-t_0))*(1+Ud())`}) ; hideL(-10=={`-(t-t_0)*(2*v_0-b()*(t-t_0))*(1+Ud())<=2*(x-x_0)`}) ; smartQE
+                  ),
+                QE
+                ),
+              hideL(-6=={`2*b()*abs(x_0-xo)>(1+Ud())*v_0^2|2*b()*abs(y_0-yo)>(1+Ud())*v_0^2`}) ; dI(1)
+              ),
+            dI(1)
+            ),
+          dI(1)
+          ),
+        dI(1)
+        ),
+      dI(1)
+      ),
+    orL(-5) ; <(
+      andL(-5) ; allL2R(-15) ; hideL(-15=={`a=0`}) ; dC({`t>=old(t)`}, 1) ; <(
+        dC({`1-Ud()<=dx^2+dy^2&dx^2+dy^2<=1+Ud()`}, 1) ; <(
+          dC({`v=old(v)`}, 1) ; <(
+            dC({`x=old(x)`}, 1) ; <(
+              dC({`y=old(y)`}, 1) ; <(
+                dW(1) ; implyR(1) ; andR(1) ; <(
+                  andL('L)* ; allL2R(-17) ; hideL(-17=={`v=v_0`}) ; allL2R(-16) ; hideL(-16=={`x=x_0`}) ; allL2R(-15) ; hideL(-15=={`y=y_0`}) ; simplify(1) ; closeTrue,
+                  andR(1) ; <(
+                    QE,
+                    orR(1) ; orR(2) ; hideR(3=={`0=A()&(2*b()*abs(x-xo)>(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)|2*b()*abs(y-yo)>(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v))`}) ; hideR(1=={`0=-b()`}) ; simplify(1) ; QE
+                    )
+                  ),
+                dI(1)
+                ),
+              dI(1)
+              ),
+            dI(1)
+            ),
+          dI(1)
+          ),
+        dI(1)
+        ),
+      andL(-5) ; allL2R(-14) ; hideL(-14=={`a=A()`}) ; hideL(-6=={`2*b()*abs(x-xo)>(1+Ud())*v^2|2*b()*abs(y-yo)>(1+Ud())*v^2`}) ; dC({`t>=old(t)`}, 1) ; <(
+        dC({`1-Ud()<=dx^2+dy^2&dx^2+dy^2<=1+Ud()`}, 1) ; <(
+          dC({`v<=old(v)+A()*(t-old(t))`}, 1) ; <(
+            dC({`-(t-old(t))*(2*old(v)+A()*(t-old(t)))*(1+Ud())<=2*(x-old(x))&2*(x-old(x))<=(t-old(t))*(2*old(v)+A()*(t-old(t)))*(1+Ud())`}, 1) ; <(
+              dC({`-(t-old(t))*(2*old(v)+A()*(t-old(t)))*(1+Ud())<=2*(y-old(y))&2*(y-old(y))<=(t-old(t))*(2*old(v)+A()*(t-old(t)))*(1+Ud())`}, 1) ; <(
+                dW(1) ; implyR(1) ; andL('L)* ; andR(1) ; <(
+                  andR(1) ; <(
+                    hideL(-13=={`2*b()*abs(x_0-xo)>(1+Ud())*v_0^2+(1+Ud())*(A()+b())*(A()*(ep()-t_0)^2+2*(ep()-t_0)*v_0)|2*b()*abs(y_0-yo)>(1+Ud())*v_0^2+(1+Ud())*(A()+b())*(A()*(ep()-t_0)^2+2*(ep()-t_0)*v_0)`}) ; QE,
+                    andR(1) ; <(
+                      prop,
+                      orR(1) ; hideL(-21=={`dx^2+dy^2<=1+Ud()`}) ; hideL(-20=={`1-Ud()<=dx^2+dy^2`}) ; hideL(-8=={`dx_0^2+dy_0^2<=1+Ud()`}) ; hideL(-7=={`1-Ud()<=dx_0^2+dy_0^2`}) ; hideL(-5=={`dx_0^2+dy_0^2<=1+Ud()`}) ; hideL(-3=={`v_0>=0`}) ; hideL(-2=={`1-Ud()<=dx_0^2+dy_0^2`}) ; orL(-8) ; <(
+                        hideL(-9=={`-(t-t_0)*(2*v_0+A()*(t-t_0))*(1+Ud())<=2*(y-y_0)`}) ; hideL(-9=={`2*(y-y_0)<=(t-t_0)*(2*v_0+A()*(t-t_0))*(1+Ud())`}) ; edit({`2*b()*abs(x_0-xo)>(1+Ud())*v_0^2+(1+Ud())*(A()+b())*(A()*(t-t_0)^2+2*(t-t_0)*v_0)`}, -8) ; hideR(2=={`2*b()*abs(y-yo)>(1+Ud())*v^2`}) ; hideL(-13=={`t<=ep()`}) ; hideL(-5=={`ep()>0`}) ; smartQE,
+                        hideR(1=={`2*b()*abs(x-xo)>(1+Ud())*v^2`}) ; hideL(-13=={`2*(x-x_0)<=(t-t_0)*(2*v_0+A()*(t-t_0))*(1+Ud())`}) ; hideL(-12=={`-(t-t_0)*(2*v_0+A()*(t-t_0))*(1+Ud())<=2*(x-x_0)`}) ; edit({`2*b()*abs(y_0-yo)>(1+Ud())*v_0^2+(1+Ud())*(A()+b())*(A()*(t-t_0)^2+2*(t-t_0)*v_0)`}, -8) ; hideL(-13=={`t<=ep()`}) ; hideL(-5=={`ep()>0`}) ; smartQE
+                        )
+                      )
+                    ),
+                  andR(1) ; <(
+                    QE,
+                    orR(1) ; orR(2) ; hideR(1=={`A()=-b()`}) ; hideR(1=={`v=0&A()=0`}) ; simplify(1) ; orR(1) ; orL(-13) ; <(
+                      hideR(2=={`2*b()*abs(y-yo)>(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)`}) ; hideL(-21=={`dx^2+dy^2<=1+Ud()`}) ; hideL(-20=={`1-Ud()<=dx^2+dy^2`}) ; hideL(-8=={`dx_0^2+dy_0^2<=1+Ud()`}) ; hideL(-7=={`1-Ud()<=dx_0^2+dy_0^2`}) ; hideL(-5=={`dx_0^2+dy_0^2<=1+Ud()`}) ; hideL(-3=={`v_0>=0`}) ; hideL(-2=={`1-Ud()<=dx_0^2+dy_0^2`}) ; hideL(-9=={`-(t-t_0)*(2*v_0+A()*(t-t_0))*(1+Ud())<=2*(y-y_0)`}) ; hideL(-9=={`2*(y-y_0)<=(t-t_0)*(2*v_0+A()*(t-t_0))*(1+Ud())`}) ; cut({`(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)+b()*(t-t_0)*(1+Ud())*(A()*(t-t_0)+2*v_0)<=(1+Ud())*v_0^2+(1+Ud())*(A()+b())*(A()*(ep()-t_0)^2+2*(ep()-t_0)*v_0)`}) ; <(
+                        edit({`(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)+b()*(t-t_0)*(1+Ud())*(A()*(t-t_0)+2*v_0)<=abbrv((1+Ud())*v_0^2+(1+Ud())*(A()+b())*(A()*(ep()-t_0)^2+2*(ep()-t_0)*v_0))`}, -15) ; edit({`abbrv((1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v))+b()*(t-t_0)*(1+Ud())*(A()*(t-t_0)+2*v_0)<=abbrv`}, -15) ; hideL(-16=={`abbrv=(1+Ud())*v_0^2+(1+Ud())*(A()+b())*(A()*(ep()-t_0)^2+2*(ep()-t_0)*v_0)`}) ; hideL(-16=={`abbrv_0=(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)`}) ; smartQE,
+                        hideR(1=={`2*b()*abs(x-xo)>(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)`}) ; hideL(-8=={`2*b()*abs(x_0-xo)>(1+Ud())*v_0^2+(1+Ud())*(A()+b())*(A()*(ep()-t_0)^2+2*(ep()-t_0)*v_0)`}) ; QE
+                        ),
+                      hideR(1=={`2*b()*abs(x-xo)>(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)`}) ; hideL(-17=={`-(t-t_0)*(2*v_0+A()*(t-t_0))*(1+Ud())<=2*(x-x_0)`}) ; hideL(-17=={`2*(x-x_0)<=(t-t_0)*(2*v_0+A()*(t-t_0))*(1+Ud())`}) ; hideL(-19=={`dx^2+dy^2<=1+Ud()`}) ; hideL(-18=={`1-Ud()<=dx^2+dy^2`}) ; hideL(-8=={`dx_0^2+dy_0^2<=1+Ud()`}) ; hideL(-7=={`1-Ud()<=dx_0^2+dy_0^2`}) ; hideL(-5=={`dx_0^2+dy_0^2<=1+Ud()`}) ; hideL(-3=={`v_0>=0`}) ; hideL(-2=={`1-Ud()<=dx_0^2+dy_0^2`}) ; cut({`(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)+b()*(t-t_0)*(1+Ud())*(A()*(t-t_0)+2*v_0)<=(1+Ud())*v_0^2+(1+Ud())*(A()+b())*(A()*(ep()-t_0)^2+2*(ep()-t_0)*v_0)`}) ; <(
+                        edit({`(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)+b()*(t-t_0)*(1+Ud())*(A()*(t-t_0)+2*v_0)<=abbrv((1+Ud())*v_0^2+(1+Ud())*(A()+b())*(A()*(ep()-t_0)^2+2*(ep()-t_0)*v_0))`}, -15) ; edit({`abbrv((1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v))+b()*(t-t_0)*(1+Ud())*(A()*(t-t_0)+2*v_0)<=abbrv`}, -15) ; hideL(-16=={`abbrv=(1+Ud())*v_0^2+(1+Ud())*(A()+b())*(A()*(ep()-t_0)^2+2*(ep()-t_0)*v_0)`}) ; hideL(-16=={`abbrv_0=(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)`}) ; smartQE,
+                        hideR(1=={`2*b()*abs(y-yo)>(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)`}) ; hideL(-8=={`2*b()*abs(y_0-yo)>(1+Ud())*v_0^2+(1+Ud())*(A()+b())*(A()*(ep()-t_0)^2+2*(ep()-t_0)*v_0)`}) ; QE
+                        )
+                      )
+                    )
+                  ),
+                hideL(-13=={`2*b()*abs(x_0-xo)>(1+Ud())*v_0^2+(1+Ud())*(A()+b())*(A()*(ep()-t_0)^2+2*(ep()-t_0)*v_0)|2*b()*abs(y_0-yo)>(1+Ud())*v_0^2+(1+Ud())*(A()+b())*(A()*(ep()-t_0)^2+2*(ep()-t_0)*v_0)`}) ; dI(1)
+                ),
+              hideL(-13=={`2*b()*abs(x_0-xo)>(1+Ud())*v_0^2+(1+Ud())*(A()+b())*(A()*(ep()-t_0)^2+2*(ep()-t_0)*v_0)|2*b()*abs(y-yo)>(1+Ud())*v_0^2+(1+Ud())*(A()+b())*(A()*(ep()-t_0)^2+2*(ep()-t_0)*v_0)`}) ; dI(1)
+              ),
+            dI(1)
+            ),
+          hideL(-13=={`2*b()*abs(x-xo)>(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t_0)^2+2*(ep()-t_0)*v)|2*b()*abs(y-yo)>(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t_0)^2+2*(ep()-t_0)*v)`}) ; dI(1)
+          ),
+        hideL(-13=={`2*b()*abs(x-xo)>(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t_0)^2+2*(ep()-t_0)*v)|2*b()*abs(y-yo)>(1+Ud())*v^2+(1+Ud())*(A()+b())*(A()*(ep()-t_0)^2+2*(ep()-t_0)*v)`}) ; dI(1)
+        )
+      )
+    )
+  )
 End.
 
 End.
@@ -2127,6 +2599,8 @@ Tactic "Proof Theorem 9: Passive safety for asynchronous controllers".
 
 End.
 
+End.
+
 Theorem "Theorem 11: Reach waypoint".
 
 /*
@@ -2955,6 +3429,8 @@ implyR(1) ; loop({`v>=0&(r!=0&r^2=(x-xc)^2+(y-yc)^2&dx^2+dy^2=1&dx=-(y-yc)/r&dy=
       )
     ); print({`Induction Step (5) Done`})
   ); print({`Proof Done`})
+End.
+
 End.
 
 Theorem "Theorem 14: Reach waypoint with deadline".
