@@ -1,27 +1,21 @@
-﻿ArchiveEntry "TRM Tangential Roundabout Maneuver".
+﻿ArchiveEntry "TRM Tangential Roundabout Maneuver"
 
 /**
  * Essentials of Tangential Roundabout Maneuver (TRM) in Air Traffic Control (ATC)
  * @author Andre Platzer
  * @see "Andre Platzer. Differential-algebraic dynamic logic for differential-algebraic programs.Journal of Logic and Computation, 20(1), pages 309-352, 2010."
  */
-ProgramVariables.
-  R x1.   /* x-position of aircraft 1 */
-  R x2.   /* y-position of aircraft 1 */
-  R d1.   /* x-direction of aircraft 1 */
-  R d2.   /* y-direction of aircraft 1 */
-  R y1.   /* x-position of aircraft 2 */
-  R y2.   /* y-position of aircraft 2 */
-  R e1.   /* x-direction of aircraft 2 */
-  R e2.   /* y-direction of aircraft 2 */
-  R om.   /* angular velocity of aircraft 1 */
-  R omy.  /* angular velocity of aircraft 2 */
-  R c1.   /* x-position of center of roundabout circle */
-  R c2.   /* y-position of center of roundabout circle */
-  R p().  /* protected zone radius */
+Definitions
+  Real p();  /* protected zone radius */
 End.
 
-Problem.
+ProgramVariables
+  Real x1, x2, d1, d2, om;   /* aircraft 1: (x,y)-position, (x,y)-direction, and angular velocity */
+  Real y1, y2, e1, e2, omy;   /* aircraft 2: (x,y)-position  and (x,y)-direction, and angular velocity */
+  Real c1, c2;   /* (x,y)-position of center of roundabout circle */
+End.
+
+Problem
     (x1-y1)^2 + (x2-y2)^2 >= p()^2
   ->
    [{
@@ -39,7 +33,7 @@ Problem.
   ] (x1-y1)^2 + (x2-y2)^2 >= p()^2
 End.
 
-Tactic "TRM Tangential Roundabout Maneuver: Interactive Proof".
+Tactic "TRM Tangential Roundabout Maneuver: Interactive Proof"
   implyR(1) ; loop({`(x1-y1)^2+(x2-y2)^2>=p()^2`}, 1) ; <(
   closeId,
   closeId,
@@ -54,10 +48,9 @@ Tactic "TRM Tangential Roundabout Maneuver: Interactive Proof".
   )
 End.
        
-Tactic "TRM Tangential Roundabout Maneuver: Automatic Proof".
+Tactic "TRM Tangential Roundabout Maneuver: Automatic Proof"
   master
 End.
-       
 
 End.
        
