@@ -1,4 +1,4 @@
-ArchiveEntry "Bouncing Ball"
+ArchiveEntry "POPL: 1 Bouncing Ball"
 
 Definitions       /* function symbols cannot change their value */
   Real H;         /* initial height */
@@ -75,7 +75,7 @@ Tactic "Bouncing Ball: automatic"
 End.
 
 End.
-ArchiveEntry "LICS: 2 Single car drives forward"
+ArchiveEntry "POPL: 2 Car drives forward"
 
 Definitions       /* function symbols cannot change their value */
   Real b;         /* braking capabilities */
@@ -125,7 +125,7 @@ Tactic "LICS: 2 Single car drives forward: Automatic Proof"
 End.
 
 End.
-ArchiveEntry "LICS: 4a safe stopping of time-triggered car"
+ArchiveEntry "POPL: 3 Safely stopping car"
 
 Definitions       /* function symbols cannot change their value */
   Real b;         /* braking capabilities */
@@ -182,8 +182,8 @@ Tactic "LICS: 4a safety of time-triggered car: Automatic Proof"
 End.
 
 End.
-ArchiveEntry "CurveBot"
-Description "CurveBot: run a robot round the bend".
+ArchiveEntry "POPL: 4 CurveBot"
+Description "CurveBot: run a robot round the bend (with definitions)".
 
 ProgramVariables
   Real x, y;    /* robot x/y position */
@@ -191,13 +191,20 @@ ProgramVariables
   Real om;      /* robot rotational velocity */
   Real ox, oy;  /* x/y position summary of obstacle */
 End.
+
+Definitions
+  Bool Q(Real om, Real x, Real y, Real ox, Real oy, Real v, Real w) <-> 
+    ((x+w/om-ox)^2+(y-v/om-oy)^2 != v^2+w^2).
+  Bool Qline(Real x, Real y, Real ox, Real oy, Real v, Real w) <-> 
+    ((ox-x)*w != (oy-y)*v).
+End.
     
 Problem
   x!=ox | y!=oy ->
   [{
-    {?(x+w/-1-ox)^2+(y-v/-1-oy)^2!=v^2+w^2; om:=-1;
-    ++ ?(x+w-ox)^2+(y-v-oy)^2!=v^2+w^2; om:=1;
-    ++ ?(ox-x)*w!=(oy-y)*v; om:=0;}
+    {?Q(-1,x,y,ox,oy,v,w); om:=-1;
+    ++ ?Q(1,x,y,ox,oy,v,w); om:=1;
+    ++ ?Qline(x,y,ox,oy,v,w); om:=0;}
     {x'=v,y'=w,v'=om*w,w'=-om*v}
    }* @invariant(!(x=ox & y=oy))
   ] !(x=ox & y=oy)
@@ -233,7 +240,7 @@ Tactic "CurveBot: Proof"
 End.
 
 End.
-ArchiveEntry "Simple rotational dynamics"
+ArchiveEntry "POPL: 5 Rotational dynamics"
 
 ProgramVariables
   Real v;  /* direction in x-axis */
@@ -251,7 +258,7 @@ Tactic "10: Simple rotational dynamics: Proof 1"
 End.
 
 End.
-ArchiveEntry "Damped Oscillator"
+ArchiveEntry "POPL: 6 Damped oscillators"
 
 Definitions        /* function symbols cannot change their value */
   Real w;          /* undamped angular frequency */
@@ -277,7 +284,7 @@ End.
 End.
 
 
-ArchiveEntry "Increasingly Damped Oscillator"
+ArchiveEntry "POPL: 6 Damped oscillators"
 
 Definitions
   Real w;    /* undamped angular frequency */
@@ -305,7 +312,7 @@ Tactic "Increasingly Damped Oscillator: Differential cut proof"
 End.
 
 End.
-ArchiveEntry "Parachute"
+ArchiveEntry "POPL: 7 Parachute"
 
 Definitions
   Real g = 9;    /* gravity */
