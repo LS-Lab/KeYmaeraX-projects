@@ -1,4 +1,5 @@
 ﻿ArchiveEntry "Simple rotational dynamics"
+Description "Rotating points stay on circles".
 
 ProgramVariables
   Real v;  /* direction in x-axis */

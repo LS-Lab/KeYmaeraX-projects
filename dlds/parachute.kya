@@ -1,4 +1,5 @@
 ﻿ArchiveEntry "Parachute"
+Description "Safely deployed parachutes have bounded velocities".
 
 Definitions
   Real g = 9;    /* gravity */

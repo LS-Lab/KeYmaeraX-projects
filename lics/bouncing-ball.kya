@@ -1,4 +1,5 @@
 ArchiveEntry "Bouncing Ball"
+Description "Acrophobic Bouncing Ball".
 
 Definitions       /* function symbols cannot change their value */
   Real H;         /* initial height */

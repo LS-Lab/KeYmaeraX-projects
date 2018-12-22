@@ -1,4 +1,5 @@
 ArchiveEntry "Damped Oscillator"
+Description "Damped oscillators stay in ellipses".
 
 Definitions        /* function symbols cannot change their value */
   Real w;          /* undamped angular frequency */
@@ -25,6 +26,7 @@ End.
 
 
 ArchiveEntry "Increasingly Damped Oscillator"
+Description "Increasingly damped oscillators stay in ellipses".
 
 Definitions
   Real w;    /* undamped angular frequency */

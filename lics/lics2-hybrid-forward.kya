@@ -1,4 +1,5 @@
 ﻿ArchiveEntry "LICS: 2 Single car drives forward"
+Description "Cars have nonnegative velocity".
 
 Definitions       /* function symbols cannot change their value */
   Real b;         /* braking capabilities */
@@ -17,7 +18,7 @@ Problem           /* differential dynamic logic formula */
       {
         {a:=A; ++ a:=-b;}
         {x'=v, v'=a & v>=0}
-      }*@invariant(v>=0)
+      }* @invariant(v>=0)
     ] v>=0
 End.
 
