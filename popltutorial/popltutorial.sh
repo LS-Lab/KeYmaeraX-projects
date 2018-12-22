@@ -14,3 +14,5 @@ sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"POPL: 7 Parachute\"/" < ../dlds/parac
 
 #cat ../lics/bouncing-ball.kya  ../lics/lics2-hybrid-forward.kya ../lics/lics4a-time-safe.kya ../lics/CurveBotDef.kya ../lics/rotational.kya ../lics/damposc.kya ../dlds/parachute.kya > tmp.kya 
 perl -pe 's/\xEF\xBB\xBF//g' < tmp.kya > popltutorial.kyx
+rm tmp.kya
+rm repls
