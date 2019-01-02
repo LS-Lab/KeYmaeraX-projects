@@ -185,7 +185,7 @@ Tactic "LICS: 4a safety of time-triggered car: Automatic Proof"
 End.
 
 End.
-Exercise "CurveBot exercise"
+Exercise "POPL: 4 CurveBot Exercise"
 Description "CurveBot: run a robot round the bend (exercise)".
 
 ProgramVariables
