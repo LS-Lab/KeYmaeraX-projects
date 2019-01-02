@@ -1,0 +1,29 @@
+﻿Exercise "CurveBot exercise"
+Description "CurveBot: run a robot round the bend (exercise)".
+
+ProgramVariables
+  Real x, y;    /* robot x/y position */
+  Real v, w;    /* robot orientation in x/y direction */
+  Real om;      /* robot rotational velocity */
+  Real ox, oy;  /* x/y position summary of obstacle */
+End.
+
+Definitions
+  Bool Q(Real om, Real x, Real y, Real ox, Real oy, Real v, Real w) <-> 
+    (__________).
+  Bool Qline(Real x, Real y, Real ox, Real oy, Real v, Real w) <-> 
+    (__________).
+End.
+    
+Problem
+  x!=ox | y!=oy ->
+  [{
+    {?Q(-1,x,y,ox,oy,v,w); om:=-1;
+    ++ ?Q(1,x,y,ox,oy,v,w); om:=1;
+    ++ ?Qline(x,y,ox,oy,v,w); om:=0;}
+    {x'=v,y'=w,v'=om*w,w'=-om*v}
+   }*
+  ] !(x=ox & y=oy)
+End.
+
+End.
