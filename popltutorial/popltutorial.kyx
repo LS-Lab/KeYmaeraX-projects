@@ -102,8 +102,8 @@ End.
 
 Tactic "LICS: 2 Single car drives forward: Clever Proof"
 implyR(1) ; loop({`v>=0`}, 1) ; <(
-  closeId,
-  closeId,
+  id,
+  id,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
     assignb(1) ; dW(1) ; prop ; done,
     assignb(1) ; dW(1) ; prop ; done
@@ -113,8 +113,8 @@ End.
 
 Tactic "LICS: 2 Single car drives forward: Interactive Proof"
   implyR(1) ; loop({`v>=0`}, 1) ; <(
-  closeId,
-  closeId,
+  id,
+  id,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
     assignb(1) ; solve(1) ; QE,
     assignb(1) ; solve(1) ; QE
@@ -157,7 +157,7 @@ End.
 
 Tactic "LICS: 4a safety of time-triggered car: Clever Proof"
 implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
-  closeId,
+  id,
   QE,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
     composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; composeb(1) ; assignb(1) ; dC({`2*b()*(m-x)>=v^2+(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)`}, 1) ; <(
@@ -245,7 +245,7 @@ End.
 Tactic "CurveBot: Proof"
   implyR(1) ; loop({`!(x=ox&y=oy)`}, 1) ; <(
   QE,
-  closeId,
+  id,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
     composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dC({`v=-1*(y-old(y-v/-1))&w=1*(x-old(x+w/-1))`}, 1) ; <(
       dC({`(x+w/-1-ox)^2+(y-v/-1-oy)^2!=v^2+w^2`}, 1) ; <(

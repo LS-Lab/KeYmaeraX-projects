@@ -1369,8 +1369,8 @@ Tactic "Proof Theorem 3: Passive Friendly Safety".
     ,
     MR({`vxo^2+vyo^2<=V()^2`},1); <(
       loop({`vxo^2+vyo^2<=V()^2`}, 1) ; <(
-        closeId,
-        closeId,
+        id,
+        id,
         composeb(1) ; GV(1.1) ; composeb(1) ; GV(1.1) ; master
       )
       ,
@@ -3946,7 +3946,7 @@ loop({`0<=vr&Vmin()<=vo&(xr>0|xo>0|xr+vr^2/(2*b()) < 0|vr>0&(xo+vo*(0-xr)/vr+A()
       orL(-8) ; <(
         hideR(2=={`[{xr'=vr,vr'=0,xo'=vo,vo'=ao,t'=1,T'=1&((t<=ep()&vr>=0&vo>=Vmin())&vr=vr_0)&xr=xr_0}](Vmin()<=vo&(xr>0|xo>0|xr+vr^2/(2*b()) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))`}) ; leafQE,
         orL(-8) ; <(
-          closeId,
+          id,
           dW(2) ; orL(-8) ; <(
             leafQE,
             andL(-8) ; hideR(2=={`((t<=ep()&vr>=0&vo>=Vmin())&vr=vr_0)&xr=xr_0->Vmin()<=vo&(xr>0|xo>0|xr+vr^2/(2*b()) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr))`}) ; leafQE

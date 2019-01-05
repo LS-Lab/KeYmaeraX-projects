@@ -25,8 +25,8 @@ End.
 
 Tactic "Velocity Car: Proof 1"
   implyR(1) ; loop({`x<=m`}, 1) ; <(
-  closeId,
-  closeId,
+  id,
+  id,
   composeb(1) ; composeb(1.1) ; choiceb(1) ; andR(1) ; <(
     composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; assignb(1) ; dC({`x<=m-V()*(ep()-t)`}, 1) ; <(
       dW(1) ; QE,

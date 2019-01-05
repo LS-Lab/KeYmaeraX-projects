@@ -33,13 +33,13 @@ End.
 
 Tactic "LMPC: Proof"
   implyR(1) ; loop({`[{x'=v,v'=-b()&true}]x<=m`}, 1) ; <(
-  closeId,
+  id,
   boxd(-1) ; notL(-1) ; solve(2) ; existsR({`0`}, 2) ; andR(2) ; <(
     QE,
     notR(2) ; QE
     ),
   composeb(1) ; choiceb(1) ; andR(1) ; <(
-    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; closeId,
+    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; id,
     assignb(1) ; composeb(1) ; assignb(1) ; solve(-1) ; MR({`\forall t_ (t_>=0->(-b())/2*t_^2+v*t_+x<=m)`}, 1) ; <(
       solve(1) ; QE,
       solve(1) ; QE

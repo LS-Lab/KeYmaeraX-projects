@@ -10,9 +10,9 @@ End.
 
 Tactic "Dual Filibuster Game: Proof 1"
   implyR(1) ; dualDirectd(1) ; loop({`x=0`}, 1) ; <(
-  closeId,
+  id,
   dualDirectb(1) ; choiced(1) ; assignd(1.0) ; assignd(1.1) ; QE,
-  closeId
+  id
   )
 End.
 

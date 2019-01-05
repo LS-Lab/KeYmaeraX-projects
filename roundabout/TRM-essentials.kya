@@ -35,10 +35,10 @@ End.
 
 Tactic "TRM Tangential Roundabout Maneuver: Interactive Proof"
   implyR(1) ; loop({`(x1-y1)^2+(x2-y2)^2>=p()^2`}, 1) ; <(
-  closeId,
-  closeId,
+  id,
+  id,
   composeb(1) ; loop({`(x1-y1)^2+(x2-y2)^2>=p()^2`}, 1) ; <(
-    closeId,
+    id,
     composeb(1) ; randomb(1) ; allR(1) ; composeb(1) ; randomb(1) ; allR(1) ; composeb(1) ; randomb(1) ; allR(1) ; composeb(1) ; assignb(1) ; composeb(1) ; assignb(1) ; composeb(1) ; assignb(1) ; composeb(1) ; assignb(1) ; dC({`d1-e1=-om*(x2-y2)&d2-e2=om*(x1-y1)`}, 1) ; <(
       dI(1),
       dI(1)

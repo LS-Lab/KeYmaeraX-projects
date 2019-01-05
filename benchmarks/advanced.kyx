@@ -230,10 +230,10 @@ End.
 
 Tactic "Scripted proof".
 implyR(1) ; loop({`(x1-y1)^2+(x2-y2)^2>=p()^2`}, 1) ; <(
-  closeId,
-  closeId,
+  id,
+  id,
   composeb(1) ; loop({`(x1-y1)^2+(x2-y2)^2>=p()^2`}, 1) ; <(
-    closeId,
+    id,
     unfold ; diffInvariant({`d1-e1=-om*(x2-y2)&d2-e2=om*(x1-y1)`}, 1) ; dI(1),
     unfold ; dW(1) ; prop
     )

@@ -24,8 +24,8 @@ End.
 
 Tactic "LICS: 2 Single car drives forward: Clever Proof"
 implyR(1) ; loop({`v>=0`}, 1) ; <(
-  closeId,
-  closeId,
+  id,
+  id,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
     assignb(1) ; dW(1) ; prop ; done,
     assignb(1) ; dW(1) ; prop ; done
@@ -35,8 +35,8 @@ End.
 
 Tactic "LICS: 2 Single car drives forward: Interactive Proof"
   implyR(1) ; loop({`v>=0`}, 1) ; <(
-  closeId,
-  closeId,
+  id,
+  id,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
     assignb(1) ; solve(1) ; QE,
     assignb(1) ; solve(1) ; QE
