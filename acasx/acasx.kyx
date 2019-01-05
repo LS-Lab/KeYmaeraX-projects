@@ -179,7 +179,7 @@ implyR(1) ; andL('L)* ; loop({`loopInv()`}, 1) ; <(
     chase(1) ; andL(-1) ; simplify(1) ; closeTrue,
     cut({`w*dhd>=w*dhf|w*ao>=a()`}) ; <(
       useLemma({`ACAS X Safe Lower Bound`}, {`prop`}),
-      DI(1) ; implyR(1) ; closeId
+      DI(1) ; implyR(1) ; id
       )
     )
   )
@@ -249,7 +249,7 @@ Tactic "Proof Lemma 1: Equivalence between implicit and explicit region formulat
           andL('L=={`(w*dhf>=0->(-rp<=r&r < -rp-rv*min((0,w*dhd))/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp)&(-rp-rv*min((0,w*dhd))/a<=r&r<=rp-rv*min((0,w*dhd))/a->w*h < (-min((0,w*dhd))^2)/(2*a)-hp)&(rp-rv*min((0,w*dhd))/a < r&r<=rp+rv*max((0,w*(dhf-dhd)))/a->w*rv^2*h < a/2*(r-rp)^2+w*rv*dhd*(r-rp)-rv^2*hp)&(rp+rv*max((0,w*(dhf-dhd)))/a < r->rv=0|w*rv*h < w*dhf*(r-rp)-rv*max((0,w*(dhf-dhd)))^2/(2*a)-rv*hp))&(w*dhf < 0->(-rp<=r&r < -rp+rv*max((0,w*(dhf-dhd)))/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp)&(-rp+rv*max((0,w*(dhf-dhd)))/a<=r->rv=0&r>rp|w*rv*h < w*dhf*(r+rp)-rv*max((0,w*(dhf-dhd)))^2/(2*a)-rv*hp))`}) ;
           hideL('L=={`w*dhf < 0->(-rp<=r&r < -rp+rv*max((0,w*(dhf-dhd)))/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp)&(-rp+rv*max((0,w*(dhf-dhd)))/a<=r->rv=0&r>rp|w*rv*h < w*dhf*(r+rp)-rv*max((0,w*(dhf-dhd)))^2/(2*a)-rv*hp)`}) ;
           implyL('L=={`w*dhf>=0->(-rp<=r&r < -rp-rv*min((0,w*dhd))/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp)&(-rp-rv*min((0,w*dhd))/a<=r&r<=rp-rv*min((0,w*dhd))/a->w*h < (-min((0,w*dhd))^2)/(2*a)-hp)&(rp-rv*min((0,w*dhd))/a < r&r<=rp+rv*max((0,w*(dhf-dhd)))/a->w*rv^2*h < a/2*(r-rp)^2+w*rv*dhd*(r-rp)-rv^2*hp)&(rp+rv*max((0,w*(dhf-dhd)))/a < r->rv=0|w*rv*h < w*dhf*(r-rp)-rv*max((0,w*(dhf-dhd)))^2/(2*a)-rv*hp)`}) ; <(
-            hideR('R=={`\forall t \forall ro \forall ho (0<=t&t < max((0,w*(dhf-dhd)))/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=max((0,w*(dhf-dhd)))/a&ro=rv*t&ho=dhf*t-w*max((0,w*(dhf-dhd)))^2/(2*a)->abs(r-ro)>rp|w*h < w*ho-hp)`}) ; closeId
+            hideR('R=={`\forall t \forall ro \forall ho (0<=t&t < max((0,w*(dhf-dhd)))/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=max((0,w*(dhf-dhd)))/a&ro=rv*t&ho=dhf*t-w*max((0,w*(dhf-dhd)))^2/(2*a)->abs(r-ro)>rp|w*h < w*ho-hp)`}) ; id
             ,
             (allR('R)*) ;
               cut({`((r< -rp) | (-rp<=r & r < -rp-rv*min((0,w*dhd))/a) | (-rp-rv*min((0,w*dhd))/a<=r & r<=rp-rv*min((0,w*dhd))/a) | (rp-rv*min((0,w*dhd))/a < r & r<=rp+rv*max((0,w*(dhf-dhd)))/a) | (rp+rv*max((0,w*(dhf-dhd)))/a < r))`}) ;
@@ -266,7 +266,7 @@ Tactic "Proof Lemma 1: Equivalence between implicit and explicit region formulat
                       print({`-> 1:(-rp<=r & r < -rp-rv*minA/a)`}) ;
                         hideL('L=={`(-rp-rv*minA/a<=r&r<=rp-rv*minA/a->w*h < (-minA^2)/(2*a)-hp)&(rp-rv*minA/a < r&r<=rp+rv*maxA/a->w*rv^2*h < a/2*(r-rp)^2+w*rv*dhd*(r-rp)-rv^2*hp)&(rp+rv*maxA/a < r->rv=0|w*rv*h < w*dhf*(r-rp)-rv*maxA^2/(2*a)-rv*hp)`}) ;
                         implyL('L=={`-rp<=r&r < -rp-rv*minA/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp`}) ; <(
-                          hideR('R=={`0<=t&t < maxA/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=maxA/a&ro=rv*t&ho=dhf*t-w*maxA^2/(2*a)->abs_0>rp|w*h < w*ho-hp`}) ; closeId
+                          hideR('R=={`0<=t&t < maxA/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=maxA/a&ro=rv*t&ho=dhf*t-w*maxA^2/(2*a)->abs_0>rp|w*h < w*ho-hp`}) ; id
                           ,
                           implyR('R) ; orR('R) ;
                             cut({`t <= (r+rp)/rv | t > (r+rp)/rv`}) ; <(
@@ -292,7 +292,7 @@ Tactic "Proof Lemma 1: Equivalence between implicit and explicit region formulat
                           print({`-> 2: -rp-rv*minA/a<=r&r<=rp-rv*minA/a`}) ;
                             hideL('L=={`(rp-rv*minA/a < r&r<=rp+rv*maxA/a->w*rv^2*h < a/2*(r-rp)^2+w*rv*dhd*(r-rp)-rv^2*hp)&(rp+rv*maxA/a < r->rv=0|w*rv*h < w*dhf*(r-rp)-rv*maxA^2/(2*a)-rv*hp)`}) ;
                             implyL('L=={`(-rp-rv*minA/a<=r&r<=rp-rv*minA/a->w*h < (-minA^2)/(2*a)-hp)`}) ; <(
-                              hideR('R=={`0<=t&t < maxA/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=maxA/a&ro=rv*t&ho=dhf*t-w*maxA^2/(2*a)->abs_0>rp|w*h < w*ho-hp`}) ; closeId ; done
+                              hideR('R=={`0<=t&t < maxA/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=maxA/a&ro=rv*t&ho=dhf*t-w*maxA^2/(2*a)->abs_0>rp|w*h < w*ho-hp`}) ; id ; done
                               ,
                               implyR('R) & orR('R) & hideR('R=={`abs_0>rp`}) ; QE ; done
                               )
@@ -303,7 +303,7 @@ Tactic "Proof Lemma 1: Equivalence between implicit and explicit region formulat
                               print({`-> 3: rv*minA/a<=r&r<=rp-rv*minA/`}) ;
                                 hideL('L=={`rp+rv*maxA/a < r->rv=0|w*rv*h < w*dhf*(r-rp)-rv*maxA^2/(2*a)-rv*hp`}) ;
                                 implyL('L=={`rp-rv*minA/a < r&r<=rp+rv*maxA/a->w*rv^2*h < a/2*(r-rp)^2+w*rv*dhd*(r-rp)-rv^2*hp`}) ; <(
-                                  closeId ; done,
+                                  id ; done,
                                   implyR('R) ; cut({`t<= (r-rp)/rv | t > (r-rp)/rv`}) ; <(
                                     (/*cutUse,*/ orL('L=={`t<=(r-rp)/rv|t>(r-rp)/rv`}) ; <(
                                       orL('L=={`0<=t&t < maxA/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=maxA/a&ro=rv*t&ho=dhf*t-w*maxA^2/(2*a)`}) ; doall(QE) ; done
@@ -317,7 +317,7 @@ Tactic "Proof Lemma 1: Equivalence between implicit and explicit region formulat
                                 ,
                                 print({`-> 4`}) ;
                                   implyL('L=={`rp+rv*maxA/a < r->rv=0|w*rv*h < w*dhf*(r-rp)-rv*maxA^2/(2*a)-rv*hp`}) ; <(
-                                    closeId ; done,
+                                    id ; done,
                                     implyR('R) ; cut({`t<= (r-rp)/rv | t > (r-rp)/rv`}) ; <(
                                       (/*cutUse,*/ orL('L=={`t<=(r-rp)/rv|t>(r-rp)/rv`}) ; <(
                                         orL('L=={`0<=t&t < maxA/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=maxA/a&ro=rv*t&ho=dhf*t-w*maxA^2/(2*a)`}) ; doall(QE) ; done
@@ -343,7 +343,7 @@ Tactic "Proof Lemma 1: Equivalence between implicit and explicit region formulat
           (allR('R)*) ;
           hideL('L=={`w*dhf>=0->(-rp<=r&r < -rp-rv*min((0,w*dhd))/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp)&(-rp-rv*min((0,w*dhd))/a<=r&r<=rp-rv*min((0,w*dhd))/a->w*h < (-min((0,w*dhd))^2)/(2*a)-hp)&(rp-rv*min((0,w*dhd))/a < r&r<=rp+rv*max((0,w*(dhf-dhd)))/a->w*rv^2*h < a/2*(r-rp)^2+w*rv*dhd*(r-rp)-rv^2*hp)&(rp+rv*max((0,w*(dhf-dhd)))/a < r->rv=0|w*rv*h < w*dhf*(r-rp)-rv*max((0,w*(dhf-dhd)))^2/(2*a)-rv*hp)`}) ;
           implyL('L=={`w*dhf < 0->(-rp<=r&r < -rp+rv*max((0,w*(dhf-dhd)))/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp)&(-rp+rv*max((0,w*(dhf-dhd)))/a<=r->rv=0&r>rp|w*rv*h < w*dhf*(r+rp)-rv*max((0,w*(dhf-dhd)))^2/(2*a)-rv*hp)`}) ; <(
-            closeId ; done
+            id ; done
             ,
             cut({`(-rp>r)|(-rp<=r&r < -rp+rv*max((0,w*(dhf-dhd)))/a)|(-rp+rv*max((0,w*(dhf-dhd)))/a<=r)`}) ; <(
               (/*cutUse,*/ orL('L=={`(-rp>r)|(-rp<=r&r < -rp+rv*max((0,w*(dhf-dhd)))/a)|(-rp+rv*max((0,w*(dhf-dhd)))/a<=r)`}) ; <(
@@ -357,7 +357,7 @@ Tactic "Proof Lemma 1: Equivalence between implicit and explicit region formulat
                   orL('L=={`-rp<=r&r < -rp+rv*maxA/a|-rp+rv*maxA/a<=r`}) ; <(
                     print({`-> 5`}) ;
                     implyL('L=={`(-rp<=r&r < -rp+rv*maxA/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp)`}) ; <(
-                      closeId ; done
+                      id ; done
                       ,
                       hideL('L=={`-rp+rv*maxA/a<=r->rv=0&r>rp|w*rv*h < w*dhf*(r+rp)-rv*maxA^2/(2*a)-rv*hp`}) ;
                         orR('R) ;
@@ -367,7 +367,7 @@ Tactic "Proof Lemma 1: Equivalence between implicit and explicit region formulat
                     print({`-> 6`}) ;
                     hideL('L=={`-rp<=r&r < -rp+rv*maxA/a->w*rv^2*h < a/2*(r+rp)^2+w*rv*dhd*(r+rp)-rv^2*hp`}) ;
                     implyL('L=={`-rp+rv*maxA/a<=r->rv=0&r>rp|w*rv*h < w*dhf*(r+rp)-rv*maxA^2/(2*a)-rv*hp`}) ; <(
-                      closeId ; done
+                      id ; done
                       ,
                       orL('L=={`rv=0&r>rp|w*rv*h < w*dhf*(r+rp)-rv*maxA^2/(2*a)-rv*hp`}) ; <(
                         print({`zerocase`}) ;

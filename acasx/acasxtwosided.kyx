@@ -342,7 +342,7 @@ loop({`loopInv(w, dhf, dhfM, dhd, r, h)`},'R) /*DLBySubst.loop(invariant, skip)(
   print({`Use case`});
   andR('R); <(
     useLemma({`Thm 3: Use Case Low`}, {`prop`}); done,
-    (andL('L) *); closeId; done
+    (andL('L) *); id; done
   );
   done;
   print({`Use case done`})
@@ -375,7 +375,7 @@ loop({`loopInv(w, dhf, dhfM, dhd, r, h)`},'R) /*DLBySubst.loop(invariant, skip)(
       print({`After DI`});
       dC({`0=1`},'R); <(
         /*use*/ print({`After DC 2`}); dW('R); print({`after DW`}); QE; done; print({`DC 2 done`}),
-        /*show*/ print({`After DC 1`}); closeId; done; print({`DC 1 done`})
+        /*show*/ print({`After DC 1`}); id; done; print({`DC 1 done`})
       );
       done;
       print({`Use cut done`})
@@ -389,7 +389,7 @@ loop({`loopInv(w, dhf, dhfM, dhd, r, h)`},'R) /*DLBySubst.loop(invariant, skip)(
       implyR('R)*2; (andL('L) *);
       andR('R); <(
         andR('R); <(
-          closeId,
+          id,
           print({`bla2`}); orR('R);
             orL('L=={`\forall t \forall ro \forall ho (0<=t&t < maxI/a&ro=rv*t&ho=w*a/2*t^2+dhd*t|t>=maxI/a&ro=rv*t&ho=dhf*t-w*maxI^2/(2*a)->abs(r-ro)>rp|w*h < w*ho-hp)|\forall t \forall ro \forall ho (0<=t&t < maxIM/aM&ro=rv*t&ho=w*aM/2*t^2+dhd*t|t>=maxIM/aM&ro=rv*t&ho=(dhd+w*maxIM)*t-w*maxIM^2/(2*aM)->abs(r-ro)>rp|w*h>w*ho+hp)`});
             /*orL('L~={`C(w,dhf,dhd,r,h)|CM(w,dhfM,dhd,r,h)`});*/ <(
