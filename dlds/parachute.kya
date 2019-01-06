@@ -27,7 +27,7 @@ Problem
       r := p();
     }
     t := 0;
-    {x'=v, v'=-g()+r*v^2, t'=1 & t<=T() & x>=0 & v<0}
+    {{x'=v, v'=-g()+r*v^2, t'=1 & t<=T() & x>=0 & v<0}@invariant(v-g()*(T()-t)>-(g()/p())^(1/2))}
   }* @invariant((x>=0 & v<0) & v>-(g()/p())^(1/2))
 ](x=0 -> v>=m())
 End.
@@ -61,6 +61,10 @@ implyR(1) ; loop({`(x>=0&v < 0)&v>-(9/1)^(1/2)`}, 1) ; <(
     assignb(1) ; composeb(1) ; assignb(1) ; ODE(1)
     )
   )
+End.
+
+Tactic "Parachute: Automatic"
+  master
 End.
 
 End.
