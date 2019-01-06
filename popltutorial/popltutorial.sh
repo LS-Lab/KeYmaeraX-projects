@@ -11,7 +11,8 @@ s/ArchiveEntry *".*"/ArchiveEntry "POPL: 6 Damped oscillator"/1
 s/ArchiveEntry *".*"/ArchiveEntry "POPL: 6 Increasingly damped oscillator"/2
 EOM
 sed -f repls < ../lics/damposc.kya >> tmp.kya
-sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"POPL: 7 Parachute\"/" < ../dlds/parachute.kya >> tmp.kya
+sed "s/Exercise *\".*\"/Exercise \"POPL: 7 Parachute Exercise\"/" < ../dlds/parachuteExc.kyx >> tmp.kya
+sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"POPL: 7 Parachute Solution\"/" < ../dlds/parachute.kya >> tmp.kya
 
 #cat ../lics/bouncing-ball.kya  ../lics/lics2-hybrid-forward.kya ../lics/lics4a-time-safe.kya ../lics/CurveBotDef.kya ../lics/rotational.kya ../lics/damposc.kya ../dlds/parachute.kya > tmp.kya 
 perl -pe 's/\xEF\xBB\xBF//g' < tmp.kya > popltutorial.kyx
