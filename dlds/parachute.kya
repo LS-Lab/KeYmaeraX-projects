@@ -54,11 +54,8 @@ implyR(1) ; loop({`(x>=0&v < 0)&v>-(9/1)^(1/2)`}, 1) ; <(
   QE,
   QE,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
-    testb(1) ; implyR(1) ; composeb(1) ; assignb(1) ; dC({`r=a()`}, 1) ; <(
-      dC({`v-9*(T()-t)>-(9/1)^(1/2)`}, 1) ; <(
-        ODE(1),
-        ODE(1)
-        ),
+    testb(1) ; implyR(1) ; andL(-7) ; composeb(1) ; assignb(1) ; dC({`v-9*(T()-t)>-(9/1)^(1/2)`}, 1) ; <(
+      ODE(1),
       ODE(1)
       ),
     assignb(1) ; composeb(1) ; assignb(1) ; ODE(1)
