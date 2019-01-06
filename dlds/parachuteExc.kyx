@@ -1,5 +1,5 @@
 ﻿Exercise "Parachute Exercise"
-Description "Safely deployed parachutes have bounded velocities".
+Description "Exercise: Safely deployed parachutes".
 
 Definitions
   Real g = 9;    /* gravity */

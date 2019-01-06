@@ -186,7 +186,7 @@ End.
 
 End.
 Exercise "POPL: 4 CurveBot Exercise"
-Description "CurveBot: run a robot round the bend (exercise)".
+Description "Exercise: CurveBot: run a robot round the bend".
 
 ProgramVariables
   Real x, y;    /* robot x/y position */
@@ -348,7 +348,7 @@ End.
 
 End.
 Exercise "POPL: 7 Parachute Exercise"
-Description "Safely deployed parachutes have bounded velocities".
+Description "Exercise: Safely deployed parachutes".
 
 Definitions
   Real g = 9;    /* gravity */

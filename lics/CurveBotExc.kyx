@@ -1,5 +1,5 @@
 ﻿Exercise "CurveBot exercise"
-Description "CurveBot: run a robot round the bend (exercise)".
+Description "Exercise: CurveBot: run a robot round the bend".
 
 ProgramVariables
   Real x, y;    /* robot x/y position */
