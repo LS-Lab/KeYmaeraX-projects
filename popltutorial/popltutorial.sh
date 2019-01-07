@@ -1,6 +1,6 @@
 #!/bin/sh
 [[ -e tmp.kya ]] && rm tmp.kya
-sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"POPL: 1 Bouncing ball\"/" < ../lics/bouncing-ball.kya >> tmp.kya
+sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"POPL: 1 Bouncing ball\"/" < ../lics/bouncing-ball-if.kyx >> tmp.kya
 sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"POPL: 2 Car drives forward\"/" < ../lics/lics2-hybrid-forward.kya >> tmp.kya 
 sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"POPL: 3 Safely stopping car\"/" < ../lics/lics4a-time-safe.kya >> tmp.kya
 sed "s/Exercise *\".*\"/Exercise \"POPL: 4 CurveBot Exercise\"/" < ../lics/CurveBotExc.kyx >> tmp.kya
