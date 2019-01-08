@@ -1,0 +1,26 @@
+ArchiveEntry "Exercise: Bouncing Ball"
+Description "Exercise: Bouncing Ball".
+
+Definitions       /* function symbols cannot change their value */
+  Real H;         /* initial height */
+  Real g;         /* gravity */
+  Real c;         /* damping coefficient */
+End.
+
+ProgramVariables  /* program variables may change their value over time */
+  Real x, v;      /* height and vertical velocity */
+End.
+
+Problem
+  x>=0 & x=H
+  & v=0 & g>0 & 1>=c&c>=0
+ ->
+  [
+    {
+      {x'=v,v'=-g&x>=0}
+      if (x=0) {v:=-c*v;}
+    }* @invariant(__________)
+  ] (x>=0 & x<=H)
+End.
+
+End.

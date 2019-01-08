@@ -101,7 +101,7 @@ Tactic "LICS: 4a safety of time-triggered car: Automatic Proof"
 End.
 
 End.
-Exercise "POPL: 3 CurveBot Exercise"
+Exercise "POPL: 3 Exercise: CurveBot"
 Description "Exercise: CurveBot: run a robot round the bend".
 
 ProgramVariables
@@ -130,7 +130,7 @@ Problem
 End.
 
 End.
-ArchiveEntry "POPL: 3 CurveBot Solution"
+ArchiveEntry "POPL: 3 Solution: CurveBot"
 Description "CurveBot: run a robot round the bend (with definitions)".
 
 ProgramVariables
@@ -188,7 +188,33 @@ Tactic "CurveBot: Proof"
 End.
 
 End.
-ArchiveEntry "POPL: 4 Damped oscillator"
+ArchiveEntry "POPL: 4 Exercise: Bouncing ball"
+Description "Exercise: Bouncing Ball".
+
+Definitions       /* function symbols cannot change their value */
+  Real H;         /* initial height */
+  Real g;         /* gravity */
+  Real c;         /* damping coefficient */
+End.
+
+ProgramVariables  /* program variables may change their value over time */
+  Real x, v;      /* height and vertical velocity */
+End.
+
+Problem
+  x>=0 & x=H
+  & v=0 & g>0 & 1>=c&c>=0
+ ->
+  [
+    {
+      {x'=v,v'=-g&x>=0}
+      if (x=0) {v:=-c*v;}
+    }* @invariant(__________)
+  ] (x>=0 & x<=H)
+End.
+
+End.
+ArchiveEntry "POPL: 5 Damped oscillator"
 Description "Damped oscillators stay in ellipses".
 
 Definitions        /* function symbols cannot change their value */
@@ -215,7 +241,7 @@ End.
 End.
 
 
-ArchiveEntry "POPL: 4 Damped oscillator"
+ArchiveEntry "POPL: 5 Damped oscillator"
 Description "Increasingly damped oscillators stay in ellipses".
 
 Definitions
@@ -244,7 +270,7 @@ Tactic "Increasingly Damped Oscillator: Differential cut proof"
 End.
 
 End.
-Exercise "POPL: 5 Parachute Exercise"
+Exercise "POPL: 6 Exercise: Parachute"
 Description "Exercise: Safely deployed parachutes".
 
 Definitions
@@ -279,7 +305,7 @@ Problem
 End.
 
 End.
-ArchiveEntry "POPL: 5 Parachute Solution"
+ArchiveEntry "POPL: 6 Solution: Parachute"
 Description "Safely deployed parachutes have bounded velocities".
 
 Definitions
