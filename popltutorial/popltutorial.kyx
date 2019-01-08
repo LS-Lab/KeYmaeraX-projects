@@ -43,58 +43,7 @@ Tactic "Bouncing Ball: automatic"
 End.
 
 End.
-ArchiveEntry "POPL: 2 Car drives forward"
-Description "Cars have nonnegative velocity".
-
-Definitions       /* function symbols cannot change their value */
-  Real b;         /* braking capabilities */
-  Real A;         /* maximum acceleration */
-End.
-
-ProgramVariables  /* program variables may change their value over time */
-  Real x;         /* position of the car */
-  Real v;         /* velocity of the car */
-  Real a;         /* acceleration of the car */
-End.
-
-Problem           /* differential dynamic logic formula */
-    v>=0  & A>=0 & b>0
- -> [
-      {
-        {a:=A; ++ a:=-b;}
-        {x'=v, v'=a & v>=0}
-      }* @invariant(v>=0)
-    ] v>=0
-End.
-
-Tactic "LICS: 2 Single car drives forward: Clever Proof"
-implyR(1) ; loop({`v>=0`}, 1) ; <(
-  id,
-  id,
-  composeb(1) ; choiceb(1) ; andR(1) ; <(
-    assignb(1) ; dW(1) ; prop ; done,
-    assignb(1) ; dW(1) ; prop ; done
-    )
-  )
-End.
-
-Tactic "LICS: 2 Single car drives forward: Interactive Proof"
-  implyR(1) ; loop({`v>=0`}, 1) ; <(
-  id,
-  id,
-  composeb(1) ; choiceb(1) ; andR(1) ; <(
-    assignb(1) ; solve(1) ; QE,
-    assignb(1) ; solve(1) ; QE
-    )
-  )
-End.
-       
-Tactic "LICS: 2 Single car drives forward: Automatic Proof"
-  master
-End.
-
-End.
-ArchiveEntry "POPL: 3 Safely stopping car"
+ArchiveEntry "POPL: 2 Safely stopping car"
 Description "Cars don't run stop signs".
 
 Definitions       /* function symbols cannot change their value */
@@ -152,7 +101,7 @@ Tactic "LICS: 4a safety of time-triggered car: Automatic Proof"
 End.
 
 End.
-Exercise "POPL: 4 CurveBot Exercise"
+Exercise "POPL: 3 CurveBot Exercise"
 Description "Exercise: CurveBot: run a robot round the bend".
 
 ProgramVariables
@@ -181,7 +130,7 @@ Problem
 End.
 
 End.
-ArchiveEntry "POPL: 4 CurveBot Solution"
+ArchiveEntry "POPL: 3 CurveBot Solution"
 Description "CurveBot: run a robot round the bend (with definitions)".
 
 ProgramVariables
@@ -239,26 +188,7 @@ Tactic "CurveBot: Proof"
 End.
 
 End.
-ArchiveEntry "POPL: 5 Rotational dynamics"
-Description "Rotating points stay on circles".
-
-ProgramVariables
-  Real v;  /* direction in x-axis */
-  Real w;  /* direction in y-axis */
-  Real r;  /* radius r of circle around origin */
-End.
-
-Problem
-  v^2+w^2-r^2=0 -> 
-    [{v'=w,w'=-v}@invariant(v^2+w^2-r^2=0)] v^2+w^2-r^2=0
-End.
-
-Tactic "10: Simple rotational dynamics: Proof 1"
-  implyR(1) ; dI(1)
-End.
-
-End.
-ArchiveEntry "POPL: 6 Damped oscillator"
+ArchiveEntry "POPL: 4 Damped oscillator"
 Description "Damped oscillators stay in ellipses".
 
 Definitions        /* function symbols cannot change their value */
@@ -285,7 +215,7 @@ End.
 End.
 
 
-ArchiveEntry "POPL: 6 Damped oscillator"
+ArchiveEntry "POPL: 4 Damped oscillator"
 Description "Increasingly damped oscillators stay in ellipses".
 
 Definitions
@@ -314,7 +244,7 @@ Tactic "Increasingly Damped Oscillator: Differential cut proof"
 End.
 
 End.
-Exercise "POPL: 7 Parachute Exercise"
+Exercise "POPL: 5 Parachute Exercise"
 Description "Exercise: Safely deployed parachutes".
 
 Definitions
@@ -349,7 +279,7 @@ Problem
 End.
 
 End.
-ArchiveEntry "POPL: 7 Parachute Solution"
+ArchiveEntry "POPL: 5 Parachute Solution"
 Description "Safely deployed parachutes have bounded velocities".
 
 Definitions
