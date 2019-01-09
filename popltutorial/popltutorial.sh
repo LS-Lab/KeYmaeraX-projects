@@ -5,7 +5,7 @@ sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"POPL: 1 Bouncing ball\"/" < ../lics/b
 sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"POPL: 2 Safely stopping car\"/" < ../lics/lics4a-time-safe.kya >> tmp.kya
 sed "s/Exercise *\".*\"/Exercise \"POPL: 3 Exercise: CurveBot\"/" < ../lics/CurveBotExc.kyx >> tmp.kya
 sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"POPL: 3 Solution: CurveBot\"/" < ../lics/CurveBotDef.kyx >> tmp.kya
-sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"POPL: 4 Exercise: Bouncing ball\"/" < ../lics/bouncing-ball-exc.kyx >> tmp.kya
+sed "s/ArchiveEntry *\".*\"/Exercise \"POPL: 4 Exercise: Bouncing ball\"/" < ../lics/bouncing-ball-exc.kyx >> tmp.kya
 cat > repls <<- EOM
 s/ArchiveEntry *".*"/ArchiveEntry "POPL: 5 Damped oscillator"/1
 s/ArchiveEntry *".*"/ArchiveEntry "POPL: 5 Increasingly damped oscillator"/2
