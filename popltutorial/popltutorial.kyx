@@ -71,7 +71,7 @@ Problem           /* differential dynamic logic formula */
     ] x <= m
 End.
 
-Tactic "LICS: 4a safety of time-triggered car: Clever Proof"
+Tactic "Safety of time-triggered car: Clever Proof"
 implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
   id,
   QE,
@@ -85,7 +85,7 @@ implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
   )
 End.
 
-Tactic "LICS: 4a safety of time-triggered car: Interactive Proof"
+Tactic "Safety of time-triggered car: Interactive Proof"
   implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
   QE,
   QE,
@@ -96,7 +96,7 @@ Tactic "LICS: 4a safety of time-triggered car: Interactive Proof"
   )
 End.
        
-Tactic "LICS: 4a safety of time-triggered car: Automatic Proof"
+Tactic "Safety of time-triggered car: Automatic"
   master
 End.
 
@@ -187,6 +187,10 @@ Tactic "CurveBot: Proof"
   )
 End.
 
+Tactic "CurveBot: automatic"
+  master
+End.
+
 End.
 ArchiveEntry "POPL: 4 Exercise: Bouncing ball"
 Description "Exercise: Bouncing Ball".
@@ -238,6 +242,10 @@ Tactic "Damped Oscillator: Differential invariant proof"
   implyR(1) ; dI(1)
 End.
 
+Tactic "Damped Oscillator: automatic"
+  master
+End.
+
 End.
 
 
@@ -267,6 +275,10 @@ Tactic "Increasingly Damped Oscillator: Differential cut proof"
     dI(1), 
     dI(1)
   )
+End.
+
+Tactic "Increasingly Damped Oscillator: automatic"
+  master
 End.
 
 End.
