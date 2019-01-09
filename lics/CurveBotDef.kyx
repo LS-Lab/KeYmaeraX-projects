@@ -55,4 +55,8 @@ Tactic "CurveBot: Proof"
   )
 End.
 
+Tactic "CurveBot: automatic"
+  master
+End.
+
 End.
