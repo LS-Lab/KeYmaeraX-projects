@@ -193,6 +193,12 @@ Tactic "CurveBot: automatic"
   master
 End.
 
+Tactic "CurveBot: unfold"
+unfold ; loop({`!(x=ox&y=oy)`}, 1) ; <(
+  QE,
+  QE,
+  unfold ; doall(ODE(1))
+  )
 End.
 Exercise "POPL: 4 Exercise: Bouncing ball"
 Description "Exercise: Bouncing Ball".
