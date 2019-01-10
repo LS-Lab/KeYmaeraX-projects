@@ -200,6 +200,8 @@ unfold ; loop({`!(x=ox&y=oy)`}, 1) ; <(
   unfold ; doall(ODE(1))
   )
 End.
+
+End.
 Exercise "POPL: 4 Exercise: Bouncing ball"
 Description "Exercise: Bouncing Ball".
 
