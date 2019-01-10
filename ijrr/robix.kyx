@@ -3869,7 +3869,7 @@ Definitions.
       obstacle;
       { robot; t := 0; }
       dyn;
-    }*@invariant(loopinv())
+    }*
   }.
 
 End.
@@ -4247,7 +4247,7 @@ Definitions.
       obstacle;
       { robot; t := 0; }
       dyn;
-    }*@invariant(loopinv())
+    }*
   }.
 
 End.
