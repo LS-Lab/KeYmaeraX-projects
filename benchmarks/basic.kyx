@@ -655,6 +655,10 @@ Tactic "Scripted proof"
   )
 End.
 
+Tactic "Automated proof"
+  master
+End.
+
 End.
 
 ArchiveEntry "Dynamics: Nonlinear 1"

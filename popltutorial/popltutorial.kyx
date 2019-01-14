@@ -38,7 +38,6 @@ implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
 End.
 
 Tactic "Bouncing Ball: automatic"
-  /* needs QE({`Mathematica`}) */
   master
 End.
 
@@ -362,28 +361,29 @@ Problem
 End.
 
 Tactic "Parachute: Proof 1"
-  implyR(1) ; loop({`(x>=0&v < 0)&v>-(9/1)^(1/2)`}, 1) ; <(
+  implyR(1) ; loop({`(x>=0&v < 0)&v>-(g()/p())^(1/2)`}, 1) ; <(
   QE,
   QE,
   boxAnd(1) ; andR(1) ; <(
     master,
     unfold ; <(
-      dC({`v>=old(v)-9*t`}, 1) ; <(
+      dC({`v>=old(v)-g()*t`}, 1) ; <(
         dW(1) ; QE,
         dI(1)
         ),
-      dG({`y'=(-1/2*1*(v-(9/1)^(1/2)))*y`}, {`y^2*(v+(9/1)^(1/2))=1`}, 1) ; dI(1.0) ; QE({`Mathematica`})
+      dG({`y'=(-1/2*p()*(v-(g()/p())^(1/2)))*y`}, {`y^2*(v+(g()/p())^(1/2))=1`}, 1) ; dI(1.0) ; QE({`Mathematica`})
       )
     )
   )
 End.
 
 Tactic "Parachute: Invariants+Automation"
-implyR(1) ; loop({`(x>=0&v < 0)&v>-(9/1)^(1/2)`}, 1) ; <(
+/* requires QE({`Mathematica`}) */
+implyR(1) ; loop({`(x>=0&v < 0)&v>-(g()/p())^(1/2)`}, 1) ; <(
   QE,
   QE,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
-    testb(1) ; implyR(1) ; andL(-7) ; composeb(1) ; assignb(1) ; dC({`v-9*(T()-t)>-(9/1)^(1/2)`}, 1) ; <(
+    testb(1) ; implyR(1) ; andL(-7) ; composeb(1) ; assignb(1) ; dC({`v-g()*(T()-t)>-(g()/p())^(1/2)`}, 1) ; <(
       ODE(1),
       ODE(1)
       ),
@@ -393,6 +393,7 @@ implyR(1) ; loop({`(x>=0&v < 0)&v>-(9/1)^(1/2)`}, 1) ; <(
 End.
 
 Tactic "Parachute: Automatic"
+/* requires QE({`Mathematica`}) */
   master
 End.
 

@@ -140,6 +140,10 @@ Problem.
   !(x > 1 | z > 0)
 End.
 
+Tactic "Automated proof".
+  master
+End.
+
 End.
 
 ArchiveEntry "Arrowsmith Place Fig_1_29 page 14".
