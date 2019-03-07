@@ -955,6 +955,10 @@ Tactic "Scripted proof".
   (implyR(1)&(dC({`x^2+y^2+z^2<=1`},1)&<( (dW(1)&QE), master)))
 End.
 
+Tactic "Automated proof".
+  master
+End.
+
 End.
 
 ArchiveEntry "KeYmaera Nonlinear Diffcut".
@@ -1796,7 +1800,7 @@ Problem.
   ]y<=48
 End.
 
-Tactic "Manual proof".
+Tactic "Scripted proof".
   implyR(1) ; cut({`\exists u21 \exists u22 (u21^2+u22^2!=0 & invcluster(x,y,u21,u22)=0)`}) ; <(
     existsL('Llast)*2 ; dC({`invcluster(x,y,u21,u22)=0`}, 1) ; <(
       dW(1); QE,
@@ -1805,6 +1809,10 @@ Tactic "Manual proof".
     ,
     hideR(1) ; QE
   )
+End.
+
+Tactic "Automated proof".
+  master
 End.
 
 End.
