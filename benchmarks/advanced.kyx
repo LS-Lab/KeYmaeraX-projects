@@ -1066,3 +1066,57 @@ initial() ->
 End.
 
 End.
+
+ArchiveEntry "Lunar lander descent guidance (slow descent)".
+
+Citation "Hengjun ZhaoMengfei YangNaijun ZhanBin GuLiang ZouYao Chen. Formal Verification of a Descent Guidance Control Program of a Lunar Lander. FM 2014.".
+
+Definitions.
+  R Isp1   = (2500).  /* thrust engine impulse (low thrust) */
+  R Isp2   = (2800).  /* thrust engine impulse (high thrust) */
+  R gM     = (1.622). /* gravitational acceleration on the moon */
+  R eps    = (0.05).  /* v fluctuation tolerance */
+  R vslw   = (-2).    /* target velocity slow descent */
+  R vmax   = (5).     /* max velocity */
+  R DeltaT = (0.128). /* controller sampling time */
+  R mMin   = (1100).  /* maximum lander mass */
+  R mMax   = (3000).  /* minimum lander mass */
+  R c1     = (0.01).  /* control coeffiecent */
+  R c2     = (0.6).   /* control coefficient */
+End.
+
+ProgramVariables.
+  R r.   /* altitude relative to lunar surface */
+  R v.   /* vertical velocity */
+  R m.   /* lunar lander mass */
+  R Fc.  /* lander thrust */
+  R t.   /* time */
+  R isp. /* engine impulse depending on thrust */
+
+  R a.
+  R alC.
+End.
+
+Problem.
+  m=1250 & r=30 & v=-2 & Fc=2027.5
+  ->
+  [{
+     /* guidance program (plant updates mass) */
+     {
+     a := Fc/m;
+     alC := max(-c1*(a-gM) - c2*(v-vslw) + gM, 1500);
+     Fc := max(min(m*alC, 5000), 1500);
+     }
+     /* plant */
+     {
+     t:=0;
+     if (Fc <= 3000) { isp:=Isp1; } else { isp:=Isp2; }
+     /*{ r'=v, v'=Fc/m-gM, m'=-Fc/isp, t'=1 & r>=0 & t<=DeltaT & mMin<=m&m<=mMax }*/
+     /* recast per paper */
+     { r'=v, v'=a-gM, a'=a^2/isp, t'=1 & r>=0 & t<=DeltaT & mMin<=m&m<=mMax }
+     }
+   }*@invariant( (v - vslw)^2 <= eps^2 & v^2<=vmax^2 )
+  ]((v - vslw)^2 <= eps^2 & v^2<=vmax^2)
+End.
+
+End.
