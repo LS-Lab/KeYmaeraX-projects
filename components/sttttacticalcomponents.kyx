@@ -1,0 +1,264 @@
+SharedDefinitions
+  HP skip    ::= { ?true; };
+End.
+
+ArchiveEntry "Remote Control Contract Compliance"
+
+Definitions
+  Real D();
+
+  HP ctrlRC  ::= { d:=*; ?abs(d-d0)<=D(); };
+  HP plantRC ::= { skip; };
+  HP cpRC    ::= { skip; };
+  HP deltaRC ::= { d0:=d; };
+  HP inRC    ::= { skip; };
+
+  Bool initRC(Real d, Real d0) <-> d=d0;
+  Bool safeRC(Real d, Real d0) <-> abs(d-d0) <= D();
+End.
+
+ProgramVariables
+  Real d, d0;
+End.
+
+Problem
+  D()>=0 & initRC(d,d0) -> [{ deltaRC; ctrlRC; plantRC; inRC; cpRC; }*]safeRC(d,d0)
+End.
+
+Tactic "Proof Remote Control Contract Compliance (Create Lemmas)"
+  implyR(1);
+  loop({`safeRC(d,d0)`},1); <(
+    master; done({`RC base case done`}, {`user/robotcomponents/Remote Control Base Case`}),
+    master; done({`RC use case done`}, {`user/robotcomponents/Remote Control Use Case`}),
+    master; done({`RC step done`}, {`user/robotcomponents/Remote Control Step`})
+  )
+End.
+
+Tactic "Automated Proof Remote Control Contract Compliance"
+  master
+End.
+
+End.
+
+ArchiveEntry "Obstacle Contract Compliance"
+
+Definitions
+  Real S();
+  
+  Bool initobs(R po, R po0, R so) <-> po=po0 & so=0;
+  Bool safeobs(R po, R po0, R t, R t0) <-> abs(po-po0) <= S()*(t-t0);
+
+  HP ctrlobs  ::= { so:=*; ?0<=so&so<=S(); };
+  HP plantobs ::= { {t'=1, po'=so & true} };
+  HP cpobs    ::= { ?true; };
+  HP deltaobs ::= { po0:=po; };
+  HP inobs    ::= { ?true; };
+End.
+
+ProgramVariables
+  Real po, po0;
+  Real so;
+  Real t, t0;
+End.
+
+Problem
+  t=t0 & S()>=0 & initobs(po,po0,so) -> [{ deltaobs; ctrlobs; t0:=t; plantobs; inobs; cpobs; }*]safeobs(po,po0,t,t0)
+End.
+
+Tactic "Proof Obstacle Contract Compliance (Create Lemmas)"
+  implyR(1);
+  loop({`safeobs(po,po0,t,t0)`},1); <(
+    master; done({`Obstacle base case done`}, {`user/robotcomponents/Obstacle Base Case`}),
+    master; done({`Obstacle use case done`}, {`user/robotcomponents/Obstacle Use Case`}),
+    master; done({`Obstacle step done`}, {`user/robotcomponents/Obstacle Step`})
+  )
+End.
+
+Tactic "Automated Proof Obstacle Contract Compliance"
+  master
+End.
+
+End.
+
+ArchiveEntry "Robot Contract Compliance"
+
+Definitions
+  Real S();
+  Real D();
+  Real ep();
+  
+  Bool initrobot(Real por, Real por0, Real dr, Real dr0, Real sr) <-> por=por0 & dr=dr0 & sr=0 & ep()>0;
+  Bool saferobot(Real sr, Real por, Real pr) <-> (sr>0 -> por != pr);
+
+  Bool Drive(Real por, Real pr, Real dr) <-> por-pr > (dr+S())*ep();
+
+  Bool PiInPosObs(Real por, Real por0, Real t, Real t0) <-> abs(por-por0) <= S()*(t-t0);
+  Bool PiInD(Real dr, Real dr0) <-> abs(dr-dr0) <= D();
+
+  HP ctrlrobot  ::= { if (Drive(por,pr,dr)) { sr:=dr; } else { sr:=0; } };
+  HP plantrobot ::= { { t'=1, pr'=sr & t-t0<=ep() } };
+  HP cprobot    ::= { ?true; };
+  HP deltarobot ::= { por0:=por; dr0:=dr; };
+  HP inrobot    ::= { por:=*; ?PiInPosObs(por,por0,t,t0); dr:=*; ?PiInD(dr,dr0); };
+End.
+
+ProgramVariables
+  Real por, por0;
+  Real dr, dr0;
+  Real sr;
+  Real pr;
+  Real t, t0;
+End.
+
+Problem
+  t=t0 & S()>=0 & D()>=0 & initrobot(por,por0,dr,dr0,sr) -> [{
+    deltarobot; ctrlrobot; t0:=t; plantrobot; inrobot; cprobot;
+  }*]saferobot(sr,por,pr)
+End.
+
+Tactic "Proof Robot Contract Compliance (Create Lemmas)"
+  implyR(1);
+  loop({`saferobot(sr,por,pr)`},1); <(
+    master; done({`Robot base case done`}, {`user/robotcomponents/Robot Base Case`}),
+    master; done({`Robot use case done`}, {`user/robotcomponents/Robot Use Case`}),
+    master; done({`Robot step done`}, {`user/robotcomponents/Robot Step`})
+  )
+End.
+
+Tactic "Automated Proof Robot Contract Compliance"
+  master
+End.
+
+End.
+
+Lemma "Compatibility of Obstacle and Robot"
+
+Definitions
+  Real S();
+
+  Bool zeta(Real por, Real po) <-> po=por;
+  Bool PiOutPosObs(Real po, Real po0, Real t, Real t0)  <-> abs(po-po0) <= S()*(t-t0);
+  Bool PiInPosObs(Real por, Real por0, Real t, Real t0) <-> abs(por-por0) <= S()*(t-t0);
+End.
+
+ProgramVariables
+  Real po, po0;
+  Real por, por0;
+  Real t, t0;
+End.
+
+Problem
+  zeta(por0,po0) & S()>=0 -> [por:=po;](PiOutPosObs(po,po0,t,t0) -> PiInPosObs(por,por0,t,t0))
+End.
+
+Tactic "Proof Compatibility of Obstacle and Robot"
+  master & done({`Compatibility`}, {`user/robotcomponents/Compatibility of Obstacle and Robot`})
+End.
+
+End.
+
+Lemma "Communication Guarantee Safety"
+
+Definitions
+  Bool zeta(Real por, Real po) <-> po=por;
+  HP con ::= { por:=po; };
+End.
+
+ProgramVariables
+  Real por;
+  Real po;
+End.
+
+Problem
+  [con;]zeta(por,po)
+End.
+
+Tactic "Proof Communication Guarantee Safety"
+  master; done({`Communication guarantee safety`}, {`user/robotcomponents/Communication Guarantee Safety`})
+End.
+
+End.
+
+Lemma "Communication Guarantee Liveness"
+
+Definitions
+  HP con ::= { por:=po; };
+End.
+
+ProgramVariables
+  Real por;
+  Real po;
+End.
+
+Problem
+  <con;>true
+End.
+
+Tactic "Proof Communication Guarantee Liveness"
+  master & done({`Communication guarantee liveness`},{`user/robotcomponents/Communication Guarantee Liveness`})
+End.
+
+End.
+
+Theorem "Remote-Controlled Robot System Avoids Obstacles"
+
+Description "Parallel composition of robot and obstacle".
+
+Definitions
+  Real S();
+  Real D();
+  Real ep();
+
+  Bool initrobot(Real por, Real por0, Real dr, Real dr0, Real sr) <-> por=por0 & dr=dr0 & sr=0 & ep()>0;
+  Bool saferobot(Real sr, Real por, Real pr) <-> ( sr>0 -> por != pr );
+
+  Bool initobs(Real po, Real po0, Real so) <-> po=po0 & so=0;
+  Bool safeobs(Real po, Real po0, Real t, Real t0) <-> abs(po-po0) <= S()*(t-t0);
+
+  Bool zeta(Real por, Real po) <-> po=por;
+
+  /* "Omega" */
+  Bool GlobalFacts() <-> D()>=0 & S()>=0 & ep()>0;
+
+  Bool Drive(Real por, Real pr, Real dr) <-> ( por-pr > (dr+S())*ep() );
+
+  Bool PiInD(Real dr, Real dr0)   <-> abs(dr-dr0) <= D();
+
+  HP ctrlrobot  ::= { if (Drive(por,pr,dr)) { sr:=dr; } else { sr:=0; } };
+  HP ctrlobs    ::= { so:=*; ?0<=so&so<=S(); };
+
+  HP con        ::= { por:=po; };
+
+  HP ctrlsys    ::= { ctrlrobot; ctrlobs; };
+  HP plantsys   ::= { {t'=1, po'=so, pr'=sr & t-t0<=ep()} };
+  HP cpsys      ::= { ?true; ?true; con; };
+  HP deltasys   ::= { {por0:=por; dr0:=dr;} po0:=po; };
+  HP insys      ::= { {dr:=*; ?PiInD(dr,dr0);} ?true; };
+End.
+
+ProgramVariables
+  Real po, po0;
+  Real so;
+  Real por, por0;
+  Real dr, dr0;
+  Real pr;
+  Real sr;
+  Real t, t0;
+End.
+
+Problem
+  t=t0 & GlobalFacts() & initrobot(por,por0,dr,dr0,sr) & initobs(po,po0,so) & zeta(por,po) -> [{
+    deltasys; ctrlsys; t0:=t; plantsys; insys; cpsys;
+  }*]((saferobot(sr,por,pr)&true) & (true&safeobs(po,po0,t,t0)))
+End.
+
+Tactic "System Proof from Component Proofs"
+  proveComponentSystem(
+    {`robotcomponents/Robot Obstacle`},
+    {`robotcomponents/Robot Base Case`}, {`robotcomponents/Robot Use Case`}, {`robotcomponents/Robot Step`},
+    {`robotcomponents/Obstacle Base Case`}, {`robotcomponents/Obstacle Use Case`}, {`robotcomponents/Obstacle Step`},
+    {`robotcomponents/Compatibility of Obstacle and Robot`},
+    {`robotcomponents/Communication Guarantee Safety`}, {`robotcomponents/Communication Guarantee Liveness`}, 1)
+End.
+
+End.
