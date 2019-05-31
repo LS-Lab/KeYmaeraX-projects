@@ -41,8 +41,8 @@ Tactic "LMPC: Proof".
   composeb(1) ; choiceb(1) ; andR(1) ; <(
     composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; id,
     assignb(1) ; composeb(1) ; assignb(1) ; solve(-1) ; MR({`\forall t_ (t_>=0->(-b())/2*t_^2+v*t_+x<=m)`}, 1) ; <(
-      solve(1) ; QE({`Mathematica`}),
-      solve(1) ; QE({`Mathematica`})
+      solve(1) ; QE,
+      solve(1) ; QE
       )
     )
   )

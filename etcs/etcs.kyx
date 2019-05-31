@@ -234,7 +234,6 @@ Problem.
 End.
 
 Tactic "Controllability Automated Proof".
-  /* needs QE({`Mathematica`}) */
   master
 End.
 
@@ -311,7 +310,6 @@ Problem.
 End.
 
 Tactic "Proposition 2: RBC Preserves Train Controllability (Automated Proof)".
-  /* needs QE({`Mathematica`}) */
   chase(1.1.1.1.0.0.0); /* symbolically execute <m:=mo;d:=do;> */
   master
 End.

@@ -27,7 +27,7 @@ Tactic "1D Saddle Node: Bifurcation Proof"
         dI(1),
         dG({`{z'=(x-s)/2*z}`}, {`z^2*y=1`}, 1) ; existsR({`1`}, 1) ; dI(1)
       ),
-      hideR(1) ; QE({`Mathematica`})
+      hideR(1) ; QE
     )
   )
 End.
@@ -54,7 +54,7 @@ Tactic "1D Saddle Node: Tree-shaped bifurcation proof"
       )
     )
     ,
-    hideR(1) ; QE({`Mathematica`})
+    hideR(1) ; QE
   )
 End.
 

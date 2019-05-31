@@ -292,11 +292,11 @@ Problem
 End.
 
 Tactic "Exponential Decay from tactic"
-  implyR(1) ; dG({`y'=1/2*y`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE({`Mathematica`})
+  implyR(1) ; dG({`y'=1/2*y`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE
 End.
  
 Tactic "Exponential Decay: Automatic"
-  /* needs QE({`Mathematica`}) */
+  /* requires QE({`Mathematica`}) */
   master
 End.
 
@@ -313,7 +313,7 @@ Problem
 End.
 
 Tactic "Exponential Growth from tactic"
-  implyR(1) ; dG({`y'=-1/2*y`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE({`Mathematica`})
+  implyR(1) ; dG({`y'=-1/2*y`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE
 End.
 
 Tactic "Exponential Growth: Automatic"
@@ -335,7 +335,7 @@ End.
 
 
 Tactic "Exponential at Equilibrium from tactic"
- implyR(1) ; dG({`y'=-1*y`}, {`y>0&x*y=0`}, 1) ; boxAnd(1.0) ; dI(1.0.1) ; dG({`z'=1/2*z`}, {`y*z^2=1`}, 1.0.0) ; dI(1.0.0.0) ; QE({`Mathematica`})
+ implyR(1) ; dG({`y'=-1*y`}, {`y>0&x*y=0`}, 1) ; boxAnd(1.0) ; dI(1.0.1) ; dG({`z'=1/2*z`}, {`y*z^2=1`}, 1.0.0) ; dI(1.0.0.0) ; QE
 End.
 
 Tactic "Exponential at Equilibrium: top-level proof"
@@ -346,8 +346,8 @@ Tactic "Exponential at Equilibrium: top-level proof"
 End.
 
 Tactic "Exponential at Equilibrium: Automatic"
- /* needs QE({`Mathematica`}) */
- master
+  /* requires QE({`Mathematica`}) */
+  master
 End.
 
 End.
@@ -363,7 +363,7 @@ Problem
 End.
 
 Tactic "Exponential difference from tactic"
-  implyR(1) ; dG({`y'=-1*y`}, {`x*y=1`}, 1) ; dI(1.0) ; QE({`Mathematica`})
+  implyR(1) ; dG({`y'=-1*y`}, {`x*y=1`}, 1) ; dI(1.0) ; QE
 End.
    
 Tactic "Exponential difference: top-level proof"
@@ -415,7 +415,7 @@ Tactic "Parachute: Proof 1"
         dW(1) ; QE,
         dI(1)
         ),
-      dG({`y'=(-1/2*1*(v-(9/1)^(1/2)))*y`}, {`y^2*(v+(9/1)^(1/2))=1`}, 1) ; dI(1.0) ; QE({`Mathematica`})
+      dG({`y'=(-1/2*1*(v-(9/1)^(1/2)))*y`}, {`y^2*(v+(9/1)^(1/2))=1`}, 1) ; dI(1.0) ; QE
       )
     )
   )
