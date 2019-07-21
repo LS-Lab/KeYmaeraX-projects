@@ -1,5 +1,5 @@
 ﻿ArchiveEntry "Swirl invariant"
-Description "LICS'18 running example".
+Description "LICS'18 hourglass".
 
 ProgramVariables
   Real u;
@@ -15,7 +15,7 @@ End.
 End.
 
 ArchiveEntry "Swirl invariant circle"
-Description "LICS'18 running example".
+Description "LICS'18 circle".
 
 ProgramVariables
   Real u;
@@ -31,7 +31,7 @@ End.
 End.
 
 ArchiveEntry "Swirl invariant disc"
-Description "LICS'18 running example".
+Description "LICS'18 disc".
 
 ProgramVariables
   Real u;

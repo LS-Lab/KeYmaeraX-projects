@@ -1,4 +1,4 @@
-ArchiveEntry "Bouncing Ball"
+ArchiveEntry "1 Bouncing ball"
 Description "Acrophobic Bouncing Ball".
 
 Definitions       /* function symbols cannot change their value */
@@ -43,7 +43,7 @@ Tactic "Bouncing Ball: automatic"
 End.
 
 End.
-ArchiveEntry "LICS: 4a safe stopping of time-triggered car"
+ArchiveEntry "2 Safely stopping car"
 Description "Cars don't run stop signs".
 
 Definitions       /* function symbols cannot change their value */
@@ -64,7 +64,7 @@ Problem           /* differential dynamic logic formula */
     v^2<=2*b*(m-x) & v>=0  & A>=0 & b>0
  -> [
       {
-        {?(2*b*(m-x) >= v^2+(A+b)*(A*ep^2+2*ep*v)); a:=A; ++ a:=-b; }
+        {a:=-b; ++ ?(2*b*(m-x) >= v^2+(A+b)*(A*ep^2+2*ep*v)); a:=A;}
         t := 0;
         {x'=v, v'=a, t'=1 & v>=0 & t<=ep}
       }*@invariant(v^2<=2*b*(m-x))
@@ -76,11 +76,12 @@ implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
   id,
   QE,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
+    assignb(1) ; composeb(1) ; assignb(1) ; dI(1)
+    ,
     composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; composeb(1) ; assignb(1) ; dC({`2*b()*(m-x)>=v^2+(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)`}, 1) ; <(
       dW(1) ; QE,
       dI(1)
-      ),
-    assignb(1) ; composeb(1) ; assignb(1) ; dI(1)
+      )
     )
   )
 End.
@@ -90,8 +91,9 @@ Tactic "Safety of time-triggered car: Interactive Proof"
   QE,
   QE,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
-    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; composeb(1) ; assignb(1) ; solveEnd(1) ; QE,
     assignb(1) ; composeb(1) ; assignb(1) ; solveEnd(1) ; QE
+    ,
+    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; composeb(1) ; assignb(1) ; solveEnd(1) ; QE
     )
   )
 End.
@@ -101,7 +103,7 @@ Tactic "Safety of time-triggered car: Automatic"
 End.
 
 End.
-Exercise "CurveBot exercise"
+Exercise "3 Exercise: Runaround Robot"
 Description "Exercise: CurveBot: run a robot round the bend".
 
 ProgramVariables
@@ -130,7 +132,7 @@ Problem
 End.
 
 End.
-ArchiveEntry "CurveBot definitions"
+ArchiveEntry "3 Solution: Runaround Robot"
 Description "CurveBot: run a robot round the bend (with definitions)".
 
 ProgramVariables
@@ -199,7 +201,8 @@ unfold ; loop({`!(x=ox&y=oy)`}, 1) ; <(
   )
 End.
 
-End.Exercise "Exercise: TwoCar"
+End.
+Exercise "Exercise: TwoCar"
 Description "Control one car to safely follow another".
 
 Functions
@@ -236,7 +239,8 @@ Problem
   (__________) /* safety condition */
 
 End.
-End.ArchiveEntry "Damped Oscillator"
+End.
+ArchiveEntry "5 Damped oscillator"
 Description "Damped oscillators stay in ellipses".
 
 Definitions        /* function symbols cannot change their value */
@@ -267,7 +271,7 @@ End.
 End.
 
 
-ArchiveEntry "Increasingly Damped Oscillator"
+ArchiveEntry "5 Damped oscillator"
 Description "Increasingly damped oscillators stay in ellipses".
 
 Definitions
@@ -301,7 +305,7 @@ End.
 
 End.
 ArchiveEntry "Swirl invariant"
-Description "LICS'18 running example".
+Description "LICS'18 hourglass".
 
 ProgramVariables
   Real u;
@@ -317,7 +321,7 @@ End.
 End.
 
 ArchiveEntry "Swirl invariant circle"
-Description "LICS'18 running example".
+Description "LICS'18 circle".
 
 ProgramVariables
   Real u;
@@ -333,7 +337,7 @@ End.
 End.
 
 ArchiveEntry "Swirl invariant disc"
-Description "LICS'18 running example".
+Description "LICS'18 disc".
 
 ProgramVariables
   Real u;
