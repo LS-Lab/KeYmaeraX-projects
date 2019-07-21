@@ -1,0 +1,38 @@
+Exercise "Exercise: TwoCar"
+Description "Control one car to safely follow another".
+
+Functions
+  Real A;   /* Acceleration constant */
+  Real B;   /* Braking constant */
+  Real T;   /* Maximum reaction time constant */
+End.
+
+ProgramVariables
+  Real posLead, velLead, accLead;  /* position/velocity/acceleration of lead car */
+  Real pos, vel, acc;        /* position/velocity/acceleration of controlled car */
+  Real t;                    /* clock variable */
+End.
+
+Problem
+  /* INITIAL CONDITIONS */
+  (__________)
+  ->
+  [
+    {
+      /* CONTROL */
+      {
+        __________ /* assign a safe accel to ctrl. */
+        __________ /* safely assign acceleration or braking to lead */
+      }
+      /* CONTINUOUS DYNAMICS */
+      t := 0;
+      {
+        {__________ &
+          __________ & t <= T} /* evolution domain and time-trigger */
+      }
+    }*@invariant(__________) /* loop invariant */
+  ]
+  (__________) /* safety condition */
+
+End.
+End.
