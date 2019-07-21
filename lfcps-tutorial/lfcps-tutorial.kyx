@@ -1,0 +1,422 @@
+ArchiveEntry "Bouncing Ball"
+Description "Acrophobic Bouncing Ball".
+
+Definitions       /* function symbols cannot change their value */
+  Real H;         /* initial height */
+  Real g;         /* gravity */
+  Real c;         /* damping coefficient */
+End.
+
+ProgramVariables  /* program variables may change their value over time */
+  Real x, v;      /* height and vertical velocity */
+End.
+
+Problem
+  x>=0 & x=H
+  & v=0 & g>0 & 1>=c&c>=0
+ ->
+  [
+    {
+      {x'=v,v'=-g&x>=0}
+      if (x=0) {v:=-c*v;}
+    }* @invariant(2*g*x<=2*g*H-v^2 & x>=0)
+  ] (x>=0 & x<=H)
+End.
+
+Tactic "Bouncing Ball: Clever Proof"
+implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
+  QE,
+  QE,
+  composeb(1) ; dC({`2*g()*x<=2*g()*H()-v^2`}, 1) ; <(
+    dW(1) ; implyR(1) ; choiceb(1) ; andR(1) ; <(
+      composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE,
+      composeb(1) ; testb(1) ; implyR(1) ; testb(1) ; implyR(1) ; prop ; done
+      ),
+    dI(1)
+    )
+  )
+End.
+
+Tactic "Bouncing Ball: automatic"
+  /* needs QE({`Mathematica`}) */
+  master
+End.
+
+End.
+ArchiveEntry "LICS: 4a safe stopping of time-triggered car"
+Description "Cars don't run stop signs".
+
+Definitions       /* function symbols cannot change their value */
+  Real b;         /* braking capabilities */
+  Real A;         /* maximum acceleration */
+  Real ep;        /* reaction time */
+End.
+
+ProgramVariables  /* program variables may change their value over time */
+  Real x;         /* position of the car */
+  Real v;         /* velocity of the car */
+  Real a;         /* acceleration of the car */
+  Real m;         /* stop sign position */
+  Real t;         /* clock variable */
+End.
+
+Problem           /* differential dynamic logic formula */
+    v^2<=2*b*(m-x) & v>=0  & A>=0 & b>0
+ -> [
+      {
+        {?(2*b*(m-x) >= v^2+(A+b)*(A*ep^2+2*ep*v)); a:=A; ++ a:=-b; }
+        t := 0;
+        {x'=v, v'=a, t'=1 & v>=0 & t<=ep}
+      }*@invariant(v^2<=2*b*(m-x))
+    ] x <= m
+End.
+
+Tactic "Safety of time-triggered car: Clever Proof"
+implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
+  id,
+  QE,
+  composeb(1) ; choiceb(1) ; andR(1) ; <(
+    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; composeb(1) ; assignb(1) ; dC({`2*b()*(m-x)>=v^2+(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)`}, 1) ; <(
+      dW(1) ; QE,
+      dI(1)
+      ),
+    assignb(1) ; composeb(1) ; assignb(1) ; dI(1)
+    )
+  )
+End.
+
+Tactic "Safety of time-triggered car: Interactive Proof"
+  implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
+  QE,
+  QE,
+  composeb(1) ; choiceb(1) ; andR(1) ; <(
+    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; composeb(1) ; assignb(1) ; solveEnd(1) ; QE,
+    assignb(1) ; composeb(1) ; assignb(1) ; solveEnd(1) ; QE
+    )
+  )
+End.
+       
+Tactic "Safety of time-triggered car: Automatic"
+  master
+End.
+
+End.
+Exercise "CurveBot exercise"
+Description "Exercise: CurveBot: run a robot round the bend".
+
+ProgramVariables
+  Real x, y;    /* robot x/y position */
+  Real v, w;    /* robot orientation in x/y direction */
+  Real om;      /* robot rotational velocity */
+  Real ox, oy;  /* x/y position summary of obstacle */
+End.
+
+Definitions
+  Bool Q(Real om, Real x, Real y, Real ox, Real oy, Real v, Real w) <-> 
+    (__________).
+  Bool Qline(Real x, Real y, Real ox, Real oy, Real v, Real w) <-> 
+    (__________).
+End.
+    
+Problem
+  x!=ox | y!=oy ->
+  [{
+    {?Q(-1,x,y,ox,oy,v,w); om:=-1;
+    ++ ?Q(1,x,y,ox,oy,v,w); om:=1;
+    ++ ?Qline(x,y,ox,oy,v,w); om:=0;}
+    {x'=v,y'=w,v'=om*w,w'=-om*v}
+   }*
+  ] !(x=ox & y=oy)
+End.
+
+End.
+ArchiveEntry "CurveBot definitions"
+Description "CurveBot: run a robot round the bend (with definitions)".
+
+ProgramVariables
+  Real x, y;    /* robot x/y position */
+  Real v, w;    /* robot orientation in x/y direction */
+  Real om;      /* robot rotational velocity */
+  Real ox, oy;  /* x/y position summary of obstacle */
+End.
+
+Definitions
+  Bool Q(Real om, Real x, Real y, Real ox, Real oy, Real v, Real w) <-> 
+    ((x+w/om-ox)^2+(y-v/om-oy)^2 != v^2+w^2).
+  Bool Qline(Real x, Real y, Real ox, Real oy, Real v, Real w) <-> 
+    ((ox-x)*w != (oy-y)*v).
+End.
+    
+Problem
+  x!=ox | y!=oy ->
+  [{
+    {?Q(-1,x,y,ox,oy,v,w); om:=-1;
+    ++ ?Q(1,x,y,ox,oy,v,w); om:=1;
+    ++ ?Qline(x,y,ox,oy,v,w); om:=0;}
+    {x'=v,y'=w,v'=om*w,w'=-om*v}
+   }* @invariant(!(x=ox & y=oy))
+  ] !(x=ox & y=oy)
+End.
+
+Tactic "CurveBot: Proof"
+  implyR(1) ; loop({`!(x=ox&y=oy)`}, 1) ; <(
+  QE,
+  id,
+  composeb(1) ; choiceb(1) ; andR(1) ; <(
+    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dC({`v=-1*(y-old(y-v/-1))&w=1*(x-old(x+w/-1))`}, 1) ; <(
+      dC({`(x+w/-1-ox)^2+(y-v/-1-oy)^2!=v^2+w^2`}, 1) ; <(
+        dW(1) ; QE,
+        dI(1)
+        ),
+      dI(1)
+      ),
+    choiceb(1) ; andR(1) ; <(
+      composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dC({`v=1*(y-old(y-v/1))&w=-1*(x-old(x+w/1))`}, 1) ; <(
+        dC({`(x+w/1-ox)^2+(y-v/1-oy)^2!=v^2+w^2`}, 1) ; <(
+          dW(1) ; QE,
+          dI(1)
+          ),
+        dI(1)
+        ),
+      composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dG({`t'=1`}, {`!(x=ox&y=oy)`}, 1) ; existsR({`0`}, 1) ; dC({`v=old(v)&w=old(w)&x=old(x)+v*t&y=old(y)+w*t`}, 1) ; <(
+        dW(1) ; QE,
+        dI(1)
+        )
+      )
+    )
+  )
+End.
+
+Tactic "CurveBot: automatic"
+  master
+End.
+
+Tactic "CurveBot: unfold"
+unfold ; loop({`!(x=ox&y=oy)`}, 1) ; <(
+  QE,
+  QE,
+  unfold ; doall(ODE(1))
+  )
+End.
+
+End.Exercise "Exercise: TwoCar"
+Description "Control one car to safely follow another".
+
+Functions
+  Real A;   /* Acceleration constant */
+  Real B;   /* Braking constant */
+  Real T;   /* Maximum reaction time constant */
+End.
+
+ProgramVariables
+  Real posLead, velLead, accLead;  /* position/velocity/acceleration of lead car */
+  Real pos, vel, acc;        /* position/velocity/acceleration of controlled car */
+  Real t;                    /* clock variable */
+End.
+
+Problem
+  /* INITIAL CONDITIONS */
+  (__________)
+  ->
+  [
+    {
+      /* CONTROL */
+      {
+        __________ /* assign a safe accel to ctrl. */
+        __________ /* safely assign acceleration or braking to lead */
+      }
+      /* CONTINUOUS DYNAMICS */
+      t := 0;
+      {
+        {__________ &
+          __________ & t <= T} /* evolution domain and time-trigger */
+      }
+    }*@invariant(__________) /* loop invariant */
+  ]
+  (__________) /* safety condition */
+
+End.
+End.ArchiveEntry "Damped Oscillator"
+Description "Damped oscillators stay in ellipses".
+
+Definitions        /* function symbols cannot change their value */
+  Real w;          /* undamped angular frequency */
+  Real c;          /* level of ellipse */
+  Real d;          /* constant damping ratio */
+End.
+
+ProgramVariables  /* program variables may change their value over time */
+  Real x;         /* position of spring/mass system */
+  Real y;         /* velocity */
+End.
+
+Problem
+    w()^2*x^2 + y^2 <= c()^2
+->
+  [{x'=y, y'=-w()^2*x-2*d()*w()*y & w()>=0 & d()>=0}]w()^2*x^2 + y^2 <= c()^2
+End.
+
+Tactic "Damped Oscillator: Differential invariant proof"
+  implyR(1) ; dI(1)
+End.
+
+Tactic "Damped Oscillator: automatic"
+  master
+End.
+
+End.
+
+
+ArchiveEntry "Increasingly Damped Oscillator"
+Description "Increasingly damped oscillators stay in ellipses".
+
+Definitions
+  Real w;    /* undamped angular frequency */
+  Real c;    /* level of ellipse */
+End.
+
+ProgramVariables
+  Real x;    /* position of spring/mass system */
+  Real y;    /* velocity */
+  Real d;    /* damping ratio */
+End.
+
+Problem.
+    w()^2*x^2 + y^2 <= c()^2
+  & d>=0
+->
+  [{x'=y, y'=-w()^2*x-2*d*w()*y, d'=7 & w()>=0}]w()^2*x^2 + y^2 <= c()^2
+End.
+
+Tactic "Increasingly Damped Oscillator: Differential cut proof"
+  implyR(1) ; dC({`d>=0`}, 1) ; <(
+    dI(1), 
+    dI(1)
+  )
+End.
+
+Tactic "Increasingly Damped Oscillator: automatic"
+  master
+End.
+
+End.
+ArchiveEntry "Swirl invariant"
+Description "LICS'18 running example".
+
+ProgramVariables
+  Real u;
+  Real v;
+End.
+
+Problem
+  u^2<=v^2+9/2 -> [{u'=-v+u/4*(1-u^2-v^2),v'=u+v/4*(1-u^2-v^2)}]u^2<=v^2+9/2
+End.
+Tactic "Swirl invariant: Proof"
+master
+End.
+End.
+
+ArchiveEntry "Swirl invariant circle"
+Description "LICS'18 running example".
+
+ProgramVariables
+  Real u;
+  Real v;
+End.
+
+Problem
+  u^2+v^2=1 -> [{u'=-v+u/4*(1-u^2-v^2),v'=u+v/4*(1-u^2-v^2)}]u^2+v^2=1
+End.
+Tactic "Swirl invariant circle: Proof"
+master
+End.
+End.
+
+ArchiveEntry "Swirl invariant disc"
+Description "LICS'18 running example".
+
+ProgramVariables
+  Real u;
+  Real v;
+End.
+
+Problem
+  1-u^2-v^2>0 -> [{u'=-v+u/4*(1-u^2-v^2),v'=u+v/4*(1-u^2-v^2)}]1-u^2-v^2>0
+End.
+Tactic "Swirl invariant disc: Proof"
+master
+End.
+End.
+ArchiveEntry "Parachute"
+Description "Safely deployed parachutes have bounded velocities".
+
+Definitions
+  Real g = 9;    /* gravity */
+  Real p = 1;    /* parachute drag coefficient */
+  Real a;        /* skydiver air drag coefficient */
+  Real m;        /* impact velocity */
+  Real T;        /* skydiver reaction time */
+End.
+
+ProgramVariables
+  Real x;        /* skydiver altitude */
+  Real v;        /* skydiver speed (< 0, so lower is faster) */
+  Real r;        /* skydiver current drag coefficient (depends on parachute open/closed) */
+  Real t;        /* time */
+End.
+
+Problem
+  g()>0 & p()>a() & a()>0 & T()>0 & m()< -(g()/p())^(1/2) &
+  x>=0 & v<0 & v> -(g()/p())^(1/2) & r=a()
+->
+[ {
+    {
+      ?(v - g()*T() > -(g()/p())^(1/2) & r = a());
+      ++
+      r := p();
+    }
+    t := 0;
+    {{x'=v, v'=-g()+r*v^2, t'=1 & t<=T() & x>=0 & v<0}@invariant(v-g()*(T()-t)>-(g()/p())^(1/2))}
+  }* @invariant((x>=0 & v<0) & v>-(g()/p())^(1/2))
+](x=0 -> v>=m())
+End.
+
+Tactic "Parachute: Proof 1"
+  implyR(1) ; loop({`(x>=0&v < 0)&v>-(g()/p())^(1/2)`}, 1) ; <(
+  QE,
+  QE,
+  boxAnd(1) ; andR(1) ; <(
+    master,
+    unfold ; <(
+      dC({`v>=old(v)-g()*t`}, 1) ; <(
+        dW(1) ; QE,
+        dI(1)
+        ),
+      dG({`y'=(-1/2*p()*(v-(g()/p())^(1/2)))*y`}, {`y^2*(v+(g()/p())^(1/2))=1`}, 1) ; dI(1.0) ; QE
+      )
+    )
+  )
+End.
+
+Tactic "Parachute: Invariants+Automation"
+/* requires QE({`Mathematica`}) */
+implyR(1) ; loop({`(x>=0&v < 0)&v>-(g()/p())^(1/2)`}, 1) ; <(
+  QE,
+  QE,
+  composeb(1) ; choiceb(1) ; andR(1) ; <(
+    testb(1) ; implyR(1) ; andL(-7) ; composeb(1) ; assignb(1) ; dC({`v-g()*(T()-t)>-(g()/p())^(1/2)`}, 1) ; <(
+      ODE(1),
+      ODE(1)
+      ),
+    assignb(1) ; composeb(1) ; assignb(1) ; ODE(1)
+    )
+  )
+End.
+
+Tactic "Parachute: Automatic"
+  /* requires QE({`Mathematica`}) */
+  master
+End.
+
+End.
+       
