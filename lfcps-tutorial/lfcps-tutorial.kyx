@@ -352,12 +352,12 @@ master
 End.
 End.
 ArchiveEntry "Parachute"
-Description "Safely deployed parachutes have bounded velocities".
+Description "Simplified parachute with air drag only for parachute".
 
 Definitions
   Real g = 9;    /* gravity */
   Real p = 1;    /* parachute drag coefficient */
-  Real a;        /* skydiver air drag coefficient */
+  Real a = 0;    /* skydiver air drag coefficient: SIMPLIFIED to 0 */
   Real m;        /* impact velocity */
   Real T;        /* skydiver reaction time */
 End.
@@ -385,7 +385,7 @@ Problem
 ](x=0 -> v>=m())
 End.
 
-Tactic "Parachute: Proof 1"
+Tactic "Parachute nonaerodynamic: Proof 1"
   implyR(1) ; loop({`(x>=0&v < 0)&v>-(g()/p())^(1/2)`}, 1) ; <(
   QE,
   QE,
@@ -402,7 +402,7 @@ Tactic "Parachute: Proof 1"
   )
 End.
 
-Tactic "Parachute: Invariants+Automation"
+Tactic "Parachute nonaerodynamic: Invariants+Automation"
 /* requires QE({`Mathematica`}) */
 implyR(1) ; loop({`(x>=0&v < 0)&v>-(g()/p())^(1/2)`}, 1) ; <(
   QE,
@@ -417,7 +417,7 @@ implyR(1) ; loop({`(x>=0&v < 0)&v>-(g()/p())^(1/2)`}, 1) ; <(
   )
 End.
 
-Tactic "Parachute: Automatic"
+Tactic "Parachute nonaerodynamic: Automatic"
   /* requires QE({`Mathematica`}) */
   master
 End.

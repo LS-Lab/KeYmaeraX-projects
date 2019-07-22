@@ -11,7 +11,7 @@ s/ArchiveEntry *".*"/ArchiveEntry "5 Increasingly damped oscillator"/2
 EOM
 sed -f repls < ../lics/damposc.kya >> tmp.kya
 cat swirl.kyx >> tmp.kya
-sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"Parachute\"/" < ../dlds/parachute.kya >> tmp.kya
+sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"Parachute\"/" < parachute-nonaero.kyx >> tmp.kya
 
 perl -pe 's/\xEF\xBB\xBF//g' < tmp.kya > lfcps-tutorial.kyx
 rm tmp.kya
