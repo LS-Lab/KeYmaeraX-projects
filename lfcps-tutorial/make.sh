@@ -3,9 +3,9 @@
 sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"1 Bouncing ball\"/" < ../lics/bouncing-ball-if.kyx >> tmp.kya
 sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"2 Safely stopping car\"/" < ../popltutorial/time-safe.kyx >> tmp.kya
 sed "s/Exercise *\".*\"/Exercise \"3 Exercise: Runaround Robot\"/" < ../lics/CurveBotExc.kyx >> tmp.kya
-sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"3 Solution: Runaround Robot\"/" < ../lics/CurveBotDef.kyx >> tmp.kya
+#sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"3 Solution: Runaround Robot\"/" < ../lics/CurveBotDef.kyx >> tmp.kya
 sed "s/Exercise *\".*\"/Exercise \"4 Exercise: Modeling two cars\"/" < TwoCarExc.kyx >> tmp.kya
-cat > repls <<- EOM.
+cat > repls <<- EOM
 s/ArchiveEntry *"Damp.*"/ArchiveEntry "5 Damped oscillator"/
 s/ArchiveEntry *"Increas.*"/ArchiveEntry "5 Increasingly damped oscillator"/
 EOM
