@@ -104,7 +104,7 @@ End.
 
 End.
 Exercise "3 Exercise: Runaround Robot"
-Description "Exercise: CurveBot: run a robot round the bend".
+Description "CurveBot: run a robot round the bend".
 
 ProgramVariables
   Real x, y;    /* robot x/y position */
@@ -202,7 +202,7 @@ unfold ; loop({`!(x=ox&y=oy)`}, 1) ; <(
 End.
 
 End.
-Exercise "Exercise: TwoCar"
+Exercise "4 Exercise: Modeling two cars"
 Description "Control one car to safely follow another".
 
 Functions
@@ -271,7 +271,7 @@ End.
 End.
 
 
-ArchiveEntry "5 Damped oscillator"
+ArchiveEntry "5 Increasingly damped oscillator"
 Description "Increasingly damped oscillators stay in ellipses".
 
 Definitions
@@ -304,8 +304,8 @@ Tactic "Increasingly Damped Oscillator: automatic"
 End.
 
 End.
-ArchiveEntry "Swirl invariant"
-Description "LICS'18 hourglass".
+ArchiveEntry "6 Swirl invariant"
+Description "LICS'18 hourglass swirl".
 
 ProgramVariables
   Real u;
@@ -320,8 +320,8 @@ master
 End.
 End.
 
-ArchiveEntry "Swirl invariant circle"
-Description "LICS'18 circle".
+ArchiveEntry "6 Swirl invariant circle"
+Description "LICS'18 circle swirl".
 
 ProgramVariables
   Real u;
@@ -336,8 +336,8 @@ master
 End.
 End.
 
-ArchiveEntry "Swirl invariant disc"
-Description "LICS'18 disc".
+ArchiveEntry "6 Swirl invariant disc"
+Description "LICS'18 disc swirl".
 
 ProgramVariables
   Real u;
@@ -351,7 +351,7 @@ Tactic "Swirl invariant disc: Proof"
 master
 End.
 End.
-ArchiveEntry "Parachute"
+ArchiveEntry "7 Parachute simplified"
 Description "Simplified parachute with air drag only for parachute".
 
 Definitions
