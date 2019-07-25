@@ -1,0 +1,15 @@
+
+ProgramVariables.
+  R v.  /* Velocity of rocket */
+  R h.  /* Height of rocket */
+  R mR. /* Mass of rocket */
+  R mF. /* Mass of fuel */
+  R mFi. /* Initial mass */
+  R th.  /* Thrust */
+End.
+
+Problem.
+h = 0 & v = 0 & th > 0 & mFi = mF & mF > 0 & mR > 0 ->
+<{h' = v, v' = th/(mF+mR), mF'=-1 & mF >= 0}>
+h >= th*mFi/2
+End.
