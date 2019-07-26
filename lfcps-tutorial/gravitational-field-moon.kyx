@@ -1,0 +1,30 @@
+ArchiveEntry "Moon gravitating around the Earth"
+Description "Moon of mass m flying in gravitational force field around Earth of mass M at origin".
+
+Definitions
+  Real G;        /* gravitational constant */
+  Real M;        /* mass of the Earth */
+  Real m;        /* mass of the moon */
+  Real E;        /* generalized energy level */
+End.
+
+ProgramVariables
+  Real x,y;      /* x/y coordinates of the moon */
+  Real v,w;      /* x/y velocities of the moon */
+End.
+
+Problem
+  G>0&M>0 &
+  (v^2+w^2)-2*G*M/(x^2+y^2)^(1/2) = E ->
+   [{x'=v,v'=-G*M*x/(x^2+y^2)^(3/2),
+     y'=w,w'=-G*M*y/(x^2+y^2)^(3/2)}] (v^2+w^2)-2*G*M/(x^2+y^2)^(1/2) = E
+End.
+
+Tactic "Moon gravitating around the Earth: Proof"
+implyR(1) ; dI(1)
+End.
+
+Tactic "Moon gravitating around the Earth: Proof"
+master
+End.
+End.
