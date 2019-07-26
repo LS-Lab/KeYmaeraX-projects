@@ -29,6 +29,7 @@ theta - theta^3/6 - err < sintheta & sintheta < theta - theta^3/6 + err &
 costheta^2 + sintheta^2 = 1
 ->
 [{ theta' = thetav, thetav' = - g/l * sintheta - k/m * thetav, sintheta' = thetav * costheta, costheta' = -thetav * sintheta }]
+/* The pendulum never swings too high nor with too high speed */
 ( (-3 <= theta & theta <= 3) & (-3 <= thetav & thetav <= 3))
 End.
 

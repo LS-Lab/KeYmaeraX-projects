@@ -3,20 +3,23 @@ Theorem "chemical oscillator (diff axiomatization)".
 Citation "Hassan K. Khalil. Nonlinear Systems. Exercise 2.29 (b)".
 
 Definitions.
-  R a = (10).
+  R a = (10). /* a,b are positive constants */
   R b = (2).
 End.
 
 ProgramVariables.
-  R x1.
+  R x1. /* x1,x2 are dimensionless concentration of certain chemicals (see citation) */
   R x2.
-  R xi. /* This uniquely tracks 1/(1+x1^2) */
+  R xi. /* This variable uniquely tracks 1/(1+x1^2) along the ODE.
+           It is used to write down a polynomial differential equation for x1,x2 */
 End.
 
 Problem.
 (x1-2)^2 + (x2-5)^2 <= 1/4 &
 xi * (1+x1^2) = 1 ->
 [{ x1' = a - x1 - 4*x1*x2*xi, x2' = b*x1*(1-x2*xi), xi'= - xi^2 * (2*x1*(a - x1 - 4*x1*x2*xi)) }]
+/* The system in (x1,x2) has a stable limit cycle.
+   The concentration x2 always stays above 1 if starting inside the cycle */
 (x2 >= 1)
 End.
 
