@@ -1,0 +1,27 @@
+ArchiveEntry "Oil-reservoir Problem".
+
+/* 
+
+Cash, J. R. and Karp, A. H.
+A Variable Order Runge-Kutta Method for Initial Value Problems with Rapidly Varying Right-hand Sides.
+https://doi.org/10.1007/978-3-642-38088-4_8
+
+Bouissou O., Chapoutot A., Djoudi A.
+Enclosing Temporal Evolution of Dynamical Systems Using Numerical Methods.
+http://doi.acm.org.eaccess.ub.tum.de/10.1145/79505.79507
+
+Immler F.
+Formally Verified Computation of Enclosures of Solutions of Ordinary Differential Equations
+https://doi.org/10.1007/978-3-319-06200-6_9
+
+*/
+ProgramVariables.
+  R x.
+  R y.
+End.
+Problem.
+  x = 10 & y = 0 ->
+    [{ x' = y, y'= y^2 - 3/(0.001 + x^2) }] y >= -25
+End.
+
+End.

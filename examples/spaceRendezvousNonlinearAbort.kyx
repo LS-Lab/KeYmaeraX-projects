@@ -1,0 +1,94 @@
+ArchiveEntry "Space Rendezvous (Nonlinear) - Abort".
+
+/*
+  ARCH-COMP19 Category Report: Continuous and Hybrid Systems with Nonlinear Dynamics
+	https://doi.org/10.29007/m75b
+*/
+
+ProgramVariables
+  /* time */
+  Real t;
+  /* dynamics */
+  Real x;
+  Real y;
+  Real vx;
+  Real vy;
+End.
+
+Definitions
+  /* model parameters */
+  Real mu = 3.986 * 10^14 * 60^2;
+  Real mc = 500;
+  Real r  = 42164 * 10^3;
+  Real rc(Real x, Real y) = (( (r() + x)^2 + y^2 )^0.5);
+  Real n  = (( mu()/r()^3 )^0.5);
+  Real tan30 = 3^-0.5;
+  
+  /* linear feedback controllers */
+  
+  /* approaching */
+  Real Ka11 = -28.8287  ; Real Ka12 = 0.1005   ; Real Ka13 = -1449.9754 ; Real Ka14 = 0.0046    ;
+  Real Ka21 = -0.087    ; Real Ka22 = -33.2562 ; Real Ka23 = 0.00462    ; Real Ka24 = -1451.501 ;
+  Real uxa(Real x, Real y, Real vx, Real vy) = (Ka11 * x + Ka12 * y + Ka13 * vx + Ka14 * vy);
+  Real uya(Real x, Real y, Real vx, Real vy) = (Ka21 * x + Ka22 * y + Ka23 * vx + Ka24 * vy);
+
+  /* rendezvous attempt */
+  Real Kr11 = -288.0288 ; Real Kr12 = 0.1312   ; Real Kr13 = -9614.9898 ; Real Kr14 = 0         ;
+  Real Kr21 = -0.1312   ; Real Kr22 = -288     ; Real Kr23 = 0          ; Real Kr24 = -9614.988 ;
+  Real uxr(Real x, Real y, Real vx, Real vy) = (Kr11 * x + Kr12 * y + Kr13 * vx + Kr14 * vy);
+  Real uyr(Real x, Real y, Real vx, Real vy) = (Kr21 * x + Kr22 * y + Kr23 * vx + Kr24 * vy);
+
+  /* dynamics */
+  HP approach ::=
+    {{
+      t' = 1,
+      x'  = vx,
+      y'  = vy,
+      vx' = n()^2*x + 2*n()*vy + mu()/r()^2 - mu()/rc(x, y)^3*(r()+x) + uxa(x,y,vx,vy)/mc(),
+      vy' = n()^2*y - 2*n()*vx              - mu()/rc(x, y)^3*y       + uya(x,y,vx,vy)/mc()
+      &
+      t <= 120 & -1000 <= x & x <= -100
+    }};
+  HP rendezvous ::=
+    {{
+      t' = 1,
+      x'  = vx,
+      y'  = vy,
+      vx' = n()^2*x + 2*n()*vy + mu()/r()^2 - mu()/rc(x, y)^3*(r()+x) + uxr(x,y,vx,vy)/mc(),
+      vy' = n()^2*y - 2*n()*vx              - mu()/rc(x, y)^3*y       + uyr(x,y,vx,vy)/mc()
+      &
+      t <= 120 & -100 <= x
+    }};
+  HP aborting ::=
+    {{
+      t' = 1,
+      x'  = vx,
+      y'  = vy,
+      vx' = n()^2*x + 2*n()*vy + mu()/r()^2 - mu()/rc(x, y)^3*(r()+x),
+      vy' = n()^2*y - 2*n()*vx              - mu()/rc(x, y)^3*y
+      &
+      120 <= t
+    }};
+End.
+
+
+Problem
+(-925 <= x & x <= -875 &
+ -425 <= y & y <= -375 &
+ vx = 0 &
+ vy = 0
+ )
+->
+[approach;][rendezvous;](
+    /* velocity constraint */
+    (vx^2 + vy^2)^0.5 <= 3.3 &
+    /* line of sight cone */
+    x >= -100 & y >= x * tan30() & -y >= x * tan30() &
+    [aborting;](
+      !(-0.2 <= x & 0.2 <= x & -0.2 <= y & y <= 0.2)
+    )
+  )
+
+End.
+
+End.
