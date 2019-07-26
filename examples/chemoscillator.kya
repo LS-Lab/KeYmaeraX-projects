@@ -1,0 +1,30 @@
+Theorem "chemical oscillator (diff axiomatization)".
+
+Citation "Hassan K. Khalil. Nonlinear Systems. Exercise 2.29 (b)".
+
+Definitions.
+  R a = (10).
+  R b = (2).
+End.
+
+ProgramVariables.
+  R x1.
+  R x2.
+  R xi. /* This uniquely tracks 1/(1+x1^2) */
+End.
+
+Problem.
+(x1-2)^2 + (x2-5)^2 <= 1/4 &
+xi * (1+x1^2) = 1 ->
+[{ x1' = a - x1 - 4*x1*x2*xi, x2' = b*x1*(1-x2*xi), xi'= - xi^2 * (2*x1*(a - x1 - 4*x1*x2*xi)) }]
+(x2 >= 1)
+End.
+
+Tactic "chemical oscillator (diff axiomatization): Proof"
+unfold ; dC({`xi*(1+x1^2)=1`}, 1) ; <(
+  ODE(1),
+  ODE(1) /* Pegasus generates this: (((x1>0&x2>0)&xi>0)&347+x1*(-47+29*x1+5*x2)+-6*x1*xi+7*xi^2 < x2*(312+x2)) */
+  )
+End.
+
+End.
