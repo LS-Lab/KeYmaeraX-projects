@@ -1,6 +1,6 @@
 Theorem "chemical oscillator (diff axiomatization)".
 
-Description "Model of a chemical oscillator with simplified constants and with rational functions replaced by polynomials to aid in its analysis".
+Description "Model of a chemical oscillator with simplified constants and with rational functions differentially axiomatized by polynomials to aid in its analysis".
 
 Citation "Hassan K. Khalil. Nonlinear Systems. Exercise 2.29 (b)".
 

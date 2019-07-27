@@ -1,6 +1,6 @@
 ﻿Theorem "pendulum does not oscillate too wildly (diff axiomatization)".
 
-Description "Model of a pendulum with simplified constants and with trigonometric functions replaced by polynomials to aid in its analysis".
+Description "Model of a pendulum with simplified constants and with trigonometric functions differentially axiomatized by polynomials to aid in its analysis".
 
 Citation "Hassan K. Khalil. Nonlinear Systems. Example 1.2.1".
 
