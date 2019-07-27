@@ -354,33 +354,33 @@ End.
 
 End.
        
-ArchiveEntry "8 Moon gravitating around the Earth"
-Description "Moon of mass m flying in gravitational force field around Earth of mass M at origin".
+ArchiveEntry "8 Kepler two body"
+Description "Two planets in gravitational force field with one planet as origin, mathematically normalized constants".
+/* Ernst Hairer. Geometric Numerical Integration. TU Munich 2010 */
 
 Definitions
-  Real G;        /* gravitational constant */
-  Real M;        /* mass of the Earth */
-  Real m;        /* mass of the moon */
+  Real e;        /* eccentricity */
   Real E;        /* generalized energy level */
 End.
 
 ProgramVariables
-  Real x,y;      /* x/y coordinates of the moon */
-  Real v,w;      /* x/y velocities of the moon */
+  Real x,y;      /* x/y coordinates of the planet */
+  Real v,w;      /* x/y velocities of the planet */
 End.
 
 Problem
-  G>0&M>0 &
-  (v^2+w^2)-2*G*M/(x^2+y^2)^(1/2) = E ->
-   [{x'=v,v'=-G*M*x/(x^2+y^2)^(3/2),
-     y'=w,w'=-G*M*y/(x^2+y^2)^(3/2)}] (v^2+w^2)-2*G*M/(x^2+y^2)^(1/2) = E
+  /* 0<=e&e<1 &
+  x=1-e&v=0 & y=0&w=((1+e)/(1-e))^(1/2) & */
+  (v^2+w^2)/2-1/(x^2+y^2)^(1/2) = E ->
+   [{x'=v,v'=-x/(x^2+y^2)^(3/2),
+     y'=w,w'=-y/(x^2+y^2)^(3/2)}] (v^2+w^2)/2-1/(x^2+y^2)^(1/2) = E
 End.
 
-Tactic "Moon gravitating around the Earth: Proof"
+Tactic "Kepler two body: Proof"
 implyR(1) ; dI(1)
 End.
 
-Tactic "Moon gravitating around the Earth: Proof"
+Tactic "Kepler two body: Proof"
 master
 End.
 End.
