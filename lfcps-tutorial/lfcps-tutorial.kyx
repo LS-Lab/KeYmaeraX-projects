@@ -356,7 +356,7 @@ End.
        
 ArchiveEntry "8 Kepler two body"
 Description "Two planets in gravitational force field with one planet as origin, mathematically normalized constants".
-/* Ernst Hairer. Geometric Numerical Integration. TU Munich 2010 */
+Citation "Ernst Hairer. Geometric Numerical Integration. TU Munich 2010".
 
 Definitions
   Real e;        /* eccentricity */
