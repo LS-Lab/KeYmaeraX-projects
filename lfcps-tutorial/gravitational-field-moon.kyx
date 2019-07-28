@@ -17,7 +17,7 @@ Problem
   G>0&M>0 &
   (v^2+w^2)-2*G*M/(x^2+y^2)^(1/2) = E ->
    [{x'=v,v'=-G*M*x/(x^2+y^2)^(3/2),
-     y'=w,w'=-G*M*y/(x^2+y^2)^(3/2)}] (v^2+w^2)-2*G*M/(x^2+y^2)^(1/2) = E
+     y'=w,w'=-G*M*y/(x^2+y^2)^(3/2)&(x!=0|y!=0)}] (v^2+w^2)-2*G*M/(x^2+y^2)^(1/2) = E
 End.
 
 Tactic "Moon gravitating around the Earth: Proof"
