@@ -3,27 +3,41 @@ ArchiveEntry "Space Rendezvous (Nonlinear) - Abort".
 /*
   ARCH-COMP19 Category Report: Continuous and Hybrid Systems with Nonlinear Dynamics
 	https://doi.org/10.29007/m75b
+
+	Two spacecraft, "chaser" and "target", in the same orbital plane.
 */
 
 ProgramVariables
-  /* time */
+  /* time [min] */
   Real t;
-  /* dynamics */
+
+  /* position [m] of chaser relative to the target */
   Real x;
   Real y;
+
+  /* velocity [m/min] of chaser relative to the target */
   Real vx;
   Real vy;
 End.
 
 Definitions
-  /* model parameters */
-  Real mu = 3.986 * 10^14 * 60^2;
+  /* mass [kg] of chaser */
   Real mc = 500;
+
+  /* radius [m] of geostationary orbit */
   Real r  = 42164 * 10^3;
+
+  /* distance [m] between chaser and earth */
   Real rc(Real x, Real y) = (( (r() + x)^2 + y^2 )^0.5);
+
+  /* angular velocity n [1/min] */
+  Real mu = 3.986 * 10^14 * 60^2;
   Real n  = (( mu()/r()^3 )^0.5);
+
+  /* tan(30deg) */
   Real tan30 = 3^-0.5;
   
+
   /* linear feedback controllers */
   
   /* approaching */
@@ -85,6 +99,7 @@ Problem
     /* line of sight cone */
     x >= -100 & y >= x * tan30() & -y >= x * tan30() &
     [aborting;](
+      /* collision avoidance */
       !(-0.2 <= x & 0.2 <= x & -0.2 <= y & y <= 0.2)
     )
   )
