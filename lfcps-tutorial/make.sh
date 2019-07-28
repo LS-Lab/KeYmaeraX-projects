@@ -13,7 +13,7 @@ sed -f repls < ../lics/damposc.kya >> tmp.kya
 sed "s/ArchiveEntry *\"\(.*\)\"/ArchiveEntry \"6 \1\"/" <swirl.kyx >> tmp.kya
 sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"7 Parachute simplified\"/" < parachute-nonaero.kyx >> tmp.kya
 sed "s/ArchiveEntry *\"\(.*\)\"/ArchiveEntry \"8 \1\"/" <KeplerProblem.kyx >> tmp.kya
-#sed "s/ArchiveEntry *\"\(.*\)\"/ArchiveEntry \"8 \1\"/" <gravitational-field-moon.kyx >> tmp.kya
+sed "s/Exercise *\"\(.*\)\"/Exercise \"9 \1\"/" <gravitational-field-moonExc.kyx >> tmp.kya
 
 perl -pe 's/\xEF\xBB\xBF//g' < tmp.kya > lfcps-tutorial.kyx
 rm tmp.kya

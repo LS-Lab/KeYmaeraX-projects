@@ -384,3 +384,26 @@ Tactic "Kepler two body: Proof"
 master
 End.
 End.
+Exercise "9 Exercise: Moon around Earth"
+Description "Moon of mass m flying in gravitational force field around Earth of mass M at origin".
+
+Definitions
+  Real G;        /* gravitational constant */
+  Real M;        /* mass of the Earth */
+  Real m;        /* mass of the moon */
+  Real E;        /* generalized energy level */
+End.
+
+ProgramVariables
+  Real x,y;      /* x/y coordinates of the moon */
+  Real v,w;      /* x/y velocities of the moon */
+End.
+
+Problem
+  G>0&M>0 &
+  __________ ->
+   [{x'=v,v'=-G*M*x/(x^2+y^2)^(3/2),
+     y'=w,w'=-G*M*y/(x^2+y^2)^(3/2)&(x!=0|y!=0)}] __________
+End.
+
+End.
