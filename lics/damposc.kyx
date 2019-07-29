@@ -1,0 +1,64 @@
+ArchiveEntry "Damped Oscillator"
+Description "Damped oscillators stay in ellipses".
+
+Definitions        /* function symbols cannot change their value */
+  Real w;          /* undamped angular frequency */
+  Real c;          /* level of ellipse */
+  Real d;          /* constant damping ratio */
+End.
+
+ProgramVariables  /* program variables may change their value over time */
+  Real x;         /* position of spring/mass system */
+  Real y;         /* velocity */
+End.
+
+Problem
+    w()^2*x^2 + y^2 <= c()^2
+->
+  [{x'=y, y'=-w()^2*x-2*d()*w()*y & w()>=0 & d()>=0}]w()^2*x^2 + y^2 <= c()^2
+End.
+
+Tactic "Damped Oscillator: Differential invariant proof"
+  implyR(1) ; dI(1)
+End.
+
+Tactic "Damped Oscillator: automatic"
+  master
+End.
+
+End.
+
+
+ArchiveEntry "Increasingly Damped Oscillator"
+Description "Increasingly damped oscillators stay in ellipses".
+
+Definitions
+  Real w;    /* undamped angular frequency */
+  Real c;    /* level of ellipse */
+End.
+
+ProgramVariables
+  Real x;    /* position of spring/mass system */
+  Real y;    /* velocity */
+  Real d;    /* damping ratio */
+End.
+
+Problem.
+    w()^2*x^2 + y^2 <= c()^2
+  & d>=0
+->
+  [{x'=y, y'=-w()^2*x-2*d*w()*y, d'=7 & w()>=0}]w()^2*x^2 + y^2 <= c()^2
+End.
+
+Tactic "Increasingly Damped Oscillator: Differential cut proof"
+  implyR(1) ; dC({`d>=0`}, 1) ; <(
+    dI(1), 
+    dI(1)
+  )
+End.
+
+Tactic "Increasingly Damped Oscillator: automatic"
+  master
+End.
+
+End.

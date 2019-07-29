@@ -1,0 +1,51 @@
+﻿ArchiveEntry "LICS: 2 Single car drives forward"
+Description "Cars have nonnegative velocity".
+
+Definitions       /* function symbols cannot change their value */
+  Real b;         /* braking capabilities */
+  Real A;         /* maximum acceleration */
+End.
+
+ProgramVariables  /* program variables may change their value over time */
+  Real x;         /* position of the car */
+  Real v;         /* velocity of the car */
+  Real a;         /* acceleration of the car */
+End.
+
+Problem           /* differential dynamic logic formula */
+    v>=0  & A>=0 & b>0
+ -> [
+      {
+        {a:=A; ++ a:=-b;}
+        {x'=v, v'=a & v>=0}
+      }* @invariant(v>=0)
+    ] v>=0
+End.
+
+Tactic "LICS: 2 Single car drives forward: Clever Proof"
+implyR(1) ; loop({`v>=0`}, 1) ; <(
+  id,
+  id,
+  composeb(1) ; choiceb(1) ; andR(1) ; <(
+    assignb(1) ; dW(1) ; prop ; done,
+    assignb(1) ; dW(1) ; prop ; done
+    )
+  )
+End.
+
+Tactic "LICS: 2 Single car drives forward: Interactive Proof"
+  implyR(1) ; loop({`v>=0`}, 1) ; <(
+  id,
+  id,
+  composeb(1) ; choiceb(1) ; andR(1) ; <(
+    assignb(1) ; solve(1) ; QE,
+    assignb(1) ; solve(1) ; QE
+    )
+  )
+End.
+       
+Tactic "LICS: 2 Single car drives forward: Automatic Proof"
+  master
+End.
+
+End.

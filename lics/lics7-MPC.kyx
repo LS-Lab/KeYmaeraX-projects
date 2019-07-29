@@ -1,0 +1,51 @@
+﻿ArchiveEntry "LICS 7: Model-Predictive Control Design Car"
+
+Definitions      /* function symbols cannot change their value */
+  Real b;        /* braking capabilities */
+  Real A;        /* maximum acceleration */
+  Real ep;       /* reaction time */
+End.
+    
+ProgramVariables /* program variables may change their value over time */
+  Real x;        /* position of the car */
+  Real v;        /* velocity of the car */
+  Real a;        /* acceleration of the car */
+  Real m;        /* stop sign position */
+  Real t;        /* clock variable */
+End.
+    
+Problem          /* differential dynamic logic formula */
+  [{x'=v, v'=-b}](x<=m)
+   & v >= 0  
+   & A >= 0
+   & b > 0
+->
+  [
+    {
+    {{?([t:=0; {x'=v, v'=A, t'=1 & v >= 0 & t<=ep}] [{x'=v, v'=-b}](x<=m));
+       a := A;}
+    ++ a := -b;}
+      t := 0;
+      {x'=v, v'=a, t'=1 & v>=0 & t<=ep}
+    }*@invariant([{x'=v, v'=-b}](x<=m))
+  ] (x <= m)
+End.
+
+Tactic "LMPC: Proof"
+  implyR(1) ; loop({`[{x'=v,v'=-b()&true}]x<=m`}, 1) ; <(
+  id,
+  boxd(-1) ; notL(-1) ; solve(2) ; existsR({`0`}, 2) ; andR(2) ; <(
+    QE,
+    notR(2) ; QE
+    ),
+  composeb(1) ; choiceb(1) ; andR(1) ; <(
+    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; id,
+    assignb(1) ; composeb(1) ; assignb(1) ; solve(-1) ; MR({`\forall t_ (t_>=0->(-b())/2*t_^2+v*t_+x<=m)`}, 1) ; <(
+      solve(1) ; QE,
+      solve(1) ; QE
+      )
+    )
+  )
+End.
+
+End.

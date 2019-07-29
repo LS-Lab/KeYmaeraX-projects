@@ -1,0 +1,50 @@
+﻿ArchiveEntry "Push-around cart"
+
+ProgramVariables
+  Real x;     /* cart position */
+  Real v;     /* cart velocity */
+  Real a;     /* Angel's acceleration */
+  Real d;     /* Demon's acceleration */
+End.
+
+Problem
+  x>=0 & v>=0
+->
+  [{
+    {d:=1;++d:=-1;}^@    /* Demon chooses push or pull */
+    {a:=1;++a:=-1;}      /* Angel chooses push or pull */
+    {x'=v,v'=a+d}
+   }* @invariant(x>=0 & v>=0)
+  ] x>=0
+End.
+
+Tactic "Push-around cart: Clever Proof"
+  implyR(1) ; loop({`x>=0&v>=0`}, 1) ; <(
+  prop ; done,
+  composeb(1) ; dualDirectb(1) ; choiced(1) ; orR(1) ; hideR(2) ; assignd(1) ; composeb(1) ; choiceb(1) ; assignb(1.0) ; assignb(1.1) ; andR(1) ; <(
+    dC({`v>=0`}, 1) ; <(
+      dI(1),
+      dI(1)
+      ),
+    dC({`v>=0`}, 1) ; <(
+      dI(1),
+      dI(1)
+      )
+    ),
+  prop ; done
+  )
+End.
+       
+Tactic "Push-around cart: Interactive Proof"
+  implyR(1) ; loop({`x>=0&v>=0`}, 1) ; <(
+    prop ; done, 
+    composeb(1) ; dualDirectb(1) ; choiced(1) ; orR(1) ; hideR(2) ; assignd(1) ; composeb(1) ; choiceb(1) ; assignb(1.0) ; assignb(1.1) ; andR(1) ; <(
+      solve(1) ; QE, 
+      solve(1) ; QE
+    ), 
+    prop ; done
+  )
+End.
+
+End.
+       
