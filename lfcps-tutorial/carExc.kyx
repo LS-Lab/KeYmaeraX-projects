@@ -1,0 +1,29 @@
+ArchiveEntry "02 Exercise: Car braking"
+Description "Cars need invariants and control constraints to stop before m".
+
+Definitions       /* function symbols cannot change their value */
+  Real b;         /* braking capabilities */
+  Real A;         /* maximum acceleration */
+  Real ep;        /* reaction time */
+End.
+
+ProgramVariables  /* program variables may change their value over time */
+  Real x;         /* position of the car */
+  Real v;         /* velocity of the car */
+  Real a;         /* acceleration of the car */
+  Real m;         /* stop sign position */
+  Real t;         /* clock variable */
+End.
+
+Problem           /* differential dynamic logic formula */
+    v^2<=2*b*(m-x) & v>=0  & A>=0 & b>0
+ -> [
+      {
+        {a:=-b; ++ ?__________; a:=A;}
+        t := 0;
+        {x'=v, v'=a, t'=1 & v>=0 & t<=ep}
+      }* @invariant(__________)
+    ] x <= m
+End.
+
+End.
