@@ -43,7 +43,49 @@ Tactic "Bouncing Ball: automatic"
 End.
 
 End.
-ArchiveEntry "2 Exercise: Car"
+ArchiveEntry "2 Coasting Car"
+Description "Coasting cars can stop".
+
+Definitions       /* function symbols cannot change their value */
+  Real b;         /* braking capabilities */
+  Real ep;        /* reaction time */
+End.
+
+ProgramVariables  /* program variables may change their value over time */
+  Real x;         /* position of the car */
+  Real v;         /* velocity of the car */
+  Real a;         /* acceleration of the car */
+  Real m;         /* stop sign position */
+  Real t;         /* clock variable */
+End.
+
+Problem           /* differential dynamic logic formula */
+    v^2<=2*b*(m-x) & v>=0  & b>0
+ -> [
+      {
+        {a:=-b; ++ ?v^2<=2*b*(m-x-ep*v); a:=0;}
+        t := 0;
+        {x'=v, v'=a, t'=1 & v>=0 & t<=ep}
+      }*@invariant(v^2<=2*b*(m-x))
+    ] x <= m
+End.
+Tactic "Coasting Car: Interactive Proof"
+implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
+  prop,
+  QE,
+  composeb(1) ; composeb(1.1) ; choiceb(1) ; andR(1) ; <(
+    assignb(1) ; assignb(1) ; solve(1) ; QE,
+    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; assignb(1) ; solve(1) ; QE
+    )
+  )
+End.
+
+Tactic "Coasting Car: Automatic Proof"
+  master
+End.
+
+End.
+ArchiveEntry "3 Exercise: Accelerating Car"
 Description "Cars need invariants and control constraints to stop before m".
 
 Definitions       /* function symbols cannot change their value */
@@ -72,7 +114,7 @@ Problem           /* differential dynamic logic formula */
 End.
 
 End.
-ArchiveEntry "3 Safely stopping car"
+ArchiveEntry "3 Solution: Accelerating Car"
 Description "Cars don't run stop signs".
 
 Definitions       /* function symbols cannot change their value */

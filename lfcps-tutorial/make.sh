@@ -1,8 +1,9 @@
 #!/bin/sh
 [[ -e tmp.kya ]] && rm tmp.kya
 sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"1 Bouncing ball\"/" < ../lics/bouncing-ball-if.kyx >> tmp.kya
-sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"2 Exercise: Car\"/" < carExc.kyx >> tmp.kya
-sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"3 Safely stopping car\"/" < ../popltutorial/time-safe.kyx >> tmp.kya
+sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"2 Coasting Car\"/" < CoastingCar.kyx >> tmp.kya
+sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"3 Exercise: Accelerating Car\"/" < carExc.kyx >> tmp.kya
+sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"3 Solution: Accelerating Car\"/" < ../popltutorial/time-safe.kyx >> tmp.kya
 sed "s/Exercise *\".*\"/Exercise \"4 Exercise: Runaround Robot\"/" < ../lics/CurveBotExc.kyx >> tmp.kya
 #sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"3 Solution: Runaround Robot\"/" < ../lics/CurveBotDef.kyx >> tmp.kya
 sed "s/Exercise *\".*\"/Exercise \"5 Exercise: Modeling two cars\"/" < TwoCarExc.kyx >> tmp.kya
