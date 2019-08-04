@@ -43,7 +43,36 @@ Tactic "Bouncing Ball: automatic"
 End.
 
 End.
-ArchiveEntry "2 Safely stopping car"
+ArchiveEntry "2 Exercise: Car"
+Description "Cars need invariants and control constraints to stop before m".
+
+Definitions       /* function symbols cannot change their value */
+  Real b;         /* braking capabilities */
+  Real A;         /* maximum acceleration */
+  Real ep;        /* reaction time */
+End.
+
+ProgramVariables  /* program variables may change their value over time */
+  Real x;         /* position of the car */
+  Real v;         /* velocity of the car */
+  Real a;         /* acceleration of the car */
+  Real m;         /* stop sign position */
+  Real t;         /* clock variable */
+End.
+
+Problem           /* differential dynamic logic formula */
+    v^2<=2*b*(m-x) & v>=0  & A>=0 & b>0
+ -> [
+      {
+        {a:=-b; ++ ?__________; a:=A;}
+        t := 0;
+        {x'=v, v'=a, t'=1 & v>=0 & t<=ep}
+      }* @invariant(__________)
+    ] x <= m
+End.
+
+End.
+ArchiveEntry "3 Safely stopping car"
 Description "Cars don't run stop signs".
 
 Definitions       /* function symbols cannot change their value */
@@ -103,7 +132,7 @@ Tactic "Safety of time-triggered car: Automatic"
 End.
 
 End.
-Exercise "3 Exercise: Runaround Robot"
+Exercise "4 Exercise: Runaround Robot"
 Description "CurveBot: run a robot round the bend".
 
 ProgramVariables
@@ -132,7 +161,7 @@ Problem
 End.
 
 End.
-Exercise "4 Exercise: Modeling two cars"
+Exercise "5 Exercise: Modeling two cars"
 Description "Control one car to safely follow another".
 
 Functions
@@ -170,7 +199,7 @@ Problem
 
 End.
 End.
-ArchiveEntry "5 Damped oscillator"
+ArchiveEntry "6 Damped oscillator"
 Description "Damped oscillators stay in ellipses".
 
 Definitions        /* function symbols cannot change their value */
@@ -201,7 +230,7 @@ End.
 End.
 
 
-ArchiveEntry "5 Increasingly damped oscillator"
+ArchiveEntry "6 Increasingly damped oscillator"
 Description "Increasingly damped oscillators stay in ellipses".
 
 Definitions
@@ -234,7 +263,7 @@ Tactic "Increasingly Damped Oscillator: automatic"
 End.
 
 End.
-ArchiveEntry "6 Swirl invariant"
+ArchiveEntry "7 Swirl invariant"
 Description "LICS'18 hourglass swirl".
 
 ProgramVariables
@@ -250,7 +279,7 @@ master
 End.
 End.
 
-ArchiveEntry "6 Swirl invariant circle"
+ArchiveEntry "7 Swirl invariant circle"
 Description "LICS'18 circle swirl".
 
 ProgramVariables
@@ -266,7 +295,7 @@ master
 End.
 End.
 
-ArchiveEntry "6 Swirl invariant disc"
+ArchiveEntry "7 Swirl invariant disc"
 Description "LICS'18 disc swirl".
 
 ProgramVariables
@@ -281,7 +310,7 @@ Tactic "Swirl invariant disc: Proof"
 master
 End.
 End.
-ArchiveEntry "7 Parachute simplified"
+ArchiveEntry "8 Parachute simplified"
 Description "Simplified parachute with air drag only for parachute".
 
 Definitions
@@ -354,7 +383,7 @@ End.
 
 End.
        
-ArchiveEntry "8 Kepler two body"
+ArchiveEntry "9 Kepler two body"
 Description "Two planets in gravitational force field with one planet as origin, mathematically normalized constants".
 Citation "Ernst Hairer. Geometric Numerical Integration. TU Munich 2010".
 
