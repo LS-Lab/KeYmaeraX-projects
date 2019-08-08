@@ -1,0 +1,63 @@
+Theorem "rigid body (stability of origin)".
+
+Description "stability of the origin for a 3D rigid body".
+
+Citation "Wassim M. Haddad & VijaySekhar Chellaboina. Nonlinear Dynamical Systems and Control A Lyapunov-Based Approach. Example 3.1".
+
+Definitions.
+  R I1.   /* I1,I2,I3 are the "principal moments of inertia" */
+  R I2.
+  R I3.
+End.
+
+ProgramVariables.
+  R x1. /* x1,x2,x3 give the angular velocities in each of the axes */
+  R x2.
+  R x3.
+  R e.
+  R d.
+End.
+
+Problem.
+I1 > 0 & I2 > 0 & I3 > 0 ->
+\forall e (
+  e > 0 ->
+  \exists d
+  (d > 0 &
+  \forall x1 \forall x2 \forall x3
+  (
+  x1^2+x2^2+x3^2 < d ->
+  [
+    {
+    x1' = (I2-I3)/I1 * x2 * x3,
+    x2' = (I3-I1)/I2 * x3 * x1,
+    x3' = (I1-I2)/I3 * x1 * x2
+    }
+  ]
+  x1^2+x2^2+x3^2 < e
+  )
+  )
+)
+
+End.
+
+Tactic "rigid body (stability of origin): Proof"
+unfold ; cut({`\exists a1 \exists a2 \exists a3 (a1>0&a2>0&a3>0&a1*(I2()-I3())/I1()+a2*(I3()-I1())/I2()+a3*(I1()-I2())/I3()=0)`}) ; <(
+  unfold ; cut({`\exists k (k>0&\forall x1 \forall x2 \forall x3 (x1^2+x2^2+x3^2=e->1/2*(a1*x1^2+a2*x2^2+a3*x3^2)>=k))`}) ; <(
+    unfold ; cut({`\exists d (d>0&\forall x1 \forall x2 \forall x3 (x1^2+x2^2+x3^2 < d->1/2*(a1*x1^2+a2*x2^2+a3*x3^2) < k))`}) ; <(
+      unfold ; existsR({`d`}, 1) ; unfold ; allL({`x1`}, -12) ; allL({`x2`}, -12) ; allL({`x3`}, -12) ; implyL(-12) ; <(
+        master,
+        hideL(-13=={`x1^2+x2^2+x3^2 < d`}) ; dC({`1/2*(a1*x1^2+a2*x2^2+a3*x3^2) < k`}, 1) ; <(
+          dW(1) ; QE,
+          ODE(1)
+          )
+        ),
+      hideR(1=={`\exists d (d>0&\forall x1 \forall x2 \forall x3 (x1^2+x2^2+x3^2 < d->[{x1'=(I2()-I3())/I1()*x2*x3,x2'=(I3()-I1())/I2()*x3*x1,x3'=(I1()-I2())/I3()*x1*x2&true}]x1^2+x2^2+x3^2 < e))`}) ; QE
+      ),
+    hideR(1=={`\exists d (d>0&\forall x1 \forall x2 \forall x3 (x1^2+x2^2+x3^2 < d->[{x1'=(I2()-I3())/I1()*x2*x3,x2'=(I3()-I1())/I2()*x3*x1,x3'=(I1()-I2())/I3()*x1*x2&true}]x1^2+x2^2+x3^2 < e))`}) ; QE
+    ),
+  hideR(1=={`\exists d (d>0&\forall x1 \forall x2 \forall x3 (x1^2+x2^2+x3^2 < d->[{x1'=(I2()-I3())/I1()*x2*x3,x2'=(I3()-I1())/I2()*x3*x1,x3'=(I1()-I2())/I3()*x1*x2&true}]x1^2+x2^2+x3^2 < e))`}) ; QE
+  )
+End.
+
+End.
