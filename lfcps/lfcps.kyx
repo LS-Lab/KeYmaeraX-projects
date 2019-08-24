@@ -536,6 +536,7 @@ End.
 End.
 
 ArchiveEntry "12: Exponential Decay"
+Description "12.3.4 Differential ghost as counterweight".
 
 ProgramVariables
   Real x;
@@ -607,7 +608,7 @@ End.
 
 End.
 
-ArchiveEntry "12: Exponential difference"
+ArchiveEntry "12: Exponential Difference"
 
 ProgramVariables
   Real x;
