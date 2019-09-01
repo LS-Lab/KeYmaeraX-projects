@@ -298,7 +298,7 @@ End.
 End.
 
 
-       ArchiveEntry "11: Aerodynamic Acrophobic Bouncing Ball"
+       ArchiveEntry "11: Aerodynamic Bouncing Ball"
 Description "11.12: Proving Aerodynamic Bouncing Balls".
 
 Definitions      /* function symbols cannot change their value */
@@ -559,13 +559,14 @@ End.
 End.
 
 ArchiveEntry "12: Exponential Growth"
+Description "Example 12.3".
 
 ProgramVariables
   Real x;
 End.
 
 Problem
-  x>1 -> [{x'=x}]x>0
+  x>0 -> [{x'=x}]x>0
 End.
 
 Tactic "12: Exponential Growth from tactic"
@@ -581,6 +582,7 @@ End.
 
 
 ArchiveEntry "12: Exponential at Equilibrium"
+Description "Example 12.6 Exponential equilibrium".
 
 ProgramVariables
  Real x;
@@ -609,6 +611,7 @@ End.
 End.
 
 ArchiveEntry "12: Exponential Difference"
+Description "Example 12.4".
 
 ProgramVariables
   Real x;
@@ -640,7 +643,7 @@ Problem
  <{{{x:=0; ++ x:=1;}^@}*}^@> x=0
 End.
 
-Tactic "16: Dual Filibuster Game: Proof 1"
+Tactic "16: Dual Filibuster Game: Proof"
   implyR(1) ; duald(1) ; box(1) ; loop("x=0", 1) ; <(
 closeId, 
 dualb(1) ; diamond(1) ; choiced(1) ; orR(1) ; assignd(1) ; hideR(2) ; QE, 
@@ -670,7 +673,7 @@ Problem
   ] x>=0
 End.
 
-Tactic "16: Push-around Cart: Proof 1"
+Tactic "16: Push-around Cart: Proof"
   implyR(1) ; loop("x>=0&v>=0", 1) ; <(
 prop, 
 composeb(1) ; dualb(1) ; diamond(1) ; composeb(1.1) ; choiced(1) ; orR(1) ; assignd(1) ; assignd(2) ; choiceb(1) ; andR(1) ; <(
@@ -684,6 +687,7 @@ End.
 End.
 
 ArchiveEntry "16: Goalie in Robot Soccer"
+Description "Proof for Example 14.6".
 
 ProgramVariables
   Real x, y;     /* x/y-coordinate of ball */
