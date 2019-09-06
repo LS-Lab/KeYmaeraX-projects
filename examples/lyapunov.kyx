@@ -97,6 +97,8 @@ End.
 
 End.
 
+/* Exported from KeYmaera X v4.7.1 */
+
 Theorem "lyapunov stability of arbitrarily switched system"
 
 Description "constructed example (based on preceding example)".
@@ -120,7 +122,7 @@ Problem
         x1' = - x1 + x2^3,
         x2' = - x1 - x2
       }
-      ;
+      ++
       {
         x1' = - x1,
         x2' = - x2
@@ -138,19 +140,151 @@ Tactic "lyapunov stability of arbitrarily switched system: Proof"
 unfold ; cut("\exists k (k>0&\forall x1 \forall x2 (x1^2+x2^2=e->x1^2/2+x2^4/4>=k))") ; <(
   unfold ; cut("\exists d (e>d&d>0&\forall x1 \forall x2 (x1^2+x2^2 < d->x1^2/2+x2^4/4 < k))") ; <(
     unfold ; existsR("d", 1) ; unfold ; allL("x1", -6) ; allL("x2", -6) ; implyL(-6) ; <(
-      master,
+      propAuto,
       loop("x1^2/2+x2^4/4 < k&x1^2+x2^2 < e", 1) ; <(
         hideL(-3=="\forall x1 \forall x2 (x1^2+x2^2=e->x1^2/2+x2^4/4>=k)") ; QE,
-        QE,
-        composeb(1) ; dC("x1^2/2+x2^4/4 < k&x1^2+x2^2 < e", 1) ; <(
-          dW(1) ; hideL(-1=="x1_0^2/2+x2_0^4/4 < k&x1_0^2+x2_0^2 < e") ; unfold ; ODE(1),
+        propAuto,
+        unfold ; <(
+          ODE(1),
           ODE(1)
           )
         )
       ),
-    hideR(1=="\exists d (d>0&\forall x1 \forall x2 (x1^2+x2^2 < d->[{{x1'=-x1+x2^3,x2'=-x1-x2&true}{x1'=-x1,x2'=-x2&true}}*]x1^2+x2^2 < e))") ; QE
+    hideR(1=="\exists d (d>0&\forall x1 \forall x2 (x1^2+x2^2 < d->[{{x1'=-x1+x2^3,x2'=-x1-x2&true}++{x1'=-x1,x2'=-x2&true}}*]x1^2+x2^2 < e))") ; QE
     ),
-  hideR(1=="\exists d (d>0&\forall x1 \forall x2 (x1^2+x2^2 < d->[{{x1'=-x1+x2^3,x2'=-x1-x2&true}{x1'=-x1,x2'=-x2&true}}*]x1^2+x2^2 < e))") ; QE
+  hideR(1=="\exists d (d>0&\forall x1 \forall x2 (x1^2+x2^2 < d->[{{x1'=-x1+x2^3,x2'=-x1-x2&true}++{x1'=-x1,x2'=-x2&true}}*]x1^2+x2^2 < e))") ; QE
+  )
+End.
+
+End.
+
+/* Exported from KeYmaera X v4.7.1 */
+
+Theorem "lyapunov stability under constrained switching (common lyapunov function)"
+
+Description "state-dependent switched system: a different state-dependent switching can lead to an unstable system (see citation)".
+
+Citation "Daniel Liberzon. Switching In Systems And Control. Example 3.1".
+
+ProgramVariables
+  Real x1;
+  Real x2;
+End.
+
+Problem
+\forall e (
+  e > 0 ->
+  \exists d
+  (d > 0 &
+  \forall x1 \forall x2
+  (
+  x1^2+x2^2 < d ->
+  [
+    {
+      {
+        x1' = -1/2 * x1 - x2,
+        x2' =    2 * x1 - 1/2 * x2
+        & x1*x2 <= 0
+      }
+      ++
+      {
+        x1' = -1/2 * x1 - 2 * x2,
+        x2' =        x1 - 1/2 * x2
+        & x1*x2 >= 0
+      }
+    }*
+  ]
+  x1^2+x2^2 < e
+  )
+  )
+)
+
+End.
+
+Tactic "lyapunov stability under constrained switching (common lyapunov function): Proof"
+unfold ; existsR("e", 1) ; unfold ; master
+End.
+
+End.
+
+/* Exported from KeYmaera X v4.7.1 */
+
+Theorem "lyapunov stability under constrained switching (individual lyapunov functions)"
+
+Description "state-dependent switched system: no common lyapunov function for sub-systems".
+
+Citation "Daniel Liberzon. Switching In Systems And Control. Example 3.2".
+
+ProgramVariables
+  Real x1;
+  Real x2;
+End.
+
+Problem
+\forall e (
+  e > 0 ->
+  \exists d
+  (d > 0 &
+  \forall x1 \forall x2
+  (
+  x1^2+x2^2 < d ->
+  [
+    {
+      {
+        x1' = -1/2 * x1 - x2,
+        x2' =    2 * x1 - 1/2 * x2
+        & x1 >= 0
+      }
+      ++
+      {
+        x1' = -1/2 * x1 - 2 * x2,
+        x2' =        x1 - 1/2 * x2
+        & x1 <= 0
+      }
+    }*
+  ]
+  x1^2+x2^2 < e
+  )
+  )
+)
+
+End.
+
+Tactic "lyapunov stability under constrained switching (individual lyapunov functions): Proof"
+unfold ; cut("\exists k (k>0&\forall x1 \forall x2 (x1^2+x2^2=e->2*x1^2+x2^2>=k&1/2*x1^2+x2^2>=k))") ; <(
+  unfold ; cut("\exists d (e>d&d>0&\forall x1 \forall x2 (x1^2+x2^2 < d->2*x1^2+x2^2 < k&1/2*x1^2+x2^2 < k))") ; <(
+    unfold ; existsR("d", 1) ; unfold ; allL("x1", -6) ; allL("x2", -6) ; implyL(-6) ; <(
+      propAuto,
+      loop("2*x1^2+x2^2 < k&x1^2+x2^2 < e&x1>=0|1/2*x1^2+x2^2 < k&x1^2+x2^2 < e&x1<=0", 1) ; <(
+        QE,
+        propAuto,
+        unfold ; <(
+          orL(-1) ; <(
+            MR("2*x1^2+x2^2 < k&x1^2+x2^2 < e&x1>=0", 1) ; <(
+              ODE(1),
+              propAuto
+              ),
+            unfold ; MR("2*x1^2+x2^2 < k&x1^2+x2^2 < e&x1>=0", 1) ; <(
+              diffUnpackEvolDomain(1) ; ODE(1),
+              propAuto
+              )
+            ),
+          orL(-1) ; <(
+            diffUnpackEvolDomain(1) ; unfold ; MR("1/2*x1^2+x2^2 < k&x1^2+x2^2 < e&x1<=0", 1) ; <(
+              ODE(1),
+              propAuto
+              ),
+            MR("1/2*x1^2+x2^2 < k&x1^2+x2^2 < e&x1<=0", 1) ; <(
+              ODE(1),
+              propAuto
+              )
+            )
+          )
+        )
+      ),
+    hideR(1=="\exists d (d>0&\forall x1 \forall x2 (x1^2+x2^2 < d->[{{x1'=-1/2*x1-x2,x2'=2*x1-1/2*x2&x1>=0}++{x1'=-1/2*x1-2*x2,x2'=x1-1/2*x2&x1<=0}}*]x1^2+x2^2 < e))") ; hideL(-3=="\forall x1 \forall x2 (x1^2+x2^2=e->2*x1^2+x2^2>=k&1/2*x1^2+x2^2>=k)") ; QE
+    ),
+  hideR(1=="\exists d (d>0&\forall x1 \forall x2 (x1^2+x2^2 < d->[{{x1'=-1/2*x1-x2,x2'=2*x1-1/2*x2&x1>=0}++{x1'=-1/2*x1-2*x2,x2'=x1-1/2*x2&x1<=0}}*]x1^2+x2^2 < e))") ; QE
   )
 End.
 
