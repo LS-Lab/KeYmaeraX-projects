@@ -40,8 +40,8 @@ ProgramVariables /* program variables may change their value over time */
 End.
 
 Problem
-  x>=0 & x=H
-  & v=0 & g>0 & 1=c&c>=0
+  (x>=0 & x=H & v=0) &
+  (g>0 & 1=c&c>=0)
  ->
   [
     {
