@@ -1,0 +1,716 @@
+/*
+  Our robot's position is fixed at (0,0) with heading (0,1) i.e.,
+  straight up the y axis.
+
+  The goal coordinates (xg,yg) are given relative to the robot
+
+  In this coordinate system, we require that goals always lie in the upper halfplane
+*/
+
+SharedDefinitions
+  Real kf()  = 100; /* Multiplication factor for units of k */
+  Real tf()  = 10;  /* Multiplication factor for units of t */
+  Real df()  = 10;  /* Multiplication factor for distance  */
+  Real ef()  = 1;   /* Multiplication factor for tolerance  */
+
+  Real T;     /* ds */
+  Real eps;   /* m */
+  Real A;     /* dm/s^2 */
+  Real B;     /* dm/s^2 */
+
+  Real sq (Real x) = x*x;
+
+  /* Enforce that point (x,y) is in upper halfplane */
+  Bool onUpperHalfPlane(Real x, Real y) <-> y > 0;
+
+  /* cd^2 m */
+  Real circle(Real x, Real y, Real k) = k*(sq(x)+sq(y)) - 2*x*kf()*df();
+
+  /* This is the exact circle connecting (x,y) to (0,0) with curvature k */
+  Bool onCircle(Real x, Real y, Real k) <-> circle(x,y,k) = 0;
+
+  /* k, eps are a well-defined annular region */
+  Bool isAnnulus(Real k) <-> (
+    abs(k)*eps() <= kf() * ef()
+  );
+
+  /* Is point (x,y) on the annulus with curvature k of width epsilon
+    (where the origin is on the circle defined by the given curvature)
+  */
+  Bool onAnnulus(Real x, Real y, Real k) <-> (
+                      (k*sq(eps()) - 2*kf()*eps())*sq(df()) < circle(x,y,k)
+    & circle(x,y,k) < (k*sq(eps()) + 2*kf()*eps())*sq(df())
+  );
+
+  /* Speed interval must be large enough to allow braking/accelerating at least once */
+  Bool controllableSpeedGoal(Real vl, Real vh) <-> (
+    0 <= vl & vl < vh &
+    A * T <= tf() * (vh - vl) &
+    B * T <= tf() * (vh - vl)
+  );
+
+  /* Is goal far enough to adjust speed? */
+  Bool controllableGoalDist(Real v1, Real v2, Real a, Real xg, Real yg, Real k) <-> (
+    v1 <= v2 |
+     (sq(ef()*kf()) + 2*eps()*abs(k)*ef()*kf() + sq(eps())*sq(k)) * (sq(v1*tf())-sq(v2*tf())) <= (2*a) * (yg-df()*eps())*sq(kf())*sq(tf()) |
+     (sq(ef()*kf()) + 2*eps()*abs(k)*ef()*kf() + sq(eps())*sq(k)) * (sq(v1*tf())-sq(v2*tf())) <= (2*a) * (abs(xg)-df()*eps())*sq(kf())*sq(tf())
+  );
+
+  /* Loop invariant */
+  Bool J(Real xg, Real yg, Real k, Real v, Real vl, Real vh) <-> (
+    v >= 0 &
+    isAnnulus(k) &
+    onAnnulus(xg,yg,k) &
+    controllableSpeedGoal(vl,vh) &
+    controllableGoalDist(v,vh,B(),xg,yg,k) &
+    controllableGoalDist(vl,v,A(),xg,yg,k)
+  );
+
+  Bool admissibleAcc(Real xg, Real yg, Real v, Real vl, Real vh, Real a, Real k) <-> (
+    /* (1) Chosen acceleration is in range */
+    (-B() <= a & a <= A())
+    &
+    /* (2) Chosen (braking) accleration does not brake to a stop too early */
+    tf()*v + a*T() >= 0
+    &
+    /* (3) Chosen acceleration is safe for velocity upper bound */
+    (
+       v <= vh & tf()*v+a*T() <= tf()*vh
+     | (
+         (sq(ef()*kf()) + 2*eps()*abs(k)*ef()*kf() + sq(eps())*sq(k)) * (B()*(2*v*T()*tf()+a*sq(T())) + (sq(v*tf()+a*T()) - sq(tf()*vh))) <= (2*B()) * (abs(xg)-df()*eps())*sq(kf())*sq(tf())
+       | (sq(ef()*kf()) + 2*eps()*abs(k)*ef()*kf() + sq(eps())*sq(k)) * (B()*(2*v*T()*tf()+a*sq(T())) + (sq(v*tf()+a*T()) - sq(tf()*vh))) <= (2*B()) * (yg-df()*eps())*sq(kf())*sq(tf())
+       )
+    )
+    &
+    /* (4) Chosen acceleration is safe for velocity lower bound */
+    (
+       vl <= v & tf()*v+a*T() >= tf()*vl
+     | (
+         (sq(ef()*kf()) + 2*eps()*abs(k)*ef()*kf() + sq(eps())*sq(k)) * (A()*(2*v*T()*tf()+a*sq(T())) + (sq(vl*tf()) - sq(v*tf()+a*T()))) <= (2*A()) * (abs(xg)-df()*eps())*sq(kf())*sq(tf())
+       | (sq(ef()*kf()) + 2*eps()*abs(k)*ef()*kf() + sq(eps())*sq(k)) * (A()*(2*v*T()*tf()+a*sq(T())) + (sq(vl*tf()) - sq(v*tf()+a*T()))) <= (2*A()) * (yg-df()*eps())*sq(kf())*sq(tf())
+       )
+    )
+  );
+
+End.
+
+Lemma "Robot preserves loop invariant"
+
+ProgramVariables
+  Real xg,yg; /* goal position: (dm,dm) */
+  Real k;     /* curvature:     centi-(m^-1) */
+
+  Real vl,vh; /* goal velocities (upper and lower): dm/s */
+
+  Real t;     /* time trigger:  ds */
+  Real v,a;   /* linear velocity/acceleration:  dm/s,  dm/s^2 */
+End.
+
+Problem
+  T > 0 &
+  eps() > 0 &
+  A > 0 &
+  B > 0 &
+  J(xg, yg, k, v, vl, vh)
+  ->
+  [{
+  /* Control */
+  {
+    {
+      {
+        /* Turning from left or right quadrant towards origin (k <= 0, xg <= 0) or (k >= 0, xg >= 0) */
+        xg:=*; yg:=*; vl:=*; vh:=*; k:=*; a:=*;
+        ? xg >= 0 & k >= 0 | xg <= 0 & k <= 0;
+
+        /* Standard sanity conditions for the planner inputs:
+           1) Goal (xg,yg) is in upper half plane
+           2) Curvature k and bloating eps define an annulus
+           3) Goal is within safe annular region
+           4) Target speed limit interval (vl,vh) is wide enough (and >= 0)
+        */
+
+        ? onUpperHalfPlane(xg,yg) &
+          isAnnulus(k) &
+          onAnnulus(xg,yg,k) &
+          controllableSpeedGoal(vl,vh);
+
+        ? admissibleAcc(xg, yg, v, vl, vh, a, k);
+      }
+    }
+    t:=0;
+  }
+  /* Plant */
+  {
+    { xg'=-v*k*yg/(kf()*df()), yg'=v*(k*xg/(kf()*df()) -1), v'=a, t'=tf() & (v >= 0 & t <= T) }
+  }
+  }*@invariant( J(xg, yg, k, v, vl, vh) )
+  ]J(xg, yg, k, v, vl, vh)
+End.
+
+Tactic "Robot preserves loop invariant: Proof"
+unfold ; loop({`v>=0&abs(k)*eps()<=100*1&((k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&(0<=vl&vl < vh&A()*T()<=10*(vh-vl)&B()*T()<=10*(vh-vl))&(v<=vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10))&(vl<=v|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10))`}, 1) ; <(
+  prop,
+  prop,
+  unfold ; dC({`t>=0&(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10)`}, 1) ; <(
+    dC({`10*v+a*(T()-t)>=0`}, 1) ; <(
+      dC({`((a>=0&10*v+a*(T()-t)<=10*vh|a<=0&v<=vh)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+((v*10+a*(T()-t))*(v*10+a*(T()-t))-10*vh*(10*vh)))<=2*B()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+((v*10+a*(T()-t))*(v*10+a*(T()-t))-10*vh*(10*vh)))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10))&((a>=0&v>=vl|a<=0&10*v+a*(T()-t)>=10*vl)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+(vl*10*(vl*10)-(v*10+a*(T()-t))*(v*10+a*(T()-t))))<=2*A()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+(vl*10*(vl*10)-(v*10+a*(T()-t))*(v*10+a*(T()-t))))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10))`}, 1) ; <(
+        dW(1) ; hideL(-12=={`(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg_0*xg_0+yg_0*yg_0)-2*xg_0*100*10`}) ; hideL(-12=={`k*(xg_0*xg_0+yg_0*yg_0)-2*xg_0*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10)`}) ; hideL(-13=={`v_0<=vh&10*v_0+a*T()<=10*vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v_0*T()*10+a*(T()*T()))+((v_0*10+a*T())*(v_0*10+a*T())-10*vh*(10*vh)))<=2*B()*(abs(xg_0)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v_0*T()*10+a*(T()*T()))+((v_0*10+a*T())*(v_0*10+a*T())-10*vh*(10*vh)))<=2*B()*(yg_0-10*eps())*(100*100)*(10*10)`}) ; hideL(-13=={`vl<=v_0&10*v_0+a*T()>=10*vl|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v_0*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v_0*10+a*T())*(v_0*10+a*T())))<=2*A()*(abs(xg_0)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v_0*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v_0*10+a*T())*(v_0*10+a*T())))<=2*A()*(yg_0-10*eps())*(100*100)*(10*10)`}) ; hideL(-17=={`abs(k_0)*eps()<=100*1`}) ; hideL(-17=={`v_0<=vh_0|(1*100*(1*100)+2*eps()*abs(k_0)*1*100+eps()*eps()*(k_0*k_0))*(v_0*10*(v_0*10)-vh_0*10*(vh_0*10))<=2*B()*(yg_1-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k_0)*1*100+eps()*eps()*(k_0*k_0))*(v_0*10*(v_0*10)-vh_0*10*(vh_0*10))<=2*B()*(abs(xg_1)-10*eps())*(100*100)*(10*10)`}) ; hideL(-17=={`vl_0<=v_0|(1*100*(1*100)+2*eps()*abs(k_0)*1*100+eps()*eps()*(k_0*k_0))*(vl_0*10*(vl_0*10)-v_0*10*(v_0*10))<=2*A()*(yg_1-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k_0)*1*100+eps()*eps()*(k_0*k_0))*(vl_0*10*(vl_0*10)-v_0*10*(v_0*10))<=2*A()*(abs(xg_1)-10*eps())*(100*100)*(10*10)`}) ; hideL(-17=={`0<=vl_0`}) ; hideL(-17=={`vl_0 < vh_0`}) ; hideL(-17=={`A()*T()<=10*(vh_0-vl_0)`}) ; hideL(-17=={`B()*T()<=10*(vh_0-vl_0)`}) ; hideL(-17=={`(k_0*(eps()*eps())-2*100*eps())*(10*10) < k_0*(xg_1*xg_1+yg_1*yg_1)-2*xg_1*100*10`}) ; hideL(-17=={`k_0*(xg_1*xg_1+yg_1*yg_1)-2*xg_1*100*10 < (k_0*(eps()*eps())+2*100*eps())*(10*10)`}) ; unfold ; andR(1) ; <(
+          QE,
+          andR(1) ; <(
+            prop,
+            andR(1) ; <(
+              prop,
+              andR(1) ; <(
+                prop,
+                hideL(-7=={`abs(k)*eps()<=100*1`}) ; hideL(-5=={`xg_0>=0&k>=0|xg_0<=0&k<=0`}) ; hideL(-5=={`yg_0>0`}) ; hideL(-7=={`A()*T()<=10*(vh-vl)`}) ; hideL(-7=={`B()*T()<=10*(vh-vl)`}) ; hideL(-7=={`10*v_0+a*T()>=0`}) ; hideL(-15=={`(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10`}) ; hideL(-15=={`k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10)`}) ; andR(1) ; <(
+                  hideL(-12=={`(a>=0&v>=vl|a<=0&10*v+a*(T()-t)>=10*vl)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+(vl*10*(vl*10)-(v*10+a*(T()-t))*(v*10+a*(T()-t))))<=2*A()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+(vl*10*(vl*10)-(v*10+a*(T()-t))*(v*10+a*(T()-t))))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10)`}) ; orL(-11) ; <(
+                    QE,
+                    orL(-11) ; <(
+                      cut({`(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*((v*10*(v*10)-10*vh*(10*vh))/(2*B()))<=(yg-10*eps())*(100*100)*(10*10)`}) ; <(
+                        hideL(-11=={`(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+((v*10+a*(T()-t))*(v*10+a*(T()-t))-10*vh*(10*vh)))<=2*B()*(yg-10*eps())*(100*100)*(10*10)`}) ; QE,
+                        hideR(1=={`v<=vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)`}) ; QE
+                        ),
+                      cut({`(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*((v*10*(v*10)-10*vh*(10*vh))/(2*B()))<=(abs(xg)-10*eps())*(100*100)*(10*10)`}) ; <(
+                        hideL(-11=={`(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+((v*10+a*(T()-t))*(v*10+a*(T()-t))-10*vh*(10*vh)))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)`}) ; QE,
+                        hideR(1=={`v<=vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)`}) ; QE
+                        )
+                      )
+                    ),
+                  hideL(-11=={`(a>=0&10*v+a*(T()-t)<=10*vh|a<=0&v<=vh)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+((v*10+a*(T()-t))*(v*10+a*(T()-t))-10*vh*(10*vh)))<=2*B()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+((v*10+a*(T()-t))*(v*10+a*(T()-t))-10*vh*(10*vh)))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)`}) ; orL(-11) ; <(
+                    QE,
+                    orL(-11) ; <(
+                      QE,
+                      cut({`(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*((vl*10*(vl*10)-v*10*(v*10))/(2*A()))<=(abs(xg)-10*eps())*(100*100)*(10*10)`}) ; <(
+                        QE,
+                        hideR(1=={`vl<=v|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10)`}) ; QE
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          ),
+        hideL(-21=={`abs(k_0)*eps()<=100*1`}) ; hideL(-21=={`v<=vh_0|(1*100*(1*100)+2*eps()*abs(k_0)*1*100+eps()*eps()*(k_0*k_0))*(v*10*(v*10)-vh_0*10*(vh_0*10))<=2*B()*(yg_0-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k_0)*1*100+eps()*eps()*(k_0*k_0))*(v*10*(v*10)-vh_0*10*(vh_0*10))<=2*B()*(abs(xg_0)-10*eps())*(100*100)*(10*10)`}) ; hideL(-21=={`vl_0<=v|(1*100*(1*100)+2*eps()*abs(k_0)*1*100+eps()*eps()*(k_0*k_0))*(vl_0*10*(vl_0*10)-v*10*(v*10))<=2*A()*(yg_0-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k_0)*1*100+eps()*eps()*(k_0*k_0))*(vl_0*10*(vl_0*10)-v*10*(v*10))<=2*A()*(abs(xg_0)-10*eps())*(100*100)*(10*10)`}) ; hideL(-21=={`0<=vl_0`}) ; hideL(-21=={`vl_0 < vh_0`}) ; hideL(-21=={`A()*T()<=10*(vh_0-vl_0)`}) ; hideL(-21=={`B()*T()<=10*(vh_0-vl_0)`}) ; hideL(-21=={`(k_0*(eps()*eps())-2*100*eps())*(10*10) < k_0*(xg_0*xg_0+yg_0*yg_0)-2*xg_0*100*10`}) ; hideL(-21=={`k_0*(xg_0*xg_0+yg_0*yg_0)-2*xg_0*100*10 < (k_0*(eps()*eps())+2*100*eps())*(10*10)`}) ; boxAnd(1) ; andR(1) ; <(
+          hideL(-12=={`(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10`}) ; hideL(-12=={`k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10)`}) ; hideL(-7=={`abs(k)*eps()<=100*1`}) ; hideL(-13=={`vl<=v&10*v+a*T()>=10*vl|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(yg-10*eps())*(100*100)*(10*10)`}) ; orL(-12) ; <(
+            cut({`a>=0|a<=0`}) ; <(
+              orL(-17) ; <(
+                MR({`a>=0&10*v+a*(T()-t)<=10*vh`}, 1) ; <(
+                  dI(1),
+                  prop
+                  ),
+                MR({`a<=0&v<=vh`}, 1) ; <(
+                  dI(1),
+                  prop
+                  )
+                ),
+              hideR(1=={`[{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=a,t'=10&((v>=0&t<=T())&t>=0&(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&10*v+a*(T()-t)>=0}]((a>=0&10*v+a*(T()-t)<=10*vh|a<=0&v<=vh)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+((v*10+a*(T()-t))*(v*10+a*(T()-t))-10*vh*(10*vh)))<=2*B()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+((v*10+a*(T()-t))*(v*10+a*(T()-t))-10*vh*(10*vh)))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10))`}) ; QE
+              ),
+            orL(-12) ; <(
+              orL(-5) ; <(
+                cut({`abs(k)=k&abs(xg)=xg`}) ; <(
+                  andL(-17) ; allL2R(-17) ; hideL(-17=={`abs(k)=k`}) ; allL2R(-17) ; hideL(-17=={`abs(xg)=xg`}) ; MR({`(1*100*(1*100)+2*eps()*k*1*100+eps()*eps()*(k*k))*(v*(T()-t)*10+a/2*((T()-t)*(T()-t))+((v*10+a*(T()-t))*(v*10+a*(T()-t))-10*vh*(10*vh))/(2*B()))<=(xg-10*eps())*(100*100)*(10*10)`}, 1) ; <(
+                    hideL(-9=={`A()*T()<=10*(vh-vl)`}) ; hideL(-9=={`B()*T()<=10*(vh-vl)`}) ; hideL(-9=={`10*v+a*T()>=0`}) ; hideL(-6=={`yg>0`}) ; hideL(-3=={`A()>0`}) ; hideL(-9=={`a<=A()`}) ; dI(1),
+                    QE
+                    ),
+                  hideR(1=={`[{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=a,t'=10&((v>=0&t<=T())&t>=0&(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&10*v+a*(T()-t)>=0}]((a>=0&10*v+a*(T()-t)<=10*vh|a<=0&v<=vh)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+((v*10+a*(T()-t))*(v*10+a*(T()-t))-10*vh*(10*vh)))<=2*B()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+((v*10+a*(T()-t))*(v*10+a*(T()-t))-10*vh*(10*vh)))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10))`}) ; QE
+                  ),
+                hideL(-3=={`A()>0`}) ; hideL(-8=={`A()*T()<=10*(vh-vl)`}) ; hideL(-8=={`B()*T()<=10*(vh-vl)`}) ; hideL(-8=={`10*v+a*T()>=0`}) ; cut({`abs(k)=-k&abs(xg)=-xg`}) ; <(
+                  andL(-13) ; allL2R(-13) ; hideL(-13=={`abs(k)=-k`}) ; allL2R(-13) ; hideL(-13=={`abs(xg)=-xg`}) ; MR({`(1*100*(1*100)+2*eps()*(-k*1*100)+eps()*eps()*(k*k))*(v*(T()-t)*10+a/2*((T()-t)*(T()-t))+((v*10+a*(T()-t))*(v*10+a*(T()-t))-10*vh*(10*vh))/(2*B()))<=(-xg-10*eps())*(100*100)*(10*10)`}, 1) ; <(
+                    hideL(-5=={`yg>0`}) ; dI(1),
+                    QE
+                    ),
+                  hideR(1=={`[{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=a,t'=10&((v>=0&t<=T())&t>=0&(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&10*v+a*(T()-t)>=0}]((a>=0&10*v+a*(T()-t)<=10*vh|a<=0&v<=vh)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+((v*10+a*(T()-t))*(v*10+a*(T()-t))-10*vh*(10*vh)))<=2*B()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+((v*10+a*(T()-t))*(v*10+a*(T()-t))-10*vh*(10*vh)))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10))`}) ; QE
+                  )
+                ),
+              MR({`(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*(T()-t)*10+a/2*((T()-t)*(T()-t))+((v*10+a*(T()-t))*(v*10+a*(T()-t))-10*vh*(10*vh))/(2*B()))<=(yg-10*eps())*(100*100)*(10*10)`}, 1) ; <(
+                orL(-5) ; <(
+                  cut({`abs(k)=k`}) ; <(
+                    allL2R(-17) ; hideL(-17=={`abs(k)=k`}) ; dI(1),
+                    hideR(1=={`[{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=a,t'=10&((v>=0&t<=T())&t>=0&(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&10*v+a*(T()-t)>=0}](1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*(T()-t)*10+a/2*((T()-t)*(T()-t))+((v*10+a*(T()-t))*(v*10+a*(T()-t))-10*vh*(10*vh))/(2*B()))<=(yg-10*eps())*(100*100)*(10*10)`}) ; QE
+                    ),
+                  cut({`abs(k)=-k`}) ; <(
+                    allL2R(-17) ; hideL(-17=={`abs(k)=-k`}) ; dI(1),
+                    hideR(1=={`[{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=a,t'=10&((v>=0&t<=T())&t>=0&(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&10*v+a*(T()-t)>=0}](1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*(T()-t)*10+a/2*((T()-t)*(T()-t))+((v*10+a*(T()-t))*(v*10+a*(T()-t))-10*vh*(10*vh))/(2*B()))<=(yg-10*eps())*(100*100)*(10*10)`}) ; QE
+                    )
+                  ),
+                QE
+                )
+              )
+            ),
+          hideL(-15=={`v<=vh&10*v+a*T()<=10*vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(yg-10*eps())*(100*100)*(10*10)`}) ; hideL(-12=={`(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10`}) ; hideL(-12=={`k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10)`}) ; hideL(-7=={`abs(k)*eps()<=100*1`}) ; hideL(-9=={`A()*T()<=10*(vh-vl)`}) ; hideL(-9=={`B()*T()<=10*(vh-vl)`}) ; orL(-10) ; <(
+            cut({`a>=0|a<=0`}) ; <(
+              orL(-15) ; <(
+                MR({`a>=0&v>=vl`}, 1) ; <(
+                  dI(1),
+                  QE
+                  ),
+                MR({`a<=0&10*v+a*(T()-t)>=10*vl`}, 1) ; <(
+                  dI(1),
+                  QE
+                  )
+                ),
+              hideR(1=={`[{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=a,t'=10&((v>=0&t<=T())&t>=0&(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&10*v+a*(T()-t)>=0}]((a>=0&v>=vl|a<=0&10*v+a*(T()-t)>=10*vl)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+(vl*10*(vl*10)-(v*10+a*(T()-t))*(v*10+a*(T()-t))))<=2*A()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+(vl*10*(vl*10)-(v*10+a*(T()-t))*(v*10+a*(T()-t))))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10))`}) ; QE
+              ),
+            orL(-10) ; <(
+              orL(-5) ; <(
+                cut({`abs(k)=k&abs(xg)=xg`}) ; <(
+                  andL(-15) ; allL2R(-15) ; hideL(-15=={`abs(k)=k`}) ; allL2R(-15) ; hideL(-15=={`abs(xg)=xg`}) ; MR({`(1*100*(1*100)+2*eps()*k*1*100+eps()*eps()*(k*k))*(v*(T()-t)*10+a/2*((T()-t)*(T()-t))+(vl*10*(vl*10)-(v*10+a*(T()-t))*(v*10+a*(T()-t)))/(2*A()))<=(xg-10*eps())*(100*100)*(10*10)`}, 1) ; <(
+                    hideL(-6=={`yg>0`}) ; dI(1),
+                    QE
+                    ),
+                  hideR(1=={`[{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=a,t'=10&((v>=0&t<=T())&t>=0&(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&10*v+a*(T()-t)>=0}]((a>=0&v>=vl|a<=0&10*v+a*(T()-t)>=10*vl)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+(vl*10*(vl*10)-(v*10+a*(T()-t))*(v*10+a*(T()-t))))<=2*A()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+(vl*10*(vl*10)-(v*10+a*(T()-t))*(v*10+a*(T()-t))))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10))`}) ; QE
+                  ),
+                cut({`abs(k)=-k&abs(xg)=-xg`}) ; <(
+                  andL(-15) ; allL2R(-15) ; hideL(-15=={`abs(k)=-k`}) ; allL2R(-15) ; hideL(-15=={`abs(xg)=-xg`}) ; MR({`(1*100*(1*100)+2*eps()*(-k*1*100)+eps()*eps()*(k*k))*(v*(T()-t)*10+a/2*((T()-t)*(T()-t))+(vl*10*(vl*10)-(v*10+a*(T()-t))*(v*10+a*(T()-t)))/(2*A()))<=(-xg-10*eps())*(100*100)*(10*10)`}, 1) ; <(
+                    hideL(-6=={`yg>0`}) ; dI(1),
+                    QE
+                    ),
+                  hideR(1=={`[{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=a,t'=10&((v>=0&t<=T())&t>=0&(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&10*v+a*(T()-t)>=0}]((a>=0&v>=vl|a<=0&10*v+a*(T()-t)>=10*vl)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+(vl*10*(vl*10)-(v*10+a*(T()-t))*(v*10+a*(T()-t))))<=2*A()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*(T()-t)*10+a*((T()-t)*(T()-t)))+(vl*10*(vl*10)-(v*10+a*(T()-t))*(v*10+a*(T()-t))))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10))`}) ; QE
+                  )
+                ),
+              MR({`(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*(T()-t)*10+a/2*((T()-t)*(T()-t))+(vl*10*(vl*10)-(v*10+a*(T()-t))*(v*10+a*(T()-t)))/(2*A()))<=(yg-10*eps())*(100*100)*(10*10)`}, 1) ; <(
+                orL(-5) ; <(
+                  cut({`abs(k)=k`}) ; <(
+                    allL2R(-15) ; hideL(-15=={`abs(k)=k`}) ; dI(1),
+                    hideR(1=={`[{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=a,t'=10&((v>=0&t<=T())&t>=0&(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&10*v+a*(T()-t)>=0}](1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*(T()-t)*10+a/2*((T()-t)*(T()-t))+(vl*10*(vl*10)-(v*10+a*(T()-t))*(v*10+a*(T()-t)))/(2*A()))<=(yg-10*eps())*(100*100)*(10*10)`}) ; QE
+                    ),
+                  cut({`abs(k)=-k`}) ; <(
+                    allL2R(-15) ; hideL(-15=={`abs(k)=-k`}) ; dI(1),
+                    hideR(1=={`[{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=a,t'=10&((v>=0&t<=T())&t>=0&(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&10*v+a*(T()-t)>=0}](1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*(T()-t)*10+a/2*((T()-t)*(T()-t))+(vl*10*(vl*10)-(v*10+a*(T()-t))*(v*10+a*(T()-t)))/(2*A()))<=(yg-10*eps())*(100*100)*(10*10)`}) ; QE
+                    )
+                  ),
+                QE
+                )
+              )
+            )
+          )
+        ),
+      hideL(-5=={`xg>=0&k>=0|xg<=0&k<=0`}) ; hideL(-6=={`abs(k)*eps()<=100*1`}) ; hideL(-13=={`v<=vh&10*v+a*T()<=10*vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(yg-10*eps())*(100*100)*(10*10)`}) ; hideL(-13=={`vl<=v&10*v+a*T()>=10*vl|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(yg-10*eps())*(100*100)*(10*10)`}) ; dI(1)
+      ),
+    hideL(-5=={`xg>=0&k>=0|xg<=0&k<=0`}) ; hideL(-6=={`abs(k)*eps()<=100*1`}) ; hideL(-13=={`v<=vh&10*v+a*T()<=10*vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(yg-10*eps())*(100*100)*(10*10)`}) ; hideL(-13=={`vl<=v&10*v+a*T()>=10*vl|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(yg-10*eps())*(100*100)*(10*10)`}) ; dI(1)
+    )
+  )
+End.
+
+End.
+
+Lemma "Robot reaches waypoint"
+
+ProgramVariables
+  Real xg,yg; /* goal position: (dm,dm) */
+  Real k;     /* curvature:     centi-(m^-1) */
+
+  Real vl,vh; /* goal velocities (upper and lower): dm/s */
+
+  Real t;     /* time trigger:  ds */
+  Real v,a;   /* linear velocity/acceleration:  dm/s,  dm/s^2 */
+End.
+
+Problem
+  T > 0 &
+  eps() > 0 &
+  A > 0 &
+  B > 0 &
+
+  v > 0 &
+  onUpperHalfPlane(xg,yg) &
+  onAnnulus(xg,yg,k) &
+  vl <= v & v <= vh
+  ->
+  <{
+  /* Control */
+  {
+    {
+      {
+        /* Only control acceleration keeping waypoint, target velocities and curvature fixed */
+        a:=*;
+        ? admissibleAcc(xg, yg, v, vl, vh, a, k);
+      }
+    }
+    t:=0;
+  }
+  /* Plant */
+  {
+    { xg'=-v*k*yg/(kf()*df()), yg'=v*(k*xg/(kf()*df()) -1), v'=a, t'=tf() & v>=0 }
+  }
+  }*>
+  (
+    sq(xg) + sq(yg) <= sq(df()*eps()) &
+    (vl <= v & v <= vh)
+  )
+End.
+
+Tactic "Proof robot reaches waypoint"
+unfold ; iterated(1) ; orR(1) ; iterated(2.1) ; diamondOr(2) ; orR(2) ; hideR(3=={`<{{a:=*;?(-B()<=a&a<=A())&10*v+a*T()>=0&(v<=vh&10*v+a*T()<=10*vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(yg-10*eps())*(100*100)*(10*10))&(vl<=v&10*v+a*T()>=10*vl|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(yg-10*eps())*(100*100)*(10*10));}t:=0;}{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=a,t'=10&v>=0}><{{a:=*;?(-B()<=a&a<=A())&10*v+a*T()>=0&(v<=vh&10*v+a*T()<=10*vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(yg-10*eps())*(100*100)*(10*10))&(vl<=v&10*v+a*T()>=10*vl|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(yg-10*eps())*(100*100)*(10*10));}t:=0;}{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=a,t'=10&v>=0}><{{{a:=*;?(-B()<=a&a<=A())&10*v+a*T()>=0&(v<=vh&10*v+a*T()<=10*vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(yg-10*eps())*(100*100)*(10*10))&(vl<=v&10*v+a*T()>=10*vl|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(yg-10*eps())*(100*100)*(10*10));}t:=0;}{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=a,t'=10&v>=0}}*>(xg*xg+yg*yg<=10*eps()*(10*eps())&vl<=v&v<=vh)`}) ; hideR(1=={`xg*xg+yg*yg<=10*eps()*(10*eps())&vl<=v&v<=vh`}) ; unfold ; existsR({`0`}, 1) ; unfold ; <(
+  QE,
+  cut({`\exists v0 v=v0`}) ; <(
+    cut({`\exists xg0 xg0=xg&\exists yg0 yg0=yg`}) ; <(
+      unfold ; edit({`(k*(eps()*eps())-2*100*eps())*(10*10) < abbrv(k*(xg*xg+yg*yg)-2*xg*100*10)`}, -9) ; cut({`\exists xt \exists yt (0 < yt&yt<=yg&xt^2+yt^2 < (10*eps())^2&k*(xt^2+yt^2)-2*xt*1000=abbrv)`}) ; <(
+        unfold ; DV({`k*(xg^2+yg^2)-2*xg*1000=abbrv&xg^2+yg^2-(10*eps())^2>=0&v=v0&yg>=yt`}, {`(10*eps())^2-(xg^2+yg^2)`}, {`2*v0*yt`}, 1) ; <(
+  ODE(1),
+  dC({`v=v0`}, 1) ; <(
+dC({`k*(xg^2+yg^2)-2*xg*1000=abbrv`}, 1) ; <(
+dC({`yg>=yt`}, 1) ; <(
+  dW(1) ; QE,
+    hideL(-15=={`abbrv=k*(xg*xg+yg*yg)-2*xg*100*10`}) ; barrier(1)
+  ),
+  ODE(1)
+),
+ODE(1)
+),
+  ODE(1)
+  ),
+        hideR(1=={`<{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=0,t'=10&v>=0}>(xg*xg+yg*yg<=10*eps()*(10*eps())&vl<=v&v<=vh)`}) ; hideL(-15=={`abbrv=k*(xg*xg+yg*yg)-2*xg*100*10`}) ; QE
+        ),
+      hideR(1=={`<{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=0,t'=10&v>=0}>(xg*xg+yg*yg<=10*eps()*(10*eps())&vl<=v&v<=vh)`}) ; QE
+      ),
+    hideR(1=={`<{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=0,t'=10&v>=0}>(xg*xg+yg*yg<=10*eps()*(10*eps())&vl<=v&v<=vh)`}) ; QE
+    )
+  )
+End.
+
+End.
+
+Lemma "Robot reaches waypoint with desired speed"
+
+ProgramVariables
+  Real xg,yg; /* goal position: (dm,dm) */
+  Real k;     /* curvature:     centi-(m^-1) */
+
+  Real vl,vh; /* goal velocities (upper and lower): dm/s */
+
+  Real t;     /* time trigger:  ds */
+  Real v,a;   /* linear velocity/acceleration:  dm/s,  dm/s^2 */
+End.
+
+Problem
+  T > 0 &
+  eps() > 0 &
+  A > 0 &
+  B > 0 &
+
+  v > 0 &
+  onUpperHalfPlane(xg,yg) &
+  J(xg, yg, k, v, vl, vh)
+  ->
+  <{
+  /* Control */
+  {
+    {
+      {
+        /* Only control acceleration keeping waypoint, target velocities and curvature fixed */
+        a:=*;
+        ? admissibleAcc(xg, yg, v, vl, vh, a, k);
+      }
+    }
+    t:=0;
+  }
+  /* Plant */
+  {
+    { xg'=-v*k*yg/(kf()*df()), yg'=v*(k*xg/(kf()*df()) -1), v'=a, t'=tf() & v>=0 }
+  }
+  }*>
+  (
+    sq(xg) + sq(yg) <= sq(df()*eps()) &
+    (vl <= v & v <= vh)
+  )
+End.
+
+Tactic "Robot reaches waypoint with desired speed: Proof"
+unfold ; cut({`v < vl|vl<=v&v<=vh|vh < v`}) ; <(
+  orL(-17) ; <(
+    cut({`vl>0`}) ; <(
+      iterated(1) ; orR(1) ; hideR(1=={`xg*xg+yg*yg<=10*eps()*(10*eps())&vl<=v&v<=vh`}) ; MR({`((k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&v=vl&yg>0`}, 1) ; <(
+        hideL(-9=={`v<=vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)`}) ; unfold ; existsR({`A()`}, 1) ; unfold ; <(
+          QE,
+          cut({`<{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=A(),t'=10&v<=vl}>v=vl`}) ; <(
+            useAt({`<> diamond`}, {`1`}, -19) ; notL(-19) ; dC({`(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10)`}, 2) ; <(
+              dC({`yg>0`}, 2) ; <(
+                useAt({`[] box`}, {`1`}, 2) ; notR(2) ; doubleNegation(-19.1) ; DWd(-19) ; dR({`v>=0`}, -19) ; <(
+                  MR({`((v<=vl&(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&yg>0)&v=vl`}, 1) ; <(
+                    id,
+                    ODE(1)
+                    ),
+                  ODE(1)
+                  ),
+                hideR(1=={`<{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=A(),t'=10&v>=0}>(((k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&v=vl&yg>0)`}) ; dC({`v>0`}, 1) ; <(
+                  fullSimplify ; orL(-8) ; <(
+                    edit({`(10000+2*eps()*expand(abs(k))*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(yg-10*eps())*10000*100`}, -8) ; orL(-17) ; <(
+                      andL(-17) ; allL2R(-18) ; hideL(-18=={`abs_0=k`}) ; dC({`(10000+2*eps()*k*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(yg-10*eps())*10000*100`}, 1) ; <(
+                        dW(1) ; QE,
+                        dI(1)
+                        ),
+                      andL(-17) ; allL2R(-18) ; hideL(-18=={`abs_0=-k`}) ; dC({`(10000+2*eps()*(-k)*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(yg-10*eps())*10000*100`}, 1) ; <(
+                        dW(1) ; QE,
+                        dI(1)
+                        )
+                      ),
+                    edit({`expand(abs(k))*eps()<=100`}, -7) ; edit({`(10000+2*eps()*abs_0*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(expand(abs(xg))-10*eps())*10000*100`}, -8) ; orL(-17) ; <(
+                      andL(-17) ; allL2R(-19) ; hideL(-19=={`abs_0=k`}) ; orL(-17) ; <(
+                        andL(-17) ; allL2R(-19) ; hideL(-19=={`abs_1=xg`}) ; dC({`(10000+2*eps()*k*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(xg-10*eps())*10000*100`}, 1) ; <(
+                          barrier(1),
+                          dI(1)
+                          ),
+                        hideR(1=={`[{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=A(),t'=10&(v<=vl&(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&v>0}]yg>0`}) ; QE
+                        ),
+                      andL(-17) ; allL2R(-19) ; hideL(-19=={`abs_0=-k`}) ; orL(-17) ; <(
+                        hideR(1=={`[{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=A(),t'=10&(v<=vl&(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&v>0}]yg>0`}) ; QE,
+                        andL(-17) ; allL2R(-19) ; hideL(-19=={`abs_1=-xg`}) ; dC({`(10000+2*eps()*(-k)*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(-xg-10*eps())*10000*100`}, 1) ; <(
+                          barrier(1),
+                          dI(1)
+                          )
+                        )
+                      )
+                    ),
+                  dI(1)
+                  )
+                ),
+              hideR(1=={`<{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=A(),t'=10&v>=0}>(((k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&v=vl&yg>0)`}) ; dI(1)
+              ),
+            hideR(1=={`<{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=A(),t'=10&v>=0}>(((k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&v=vl&yg>0)`}) ; dG({`{vll'=0}`}, {`v=vl`}, 1) ; existsR({`vl+0`}, 1) ; DV({`v<=vl`}, {`v-vll`}, {`A()`}, 1) ; <(
+    dC({`vll=vl`}, 1) ; <(
+      ODE(1),
+      dI(1)
+      ),
+    ODE(1),
+    ODE(1)
+    ))
+          ),
+        GV(1) ; hideL(-9=={`v<=vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)`}) ; hideL(-8=={`abs(k)*eps()<=100*1`}) ; hideL(-8=={`vl<=v|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10)`}) ; hideL(-10=={`A()*T()<=10*(vh-vl)`}) ; hideL(-10=={`B()*T()<=10*(vh-vl)`}) ; hideL(-10=={`(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10`}) ; hideL(-10=={`k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10)`}) ; hideL(-8=={`0<=vl`}) ; hideL(-5=={`v>0`}) ; hideL(-6=={`v>=0`}) ; hideL(-7=={`v < vl`}) ; unfold ; cut({`vl<=v&v<=vh&v>0`}) ; <(
+          useLemma({`Robot reaches waypoint`}, {`prop`}),
+          hideR(1=={`<{{{a:=*;?(-B()<=a&a<=A())&10*v+a*T()>=0&(v<=vh&10*v+a*T()<=10*vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(yg-10*eps())*(100*100)*(10*10))&(vl<=v&10*v+a*T()>=10*vl|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(yg-10*eps())*(100*100)*(10*10));}t:=0;}{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=a,t'=10&v>=0}}*>(xg*xg+yg*yg<=10*eps()*(10*eps())&vl<=v&v<=vh)`}) ; QE
+          )
+        ),
+      hideR(1=={`<{{{a:=*;?(-B()<=a&a<=A())&10*v+a*T()>=0&(v<=vh&10*v+a*T()<=10*vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(yg-10*eps())*(100*100)*(10*10))&(vl<=v&10*v+a*T()>=10*vl|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(yg-10*eps())*(100*100)*(10*10));}t:=0;}{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=a,t'=10&v>=0}}*>(xg*xg+yg*yg<=10*eps()*(10*eps())&vl<=v&v<=vh)`}) ; QE
+      ),
+    orL(-17) ; <(
+      useLemma({`Robot reaches waypoint`}, {`prop`}),
+      hideL(-10=={`vl<=v|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10)`}) ; fullSimplify ; iterated(1) ; orR(1) ; hideR(1=={`xg*xg+yg*yg<=10*eps()*(10*eps())&vl<=v&v<=vh`}) ; MR({`((k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&v=vh&yg>0`}, 1) ; <(
+        unfold ; existsR({`-B()`}, 1) ; unfold ; <(
+          QE,
+          cut({`<{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=-B(),t'=10&v>=vh}>v=vh`}) ; <(
+            useAt({`<> diamond`}, {`1`}, -17) ; notL(-17) ; dC({`(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10)`}, 2) ; <(
+              dC({`yg>0`}, 2) ; <(
+                useAt({`[] box`}, {`1`}, 2) ; notR(2) ; doubleNegation(-17.1) ; DWd(-17) ; dR({`v>=0`}, -17) ; <(
+                  MR({`((v>=vh&(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&yg>0)&v=vh`}, 1) ; <(
+                    id,
+                    ODE(1)
+                    ),
+                  dW(1) ; QE
+                  ),
+                hideR(1=={`<{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=-B(),t'=10&v>=0}>(((k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&v=vh&yg>0)`}) ; orL(-8) ; <(
+                  edit({`(10000+2*eps()*expand(abs(k))*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(yg-10*eps())*10000*100`}, -8) ; orL(-17) ; <(
+                    andL(-17) ; allL2R(-18) ; hideL(-18=={`abs_0=k`}) ; dC({`(10000+2*eps()*k*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(yg-10*eps())*10000*100`}, 1) ; <(
+                      dW(1) ; QE,
+                      dI(1)
+                      ),
+                    andL(-17) ; allL2R(-18) ; hideL(-18=={`abs_0=-k`}) ; dC({`(10000+2*eps()*(-k)*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(yg-10*eps())*10000*100`}, 1) ; <(
+                      dW(1) ; QE,
+                      dI(1)
+                      )
+                    ),
+                  edit({`expand(abs(k))*eps()<=100`}, -7) ; edit({`(10000+2*eps()*abs_0*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(expand(abs(xg))-10*eps())*10000*100`}, -8) ; orL(-17) ; <(
+                    andL(-17) ; allL2R(-19) ; hideL(-19=={`abs_0=k`}) ; orL(-17) ; <(
+                      andL(-17) ; allL2R(-19) ; hideL(-19=={`abs_1=xg`}) ; dC({`(10000+2*eps()*k*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(xg-10*eps())*10000*100`}, 1) ; <(
+                        barrier(1),
+                        dI(1)
+                        ),
+                      hideR(1=={`[{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=-B(),t'=10&v>=vh&(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10)}]yg>0`}) ; QE
+                      ),
+                    orL(-18) ; <(
+                      hideR(1=={`[{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=-B(),t'=10&v>=vh&(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10)}]yg>0`}) ; QE,
+                      andL(-17) ; allL2R(-19) ; hideL(-19=={`abs_0=-k`}) ; andL(-17) ; allL2R(-19) ; hideL(-19=={`abs_1=-xg`}) ; dC({`(10000+2*eps()*(-k)*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(-xg-10*eps())*10000*100`}, 1) ; <(
+                        barrier(1),
+                        dI(1)
+                        )
+                      )
+                    )
+                  )
+                ),
+              hideR(1=={`<{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=-B(),t'=10&v>=0}>(((k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&v=vh&yg>0)`}) ; dI(1)
+              ),
+            hideR(1=={`<{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=-B(),t'=10&v>=0}>(((k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&v=vh&yg>0)`}) ; dG({`{vhh'=0}`}, {`v=vh`}, 1) ; existsR({`vh+0`}, 1) ; DV({`v>=vh`}, {`vhh-v`}, {`B()`}, 1) ; <(
+    dC({`vh=vhh`}, 1) ; <(
+      ODE(1),
+      dI(1)
+      ),
+    ODE(1),
+    ODE(1)
+    )
+            )
+          ),
+        hideL(-8=={`(10000+2*eps()*abs(k)*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(yg-10*eps())*10000*100|(10000+2*eps()*abs(k)*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(abs(xg)-10*eps())*10000*100`}) ; hideL(-7=={`abs(k)*eps()<=100`}) ; hideL(-5=={`v>0`}) ; hideL(-5=={`yg>0`}) ; hideL(-7=={`A()*T()<=10*(vh-vl)`}) ; hideL(-7=={`B()*T()<=10*(vh-vl)`}) ; hideL(-7=={`(k*(eps()*eps())-200*eps())*100 < k*(xg*xg+yg*yg)-2*xg*100*10`}) ; hideL(-7=={`k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+200*eps())*100`}) ; hideL(-7=={`vh < v`}) ; GV(1) ; unfold ; cut({`vl<=v&v<=vh&v>0`}) ; <(
+          useLemma({`Robot reaches waypoint`}, {`prop`}),
+          hideR(1=={`<{{{a:=*;?(-B()<=a&a<=A())&10*v+a*T()>=0&(v<=vh&10*v+a*T()<=10*vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(yg-10*eps())*(100*100)*(10*10))&(vl<=v&10*v+a*T()>=10*vl|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(yg-10*eps())*(100*100)*(10*10));}t:=0;}{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=a,t'=10&v>=0}}*>(xg*xg+yg*yg<=10*eps()*(10*eps())&vl<=v&v<=vh)`}) ; QE
+          )
+        )
+      )
+    ),
+  hideR(1=={`<{{{a:=*;?(-B()<=a&a<=A())&10*v+a*T()>=0&(v<=vh&10*v+a*T()<=10*vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(yg-10*eps())*(100*100)*(10*10))&(vl<=v&10*v+a*T()>=10*vl|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(yg-10*eps())*(100*100)*(10*10));}t:=0;}{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=a,t'=10&v>=0}}*>(xg*xg+yg*yg<=10*eps()*(10*eps())&vl<=v&v<=vh)`}) ; QE
+  )
+End.
+
+End.
+
+Theorem "Theorem 1: Safety"
+
+ProgramVariables
+  Real xg,yg; /* goal position: (dm,dm) */
+  Real k;     /* curvature:     centi-(m^-1) */
+
+  Real vl,vh; /* goal velocities (upper and lower): dm/s */
+
+  Real t;     /* time trigger:  ds */
+  Real v,a;   /* linear velocity/acceleration:  dm/s,  dm/s^2 */
+End.
+
+Problem
+  T > 0 &
+  eps() > 0 &
+  A > 0 &
+  B > 0 &
+
+  J(xg, yg, k, v, vl, vh)
+  ->
+  [{
+  /* Control */
+  {
+    {
+      {
+        /* Turning from left or right quadrant towards origin (k <= 0, xg <= 0) or (k >= 0, xg >= 0) */
+        xg:=*; yg:=*; vl:=*; vh:=*; k:=*; a:=*;
+        ? xg >= 0 & k >= 0 | xg <= 0 & k <= 0;
+
+        /* Standard sanity conditions for the planner inputs:
+           1. Goal (xg,yg) is in upper half plane
+           2. Curvature k and bloating eps define an annulus
+           3. Goal is within safe annular region
+           4. Target speed limit interval (vl,vh) is wide enough (and >= 0)
+        */
+
+        ? onUpperHalfPlane(xg,yg) &
+          isAnnulus(k) &
+          onAnnulus(xg,yg,k) &
+          controllableSpeedGoal(vl,vh);
+
+        ? admissibleAcc(xg, yg, v, vl, vh, a, k);
+      }
+    }
+    t:=0;
+  }
+  /* Plant */
+  {
+    { xg'=-v*k*yg/(kf()*df()), yg'=v*(k*xg/(kf()*df()) -1), v'=a, t'=tf() & (v >= 0 & t <= T) }
+  }
+  }*@invariant( J(xg, yg, k, v, vl, vh) )
+  ]( sq(xg) + sq(yg) <= sq(df()*eps()) -> vl <= v & v <= vh )
+End.
+
+Tactic "Proof Theorem 1: Safety"
+implyR(1) ; MR({`v>=0&abs(k)*eps()<=100*1&((k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&(0<=vl&vl < vh&A()*T()<=10*(vh-vl)&B()*T()<=10*(vh-vl))&(v<=vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10))&(vl<=v|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10))`}, 1) ; <(
+  useLemma({`Robot preserves loop invariant`},{`prop`}),
+  unfold ; orL(-9) ; <(
+    orL(-8) ; <(
+      prop,
+      QE
+      ),
+    orL(-8) ; <(
+      QE,
+      hideL(-7=={`abs(k)*eps()<=100*1`}) ; hideL(-13=={`(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10`}) ; hideL(-13=={`k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10)`}) ; hideL(-12=={`B()*T()<=10*(vh-vl)`}) ; hideL(-11=={`A()*T()<=10*(vh-vl)`}) ; andR(1) ; <(
+        hideL(-7=={`(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)`}) ; QE,
+        hideL(-8=={`(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10)`}) ; QE
+        )
+      )
+    )
+  )
+End.
+
+End.
+
+Theorem "Theorem 2: Liveness"
+
+ProgramVariables
+  Real xg,yg; /* goal position: (dm,dm) */
+  Real k;     /* curvature:     centi-(m^-1) */
+
+  Real vl,vh; /* goal velocities (upper and lower): dm/s */
+
+  Real t;     /* time trigger:  ds */
+  Real v,a;   /* linear velocity/acceleration:  dm/s,  dm/s^2 */
+End.
+
+Problem
+  T > 0 &
+  eps() > 0 &
+  A > 0 &
+  B > 0 &
+
+  J(xg, yg, k, v, vl, vh)
+  ->
+  [{
+  /* Control */
+  {
+    {
+      {
+        /* Turning from left or right quadrant towards origin (k <= 0, xg <= 0) or (k >= 0, xg >= 0) */
+        xg:=*; yg:=*; vl:=*; vh:=*; k:=*; a:=*;
+        ? xg >= 0 & k >= 0 | xg <= 0 & k <= 0;
+
+        /* Standard sanity conditions for the planner inputs:
+           1. Goal (xg,yg) is in upper half plane
+           2. Curvature k and bloating eps define an annulus
+           3. Goal is within safe annular region
+           4. Target speed limit interval (vl,vh) is wide enough (and >= 0)
+        */
+
+        ? onUpperHalfPlane(xg,yg) &
+          isAnnulus(k) &
+          onAnnulus(xg,yg,k) &
+          controllableSpeedGoal(vl,vh);
+
+        ? admissibleAcc(xg, yg, v, vl, vh, a, k);
+      }
+    }
+    t:=0;
+  }
+  /* Plant */
+  {
+    { xg'=-v*k*yg/(kf()*df()), yg'=v*(k*xg/(kf()*df()) -1), v'=a, t'=tf() & (v >= 0 & t <= T) }
+  }
+  }*@invariant( J(xg, yg, k, v, vl, vh) )
+  ](
+    (v > 0 & onUpperHalfPlane(xg,yg) ->
+      <{
+      /* Control */
+      {
+        {
+          {
+            /* Only control acceleration keeping waypoint, target velocities and curvature fixed */
+            a:=*;
+            ? admissibleAcc(xg, yg, v, vl, vh, a, k);
+          }
+        }
+        t:=0;
+      }
+      /* Plant */
+      {
+        { xg'=-v*k*yg/(kf()*df()), yg'=v*(k*xg/(kf()*df()) -1), v'=a, t'=tf() & v>=0 }
+      }
+      }*>
+      (
+        sq(xg) + sq(yg) <= sq(df()*eps()) &
+        (vl <= v & v <= vh)
+      )
+    )
+  )
+End.
+
+Tactic "Proof Theorem 2: Liveness"
+implyR(1) ; MR({`v>=0&abs(k)*eps()<=100*1&((k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&(0<=vl&vl < vh&A()*T()<=10*(vh-vl)&B()*T()<=10*(vh-vl))&(v<=vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10))&(vl<=v|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10))`}, 1) ; <(
+  useLemma({`Robot preserves loop invariant`},{`prop`}),
+  useLemma({`Robot reaches waypoint with desired speed`},{`prop`})
+  )
+End.
+
+End.
