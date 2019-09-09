@@ -47,7 +47,7 @@ Problem
     {
       {x'=v,v'=-g&x>=0}
       {?x=0; v:=-c*v;  ++  ?x!=0;}
-    }*@invariant(2*g*x=2*g*H-v^2 & x>=0)
+    }* @invariant(2*g*x=2*g*H-v^2 & x>=0)
   ] (x>=0 & x<=H)
 End.
 
@@ -88,7 +88,7 @@ Tactic "07: Bouncing Ball: automatic"
   master
 End.
        
-
+Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
 End.
        
        
@@ -102,7 +102,7 @@ End.
 Problem
   x>=8 & 5>=y&y>=0
  ->
-  [{x:=x+y; y:=x-2*y;}*@invariant(x>=y & y>=0)] x>=0
+  [{x:=x+y; y:=x-2*y;}* @invariant(x>=y & y>=0)] x>=0
 End.
 
 Tactic "07: Simple Discrete Loop: stepwise"
@@ -133,14 +133,14 @@ ProgramVariables
 End.
                 
 Problem
-  0<=x&x<=5 & v<=0
-  & g>0 & 1>=c&c>=0 & f>=0
+  (0<=x&x<=5 & v<=0) &
+  (g>0 & 1>=c&c>=0 & f>=0)
   ->
   [
     {
       { {x'=v,v'=-g&x>=0&x<=5}++{x'=v,v'=-g&x>=5} }
       {?x=0; v:=-c*v; ++ ?(4<=x&x<=5&v>=0); v:=-f*v; ++ ?(x!=0&x<4|x>5);}
-    }*@invariant(5>=x&x>=0 & (x=5->v<=0))
+    }* @invariant(5>=x&x>=0 & (x=5->v<=0))
   ] (0<=x&x<=5)
 End.
 
@@ -155,6 +155,7 @@ solve(1) ; QE,
 )
 End.
 
+Illustration "https://lfcps.org/info/ping-pong-ball-early.png".
 End.
        ArchiveEntry "09: Time-Triggered Ping-Pong Ball"
 Description "9.2.5 Proposition 9.1: Time-triggered ping-pong is safe".
@@ -172,8 +173,8 @@ ProgramVariables
 End.
                 
 Problem
-  2*x=2*H-v^2 & 0<=x&x<=5 & v<=0
-  & g=1&g>0 & 1=c&c>=0 & 1=f&f>=0
+  (2*x=2*H-v^2 & 0<=x&x<=5 & v<=0) &
+  (g=1&g>0 & 1=c&c>=0 & 1=f&f>=0)
   ->
   [
     {
@@ -201,6 +202,7 @@ composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; choiceb(1) ; andR(1) ; <(
 )
 End.
 
+Illustration "https://lfcps.org/info/ping-pong-ball-time-miss.png".
 End.
        ArchiveEntry "10: Simple rotational dynamics"
 Description "10.3.7 Simple rotational dynamics".
@@ -423,7 +425,7 @@ boxAnd(1) ; andR(1) ; <(
 )
 End.
        
-
+Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
 End.
 
 ArchiveEntry "11: Damped Oscillator"
@@ -449,6 +451,7 @@ Tactic "11: Damped Oscillator: Differential invariant proof"
   implyR(1) ; dI(1)
 End.
 
+Illustration "https://lfcps.org/info/fig-damposc-evo2t-region.png".
 End.
 
 
@@ -480,6 +483,7 @@ Tactic "11: Increasingly Damped Oscillator: Differential cut proof"
   )
 End.
 
+Illustration "https://lfcps.org/info/fig-damped-damped-osc-field-region.png".
 End.
        
 ArchiveEntry "12: Bouncing Ball with ghost solutions"
@@ -684,6 +688,7 @@ prop
 )
 End.
 
+Illustration "https://lfcps.org/info/fig-push-around-cart.png".
 End.
 
 ArchiveEntry "16: Goalie in Robot Soccer"
@@ -709,5 +714,6 @@ Tactic "16: Goalie in Robot Soccer: Proof 1"
   )
 End.
 
+Illustration "https://lfcps.org/info/fig-goalie.png".
 End.
             
