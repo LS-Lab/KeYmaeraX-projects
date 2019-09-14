@@ -247,6 +247,7 @@ Tactic "10: Self-crossing invariant: Proof 1"
   implyR(1) ; dI(1)
 End.
 
+Illustration "https://lfcps.org/info/fig-self-crossing.png".
 End.
 
 ArchiveEntry "10: Motzkin polynomial invariant"
@@ -272,6 +273,7 @@ Tactic "10: Motzkin polynomial invariant: Proof 1"
   implyR(1) ; dI(1)
 End.
 
+Illustration "https://lfcps.org/info/fig-DI-dynamics2.png".
 End.
 
 ArchiveEntry "10: Henon-Heiles motion of a star"
@@ -315,7 +317,8 @@ ProgramVariables /* program variables may change their value over time */
 End.
 
 Problem
-  x<=H & v=0 & x>=0 & (g>0 & 1>=c&c>=0 & r>=0)
+  (x<=H & v=0 & x>=0) &
+  (g>0 & 1>=c&c>=0 & r>=0)
  ->
   [
     {
@@ -397,8 +400,8 @@ ProgramVariables /* program variables may change their value over time */
 End.
 
 Problem
-  x>=0 & x=H
-  & v=0 & g>0 & 1=c&c>=0
+  (x>=0 & x=H & v=0) &
+  (g>0 & 1=c&c>=0)
  ->
   [
     {
@@ -500,14 +503,14 @@ ProgramVariables /* program variables may change their value over time */
 End.
 
 Problem
-  x>=0 & x=H
-  & v=0 & g>0 & 1=c&c>=0
+  (x>=0 & x=H & v=0) &
+  (g>0 & 1=c&c>=0)
  ->
   [
     {
       {x'=v,v'=-g&x>=0}
       {?x=0; v:=-c*v;  ++  ?x!=0;}
-    }*@invariant(2*g*x=2*g*H-v^2 & x>=0)
+    }* @invariant(2*g*x=2*g*H-v^2 & x>=0)
   ] (x>=0 & x<=H)
 End.
 
@@ -537,6 +540,7 @@ boxAnd(1) ; andR(1) ; <(
 )
 End.
 
+Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
 End.
 
 ArchiveEntry "12: Exponential Decay"
