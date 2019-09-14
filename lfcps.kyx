@@ -247,6 +247,7 @@ Tactic "10: Self-crossing invariant: Proof 1"
   implyR(1) ; dI(1)
 End.
 
+Illustration "https://lfcps.org/info/fig-self-crossing.png".
 End.
 
 ArchiveEntry "10: Motzkin polynomial invariant"
@@ -272,6 +273,7 @@ Tactic "10: Motzkin polynomial invariant: Proof 1"
   implyR(1) ; dI(1)
 End.
 
+Illustration "https://lfcps.org/info/fig-DI-dynamics2.png".
 End.
 
 ArchiveEntry "10: Henon-Heiles motion of a star"
