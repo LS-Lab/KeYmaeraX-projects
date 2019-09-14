@@ -25,6 +25,7 @@ Tactic "05: Short Bouncing Ball: single hop: Proof 1"
   implyR(1) ; composeb(1) ; choiceb(1.1) ; composeb(1.1.0) ; testb(1.1.0) ; testb(1.1.1) ; assignb(1.1.0.1) ; solve(1) ; QE
 End.
 
+Illustration "https://lfcps.org/info/fig-bouncing-ball-dark1ghost.png".
 End.
        ArchiveEntry "07: Bouncing Ball"
 Description "7.4: Acrophobic Bouncing Ball".
