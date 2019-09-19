@@ -97,6 +97,55 @@ End.
 
 End.
 
+/* Exported from KeYmaera X v4.7.2 */
+
+Theorem "global exponential stability of origin"
+
+Description "global exponential stability of the origin for a planar system".
+
+Citation "Hassan K. Khalil. Nonlinear Systems. Exercise 4.20 (b)".
+
+ProgramVariables
+  Real x1;
+  Real x2;
+  Real  y;  /* Auxiliary used to encode the decaying exponential bound */
+End.
+
+Problem
+
+\exists a (
+\exists b (
+  a > 0 & b > 0 &
+  \forall x1 \forall x2
+  (
+  [
+    y := a * (x1^2+x2^2) ;
+    {
+      x1' = -x1 - x2,
+      x2' = x1 - x2,
+      y'  = -b * y   /* Technically can put a factor of 2 here */
+    }
+  ]
+  x1^2+x2^2 <= y /* This proves x1^2 + x2^2 <= a*old(x1^2+x2^2) e^(-bt) */
+  )
+)
+)
+End.
+
+Tactic "global exponential stability of origin: Proof"
+chaseAt(1) ; existsR("2", 1) ; chaseAt(1) ; existsR("1", 1) ; unfold ; <(
+  QE,
+  QE,
+  dC("x1^2+2*x2^2-y<=0", 1) ; <(
+    ODE(1),
+    ODE(1)
+    )
+  )
+End.
+
+End.
+
+
 /* Exported from KeYmaera X v4.7.1 */
 
 Theorem "lyapunov stability of arbitrarily switched system"
