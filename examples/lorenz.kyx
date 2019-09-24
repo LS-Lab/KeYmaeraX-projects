@@ -1,0 +1,61 @@
+/* Exported from KeYmaera X v4.7.2 */
+
+Theorem "stability for the Lorenz system"
+
+Description "stability for parametric Lorenz system with 0 < r < 1".
+
+Citation "Wolfgang Walter. Ordinary Differential Equations. Section VII.XII".
+
+Definitions
+  Real sigma;  /* sigma, r, b are positive constants */
+  Real r;
+  Real b;
+End.
+
+ProgramVariables
+  Real x; /* The Lorenz system evolves in 3D space */
+  Real y;
+  Real z;
+End.
+
+Problem
+sigma > 0 & b > 0 &
+r > 0 &  r < 1 ->
+\forall e (
+  e > 0 ->
+  \exists d
+  (d > 0 &
+  \forall x \forall y \forall z
+  (
+  x^2 + y^2 + z ^2 < d ->
+  [
+    {
+    x' = sigma * (y - x),
+    y' = r*x - y - x * z,
+    z' = x * y - b * z
+    }
+  ]
+  x^2 + y^2 + z^2 < e
+  )
+  )
+)
+
+End.
+
+Tactic "stability for the Lorenz system: Proof"
+unfold ; cut("\exists k (k>0&\forall x \forall y \forall z (x^2+y^2+z^2=e->x^2+sigma()*y^2+sigma()*z^2>=k))") ; <(
+  unfold ; cut("\exists d (d>0&\forall x \forall y \forall z (x^2+y^2+z^2 < d->x^2+sigma()*y^2+sigma()*z^2 < k))") ; <(
+    unfold ; existsR("d", 1) ; unfold ; allL("x", -9) ; allL("y", -9) ; allL("z", -9) ; implyL(-9) ; <(
+      master,
+      dC("x^2+sigma()*y^2+sigma()*z^2 < k", 1) ; <(
+        ODE(1),
+        ODE(1)
+        )
+      ),
+    hideR(1=="\exists d (d>0&\forall x \forall y \forall z (x^2+y^2+z^2 < d->[{x'=sigma()*(y-x),y'=r()*x-y-x*z,z'=x*y-b()*z&true}]x^2+y^2+z^2 < e))") ; QE
+    ),
+  hideR(1=="\exists d (d>0&\forall x \forall y \forall z (x^2+y^2+z^2 < d->[{x'=sigma()*(y-x),y'=r()*x-y-x*z,z'=x*y-b()*z&true}]x^2+y^2+z^2 < e))") ; QE
+  )
+End.
+
+End.
