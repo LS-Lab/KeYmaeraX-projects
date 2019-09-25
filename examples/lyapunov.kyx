@@ -30,11 +30,11 @@ Problem
 End.
 
 Tactic "lyapunov stability of origin (locally asymptotically stable): Proof"
-unfold ; cut({`\exists k (k>0&\forall x1 \forall x2 (x1^2+x2^2=e->x1^2/(1+x1^2)+x2^2>=k))`}) ; <(
-unfold ; cut({`\exists d (d>0&\forall x1 \forall x2 (x1^2+x2^2 < d->x1^2/(1+x1^2)+x2^2 < k))`}) ; <(
-unfold ; existsR({`d`}, 1) ; unfold ; allL({`x1`}, -5) ; allL({`x2`}, -5) ; implyL(-5) ; <(
+unfold ; cut("\exists k (k>0&\forall x1 \forall x2 (x1^2+x2^2=e->x1^2/(1+x1^2)+x2^2>=k))") ; <(
+unfold ; cut("\exists d (d>0&\forall x1 \forall x2 (x1^2+x2^2 < d->x1^2/(1+x1^2)+x2^2 < k))") ; <(
+unfold ; existsR("d", 1) ; unfold ; allL("x1", -5) ; allL("x2", -5) ; implyL(-5) ; <(
   master,
-    dC({`x1^2/(1+x1^2)+x2^2 < k`}, 1) ; <(
+    dC("x1^2/(1+x1^2)+x2^2 < k", 1) ; <(
     ODE(1),
       ODE(1)
     )
@@ -80,18 +80,18 @@ Problem
 End.
 
 Tactic "lyapunov stability of origin (globally asymptotically stable): Proof"
-unfold ; cut({`\exists k (k>0&\forall x1 \forall x2 (x1^2+x2^2=e->x1^2/2+x2^4/4>=k))`}) ; <(
-  unfold ; cut({`\exists d (d>0&\forall x1 \forall x2 (x1^2+x2^2 < d->x1^2/2+x2^4/4 < k))`}) ; <(
-    unfold ; existsR({`d`}, 1) ; unfold ; allL({`x1`}, -5) ; allL({`x2`}, -5) ; implyL(-5) ; <(
+unfold ; cut("\exists k (k>0&\forall x1 \forall x2 (x1^2+x2^2=e->x1^2/2+x2^4/4>=k))") ; <(
+  unfold ; cut("\exists d (d>0&\forall x1 \forall x2 (x1^2+x2^2 < d->x1^2/2+x2^4/4 < k))") ; <(
+    unfold ; existsR("d", 1) ; unfold ; allL("x1", -5) ; allL("x2", -5) ; implyL(-5) ; <(
       master,
-      dC({`x1^2/2+x2^4/4 < k`}, 1) ; <(
+      dC("x1^2/2+x2^4/4 < k", 1) ; <(
         ODE(1),
         ODE(1)
         )
       ),
-    hideR(1=={`\exists d (d>0&\forall x1 \forall x2 (x1^2+x2^2 < d->[{x1'=-x1+x2^3,x2'=-x1-x2&true}]x1^2+x2^2 < e))`}) ; QE
+    hideR(1=="\exists d (d>0&\forall x1 \forall x2 (x1^2+x2^2 < d->[{x1'=-x1+x2^3,x2'=-x1-x2&true}]x1^2+x2^2 < e))") ; QE
     ),
-  hideR(1=={`\exists d (d>0&\forall x1 \forall x2 (x1^2+x2^2 < d->[{x1'=-x1+x2^3,x2'=-x1-x2&true}]x1^2+x2^2 < e))`}) ; QE
+  hideR(1=="\exists d (d>0&\forall x1 \forall x2 (x1^2+x2^2 < d->[{x1'=-x1+x2^3,x2'=-x1-x2&true}]x1^2+x2^2 < e))") ; QE
   )
 End.
 

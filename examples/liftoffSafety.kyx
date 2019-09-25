@@ -1,26 +1,31 @@
-﻿Theorem "liftoffSafe (2)"
-ProgramVariables.
-  R v.  /* Velocity of rocket */
-  R h.  /* Height of rocket */
-  R mR. /* Mass of rocket */
-  R mF. /* Mass of fuel */
-  R mFi. /* Initial mass */
-  R th.  /* Thrust */
-  R t.
+﻿/* Exported from KeYmaera X v4.7.2 */
+
+Theorem "liftoffSafe"
+
+ProgramVariables
+  Real v;  /* Velocity of rocket */
+  Real h;  /* Height of rocket */
+  Real mR; /* Mass of rocket */
+  Real mF; /* Mass of fuel */
+  Real mFi; /* Initial mass */
+  Real th;  /* Thrust */
+  Real t;
 End.
 
-Problem.
+Problem
 h = 0 & v = 0 & th > 0 & mFi = mF & mF > 0 & mR > 0 & t=0 ->
 [{t'=1, h' = v, v' = th/(mF+mR), mF'=-1 & mF >= 0}]
 h >= (th*t^2)/(2*(mFi+mR))
 End.
-Tactic "liftoffSafe (2): Proof"
-unfold ; dC({`mF+mR>=0&mF+mR<=mFi+mR`}, 1) ; <(
-  dC({`v>=t*th/(mFi+mR)`}, 1) ; <(
-    ODE(1),
-    ODE(1)
-    ),
+
+Tactic "liftoffSafe: Proof"
+unfold ; dC("mF+mR>=0&mF+mR<=mFi+mR", 1) ; <(
+dC("v>=t*th/(mFi+mR)", 1) ; <(
+ODE(1),
   ODE(1)
-  )
+),
+ODE(1)
+)
 End.
+
 End.
