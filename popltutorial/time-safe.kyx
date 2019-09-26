@@ -27,13 +27,13 @@ Problem           /* differential dynamic logic formula */
 End.
 
 Tactic "Safety of time-triggered car: Clever Proof"
-implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
+implyR(1) ; loop("v^2<=2*b*(m-x)", 1) ; <(
   id,
   QE,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
     assignb(1) ; composeb(1) ; assignb(1) ; dI(1)
     ,
-    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; composeb(1) ; assignb(1) ; dC({`2*b()*(m-x)>=v^2+(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)`}, 1) ; <(
+    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; composeb(1) ; assignb(1) ; dC("2*b*(m-x)>=v^2+(A+b)*(A*(ep-t)^2+2*(ep-t)*v)", 1) ; <(
       dW(1) ; QE,
       dI(1)
       )
@@ -42,7 +42,7 @@ implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
 End.
 
 Tactic "Safety of time-triggered car: Interactive Proof"
-  implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
+  implyR(1) ; loop("v^2<=2*b*(m-x)", 1) ; <(
   QE,
   QE,
   composeb(1) ; choiceb(1) ; andR(1) ; <(

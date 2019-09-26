@@ -17,45 +17,45 @@ ProgramVariables
 End.
 
 Problem
-  g()>0 & p()>a() & T()>0 & m()< -(g()/p())^(1/2) &
-  x>=0 & v<0 & v> -(g()/p())^(1/2) & r=a()
+  g>0 & p>a & T>0 & m< -(g/p)^(1/2) &
+  x>=0 & v<0 & v> -(g/p)^(1/2) & r=a
 ->
 [ {
     {
-      ?(v - g()*T() > -(g()/p())^(1/2) & r = a());
+      ?(v - g*T > -(g/p)^(1/2) & r = a);
       ++
-      r := p();
+      r := p;
     }
     t := 0;
-    {{x'=v, v'=-g()+r*v^2, t'=1 & t<=T() & x>=0 & v<0}@invariant(v-g()*(T()-t)>-(g()/p())^(1/2))}
-  }* @invariant((x>=0 & v<0) & v>-(g()/p())^(1/2))
-](x=0 -> v>=m())
+    {{x'=v, v'=-g+r*v^2, t'=1 & t<=T & x>=0 & v<0}@invariant(v-g*(T-t)>-(g/p)^(1/2))}
+  }* @invariant((x>=0 & v<0) & v>-(g/p)^(1/2))
+](x=0 -> v>=m)
 End.
 
 Tactic "Parachute nonaerodynamic: Proof 1"
-  implyR(1) ; loop({`(x>=0&v < 0)&v>-(g()/p())^(1/2)`}, 1) ; <(
+  implyR(1) ; loop("(x>=0&v < 0)&v>-(g/p)^(1/2)", 1) ; <(
   QE,
   QE,
   boxAnd(1) ; andR(1) ; <(
     master,
     unfold ; <(
-      dC({`v>=old(v)-g()*t`}, 1) ; <(
+      dC("v>=old(v)-g*t", 1) ; <(
         dW(1) ; QE,
         dI(1)
         ),
-      dG({`y'=(-1/2*p()*(v-(g()/p())^(1/2)))*y`}, {`y^2*(v+(g()/p())^(1/2))=1`}, 1) ; dI(1.0) ; QE
+      dG("y'=(-1/2*p*(v-(g/p)^(1/2)))*y", "y^2*(v+(g/p)^(1/2))=1", 1) ; dI(1.0) ; QE
       )
     )
   )
 End.
 
 Tactic "Parachute nonaerodynamic: Invariants+Automation"
-/* requires QE({`Mathematica`}) */
-implyR(1) ; loop({`(x>=0&v < 0)&v>-(g()/p())^(1/2)`}, 1) ; <(
+/* requires QE("Mathematica") */
+implyR(1) ; loop("(x>=0&v < 0)&v>-(g/p)^(1/2)", 1) ; <(
   QE,
   QE,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
-    testb(1) ; implyR(1) ; andL(-7) ; composeb(1) ; assignb(1) ; dC({`v-g()*(T()-t)>-(g()/p())^(1/2)`}, 1) ; <(
+    testb(1) ; implyR(1) ; andL(-7) ; composeb(1) ; assignb(1) ; dC("v-g*(T-t)>-(g/p)^(1/2)", 1) ; <(
       ODE(1),
       ODE(1)
       ),
@@ -65,7 +65,7 @@ implyR(1) ; loop({`(x>=0&v < 0)&v>-(g()/p())^(1/2)`}, 1) ; <(
 End.
 
 Tactic "Parachute nonaerodynamic: Automatic"
-  /* requires QE({`Mathematica`}) */
+  /* requires QE("Mathematica") */
   master
 End.
 

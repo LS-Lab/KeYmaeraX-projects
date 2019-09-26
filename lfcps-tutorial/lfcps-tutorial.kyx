@@ -24,10 +24,10 @@ Problem
 End.
 
 Tactic "Bouncing Ball: Clever Proof"
-implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
+implyR(1) ; loop("2*g*x<=2*g*H-v^2&x>=0", 1) ; <(
   QE,
   QE,
-  composeb(1) ; dC({`2*g()*x<=2*g()*H()-v^2`}, 1) ; <(
+  composeb(1) ; dC("2*g*x<=2*g*H-v^2", 1) ; <(
     dW(1) ; implyR(1) ; choiceb(1) ; andR(1) ; <(
       composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE,
       composeb(1) ; testb(1) ; implyR(1) ; testb(1) ; implyR(1) ; prop ; done
@@ -38,7 +38,7 @@ implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
 End.
 
 Tactic "Bouncing Ball: automatic"
-  /* needs QE({`Mathematica`}) */
+  /* needs QE("Mathematica") */
   master
 End.
 
@@ -70,7 +70,7 @@ Problem           /* differential dynamic logic formula */
     ] x <= m
 End.
 Tactic "Coasting Car: Interactive Proof"
-implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
+implyR(1) ; loop("v^2<=2*b*(m-x)", 1) ; <(
   prop,
   QE,
   composeb(1) ; composeb(1.1) ; choiceb(1) ; andR(1) ; <(
@@ -143,13 +143,13 @@ Problem           /* differential dynamic logic formula */
 End.
 
 Tactic "Safety of time-triggered car: Clever Proof"
-implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
+implyR(1) ; loop("v^2<=2*b*(m-x)", 1) ; <(
   id,
   QE,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
     assignb(1) ; composeb(1) ; assignb(1) ; dI(1)
     ,
-    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; composeb(1) ; assignb(1) ; dC({`2*b()*(m-x)>=v^2+(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)`}, 1) ; <(
+    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; composeb(1) ; assignb(1) ; dC("2*b*(m-x)>=v^2+(A+b)*(A*(ep-t)^2+2*(ep-t)*v)", 1) ; <(
       dW(1) ; QE,
       dI(1)
       )
@@ -158,7 +158,7 @@ implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
 End.
 
 Tactic "Safety of time-triggered car: Interactive Proof"
-  implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
+  implyR(1) ; loop("v^2<=2*b*(m-x)", 1) ; <(
   QE,
   QE,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
@@ -256,9 +256,9 @@ ProgramVariables  /* program variables may change their value over time */
 End.
 
 Problem
-    w()^2*x^2 + y^2 <= c()^2
+    w^2*x^2 + y^2 <= c^2
 ->
-  [{x'=y, y'=-w()^2*x-2*d()*w()*y & w()>=0 & d()>=0}]w()^2*x^2 + y^2 <= c()^2
+  [{x'=y, y'=-w^2*x-2*d*w*y & w>=0 & d>=0}]w^2*x^2 + y^2 <= c^2
 End.
 
 Tactic "Damped Oscillator: Differential invariant proof"
@@ -287,14 +287,14 @@ ProgramVariables
 End.
 
 Problem.
-    w()^2*x^2 + y^2 <= c()^2
+    w^2*x^2 + y^2 <= c^2
   & d>=0
 ->
-  [{x'=y, y'=-w()^2*x-2*d*w()*y, d'=7 & w()>=0}]w()^2*x^2 + y^2 <= c()^2
+  [{x'=y, y'=-w^2*x-2*d*w*y, d'=7 & w>=0}]w^2*x^2 + y^2 <= c^2
 End.
 
 Tactic "Increasingly Damped Oscillator: Differential cut proof"
-  implyR(1) ; dC({`d>=0`}, 1) ; <(
+  implyR(1) ; dC("d>=0", 1) ; <(
     dI(1), 
     dI(1)
   )
@@ -371,45 +371,45 @@ ProgramVariables
 End.
 
 Problem
-  g()>0 & p()>a() & T()>0 & m()< -(g()/p())^(1/2) &
-  x>=0 & v<0 & v> -(g()/p())^(1/2) & r=a()
+  g>0 & p>a & T>0 & m< -(g/p)^(1/2) &
+  x>=0 & v<0 & v> -(g/p)^(1/2) & r=a
 ->
 [ {
     {
-      ?(v - g()*T() > -(g()/p())^(1/2) & r = a());
+      ?(v - g*T > -(g/p)^(1/2) & r = a);
       ++
-      r := p();
+      r := p;
     }
     t := 0;
-    {{x'=v, v'=-g()+r*v^2, t'=1 & t<=T() & x>=0 & v<0}@invariant(v-g()*(T()-t)>-(g()/p())^(1/2))}
-  }* @invariant((x>=0 & v<0) & v>-(g()/p())^(1/2))
-](x=0 -> v>=m())
+    {{x'=v, v'=-g+r*v^2, t'=1 & t<=T & x>=0 & v<0}@invariant(v-g*(T-t)>-(g/p)^(1/2))}
+  }* @invariant((x>=0 & v<0) & v>-(g/p)^(1/2))
+](x=0 -> v>=m)
 End.
 
 Tactic "Parachute nonaerodynamic: Proof 1"
-  implyR(1) ; loop({`(x>=0&v < 0)&v>-(g()/p())^(1/2)`}, 1) ; <(
+  implyR(1) ; loop("(x>=0&v < 0)&v>-(g/p)^(1/2)", 1) ; <(
   QE,
   QE,
   boxAnd(1) ; andR(1) ; <(
     master,
     unfold ; <(
-      dC({`v>=old(v)-g()*t`}, 1) ; <(
+      dC("v>=old(v)-g*t", 1) ; <(
         dW(1) ; QE,
         dI(1)
         ),
-      dG({`y'=(-1/2*p()*(v-(g()/p())^(1/2)))*y`}, {`y^2*(v+(g()/p())^(1/2))=1`}, 1) ; dI(1.0) ; QE
+      dG("y'=(-1/2*p*(v-(g/p)^(1/2)))*y", "y^2*(v+(g/p)^(1/2))=1", 1) ; dI(1.0) ; QE
       )
     )
   )
 End.
 
 Tactic "Parachute nonaerodynamic: Invariants+Automation"
-/* requires QE({`Mathematica`}) */
-implyR(1) ; loop({`(x>=0&v < 0)&v>-(g()/p())^(1/2)`}, 1) ; <(
+/* requires QE("Mathematica") */
+implyR(1) ; loop("(x>=0&v < 0)&v>-(g/p)^(1/2)", 1) ; <(
   QE,
   QE,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
-    testb(1) ; implyR(1) ; andL(-7) ; composeb(1) ; assignb(1) ; dC({`v-g()*(T()-t)>-(g()/p())^(1/2)`}, 1) ; <(
+    testb(1) ; implyR(1) ; andL(-7) ; composeb(1) ; assignb(1) ; dC("v-g*(T-t)>-(g/p)^(1/2)", 1) ; <(
       ODE(1),
       ODE(1)
       ),
@@ -419,7 +419,7 @@ implyR(1) ; loop({`(x>=0&v < 0)&v>-(g()/p())^(1/2)`}, 1) ; <(
 End.
 
 Tactic "Parachute nonaerodynamic: Automatic"
-  /* requires QE({`Mathematica`}) */
+  /* requires QE("Mathematica") */
   master
 End.
 
