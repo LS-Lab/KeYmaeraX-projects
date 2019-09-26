@@ -1,10 +1,10 @@
 /*Exercise "RLC-Circuit".*/
 
 Functions.        /* function symbols cannot change their value */
-  R R().          /* resistance */
-  R L().          /* inductance of inductor */
-  R C().          /* capacitance of capacitor */
-  R e().          /* some constant */
+  R R.          /* resistance */
+  R L.          /* inductance of inductor */
+  R C.          /* capacitance of capacitor */
+  R e.          /* some constant */
 End.
 
 ProgramVariables. /* program variables may change their value over time */

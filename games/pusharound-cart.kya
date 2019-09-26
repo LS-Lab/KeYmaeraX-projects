@@ -19,14 +19,14 @@ Problem
 End.
 
 Tactic "Push-around cart: Clever Proof"
-  implyR(1) ; loop({`x>=0&v>=0`}, 1) ; <(
+  implyR(1) ; loop("x>=0&v>=0", 1) ; <(
   prop ; done,
   composeb(1) ; dualDirectb(1) ; choiced(1) ; orR(1) ; hideR(2) ; assignd(1) ; composeb(1) ; choiceb(1) ; assignb(1.0) ; assignb(1.1) ; andR(1) ; <(
-    dC({`v>=0`}, 1) ; <(
+    dC("v>=0", 1) ; <(
       dI(1),
       dI(1)
       ),
-    dC({`v>=0`}, 1) ; <(
+    dC("v>=0", 1) ; <(
       dI(1),
       dI(1)
       )
@@ -36,7 +36,7 @@ Tactic "Push-around cart: Clever Proof"
 End.
        
 Tactic "Push-around cart: Interactive Proof"
-  implyR(1) ; loop({`x>=0&v>=0`}, 1) ; <(
+  implyR(1) ; loop("x>=0&v>=0", 1) ; <(
     prop ; done, 
     composeb(1) ; dualDirectb(1) ; choiced(1) ; orR(1) ; hideR(2) ; assignd(1) ; composeb(1) ; choiceb(1) ; assignb(1.0) ; assignb(1.1) ; andR(1) ; <(
       solve(1) ; QE, 

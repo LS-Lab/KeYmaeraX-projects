@@ -53,10 +53,10 @@ Problem
 End.
 
 Tactic "07: Bouncing Ball: generalizing as in book"
-  implyR(1) ; loop("2*g()*x=2*g()*H()-v^2&x>=0", 1) ; <(
+  implyR(1) ; loop("2*g*x=2*g*H-v^2&x>=0", 1) ; <(
 QE, 
 QE, 
-composeb(1) ; MR("2*g()*x=2*g()*H()-v^2&x>=0&c()=1&g()>0", 1) ; <(
+composeb(1) ; MR("2*g*x=2*g*H-v^2&x>=0&c=1&g>0", 1) ; <(
 solve(1) ; QE, 
   choiceb(1) ; andR(1) ; <(
   composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE, 
@@ -67,7 +67,7 @@ solve(1) ; QE,
 End.
        
 Tactic "07: Bouncing Ball: top-level"
-  implyR(1) ; loop("2*g()*x=2*g()*H()-v^2&x>=0", 1) ; <(
+  implyR(1) ; loop("2*g*x=2*g*H-v^2&x>=0", 1) ; <(
 QE, 
 QE, 
 composeb(1) ; solve(1) ; allR(1) ; implyR(1) ; implyR(1) ; allL("t_", -6) ; allR(1) ; implyR(1) ; choiceb(1) ; andR(1) ; <(
@@ -78,7 +78,7 @@ composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE,
 End.
 
 Tactic "07: Bouncing Ball: in-place proof"
-  implyR(1) ; loop("2*g()*x=2*g()*H()-v^2&x>=0", 1) ; <(
+  implyR(1) ; loop("2*g*x=2*g*H-v^2&x>=0", 1) ; <(
 QE, 
 QE, 
 composeb(1) ; choiceb(1.1) ; composeb(1.1.0) ; testb(1.1.0) ; assignb(1.1.0.1) ; testb(1.1.1) ; solve(1) ; QE
@@ -330,20 +330,20 @@ Problem
 End.
 
 Tactic "11: Aerodynamic Acrophobic Bouncing Ball: generalizing as in book"
-  implyR(1) ; loop("2*g()*x<=2*g()*H()-v^2&x>=0", 1) ; <(
+  implyR(1) ; loop("2*g*x<=2*g*H-v^2&x>=0", 1) ; <(
 QE, 
 QE, 
-composeb(1) ; MR("2*g()*x<=2*g()*H()-v^2&x>=0&g()>0&r()>=0", 1) ; <(
+composeb(1) ; MR("2*g*x<=2*g*H-v^2&x>=0&g>0&r>=0", 1) ; <(
 choiceb(1) ; andR(1) ; <(
   composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE, 
     testb(1) ; implyR(1) ; QE
   ), 
   choiceb(1) ; andR(1) ; <(
-  dC("2*g()*x<=2*g()*H()-v^2", 1) ; <(
+  dC("2*g*x<=2*g*H-v^2", 1) ; <(
     dW(1) ; QE, 
       dI(1)
     ), 
-    dC("2*g()*x<=2*g()*H()-v^2", 1) ; <(
+    dC("2*g*x<=2*g*H-v^2", 1) ; <(
     dW(1) ; QE, 
       dI(1)
     )
@@ -353,26 +353,26 @@ choiceb(1) ; andR(1) ; <(
 End.
        
 Tactic "11: Aerodynamic Acrophobic Bouncing Ball: top-level"
-  implyR(1) ; loop("2*g()*x<=2*g()*H()-v^2&x>=0", 1) ; <(
+  implyR(1) ; loop("2*g*x<=2*g*H-v^2&x>=0", 1) ; <(
 QE, 
 QE, 
 composeb(1) ; choiceb(1) ; composeb(1.0) ; testb(1.0) ; andR(1) ; <(
 implyR(1) ; assignb(1) ; choiceb(1) ; andR(1) ; <(
-  dC("2*g()*x<=2*g()*H()-v^2", 1) ; <(
+  dC("2*g*x<=2*g*H-v^2", 1) ; <(
     dW(1) ; QE, 
       dI(1)
     ), 
-    dC("2*g()*x<=2*g()*H()-v^2", 1) ; <(
+    dC("2*g*x<=2*g*H-v^2", 1) ; <(
     dW(1) ; QE, 
       dI(1)
     )
   ), 
   testb(1) ; implyR(1) ; choiceb(1) ; andR(1) ; <(
-  dC("2*g()*x<=2*g()*H()-v^2", 1) ; <(
+  dC("2*g*x<=2*g*H-v^2", 1) ; <(
     dW(1) ; QE, 
       dI(1)
     ), 
-    dC("2*g()*x<=2*g()*H()-v^2", 1) ; <(
+    dC("2*g*x<=2*g*H-v^2", 1) ; <(
     dW(1) ; QE, 
       dI(1)
     )
@@ -413,10 +413,10 @@ Problem
 End.
 
 Tactic "11: Bouncing Ball: differential invariants"
-  implyR(1) ; loop("2*g()*x=2*g()*H()-v^2&x>=0", 1) ; <(
+  implyR(1) ; loop("2*g*x=2*g*H-v^2&x>=0", 1) ; <(
 QE, 
 QE, 
-composeb(1) ; MR("2*g()*x=2*g()*H()-v^2&x>=0&g()>0&1=c()", 1) ; <(
+composeb(1) ; MR("2*g*x=2*g*H-v^2&x>=0&g>0&1=c", 1) ; <(
 boxAnd(1) ; andR(1) ; <(
     dI(1), 
     dW(1) ; prop
@@ -446,9 +446,9 @@ ProgramVariables /* program variables may change their value over time */
 End.
 
 Problem
-    w()^2*x^2 + y^2 <= c()^2
+    w^2*x^2 + y^2 <= c^2
 ->
-  [{x'=y, y'=-w()^2*x-2*d()*w()*y & w()>=0 & d()>=0}]w()^2*x^2 + y^2 <= c()^2
+  [{x'=y, y'=-w^2*x-2*d*w*y & w>=0 & d>=0}]w^2*x^2 + y^2 <= c^2
 End.
 
 Tactic "11: Damped Oscillator: Differential invariant proof"
@@ -474,10 +474,10 @@ ProgramVariables
 End.
 
 Problem
-    w()^2*x^2 + y^2 <= c()^2
+    w^2*x^2 + y^2 <= c^2
   & d>=0
 ->
-  [{x'=y, y'=-w()^2*x-2*d*w()*y, d'=7 & w()>=0}]w()^2*x^2 + y^2 <= c()^2
+  [{x'=y, y'=-w^2*x-2*d*w*y, d'=7 & w>=0}]w^2*x^2 + y^2 <= c^2
 End.
 
 Tactic "11: Increasingly Damped Oscillator: Differential cut proof"
@@ -516,13 +516,13 @@ Problem
 End.
 
 Tactic "12: Bouncing Ball with ghost solutions: ghost solutions"
-  implyR(1) ; loop("2*g()*x=2*g()*H()-v^2&x>=0", 1) ; <(
+  implyR(1) ; loop("2*g*x=2*g*H-v^2&x>=0", 1) ; <(
 QE, 
 QE, 
-composeb(1) ; MR("(2*g()*x=2*g()*H()-v^2&x>=0)&g()>0&1=c()", 1) ; <(
+composeb(1) ; MR("(2*g*x=2*g*H-v^2&x>=0)&g>0&1=c", 1) ; <(
 boxAnd(1) ; andR(1) ; <(
-  dG("t'=1", 1) ; existsR("0", 1) ; dC("v=old(v)-g()*t", 1) ; <(
-    dC("x=old(x)+old(v)*t-g()/2*t^2", 1) ; <(
+  dG("t'=1", 1) ; existsR("0", 1) ; dC("v=old(v)-g*t", 1) ; <(
+    dC("x=old(x)+old(v)*t-g/2*t^2", 1) ; <(
       dW(1) ; QE, 
         dI(1)
       ), 

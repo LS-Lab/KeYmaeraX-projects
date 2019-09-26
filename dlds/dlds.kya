@@ -27,6 +27,7 @@ End.
 
 End.
 ArchiveEntry "LICS: 2 Single car drives forward"
+Description "Cars have nonnegative velocity".
 
 Definitions       /* function symbols cannot change their value */
   Real b;         /* braking capabilities */
@@ -45,12 +46,12 @@ Problem           /* differential dynamic logic formula */
       {
         {a:=A; ++ a:=-b;}
         {x'=v, v'=a & v>=0}
-      }*@invariant(v>=0)
+      }* @invariant(v>=0)
     ] v>=0
 End.
 
 Tactic "LICS: 2 Single car drives forward: Clever Proof"
-implyR(1) ; loop({`v>=0`}, 1) ; <(
+implyR(1) ; loop("v>=0", 1) ; <(
   id,
   id,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
@@ -61,7 +62,7 @@ implyR(1) ; loop({`v>=0`}, 1) ; <(
 End.
 
 Tactic "LICS: 2 Single car drives forward: Interactive Proof"
-  implyR(1) ; loop({`v>=0`}, 1) ; <(
+  implyR(1) ; loop("v>=0", 1) ; <(
   id,
   id,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
@@ -77,6 +78,7 @@ End.
 
 End.
 ArchiveEntry "LICS: 4a safe stopping of time-triggered car"
+Description "Cars don't run stop signs".
 
 Definitions       /* function symbols cannot change their value */
   Real b;         /* braking capabilities */
@@ -103,12 +105,12 @@ Problem           /* differential dynamic logic formula */
     ] x <= m
 End.
 
-Tactic "LICS: 4a safety of time-triggered car: Clever Proof"
-implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
+Tactic "Safety of time-triggered car: Clever Proof"
+implyR(1) ; loop("v^2<=2*b*(m-x)", 1) ; <(
   id,
   QE,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
-    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; composeb(1) ; assignb(1) ; dC({`2*b()*(m-x)>=v^2+(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)`}, 1) ; <(
+    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; composeb(1) ; assignb(1) ; dC("2*b*(m-x)>=v^2+(A+b)*(A*(ep-t)^2+2*(ep-t)*v)", 1) ; <(
       dW(1) ; QE,
       dI(1)
       ),
@@ -117,8 +119,8 @@ implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
   )
 End.
 
-Tactic "LICS: 4a safety of time-triggered car: Interactive Proof"
-  implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
+Tactic "Safety of time-triggered car: Interactive Proof"
+  implyR(1) ; loop("v^2<=2*b*(m-x)", 1) ; <(
   QE,
   QE,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
@@ -128,12 +130,13 @@ Tactic "LICS: 4a safety of time-triggered car: Interactive Proof"
   )
 End.
        
-Tactic "LICS: 4a safety of time-triggered car: Automatic Proof"
+Tactic "Safety of time-triggered car: Automatic"
   master
 End.
 
 End.
 ArchiveEntry "Bouncing Ball"
+Description "Acrophobic Bouncing Ball".
 
 Definitions       /* function symbols cannot change their value */
   Real H;         /* initial height */
@@ -158,10 +161,10 @@ Problem
 End.
 
 Tactic "Bouncing Ball: Clever Proof"
-implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
+implyR(1) ; loop("2*g*x<=2*g*H-v^2&x>=0", 1) ; <(
   QE,
   QE,
-  composeb(1) ; dC({`2*g()*x<=2*g()*H()-v^2`}, 1) ; <(
+  composeb(1) ; dC("2*g*x<=2*g*H-v^2", 1) ; <(
     dW(1) ; implyR(1) ; choiceb(1) ; andR(1) ; <(
       composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE,
       testb(1) ; implyR(1) ; prop ; done
@@ -172,10 +175,10 @@ implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
 End.
 
 Tactic "Bouncing Ball: generalizing as in book"
-  implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
+  implyR(1) ; loop("2*g*x<=2*g*H-v^2&x>=0", 1) ; <(
 QE, 
 QE, 
-composeb(1) ; MR({`2*g()*x<=2*g()*H()-v^2&x>=0&1>=c()&c()>=0&g()>0`}, 1) ; <(
+composeb(1) ; MR("2*g*x<=2*g*H-v^2&x>=0&1>=c&c>=0&g>0", 1) ; <(
 solveEnd(1) ; QE,
   choiceb(1) ; andR(1) ; <(
   composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE, 
@@ -186,10 +189,10 @@ solveEnd(1) ; QE,
 End.
        
 Tactic "Bouncing Ball: top-level"
-  implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
+  implyR(1) ; loop("2*g*x<=2*g*H-v^2&x>=0", 1) ; <(
 QE, 
 QE, 
-composeb(1) ; solve(1) ; allR(1) ; implyR(1) ; implyR(1) ; allL({`t_`}, -6) ; allR(1) ; implyR(1) ; choiceb(1) ; andR(1) ; <(
+composeb(1) ; solve(1) ; allR(1) ; implyR(1) ; implyR(1) ; allL("t_", -6) ; allR(1) ; implyR(1) ; choiceb(1) ; andR(1) ; <(
 composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE, 
   testb(1) ; implyR(1) ; QE
 )
@@ -197,7 +200,7 @@ composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE,
 End.
 
 Tactic "Bouncing Ball: in-place proof"
-  implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
+  implyR(1) ; loop("2*g*x<=2*g*H-v^2&x>=0", 1) ; <(
 QE, 
 QE, 
 composeb(1) ; choiceb(1.1) ; composeb(1.1.0) ; testb(1.1.0) ; assignb(1.1.0.1) ; testb(1.1.1) ; solveEnd(1) ; QE
@@ -210,6 +213,7 @@ End.
 
 End.
 ArchiveEntry "Simple rotational dynamics"
+Description "Rotating points stay on circles".
 
 ProgramVariables
   Real v;  /* direction in x-axis */
@@ -228,6 +232,7 @@ End.
 
 End.
 ArchiveEntry "Damped Oscillator"
+Description "Damped oscillators stay in ellipses".
 
 Definitions        /* function symbols cannot change their value */
   Real w;          /* undamped angular frequency */
@@ -241,19 +246,24 @@ ProgramVariables  /* program variables may change their value over time */
 End.
 
 Problem
-    w()^2*x^2 + y^2 <= c()^2
+    w^2*x^2 + y^2 <= c^2
 ->
-  [{x'=y, y'=-w()^2*x-2*d()*w()*y & w()>=0 & d()>=0}]w()^2*x^2 + y^2 <= c()^2
+  [{x'=y, y'=-w^2*x-2*d*w*y & w>=0 & d>=0}]w^2*x^2 + y^2 <= c^2
 End.
 
 Tactic "Damped Oscillator: Differential invariant proof"
   implyR(1) ; dI(1)
 End.
 
+Tactic "Damped Oscillator: automatic"
+  master
+End.
+
 End.
 
 
 ArchiveEntry "Increasingly Damped Oscillator"
+Description "Increasingly damped oscillators stay in ellipses".
 
 Definitions
   Real w;    /* undamped angular frequency */
@@ -267,17 +277,21 @@ ProgramVariables
 End.
 
 Problem.
-    w()^2*x^2 + y^2 <= c()^2
+    w^2*x^2 + y^2 <= c^2
   & d>=0
 ->
-  [{x'=y, y'=-w()^2*x-2*d*w()*y, d'=7 & w()>=0}]w()^2*x^2 + y^2 <= c()^2
+  [{x'=y, y'=-w^2*x-2*d*w*y, d'=7 & w>=0}]w^2*x^2 + y^2 <= c^2
 End.
 
 Tactic "Increasingly Damped Oscillator: Differential cut proof"
-  implyR(1) ; dC({`d>=0`}, 1) ; <(
+  implyR(1) ; dC("d>=0", 1) ; <(
     dI(1), 
     dI(1)
   )
+End.
+
+Tactic "Increasingly Damped Oscillator: automatic"
+  master
 End.
 
 End.
@@ -292,11 +306,11 @@ Problem
 End.
 
 Tactic "Exponential Decay from tactic"
-  implyR(1) ; dG({`y'=1/2*y`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE
+  implyR(1) ; dG("y'=1/2*y", "x*y^2=1", 1) ; dI(1.0) ; QE
 End.
  
 Tactic "Exponential Decay: Automatic"
-  /* requires QE({`Mathematica`}) */
+  /* needs QE("Mathematica") */
   master
 End.
 
@@ -313,7 +327,7 @@ Problem
 End.
 
 Tactic "Exponential Growth from tactic"
-  implyR(1) ; dG({`y'=-1/2*y`}, {`x*y^2=1`}, 1) ; dI(1.0) ; QE
+  implyR(1) ; dG("y'=-1/2*y", "x*y^2=1", 1) ; dI(1.0) ; QE
 End.
 
 Tactic "Exponential Growth: Automatic"
@@ -335,19 +349,19 @@ End.
 
 
 Tactic "Exponential at Equilibrium from tactic"
- implyR(1) ; dG({`y'=-1*y`}, {`y>0&x*y=0`}, 1) ; boxAnd(1.0) ; dI(1.0.1) ; dG({`z'=1/2*z`}, {`y*z^2=1`}, 1.0.0) ; dI(1.0.0.0) ; QE
+ implyR(1) ; dG("y'=-1*y", "y>0&x*y=0", 1) ; boxAnd(1.0) ; dI(1.0.1) ; dG("z'=1/2*z", "y*z^2=1", 1.0.0) ; dI(1.0.0.0) ; QE
 End.
 
 Tactic "Exponential at Equilibrium: top-level proof"
- implyR(1) ; dG({`y'=-1*y`}, {`y>0&x*y=0`}, 1) ; existsR({`1`}, 1) ; boxAnd(1) ; andR(1) ; <(
- dG({`z'=1/2*z`}, {`z^2*y=1`}, 1) ; existsR({`1`}, 1) ; dI(1),
+ implyR(1) ; dG("y'=-1*y", "y>0&x*y=0", 1) ; existsR("1", 1) ; boxAnd(1) ; andR(1) ; <(
+ dG("z'=1/2*z", "z^2*y=1", 1) ; existsR("1", 1) ; dI(1),
  dI(1)
  )
 End.
 
 Tactic "Exponential at Equilibrium: Automatic"
-  /* requires QE({`Mathematica`}) */
-  master
+ /* needs QE("Mathematica") */
+ master
 End.
 
 End.
@@ -363,15 +377,16 @@ Problem
 End.
 
 Tactic "Exponential difference from tactic"
-  implyR(1) ; dG({`y'=-1*y`}, {`x*y=1`}, 1) ; dI(1.0) ; QE
+  implyR(1) ; dG("y'=-1*y", "x*y=1", 1) ; dI(1.0) ; QE
 End.
    
 Tactic "Exponential difference: top-level proof"
-  implyR(1) ; dG({`y'=-1*y`}, {`x*y=1`}, 1) ; existsR({`1/x`}, 1) ; dI(1)
+  implyR(1) ; dG("y'=-1*y", "x*y=1", 1) ; existsR("1/x", 1) ; dI(1)
 End.
    
 End.
 ArchiveEntry "Parachute"
+Description "Safely deployed parachutes have bounded velocities".
 
 Definitions
   Real g = 9;    /* gravity */
@@ -389,36 +404,56 @@ ProgramVariables
 End.
 
 Problem
-  g()>0 & p()>a() & a()>0 & T()>0 & m()< -(g()/p())^(1/2) &
-  x>=0 & v<0 & v> -(g()/p())^(1/2) & r=a()
+  g>0 & p>a & a>0 & T>0 & m< -(g/p)^(1/2) &
+  x>=0 & v<0 & v> -(g/p)^(1/2) & r=a
 ->
 [ {
     {
-      ?(v - g()*T() > -(g()/p())^(1/2) & r = a());
+      ?(v - g*T > -(g/p)^(1/2) & r = a);
       ++
-      r := p();
+      r := p;
     }
     t := 0;
-    {x'=v, v'=-g()+r*v^2, t'=1 & t<=T() & x>=0 & v<0}
-  }* @invariant((x>=0 & v<0) & v>-(g()/p())^(1/2))
-](x=0 -> v>=m())
+    {{x'=v, v'=-g+r*v^2, t'=1 & t<=T & x>=0 & v<0}@invariant(v-g*(T-t)>-(g/p)^(1/2))}
+  }* @invariant((x>=0 & v<0) & v>-(g/p)^(1/2))
+](x=0 -> v>=m)
 End.
 
 Tactic "Parachute: Proof 1"
-  implyR(1) ; loop({`(x>=0&v < 0)&v>-(9/1)^(1/2)`}, 1) ; <(
+  implyR(1) ; loop("(x>=0&v < 0)&v>-(g/p)^(1/2)", 1) ; <(
   QE,
   QE,
   boxAnd(1) ; andR(1) ; <(
     master,
     unfold ; <(
-      dC({`v>=old(v)-9*t`}, 1) ; <(
+      dC("v>=old(v)-g*t", 1) ; <(
         dW(1) ; QE,
         dI(1)
         ),
-      dG({`y'=(-1/2*1*(v-(9/1)^(1/2)))*y`}, {`y^2*(v+(9/1)^(1/2))=1`}, 1) ; dI(1.0) ; QE
+      dG("y'=(-1/2*p*(v-(g/p)^(1/2)))*y", "y^2*(v+(g/p)^(1/2))=1", 1) ; dI(1.0) ; QE
       )
     )
   )
+End.
+
+Tactic "Parachute: Invariants+Automation"
+/* requires QE("Mathematica") */
+implyR(1) ; loop("(x>=0&v < 0)&v>-(g/p)^(1/2)", 1) ; <(
+  QE,
+  QE,
+  composeb(1) ; choiceb(1) ; andR(1) ; <(
+    testb(1) ; implyR(1) ; andL(-7) ; composeb(1) ; assignb(1) ; dC("v-g*(T-t)>-(g/p)^(1/2)", 1) ; <(
+      ODE(1),
+      ODE(1)
+      ),
+    assignb(1) ; composeb(1) ; assignb(1) ; ODE(1)
+    )
+  )
+End.
+
+Tactic "Parachute: Automatic"
+  /* requires QE("Mathematica") */
+  master
 End.
 
 End.
@@ -433,7 +468,7 @@ Problem
 End.
 
 Tactic "Dual Filibuster Game: Proof 1"
-  implyR(1) ; dualDirectd(1) ; loop({`x=0`}, 1) ; <(
+  implyR(1) ; dualDirectd(1) ; loop("x=0", 1) ; <(
   id,
   dualDirectb(1) ; choiced(1) ; assignd(1.0) ; assignd(1.1) ; QE,
   id
@@ -462,14 +497,14 @@ Problem
 End.
 
 Tactic "Push-around cart: Clever Proof"
-  implyR(1) ; loop({`x>=0&v>=0`}, 1) ; <(
+  implyR(1) ; loop("x>=0&v>=0", 1) ; <(
   prop ; done,
   composeb(1) ; dualDirectb(1) ; choiced(1) ; orR(1) ; hideR(2) ; assignd(1) ; composeb(1) ; choiceb(1) ; assignb(1.0) ; assignb(1.1) ; andR(1) ; <(
-    dC({`v>=0`}, 1) ; <(
+    dC("v>=0", 1) ; <(
       dI(1),
       dI(1)
       ),
-    dC({`v>=0`}, 1) ; <(
+    dC("v>=0", 1) ; <(
       dI(1),
       dI(1)
       )
@@ -479,7 +514,7 @@ Tactic "Push-around cart: Clever Proof"
 End.
        
 Tactic "Push-around cart: Interactive Proof"
-  implyR(1) ; loop({`x>=0&v>=0`}, 1) ; <(
+  implyR(1) ; loop("x>=0&v>=0", 1) ; <(
     prop ; done, 
     composeb(1) ; dualDirectb(1) ; choiced(1) ; orR(1) ; hideR(2) ; assignd(1) ; composeb(1) ; choiceb(1) ; assignb(1.0) ; assignb(1.1) ; andR(1) ; <(
       solve(1) ; QE, 
@@ -511,14 +546,14 @@ Problem
 End.
 
 Tactic "Wall-E & Eve: Clever Proof"
-  implyR(1) ; dualDirectd(1) ; loop({`(w-e)^2<=1&v=f`}, 1) ; <(
+  implyR(1) ; dualDirectd(1) ; loop("(w-e)^2<=1&v=f", 1) ; <(
   prop ; done,
   dualDirectb(1) ; composed(1) ; dualDirectd(1) ; choiceb(1) ; andR(1) ; <(
-    assignb(1) ; composed(1) ; choiced(1) ; orR(1) ; hideR(2) ; assignd(1) ; composed(1) ; assignd(1) ; dualDirectd(1) ; dC({`v=f`}, 1) ; <(
+    assignb(1) ; composed(1) ; choiced(1) ; orR(1) ; hideR(2) ; assignd(1) ; composed(1) ; assignd(1) ; dualDirectd(1) ; dC("v=f", 1) ; <(
       dI(1),
       dI(1)
       ),
-    assignb(1) ; composed(1) ; choiced(1) ; orR(1) ; hideR(1) ; assignd(1) ; composed(1) ; assignd(1) ; dualDirectd(1) ; dC({`v=f`}, 1) ; <(
+    assignb(1) ; composed(1) ; choiced(1) ; orR(1) ; hideR(1) ; assignd(1) ; composed(1) ; assignd(1) ; dualDirectd(1) ; dC("v=f", 1) ; <(
       dI(1),
       dI(1)
       )
@@ -528,7 +563,7 @@ Tactic "Wall-E & Eve: Clever Proof"
 End.
        
 Tactic "Wall-E & Eve: Standard Proof"
-  implyR(1) ; dualDirectd(1) ; loop({`(w-e)^2<=1&v=f`}, 1) ; <(
+  implyR(1) ; dualDirectd(1) ; loop("(w-e)^2<=1&v=f", 1) ; <(
   prop ; done,
   dualDirectb(1) ; composed(1) ; dualDirectd(1) ; choiceb(1) ; andR(1) ; <(
     assignb(1) ; composed(1) ; choiced(1) ; orR(1) ; hideR(2) ; assignd(1) ; composed(1) ; assignd(1) ; dualDirectd(1) ; solve(1) ; QE,
@@ -557,8 +592,8 @@ End.
 
 Tactic "Goalie in robot soccer: Proof 1"
   implyR(1) ; composed(1) ; dualDirectd(1) ; choiceb(1) ; andR(1) ; <(
-  assignb(1) ; iterated(1) ; orR(1) ; iterated(2.1) ; diamondOr(2) ; orR(2) ; hideR(3) ; composed(2) ; choiced(2) ; orR(2) ; hideR(3) ; assignd(2) ; solve(2) ; existsR({`-x/v`}, 2) ; QE,
-  assignb(1) ; iterated(1) ; orR(1) ; iterated(2.1) ; diamondOr(2) ; orR(2) ; hideR(3) ; composed(2) ; choiced(2) ; orR(2) ; hideR(2) ; assignd(2) ; solve(2) ; existsR({`-x/v`}, 2) ; QE
+  assignb(1) ; iterated(1) ; orR(1) ; iterated(2.1) ; diamondOr(2) ; orR(2) ; hideR(3) ; composed(2) ; choiced(2) ; orR(2) ; hideR(3) ; assignd(2) ; solve(2) ; existsR("-x/v", 2) ; QE,
+  assignb(1) ; iterated(1) ; orR(1) ; iterated(2.1) ; diamondOr(2) ; orR(2) ; hideR(3) ; composed(2) ; choiced(2) ; orR(2) ; hideR(2) ; assignd(2) ; solve(2) ; existsR("-x/v", 2) ; QE
   )
 End.
 
