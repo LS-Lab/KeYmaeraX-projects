@@ -8,7 +8,7 @@ cat > repls <<- EOM
 s/ArchiveEntry *"Damp.*"/ArchiveEntry "4 Damped oscillator"/
 s/ArchiveEntry *"Increas.*"/ArchiveEntry "4 Increasingly damped oscillator"/
 EOM
-sed -f repls < ../../lics/damposc.kya >> tmp.kya
+sed -f repls < ../../lics/damposc.kyx >> tmp.kya
 sed "s/ArchiveEntry *\"\(.*\)\"/ArchiveEntry \"5 \1\"/" <../../lfcps-tutorial/KeplerProblem.kyx >> tmp.kya
 
 sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"6 Coasting Car\"/" < ../../lfcps-tutorial/CoastingCar.kyx >> tmp.kya
