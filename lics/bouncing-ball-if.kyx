@@ -42,4 +42,5 @@ Tactic "Bouncing Ball: automatic"
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
 End.

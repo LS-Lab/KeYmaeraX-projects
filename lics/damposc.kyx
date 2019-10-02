@@ -26,6 +26,7 @@ Tactic "Damped Oscillator: automatic"
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-damposc-evo2t-region.png".
 End.
 
 
@@ -61,4 +62,5 @@ Tactic "Increasingly Damped Oscillator: automatic"
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-damped-damped-osc-field-region.png".
 End.
