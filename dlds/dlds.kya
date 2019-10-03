@@ -528,6 +528,7 @@ Tactic "Push-around cart: Interactive Proof"
   )
 End.
 
+Illustration "https://lfcps.org/info/fig-push-around-cart.png".
 End.
        
 ArchiveEntry "Wall-E & Eve"
@@ -601,5 +602,6 @@ Tactic "Goalie in robot soccer: Proof 1"
   )
 End.
 
+Illustration "https://lfcps.org/info/fig-goalie.png".
 End.
        
