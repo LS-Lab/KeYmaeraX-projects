@@ -211,6 +211,7 @@ Tactic "Bouncing Ball: automatic"
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
 End.
 ArchiveEntry "Simple rotational dynamics"
 Description "Rotating points stay on circles".
@@ -259,6 +260,7 @@ Tactic "Damped Oscillator: automatic"
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-damposc-evo2t-region.png".
 End.
 
 
@@ -294,6 +296,7 @@ Tactic "Increasingly Damped Oscillator: automatic"
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-damped-damped-osc-field-region.png".
 End.
 ArchiveEntry "Exponential Decay: [x'=-x]x>0"
 
@@ -456,6 +459,7 @@ Tactic "Parachute: Automatic"
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-parachute.png".
 End.
        ArchiveEntry "Dual Filibuster Game"
 

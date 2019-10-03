@@ -42,6 +42,7 @@ Tactic "Bouncing Ball: automatic"
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
 End.
 ArchiveEntry "POPL: 2 Safely stopping car"
 Description "Cars don't run stop signs".
@@ -131,6 +132,7 @@ Problem
   ] !(x=ox & y=oy)
 End.
 
+Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
 End.
 ArchiveEntry "POPL: 3 Solution: CurveBot"
 Description "CurveBot: run a robot round the bend (with definitions)".
@@ -201,6 +203,7 @@ unfold ; loop("!(x=ox&y=oy)", 1) ; <(
   )
 End.
 
+Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
 End.
 Exercise "POPL: 4 Exercise: Bouncing ball"
 Description "Exercise: Bouncing Ball".
@@ -256,6 +259,7 @@ Tactic "Damped Oscillator: automatic"
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-damposc-evo2t-region.png".
 End.
 
 
@@ -291,6 +295,7 @@ Tactic "Increasingly Damped Oscillator: automatic"
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-damped-damped-osc-field-region.png".
 End.
 Exercise "POPL: 6 Exercise: Parachute"
 Description "Exercise: Safely deployed parachutes".
@@ -326,6 +331,7 @@ Problem
 ](x=0 -> v>=m)
 End.
 
+Illustration "https://lfcps.org/info/fig-parachute.png".
 End.
 ArchiveEntry "POPL: 6 Solution: Parachute"
 Description "Safely deployed parachutes have bounded velocities".
@@ -398,5 +404,6 @@ Tactic "Parachute: Automatic"
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-parachute.png".
 End.
        
