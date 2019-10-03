@@ -12,6 +12,8 @@ End.
 Tactic "Swirl invariant: Proof"
 master
 End.
+
+Illustration "https://lfcps.org/info/fig-invariant-swirl-example.png".
 End.
 
 ArchiveEntry "Swirl invariant circle"
@@ -28,6 +30,7 @@ End.
 Tactic "Swirl invariant circle: Proof"
 master
 End.
+Illustration "https://lfcps.org/info/fig-invariant-swirl-example.png".
 End.
 
 ArchiveEntry "Swirl invariant disc"
@@ -44,4 +47,5 @@ End.
 Tactic "Swirl invariant disc: Proof"
 master
 End.
+Illustration "https://lfcps.org/info/fig-invariant-swirl-example.png".
 End.

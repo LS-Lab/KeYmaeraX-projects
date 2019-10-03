@@ -67,4 +67,5 @@ unfold ; loop("!(x=ox&y=oy)", 1) ; <(
   )
 End.
 
+Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
 End.
