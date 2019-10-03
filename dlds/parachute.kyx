@@ -69,5 +69,6 @@ Tactic "Parachute: Automatic"
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-parachute.png".
 End.
        
