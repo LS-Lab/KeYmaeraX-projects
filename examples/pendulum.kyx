@@ -1,25 +1,25 @@
-﻿Theorem "pendulum does not oscillate too wildly (diff axiomatization)".
+﻿Theorem "pendulum does not oscillate too wildly (diff axiomatization)"
 
 Description "Model of a pendulum with simplified constants and with trigonometric functions differentially axiomatized by polynomials to aid in its analysis".
 
 Citation "Hassan K. Khalil. Nonlinear Systems. Example 1.2.1".
 
-Definitions.
-  R g   = (1).    /* accel. due to gravity */
-  R l   = (1).    /* length of pendulum */
-  R k   = (1).    /* resistive drag on pendulum */
-  R m   = (1).    /* mass of pendulum */
-  R err = (0.05).  /* error term*/
+Definitions
+  Real g   = (1);    /* accel; due to gravity */
+  Real l   = (1);    /* length of pendulum */
+  Real k   = (1);    /* resistive drag on pendulum */
+  Real m   = (1);    /* mass of pendulum */
+  Real err = (0.05); /* error term*/
 End.
 
-ProgramVariables.
-  R theta.    /* Angle of pendulum with vertical with range [-pi,pi], with 0 being the origin and pi being the inverted position */
-  R thetav.   /* Rate of change of the angle */
-  R sintheta. /* sin(theta) */
-  R costheta. /* cos(theta) */
+ProgramVariables
+  Real theta;    /* Angle of pendulum with vertical with range [-pi,pi], with 0 being the origin and pi being the inverted position */
+  Real thetav;   /* Rate of change of the angle */
+  Real sintheta; /* sin(theta) */
+  Real costheta; /* cos(theta) */
 End.
 
-Problem.
+Problem
 -1/2 < theta  & theta  < 1/2 &
 -1/2 < thetav & thetav < 1/2 &
 /*
@@ -36,15 +36,15 @@ costheta^2 + sintheta^2 = 1
 End.
 
 Tactic "pendulum does not oscillate too wildly (diff axiomatization): Proof"
-unfold ; dC({`costheta^2+sintheta^2=1`}, 1) ; <(
-  dC({`- 427/100-247*costheta/100+79*costheta^2/50+79*sintheta^2/50+123*thetav^2/100<=0`}, 1) ; <(
+unfold ; dC("costheta^2+sintheta^2=1", 1) ; <(
+  dC("- 427/100-247*costheta/100+79*costheta^2/50+79*sintheta^2/50+123*thetav^2/100<=0", 1) ; <(
     boxAnd(1) ; andR(1) ; <(
       boxAnd(1) ; andR(1) ; <(
-        dC({`- 113/50-583*costheta/100+61*costheta^2/20+189*costheta*sintheta/100+323*sintheta^2/100-189*theta/100+113*sintheta*thetav/50+137*thetav^2/50<=0`}, 1) ; <(
+        dC("- 113/50-583*costheta/100+61*costheta^2/20+189*costheta*sintheta/100+323*sintheta^2/100-189*theta/100+113*sintheta*thetav/50+137*thetav^2/50<=0", 1) ; <(
           dW(1) ; QE,
           ODE(1)
           ),
-        dC({`- 58/25-587*costheta/100+309*costheta^2/100-191*costheta*sintheta/100+82*sintheta^2/25+191*theta/100+57*sintheta*thetav/25+277*thetav^2/100<=0`}, 1) ; <(
+        dC("- 58/25-587*costheta/100+309*costheta^2/100-191*costheta*sintheta/100+82*sintheta^2/25+191*theta/100+57*sintheta*thetav/25+277*thetav^2/100<=0", 1) ; <(
           dW(1) ; QE,
           ODE(1)
           )

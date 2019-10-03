@@ -20,26 +20,26 @@ Problem
 End.
 
 Tactic "CurveBot: Proof"
-  implyR(1) ; loop({`!(x=ox&y=oy)`}, 1) ; <(
+  implyR(1) ; loop("!(x=ox&y=oy)", 1) ; <(
   QE,
   id,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
-    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dC({`v=-1*(y-old(y-v/-1))&w=1*(x-old(x+w/-1))`}, 1) ; <(
-      dC({`(x+w/-1-ox)^2+(y-v/-1-oy)^2!=v^2+w^2`}, 1) ; <(
+    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dC("v=-1*(y-old(y-v/-1))&w=1*(x-old(x+w/-1))", 1) ; <(
+      dC("(x+w/-1-ox)^2+(y-v/-1-oy)^2!=v^2+w^2", 1) ; <(
         dW(1) ; QE,
         dI(1)
         ),
       dI(1)
       ),
     choiceb(1) ; andR(1) ; <(
-      composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dC({`v=1*(y-old(y-v/1))&w=-1*(x-old(x+w/1))`}, 1) ; <(
-        dC({`(x+w/1-ox)^2+(y-v/1-oy)^2!=v^2+w^2`}, 1) ; <(
+      composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dC("v=1*(y-old(y-v/1))&w=-1*(x-old(x+w/1))", 1) ; <(
+        dC("(x+w/1-ox)^2+(y-v/1-oy)^2!=v^2+w^2", 1) ; <(
           dW(1) ; QE,
           dI(1)
           ),
         dI(1)
         ),
-      composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dG({`t'=1`}, {`!(x=ox&y=oy)`}, 1) ; existsR({`0`}, 1) ; dC({`v=old(v)&w=old(w)&x=old(x)+v*t&y=old(y)+w*t`}, 1) ; <(
+      composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dG("t'=1", "!(x=ox&y=oy)", 1) ; existsR("0", 1) ; dC("v=old(v)&w=old(w)&x=old(x)+v*t&y=old(y)+w*t", 1) ; <(
         dW(1) ; QE,
         dI(1)
         )

@@ -1,0 +1,21 @@
+﻿ArchiveEntry "Exponential Decay: [x'=-x]x>0"
+
+ProgramVariables
+  Real x;
+End.
+
+Problem
+  x>1 -> [{x'=-x}]x>0
+End.
+
+Tactic "Exponential Decay from tactic"
+  implyR(1) ; dG("y'=1/2*y", "x*y^2=1", 1) ; dI(1.0) ; QE
+End.
+ 
+Tactic "Exponential Decay: Automatic"
+  /* needs QE("Mathematica") */
+  master
+End.
+
+End.
+

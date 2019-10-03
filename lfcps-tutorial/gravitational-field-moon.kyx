@@ -27,4 +27,6 @@ End.
 Tactic "Moon gravitating around the Earth: Proof"
 master
 End.
+
+Illustration "https://lfcps.org/info/Moon.png".
 End.

@@ -1,33 +1,33 @@
 SharedDefinitions.
-  R ep(). /* Control cycle duration upper bound */
-  R b().  /* Braking force */
-  R A().  /* Maximum acceleration */
+  R ep. /* Control cycle duration upper bound */
+  R b.  /* Braking force */
+  R A.  /* Maximum acceleration */
 
-  B Assumptions(R v, R d) <-> ( v>=0 & d>=0 & b()>0 ).                                               /* Assumptions A */
+  B Assumptions(R v, R d) <-> ( v>=0 & d>=0 & b>0 ).                                               /* Assumptions A */
 
   B Controllable(R m, R z, R v, R d) <-> (                                            /* Controllability constraint C */
-    v^2-d^2 <= 2*b()*(m-z) & Assumptions(v,d)
+    v^2-d^2 <= 2*b*(m-z) & Assumptions(v,d)
   ).
 
   B M(R d, R do, R m, R mo) <-> (
-    do^2 - d^2 <= 2*b()*(m-mo) & do >= 0 & d >= 0
+    do^2 - d^2 <= 2*b*(m-mo) & do >= 0 & d >= 0
   ).
 
   /* Initial states */
   B initial(R m, R z, R v) <-> (
     v >= 0 &
     m-z >= stopDist(v) &         /* train has sufficient distance to the end of the movement authority to stop safely */
-    b()>0 &                                                                                     /* brakes are working */
-    A()>=0 &                                                                                     /* engine is working */
-    ep()>=0
+    b>0 &                                                                                     /* brakes are working */
+    A>=0 &                                                                                     /* engine is working */
+    ep>=0
   ).
 
   B safe(R m, R z, R v, R d) <-> (
     z >= m -> v <= d      /* train 'z' drives past end of movement authority 'm' only with appropriate speed 'v'<='d' */
   ).
 
-  R emOn()  = (1).
-  R emOff() = (0).
+  R emOn  = (1).
+  R emOff = (0).
 
   /* Program Definitions, Fig. 3 in
    * @see "Andre Platzer and Jan-David Quesel. European Train Control System: A case study in formal verification.
@@ -36,22 +36,22 @@ SharedDefinitions.
    */
 
   HP spd ::= {
-        ?v <= vdes; a:=*; ?-b()<=a&a<=A();
-     ++ ?v >= vdes; a:=*; ?-b()<=a&a<=0;
+        ?v <= vdes; a:=*; ?-b<=a&a<=A;
+     ++ ?v >= vdes; a:=*; ?-b<=a&a<=0;
   }.
 
   HP atp ::= {
-    if (m-z <= sb | em = emOn()) { a := -b(); }
+    if (m-z <= sb | em = emOn) { a := -b; }
   }.
 
   HP drive ::= {
     t := 0;                                                  /* reset control cycle timer */
-    {z'=v, v'=a, t'=1  & v >= 0 & t <= ep()}                 /* drive (not backwards v>=0)
+    {z'=v, v'=a, t'=1  & v >= 0 & t <= ep}                 /* drive (not backwards v>=0)
                                                                 for at most ep time (t<=ep) until next controller run */
   }.
 
   HP rbc ::= {
-       em := emOn();
+       em := emOn;
     ++ m :=*; d :=*; ?d > 0;
   }.
 End.
@@ -64,10 +64,10 @@ ArchiveEntry "ETCS Essentials".
  *                      41(2), pages 143-189, 2008."
  */
 Definitions.
-  R m().  /* End of movement authority (train must not drive past m) */
+  R m.  /* End of movement authority (train must not drive past m) */
 
-  R stopDist(R v) = (v^2/(2*b())).                     /* Train stopping distance from speed (.) with braking force b */
-  R accCompensation(R v) = (((A()/b()) + 1)*((A()/2)*ep()^2 + ep()*v)).     /* Distance to compensate speed increase. */
+  R stopDist(R v) = (v^2/(2*b)).                     /* Train stopping distance from speed (.) with braking force b */
+  R accCompensation(R v) = (((A/b) + 1)*((A/2)*ep^2 + ep*v)).     /* Distance to compensate speed increase. */
   R SB(R v)       = (stopDist(v) + accCompensation(v)).      /* Distance needed to stop safely when accelerating once */
 
   /* loop invariant: always maintain sufficient stopping distance */
@@ -75,8 +75,8 @@ Definitions.
 
   /* train controller */
   HP ctrl ::= {
-        ?m() - z <= SB(v); a := -b();    /* train protection: emergency brake when close to end of movement authority */
-     ++ ?m() - z >= SB(v); a :=  A();    /* free driving: accelerate when sufficient distance */
+        ?m - z <= SB(v); a := -b;    /* train protection: emergency brake when close to end of movement authority */
+     ++ ?m - z >= SB(v); a :=  A;    /* free driving: accelerate when sufficient distance */
   }.
 End.
 
@@ -93,13 +93,13 @@ End.
  * keeps the system safe (end up only in states where 'safe' is true).
  */
 Problem.
-initial(m(),z,v)  ->
+initial(m,z,v)  ->
     [
       {
         ctrl;
         drive;
-      }*@invariant(loopInv(m(),z,v))                       /* repeat, loop invariant documents system design property */
-    ] (z <= m())                        /* safety property: train 'z' never drives past end of movement authority 'm' */
+      }*@invariant(loopInv(m,z,v))                       /* repeat, loop invariant documents system design property */
+    ] (z <= m)                        /* safety property: train 'z' never drives past end of movement authority 'm' */
 End.
 
 Tactic "ETCS Essentials Automated Proof".
@@ -124,15 +124,15 @@ loopAuto('R) ; <(                                             /* prove loop by i
   QE,                                                         /* induction use case */
   unfold ; <(                                                 /* induction step, symbolically execute program until ODE */
     /* prove ODE in train protection branch (a=-b) */
-    diffInvariant({`t>=old(t)`}, 'R);                         /* intuition: time progresses */
-    diffInvariant({`v=old(v)-b()*t`}, 'R);                 /* intuition: new speed is old speed - decrease by braking */
-    diffInvariant({`z=old(z)+old(v)*t-b()/2*t^2`}, 'R)     /* intuition: new position is old position + distance
+    diffInvariant("t>=old(t)", 'R);                         /* intuition: time progresses */
+    diffInvariant("v=old(v)-b*t", 'R);                 /* intuition: new speed is old speed - decrease by braking */
+    diffInvariant("z=old(z)+old(v)*t-b/2*t^2", 'R)     /* intuition: new position is old position + distance
                                                                          travelled with mean speed */
     ,
     /* prove ODE in free driving branch (a=A) */
-    diffInvariant({`t>=old(t)`}, 'R);
-    diffInvariant({`v=old(v)+A*t`}, 'R);
-    diffInvariant({`z=old(z)+old(v)*t+A/2*t^2`}, 'R)
+    diffInvariant("t>=old(t)", 'R);
+    diffInvariant("v=old(v)+A*t", 'R);
+    diffInvariant("z=old(z)+old(v)*t+A/2*t^2", 'R)
   ) ; doall(dW('R) ; QE)                                   /* prove safety from just the differential invariants */
 )
 End.
@@ -147,15 +147,15 @@ ArchiveEntry "ETCS Essentials with Unconditional Train Protection".
  *                      41(2), pages 143-189, 2008."
  */
 Definitions.
-  R m().  /* End of movement authority (train must not drive past m) */
+  R m.  /* End of movement authority (train must not drive past m) */
 
   /* loop invariant: always maintain sufficient stopping distance */
-  B loopInv(R m, R z, R v) <-> (v >= 0 & 2*b()*(m-z) >= v*v).
+  B loopInv(R m, R z, R v) <-> (v >= 0 & 2*b*(m-z) >= v*v).
 
   /* train controller */
   HP ctrl ::= {
-        a := -b();                       /* train protection: emergency brake when close to end of movement authority */
-     ++ ?2*b()*(m() - z) >= v*v + (A()+b())*(A()*ep()*ep() + 2*ep()*v); a :=  A();    /* free driving: accelerate when sufficient distance */
+        a := -b;                       /* train protection: emergency brake when close to end of movement authority */
+     ++ ?2*b*(m - z) >= v*v + (A+b)*(A*ep*ep + 2*ep*v); a :=  A;    /* free driving: accelerate when sufficient distance */
   }.
 End.
 
@@ -173,36 +173,36 @@ End.
  */
 Problem.
     v >= 0 &
-    2*b()*(m()-z) >= v*v &
-    b()>0 &
-    A()>=0 &
-    ep()>=0
+    2*b*(m-z) >= v*v &
+    b>0 &
+    A>=0 &
+    ep>=0
 ->
     [
       {
         ctrl;
         drive;
-      }*@invariant(loopInv(m(),z,v))                       /* repeat, loop invariant documents system design property */
-    ] (z <= m())                        /* safety property: train 'z' never drives past end of movement authority 'm' */
+      }*@invariant(loopInv(m,z,v))                       /* repeat, loop invariant documents system design property */
+    ] (z <= m)                        /* safety property: train 'z' never drives past end of movement authority 'm' */
 End.
 
 Tactic "ETCS Essentials Proof with Differential Invariants".
 implyR('R);
 (andL('L)*);
-loop({`loopInv(m(),z,v)`},1) ; <(                             /* prove loop by induction with invariant loopInv */
+loop("loopInv(m,z,v)",1) ; <(                             /* prove loop by induction with invariant loopInv */
   prop,                                                       /* induction initial case */
   QE,                                                         /* induction use case */
   unfold ; <(                                                 /* induction step, symbolically execute program until ODE */
     /* prove ODE in train protection branch (a=-b) */
-    diffInvariant({`t>=old(t)`}, 'R);                         /* intuition: time progresses */
-    diffInvariant({`v=old(v)-b()*t`}, 'R);                 /* intuition: new speed is old speed - decrease by braking */
-    diffInvariant({`2*z=2*old(z)+2*old(v)*t-b()*t*t`}, 'R)     /* intuition: new position is old position + distance
+    diffInvariant("t>=old(t)", 'R);                         /* intuition: time progresses */
+    diffInvariant("v=old(v)-b*t", 'R);                 /* intuition: new speed is old speed - decrease by braking */
+    diffInvariant("2*z=2*old(z)+2*old(v)*t-b*t*t", 'R)     /* intuition: new position is old position + distance
                                                                          travelled with mean speed */
     ,
     /* prove ODE in free driving branch (a=A) */
-    diffInvariant({`t>=old(t)`}, 'R);
-    diffInvariant({`v=old(v)+A*t`}, 'R);
-    diffInvariant({`2*z=2*old(z)+2*old(v)*t+A*t*t`}, 'R)
+    diffInvariant("t>=old(t)", 'R);
+    diffInvariant("v=old(v)+A*t", 'R);
+    diffInvariant("2*z=2*old(z)+2*old(v)*t+A*t*t", 'R)
   ) ; doall(dW('R) ; QE)                                   /* prove safety from just the differential invariants */
 )
 End.
@@ -227,9 +227,9 @@ End.
 Problem.
   Assumptions(v,d) & z<=m
   ->
-  ( [ {z'=v, v'=-b() & v>=0 } ](z>=m -> v<=d)
+  ( [ {z'=v, v'=-b & v>=0 } ](z>=m -> v<=d)
     <->
-    v^2-d^2 <= 2*b()*(m-z)
+    v^2-d^2 <= 2*b*(m-z)
   )
 End.
 
@@ -297,9 +297,9 @@ ProgramVariables.
 End.
 
 Problem.
-  em = emOff()
+  em = emOff
 & d >= 0
-& b() > 0 ->
+& b > 0 ->
   [ do := d; mo := m;
 		rbc;
 	] (M(d,do,m,mo)
@@ -350,7 +350,7 @@ Tactic "Proposition 3 Analysis".
   chase(1.1.1.1.1);          /* symbolically execute <sb:=*;> */
   chase(1.1.1.1);            /* symbolically execute [spd;] */
   chase(1.1);                /* symbolically execute [mo:=m; do:=d; rbc;] */
-  print({`Symbolic Execution Result`})
+  print("Symbolic Execution Result")
   /* no proof expected, simplify sb */
   partial
 End.
@@ -380,15 +380,15 @@ ProgramVariables.
 End.
 
 Problem.
-em = 0 & d >= 0 & b() > 0 & ep() > 0 & A() > 0 & v>=0
-  -> ((\forall m \forall z (m-z>= sb & Controllable(m,z,v,d) -> [ a:=A(); drive; ]Controllable(m,z,v,d)) )
+em = 0 & d >= 0 & b > 0 & ep > 0 & A > 0 & v>=0
+  -> ((\forall m \forall z (m-z>= sb & Controllable(m,z,v,d) -> [ a:=A; drive; ]Controllable(m,z,v,d)) )
       <->
-      sb >= (v^2 - d^2) /(2*b()) + (A()/b() + 1) * (A()/2 * ep()^2 + ep()*v)
+      sb >= (v^2 - d^2) /(2*b) + (A/b + 1) * (A/2 * ep^2 + ep*v)
      )
 End.
 
 Tactic "Proof Proposition 4: Reactivity Constraint".
-  /* requires QE({`Mathematica`}) */
+  /* requires QE("Mathematica") */
   implyR(1); equivR(1); <(
     composeb(-2.0.0.1); composeb(-2.0.0.1.1); solve(-2.0.0.1.1.1); assignb(-2.0.0.1.1); assignb(-2.0.0.1); master,
     composeb(1.0.0.1); composeb(1.0.0.1.1); solve(1.0.0.1.1.1); master
@@ -408,8 +408,8 @@ Theorem "Proposition 5: Safety".
  * The following refinement is provable, too: SB := (v^2 - d^2)/(2*b) + (a/b+1)*(A/2*ep^2+ep*v);
  */
 Definitions.
-  R brakeDist(R v, R d) = ((v^2-d^2)/(2*b())).         /* Train stopping distance from speed (.) with braking force b */
-  R accCompensation(R v) = (((A()/b()) + 1)*((A()/2)*ep()^2 + ep()*v)).     /* Distance to compensate speed increase. */
+  R brakeDist(R v, R d) = ((v^2-d^2)/(2*b)).         /* Train stopping distance from speed (.) with braking force b */
+  R accCompensation(R v) = (((A/b) + 1)*((A/2)*ep^2 + ep*v)).     /* Distance to compensate speed increase. */
   R SB(R v, R d) = (brakeDist(v,d) + accCompensation(v)).   /* Distance needed to brake safely when accelerating once */
 
   B loopInv(R m, R z, R v, R d) <-> (m-z >= brakeDist(v,d) & d>=0).  /* loop invariant: maintain sufficient braking distance */
@@ -420,7 +420,7 @@ Definitions.
   }.
 
   HP rbcr ::= {
-       em := emOn();
+       em := emOn;
     ++ mo := m; m := *; vdes := *; ?vdes >= 0; do := d; d :=*; ?M(d,do,m,mo);
   }.
 End.
@@ -440,7 +440,7 @@ ProgramVariables.
 End.
 
 Problem.
-Controllable(m,z,v,d) & em = emOff() & A()>=0 & ep()>=0
+Controllable(m,z,v,d) & em = emOff & A>=0 & ep>=0
   ->
   [{
        rbcr;

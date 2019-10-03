@@ -23,7 +23,7 @@ Problem           /* differential dynamic logic formula */
 End.
 
 Tactic "LICS: 2 Single car drives forward: Clever Proof"
-implyR(1) ; loop({`v>=0`}, 1) ; <(
+implyR(1) ; loop("v>=0", 1) ; <(
   id,
   id,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
@@ -34,7 +34,7 @@ implyR(1) ; loop({`v>=0`}, 1) ; <(
 End.
 
 Tactic "LICS: 2 Single car drives forward: Interactive Proof"
-  implyR(1) ; loop({`v>=0`}, 1) ; <(
+  implyR(1) ; loop("v>=0", 1) ; <(
   id,
   id,
   composeb(1) ; choiceb(1) ; andR(1) ; <(

@@ -22,7 +22,7 @@ Problem
         {?(2*b*(m-x) >= v^2+(A+b)*(A*ep^2+2*ep*v)); a:=A; ++ a:=-b; }
         t := 0;
         {x'=v, v'=a, t'=1 & v>=0 & t<=ep}
-    }* /*@variant(x + (.)*ep()*old(v) >= p & v>=old(v))*/
+    }* /*@variant(x + (.)*ep*old(v) >= p & v>=old(v))*/
   > (x >= p)
 End.
 

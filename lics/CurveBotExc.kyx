@@ -26,4 +26,5 @@ Problem
   ] !(x=ox & y=oy)
 End.
 
+Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
 End.

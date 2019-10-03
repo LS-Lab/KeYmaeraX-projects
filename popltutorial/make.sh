@@ -10,11 +10,11 @@ cat > repls <<- EOM
 s/ArchiveEntry *".*"/ArchiveEntry "POPL: 5 Damped oscillator"/1
 s/ArchiveEntry *".*"/ArchiveEntry "POPL: 5 Increasingly damped oscillator"/2
 EOM
-sed -f repls < ../lics/damposc.kya >> tmp.kya
+sed -f repls < ../lics/damposc.kyx >> tmp.kya
 sed "s/Exercise *\".*\"/Exercise \"POPL: 6 Exercise: Parachute\"/" < ../dlds/parachuteExc.kyx >> tmp.kya
-sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"POPL: 6 Solution: Parachute\"/" < ../dlds/parachute.kya >> tmp.kya
+sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"POPL: 6 Solution: Parachute\"/" < ../dlds/parachute.kyx >> tmp.kya
 
-#cat ../lics/bouncing-ball.kya  ../lics/lics2-hybrid-forward.kya ../lics/lics4a-time-safe.kya ../lics/CurveBotDef.kya ../lics/rotational.kya ../lics/damposc.kya ../dlds/parachute.kya > tmp.kya 
+#cat ../lics/bouncing-ball.kya  ../lics/lics2-hybrid-forward.kya ../lics/lics4a-time-safe.kya ../lics/CurveBotDef.kya ../lics/rotational.kya ../lics/damposc.kyx ../dlds/parachute.kya > tmp.kya 
 perl -pe 's/\xEF\xBB\xBF//g' < tmp.kya > popltutorial.kyx
 rm tmp.kya
 rm repls

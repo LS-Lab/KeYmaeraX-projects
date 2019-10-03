@@ -18,13 +18,13 @@ https://doi.org/10.1007/978-3-319-06200-6_9
 
 */
 ProgramVariables
-  R x;
-  R y;
+  Real x;
+  Real y;
 End.
 
 Definitions
   /* parameter for sharpness */
-  R A = 0.001;
+  Real A = 0.001;
 End.
 
 Problem.

@@ -1,22 +1,24 @@
-Theorem "chemical oscillator (diff axiomatization)".
+/* Exported from KeYmaera X v4.7.2 */
+
+Theorem "chemical oscillator (diff axiomatization)"
 
 Description "Model of a chemical oscillator with simplified constants and with rational functions differentially axiomatized by polynomials to aid in its analysis".
 
 Citation "Hassan K. Khalil. Nonlinear Systems. Exercise 2.29 (b)".
 
-Definitions.
-  R a = (10). /* a,b are positive constants */
-  R b = (2).
+Definitions
+  Real a = (10); /* a,b are positive constants */
+  Real b = (2);
 End.
 
-ProgramVariables.
-  R x1. /* x1,x2 are dimensionless concentration of certain chemicals (see citation) */
-  R x2.
-  R xi. /* This variable uniquely tracks 1/(1+x1^2) along the ODE.
+ProgramVariables
+  Real x1. /* x1,x2 are dimensionless concentration of certain chemicals (see citation) */
+  Real x2.
+  Real xi. /* This variable uniquely tracks 1/(1+x1^2) along the ODE.
            It is used to write down a polynomial differential equation for x1,x2 */
 End.
 
-Problem.
+Problem
 (x1-2)^2 + (x2-5)^2 <= 1/4 &
 xi * (1+x1^2) = 1 ->
 [{ x1' = a - x1 - 4*x1*x2*xi, x2' = b*x1*(1-x2*xi), xi'= - xi^2 * (2*x1*(a - x1 - 4*x1*x2*xi)) }]
@@ -25,10 +27,20 @@ xi * (1+x1^2) = 1 ->
 (x2 >= 1)
 End.
 
-Tactic "chemical oscillator (diff axiomatization): Proof"
-unfold ; dC({`xi*(1+x1^2)=1`}, 1) ; <(
+Tactic "chemical oscillator (diff axiomatization): Proof (with Pegasus automation)"
+unfold ; dC("xi*(1+x1^2)=1", 1) ; <(
   ODE(1),
-  ODE(1) /* Pegasus generates this: (((x1>0&x2>0)&xi>0)&347+x1*(-47+29*x1+5*x2)+-6*x1*xi+7*xi^2 < x2*(312+x2)) */
+  ODE(1)
+  )
+End.
+
+Tactic "chemical oscillator (diff axiomatization): Proof (manual)"
+unfold ; dC("xi*(1+x1^2)=1", 1) ; <(
+  dC("((x1>0&x2>0)&xi>0)&347+x1*(-47+29*x1+5*x2)+-6*x1*xi+7*xi^2 < x2*(312+x2)", 1) ; <(
+    ODE(1),
+    odeInvC(1)
+    ),
+  ODE(1)
   )
 End.
 

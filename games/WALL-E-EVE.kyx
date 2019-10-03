@@ -18,14 +18,14 @@ Problem
 End.
 
 Tactic "Wall-E & Eve: Clever Proof"
-  implyR(1) ; dualDirectd(1) ; loop({`(w-e)^2<=1&v=f`}, 1) ; <(
+  implyR(1) ; dualDirectd(1) ; loop("(w-e)^2<=1&v=f", 1) ; <(
   prop ; done,
   dualDirectb(1) ; composed(1) ; dualDirectd(1) ; choiceb(1) ; andR(1) ; <(
-    assignb(1) ; composed(1) ; choiced(1) ; orR(1) ; hideR(2) ; assignd(1) ; composed(1) ; assignd(1) ; dualDirectd(1) ; dC({`v=f`}, 1) ; <(
+    assignb(1) ; composed(1) ; choiced(1) ; orR(1) ; hideR(2) ; assignd(1) ; composed(1) ; assignd(1) ; dualDirectd(1) ; dC("v=f", 1) ; <(
       dI(1),
       dI(1)
       ),
-    assignb(1) ; composed(1) ; choiced(1) ; orR(1) ; hideR(1) ; assignd(1) ; composed(1) ; assignd(1) ; dualDirectd(1) ; dC({`v=f`}, 1) ; <(
+    assignb(1) ; composed(1) ; choiced(1) ; orR(1) ; hideR(1) ; assignd(1) ; composed(1) ; assignd(1) ; dualDirectd(1) ; dC("v=f", 1) ; <(
       dI(1),
       dI(1)
       )
@@ -35,7 +35,7 @@ Tactic "Wall-E & Eve: Clever Proof"
 End.
        
 Tactic "Wall-E & Eve: Standard Proof"
-  implyR(1) ; dualDirectd(1) ; loop({`(w-e)^2<=1&v=f`}, 1) ; <(
+  implyR(1) ; dualDirectd(1) ; loop("(w-e)^2<=1&v=f", 1) ; <(
   prop ; done,
   dualDirectb(1) ; composed(1) ; dualDirectd(1) ; choiceb(1) ; andR(1) ; <(
     assignb(1) ; composed(1) ; choiced(1) ; orR(1) ; hideR(2) ; assignd(1) ; composed(1) ; assignd(1) ; dualDirectd(1) ; solve(1) ; QE,

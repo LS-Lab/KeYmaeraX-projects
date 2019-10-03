@@ -13,9 +13,9 @@ ProgramVariables  /* program variables may change their value over time */
 End.
 
 Problem
-    w()^2*x^2 + y^2 <= c()^2
+    w^2*x^2 + y^2 <= c^2
 ->
-  [{x'=y, y'=-w()^2*x-2*d()*w()*y & w()>=0 & d()>=0}]w()^2*x^2 + y^2 <= c()^2
+  [{x'=y, y'=-w^2*x-2*d*w*y & w>=0 & d>=0}]w^2*x^2 + y^2 <= c^2
 End.
 
 Tactic "Damped Oscillator: Differential invariant proof"
@@ -26,6 +26,7 @@ Tactic "Damped Oscillator: automatic"
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-damposc-evo2t-region.png".
 End.
 
 
@@ -44,14 +45,14 @@ ProgramVariables
 End.
 
 Problem.
-    w()^2*x^2 + y^2 <= c()^2
+    w^2*x^2 + y^2 <= c^2
   & d>=0
 ->
-  [{x'=y, y'=-w()^2*x-2*d*w()*y, d'=7 & w()>=0}]w()^2*x^2 + y^2 <= c()^2
+  [{x'=y, y'=-w^2*x-2*d*w*y, d'=7 & w>=0}]w^2*x^2 + y^2 <= c^2
 End.
 
 Tactic "Increasingly Damped Oscillator: Differential cut proof"
-  implyR(1) ; dC({`d>=0`}, 1) ; <(
+  implyR(1) ; dC("d>=0", 1) ; <(
     dI(1), 
     dI(1)
   )
@@ -61,4 +62,5 @@ Tactic "Increasingly Damped Oscillator: automatic"
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-damped-damped-osc-field-region.png".
 End.

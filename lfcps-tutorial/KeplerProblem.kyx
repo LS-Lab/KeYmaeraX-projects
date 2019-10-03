@@ -27,4 +27,6 @@ End.
 Tactic "Kepler two body: Proof"
 master
 End.
+
+Illustration "https://lfcps.org/info/Kepler.png".
 End.

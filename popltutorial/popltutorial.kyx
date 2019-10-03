@@ -24,10 +24,10 @@ Problem
 End.
 
 Tactic "Bouncing Ball: Clever Proof"
-implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
+implyR(1) ; loop("2*g*x<=2*g*H-v^2&x>=0", 1) ; <(
   QE,
   QE,
-  composeb(1) ; dC({`2*g()*x<=2*g()*H()-v^2`}, 1) ; <(
+  composeb(1) ; dC("2*g*x<=2*g*H-v^2", 1) ; <(
     dW(1) ; implyR(1) ; choiceb(1) ; andR(1) ; <(
       composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE,
       composeb(1) ; testb(1) ; implyR(1) ; testb(1) ; implyR(1) ; prop ; done
@@ -38,9 +38,11 @@ implyR(1) ; loop({`2*g()*x<=2*g()*H()-v^2&x>=0`}, 1) ; <(
 End.
 
 Tactic "Bouncing Ball: automatic"
+  /* needs QE("Mathematica") */
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
 End.
 ArchiveEntry "POPL: 2 Safely stopping car"
 Description "Cars don't run stop signs".
@@ -71,13 +73,13 @@ Problem           /* differential dynamic logic formula */
 End.
 
 Tactic "Safety of time-triggered car: Clever Proof"
-implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
+implyR(1) ; loop("v^2<=2*b*(m-x)", 1) ; <(
   id,
   QE,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
     assignb(1) ; composeb(1) ; assignb(1) ; dI(1)
     ,
-    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; composeb(1) ; assignb(1) ; dC({`2*b()*(m-x)>=v^2+(A()+b())*(A()*(ep()-t)^2+2*(ep()-t)*v)`}, 1) ; <(
+    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; composeb(1) ; assignb(1) ; dC("2*b*(m-x)>=v^2+(A+b)*(A*(ep-t)^2+2*(ep-t)*v)", 1) ; <(
       dW(1) ; QE,
       dI(1)
       )
@@ -86,7 +88,7 @@ implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
 End.
 
 Tactic "Safety of time-triggered car: Interactive Proof"
-  implyR(1) ; loop({`v^2<=2*b()*(m-x)`}, 1) ; <(
+  implyR(1) ; loop("v^2<=2*b*(m-x)", 1) ; <(
   QE,
   QE,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
@@ -103,7 +105,7 @@ End.
 
 End.
 Exercise "POPL: 3 Exercise: CurveBot"
-Description "Exercise: CurveBot: run a robot round the bend".
+Description "CurveBot: run a robot round the bend".
 
 ProgramVariables
   Real x, y;    /* robot x/y position */
@@ -130,6 +132,7 @@ Problem
   ] !(x=ox & y=oy)
 End.
 
+Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
 End.
 ArchiveEntry "POPL: 3 Solution: CurveBot"
 Description "CurveBot: run a robot round the bend (with definitions)".
@@ -160,26 +163,26 @@ Problem
 End.
 
 Tactic "CurveBot: Proof"
-  implyR(1) ; loop({`!(x=ox&y=oy)`}, 1) ; <(
+  implyR(1) ; loop("!(x=ox&y=oy)", 1) ; <(
   QE,
   id,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
-    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dC({`v=-1*(y-old(y-v/-1))&w=1*(x-old(x+w/-1))`}, 1) ; <(
-      dC({`(x+w/-1-ox)^2+(y-v/-1-oy)^2!=v^2+w^2`}, 1) ; <(
+    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dC("v=-1*(y-old(y-v/-1))&w=1*(x-old(x+w/-1))", 1) ; <(
+      dC("(x+w/-1-ox)^2+(y-v/-1-oy)^2!=v^2+w^2", 1) ; <(
         dW(1) ; QE,
         dI(1)
         ),
       dI(1)
       ),
     choiceb(1) ; andR(1) ; <(
-      composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dC({`v=1*(y-old(y-v/1))&w=-1*(x-old(x+w/1))`}, 1) ; <(
-        dC({`(x+w/1-ox)^2+(y-v/1-oy)^2!=v^2+w^2`}, 1) ; <(
+      composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dC("v=1*(y-old(y-v/1))&w=-1*(x-old(x+w/1))", 1) ; <(
+        dC("(x+w/1-ox)^2+(y-v/1-oy)^2!=v^2+w^2", 1) ; <(
           dW(1) ; QE,
           dI(1)
           ),
         dI(1)
         ),
-      composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dG({`t'=1`}, {`!(x=ox&y=oy)`}, 1) ; existsR({`0`}, 1) ; dC({`v=old(v)&w=old(w)&x=old(x)+v*t&y=old(y)+w*t`}, 1) ; <(
+      composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dG("t'=1", "!(x=ox&y=oy)", 1) ; existsR("0", 1) ; dC("v=old(v)&w=old(w)&x=old(x)+v*t&y=old(y)+w*t", 1) ; <(
         dW(1) ; QE,
         dI(1)
         )
@@ -193,13 +196,14 @@ Tactic "CurveBot: automatic"
 End.
 
 Tactic "CurveBot: unfold"
-unfold ; loop({`!(x=ox&y=oy)`}, 1) ; <(
+unfold ; loop("!(x=ox&y=oy)", 1) ; <(
   QE,
   QE,
   unfold ; doall(ODE(1))
   )
 End.
 
+Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
 End.
 Exercise "POPL: 4 Exercise: Bouncing ball"
 Description "Exercise: Bouncing Ball".
@@ -226,6 +230,7 @@ Problem
   ] (x>=0 & x<=H)
 End.
 
+Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
 End.
 ArchiveEntry "POPL: 5 Damped oscillator"
 Description "Damped oscillators stay in ellipses".
@@ -242,9 +247,9 @@ ProgramVariables  /* program variables may change their value over time */
 End.
 
 Problem
-    w()^2*x^2 + y^2 <= c()^2
+    w^2*x^2 + y^2 <= c^2
 ->
-  [{x'=y, y'=-w()^2*x-2*d()*w()*y & w()>=0 & d()>=0}]w()^2*x^2 + y^2 <= c()^2
+  [{x'=y, y'=-w^2*x-2*d*w*y & w>=0 & d>=0}]w^2*x^2 + y^2 <= c^2
 End.
 
 Tactic "Damped Oscillator: Differential invariant proof"
@@ -255,6 +260,7 @@ Tactic "Damped Oscillator: automatic"
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-damposc-evo2t-region.png".
 End.
 
 
@@ -273,14 +279,14 @@ ProgramVariables
 End.
 
 Problem.
-    w()^2*x^2 + y^2 <= c()^2
+    w^2*x^2 + y^2 <= c^2
   & d>=0
 ->
-  [{x'=y, y'=-w()^2*x-2*d*w()*y, d'=7 & w()>=0}]w()^2*x^2 + y^2 <= c()^2
+  [{x'=y, y'=-w^2*x-2*d*w*y, d'=7 & w>=0}]w^2*x^2 + y^2 <= c^2
 End.
 
 Tactic "Increasingly Damped Oscillator: Differential cut proof"
-  implyR(1) ; dC({`d>=0`}, 1) ; <(
+  implyR(1) ; dC("d>=0", 1) ; <(
     dI(1), 
     dI(1)
   )
@@ -290,6 +296,7 @@ Tactic "Increasingly Damped Oscillator: automatic"
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-damped-damped-osc-field-region.png".
 End.
 Exercise "POPL: 6 Exercise: Parachute"
 Description "Exercise: Safely deployed parachutes".
@@ -310,21 +317,22 @@ ProgramVariables
 End.
 
 Problem
-  g()>0 & p()>a() & a()>0 & T()>0 & m()< -(g()/p())^(1/2) &
-  x>=0 & v<0 & v> -(g()/p())^(1/2) & r=a()
+  g>0 & p>a & a>0 & T>0 & m< -(g/p)^(1/2) &
+  x>=0 & v<0 & v> -(g/p)^(1/2) & r=a
 ->
 [ {
     {
-      ?(v - g()*T() > -(g()/p())^(1/2) & r = a());
+      ?(v - g*T > -(g/p)^(1/2) & r = a);
       ++
-      r := p();
+      r := p;
     }
     t := 0;
-    {x'=v, v'=-g()+r*v^2, t'=1 & t<=T() & x>=0 & v<0}
+    {x'=v, v'=-g+r*v^2, t'=1 & t<=T & x>=0 & v<0}
   }* @invariant(__________)
-](x=0 -> v>=m())
+](x=0 -> v>=m)
 End.
 
+Illustration "https://lfcps.org/info/fig-parachute.png".
 End.
 ArchiveEntry "POPL: 6 Solution: Parachute"
 Description "Safely deployed parachutes have bounded velocities".
@@ -345,45 +353,45 @@ ProgramVariables
 End.
 
 Problem
-  g()>0 & p()>a() & a()>0 & T()>0 & m()< -(g()/p())^(1/2) &
-  x>=0 & v<0 & v> -(g()/p())^(1/2) & r=a()
+  g>0 & p>a & a>0 & T>0 & m< -(g/p)^(1/2) &
+  x>=0 & v<0 & v> -(g/p)^(1/2) & r=a
 ->
 [ {
     {
-      ?(v - g()*T() > -(g()/p())^(1/2) & r = a());
+      ?(v - g*T > -(g/p)^(1/2) & r = a);
       ++
-      r := p();
+      r := p;
     }
     t := 0;
-    {{x'=v, v'=-g()+r*v^2, t'=1 & t<=T() & x>=0 & v<0}@invariant(v-g()*(T()-t)>-(g()/p())^(1/2))}
-  }* @invariant((x>=0 & v<0) & v>-(g()/p())^(1/2))
-](x=0 -> v>=m())
+    {{x'=v, v'=-g+r*v^2, t'=1 & t<=T & x>=0 & v<0}@invariant(v-g*(T-t)>-(g/p)^(1/2))}
+  }* @invariant((x>=0 & v<0) & v>-(g/p)^(1/2))
+](x=0 -> v>=m)
 End.
 
 Tactic "Parachute: Proof 1"
-  implyR(1) ; loop({`(x>=0&v < 0)&v>-(g()/p())^(1/2)`}, 1) ; <(
+  implyR(1) ; loop("(x>=0&v < 0)&v>-(g/p)^(1/2)", 1) ; <(
   QE,
   QE,
   boxAnd(1) ; andR(1) ; <(
     master,
     unfold ; <(
-      dC({`v>=old(v)-g()*t`}, 1) ; <(
+      dC("v>=old(v)-g*t", 1) ; <(
         dW(1) ; QE,
         dI(1)
         ),
-      dG({`y'=(-1/2*p()*(v-(g()/p())^(1/2)))*y`}, {`y^2*(v+(g()/p())^(1/2))=1`}, 1) ; dI(1.0) ; QE
+      dG("y'=(-1/2*p*(v-(g/p)^(1/2)))*y", "y^2*(v+(g/p)^(1/2))=1", 1) ; dI(1.0) ; QE
       )
     )
   )
 End.
 
 Tactic "Parachute: Invariants+Automation"
-/* requires QE({`Mathematica`}) */
-implyR(1) ; loop({`(x>=0&v < 0)&v>-(g()/p())^(1/2)`}, 1) ; <(
+/* requires QE("Mathematica") */
+implyR(1) ; loop("(x>=0&v < 0)&v>-(g/p)^(1/2)", 1) ; <(
   QE,
   QE,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
-    testb(1) ; implyR(1) ; andL(-7) ; composeb(1) ; assignb(1) ; dC({`v-g()*(T()-t)>-(g()/p())^(1/2)`}, 1) ; <(
+    testb(1) ; implyR(1) ; andL(-7) ; composeb(1) ; assignb(1) ; dC("v-g*(T-t)>-(g/p)^(1/2)", 1) ; <(
       ODE(1),
       ODE(1)
       ),
@@ -393,9 +401,10 @@ implyR(1) ; loop({`(x>=0&v < 0)&v>-(g()/p())^(1/2)`}, 1) ; <(
 End.
 
 Tactic "Parachute: Automatic"
-/* requires QE({`Mathematica`}) */
+  /* requires QE("Mathematica") */
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-parachute.png".
 End.
        
