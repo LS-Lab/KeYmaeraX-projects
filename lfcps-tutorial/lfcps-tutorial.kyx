@@ -42,6 +42,7 @@ Tactic "Bouncing Ball: automatic"
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
 End.
 ArchiveEntry "2 Coasting Car"
 Description "Coasting cars can stop".
@@ -202,6 +203,7 @@ Problem
   ] !(x=ox & y=oy)
 End.
 
+Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
 End.
 Exercise "5 Exercise: Modeling two cars"
 Description "Control one car to safely follow another".
@@ -269,6 +271,7 @@ Tactic "Damped Oscillator: automatic"
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-damposc-evo2t-region.png".
 End.
 
 
@@ -304,6 +307,7 @@ Tactic "Increasingly Damped Oscillator: automatic"
   master
 End.
 
+Illustration "https://lfcps.org/info/fig-damped-damped-osc-field-region.png".
 End.
 ArchiveEntry "7 Swirl invariant"
 Description "LICS'18 hourglass swirl".
@@ -319,6 +323,8 @@ End.
 Tactic "Swirl invariant: Proof"
 master
 End.
+
+Illustration "https://lfcps.org/info/fig-invariant-swirl-example.png".
 End.
 
 ArchiveEntry "7 Swirl invariant circle"
@@ -335,6 +341,7 @@ End.
 Tactic "Swirl invariant circle: Proof"
 master
 End.
+Illustration "https://lfcps.org/info/fig-invariant-swirl-example.png".
 End.
 
 ArchiveEntry "7 Swirl invariant disc"
@@ -351,6 +358,7 @@ End.
 Tactic "Swirl invariant disc: Proof"
 master
 End.
+Illustration "https://lfcps.org/info/fig-invariant-swirl-example.png".
 End.
 ArchiveEntry "8 Parachute simplified"
 Description "Simplified parachute with air drag only for parachute".
@@ -454,6 +462,8 @@ End.
 Tactic "Kepler two body: Proof"
 master
 End.
+
+Illustration "https://lfcps.org/info/Kepler.png".
 End.
 Exercise "9 Exercise: Moon around Earth"
 Description "Moon of mass m flying in gravitational force field around Earth of mass M at origin".
