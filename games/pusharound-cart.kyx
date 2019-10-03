@@ -46,5 +46,6 @@ Tactic "Push-around cart: Interactive Proof"
   )
 End.
 
+Illustration "https://lfcps.org/info/fig-push-around-cart.png".
 End.
        

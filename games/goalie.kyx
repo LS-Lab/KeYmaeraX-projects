@@ -20,5 +20,6 @@ Tactic "Goalie in robot soccer: Proof 1"
   )
 End.
 
+Illustration "https://lfcps.org/info/fig-goalie.png".
 End.
        
