@@ -230,6 +230,7 @@ Problem
   ] (x>=0 & x<=H)
 End.
 
+Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
 End.
 ArchiveEntry "POPL: 5 Damped oscillator"
 Description "Damped oscillators stay in ellipses".
