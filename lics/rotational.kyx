@@ -1,0 +1,19 @@
+﻿ArchiveEntry "Simple rotational dynamics"
+Description "Rotating points stay on circles".
+
+ProgramVariables
+  Real v;  /* direction in x-axis */
+  Real w;  /* direction in y-axis */
+  Real r;  /* radius r of circle around origin */
+End.
+
+Problem
+  v^2+w^2-r^2=0 -> 
+    [{v'=w,w'=-v}@invariant(v^2+w^2-r^2=0)] v^2+w^2-r^2=0
+End.
+
+Tactic "10: Simple rotational dynamics: Proof 1"
+  implyR(1) ; dI(1)
+End.
+
+End.

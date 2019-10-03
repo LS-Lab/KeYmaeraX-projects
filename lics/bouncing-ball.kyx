@@ -1,0 +1,78 @@
+ArchiveEntry "Bouncing Ball"
+Description "Acrophobic Bouncing Ball".
+
+Definitions       /* function symbols cannot change their value */
+  Real H;         /* initial height */
+  Real g;         /* gravity */
+  Real c;         /* damping coefficient */
+End.
+
+ProgramVariables  /* program variables may change their value over time */
+  Real x, v;      /* height and vertical velocity */
+End.
+
+Problem
+  x>=0 & x=H
+  & v=0 & g>0 & 1>=c&c>=0
+ ->
+  [
+    {
+      {x'=v,v'=-g&x>=0}
+      {?x=0; v:=-c*v;  ++  ?x!=0;}
+    }* @invariant(2*g*x<=2*g*H-v^2 & x>=0)
+  ] (x>=0 & x<=H)
+End.
+
+Tactic "Bouncing Ball: Clever Proof"
+implyR(1) ; loop("2*g*x<=2*g*H-v^2&x>=0", 1) ; <(
+  QE,
+  QE,
+  composeb(1) ; dC("2*g*x<=2*g*H-v^2", 1) ; <(
+    dW(1) ; implyR(1) ; choiceb(1) ; andR(1) ; <(
+      composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE,
+      testb(1) ; implyR(1) ; prop ; done
+      ),
+    dI(1)
+    )
+  )
+End.
+
+Tactic "Bouncing Ball: generalizing as in book"
+  implyR(1) ; loop("2*g*x<=2*g*H-v^2&x>=0", 1) ; <(
+QE, 
+QE, 
+composeb(1) ; MR("2*g*x<=2*g*H-v^2&x>=0&1>=c&c>=0&g>0", 1) ; <(
+solveEnd(1) ; QE,
+  choiceb(1) ; andR(1) ; <(
+  composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE, 
+    testb(1) ; prop
+  )
+)
+)
+End.
+       
+Tactic "Bouncing Ball: top-level"
+  implyR(1) ; loop("2*g*x<=2*g*H-v^2&x>=0", 1) ; <(
+QE, 
+QE, 
+composeb(1) ; solve(1) ; allR(1) ; implyR(1) ; implyR(1) ; allL("t_", -6) ; allR(1) ; implyR(1) ; choiceb(1) ; andR(1) ; <(
+composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE, 
+  testb(1) ; implyR(1) ; QE
+)
+)
+End.
+
+Tactic "Bouncing Ball: in-place proof"
+  implyR(1) ; loop("2*g*x<=2*g*H-v^2&x>=0", 1) ; <(
+QE, 
+QE, 
+composeb(1) ; choiceb(1.1) ; composeb(1.1.0) ; testb(1.1.0) ; assignb(1.1.0.1) ; testb(1.1.1) ; solveEnd(1) ; QE
+)
+End.
+       
+Tactic "Bouncing Ball: automatic"
+  master
+End.
+
+Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
+End.
