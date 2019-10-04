@@ -417,7 +417,7 @@ implyR(1) ; loop("(x>=0&v < 0)&v>-(g/p)^(1/2)", 1) ; <(
   QE,
   QE,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
-    testb(1) ; implyR(1) ; andL(-7) ; composeb(1) ; assignb(1) ; dC("v-g*(T-t)>-(g/p)^(1/2)", 1) ; <(
+    testb(1) ; implyR(1) ; andL(-6) ; composeb(1) ; assignb(1) ; dC("v-g*(T-t)>-(g/p)^(1/2)", 1) ; <(
       ODE(1),
       ODE(1)
       ),
@@ -457,10 +457,12 @@ Problem
 End.
 
 Tactic "Kepler two body: Proof"
+/* requires QE("Mathematica") */
 implyR(1) ; dI(1)
 End.
 
 Tactic "Kepler two body: Proof"
+/* requires QE("Mathematica") */
 master
 End.
 
