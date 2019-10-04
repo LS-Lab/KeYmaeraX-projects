@@ -22,15 +22,15 @@ ProgramVariables
 End.
 
 Problem
-  D()>=0 & initRC(d,d0) -> [{ deltaRC; ctrlRC; plantRC; inRC; cpRC; }*]safeRC(d,d0)
+  D()>=0 & initRC(d,d0) -> [{ deltaRC; ctrlRC; plantRC; inRC; cpRC; }*@invariant(safeRC(d,d0))]safeRC(d,d0)
 End.
 
 Tactic "Proof Remote Control Contract Compliance (Create Lemmas)"
   implyR(1);
-  loop({`safeRC(d,d0)`},1); <(
-    master; done({`RC base case done`}, {`user/robotcomponents/Remote Control Base Case`}),
-    master; done({`RC use case done`}, {`user/robotcomponents/Remote Control Use Case`}),
-    master; done({`RC step done`}, {`user/robotcomponents/Remote Control Step`})
+  loop("safeRC(d,d0)",1); <(
+    master; done("RC base case done", "user/robotcomponents/Remote Control Base Case"),
+    master; done("RC use case done", "user/robotcomponents/Remote Control Use Case"),
+    master; done("RC step done", "user/robotcomponents/Remote Control Step")
   )
 End.
 
@@ -67,10 +67,10 @@ End.
 
 Tactic "Proof Obstacle Contract Compliance (Create Lemmas)"
   implyR(1);
-  loop({`safeobs(po,po0,t,t0)`},1); <(
-    master; done({`Obstacle base case done`}, {`user/robotcomponents/Obstacle Base Case`}),
-    master; done({`Obstacle use case done`}, {`user/robotcomponents/Obstacle Use Case`}),
-    master; done({`Obstacle step done`}, {`user/robotcomponents/Obstacle Step`})
+  loop("safeobs(po,po0,t,t0)",1); <(
+    master; done("Obstacle base case done", "user/robotcomponents/Obstacle Base Case"),
+    master; done("Obstacle use case done", "user/robotcomponents/Obstacle Use Case"),
+    master; done("Obstacle step done", "user/robotcomponents/Obstacle Step")
   )
 End.
 
@@ -118,10 +118,10 @@ End.
 
 Tactic "Proof Robot Contract Compliance (Create Lemmas)"
   implyR(1);
-  loop({`saferobot(sr,por,pr)`},1); <(
-    master; done({`Robot base case done`}, {`user/robotcomponents/Robot Base Case`}),
-    master; done({`Robot use case done`}, {`user/robotcomponents/Robot Use Case`}),
-    master; done({`Robot step done`}, {`user/robotcomponents/Robot Step`})
+  loop("saferobot(sr,por,pr)",1); <(
+    master; done("Robot base case done", "user/robotcomponents/Robot Base Case"),
+    master; done("Robot use case done", "user/robotcomponents/Robot Use Case"),
+    master; done("Robot step done", "user/robotcomponents/Robot Step")
   )
 End.
 
@@ -152,7 +152,7 @@ Problem
 End.
 
 Tactic "Proof Compatibility of Obstacle and Robot"
-  master & done({`Compatibility`}, {`user/robotcomponents/Compatibility of Obstacle and Robot`})
+  master & done("Compatibility", "user/robotcomponents/Compatibility of Obstacle and Robot")
 End.
 
 End.
@@ -174,7 +174,7 @@ Problem
 End.
 
 Tactic "Proof Communication Guarantee Safety"
-  master; done({`Communication guarantee safety`}, {`user/robotcomponents/Communication Guarantee Safety`})
+  master; done("Communication guarantee safety", "user/robotcomponents/Communication Guarantee Safety")
 End.
 
 End.
@@ -195,7 +195,7 @@ Problem
 End.
 
 Tactic "Proof Communication Guarantee Liveness"
-  master & done({`Communication guarantee liveness`},{`user/robotcomponents/Communication Guarantee Liveness`})
+  master; done("Communication guarantee liveness", "user/robotcomponents/Communication Guarantee Liveness")
 End.
 
 End.
@@ -254,11 +254,11 @@ End.
 
 Tactic "System Proof from Component Proofs"
   proveComponentSystem(
-    {`robotcomponents/Robot Obstacle`},
-    {`robotcomponents/Robot Base Case`}, {`robotcomponents/Robot Use Case`}, {`robotcomponents/Robot Step`},
-    {`robotcomponents/Obstacle Base Case`}, {`robotcomponents/Obstacle Use Case`}, {`robotcomponents/Obstacle Step`},
-    {`robotcomponents/Compatibility of Obstacle and Robot`},
-    {`robotcomponents/Communication Guarantee Safety`}, {`robotcomponents/Communication Guarantee Liveness`}, 1)
+    "robotcomponents/Robot Obstacle",
+    "robotcomponents/Robot Base Case", "robotcomponents/Robot Use Case", "robotcomponents/Robot Step",
+    "robotcomponents/Obstacle Base Case", "robotcomponents/Obstacle Use Case", "robotcomponents/Obstacle Step",
+    "robotcomponents/Compatibility of Obstacle and Robot",
+    "robotcomponents/Communication Guarantee Safety", "robotcomponents/Communication Guarantee Liveness", 1)
 End.
 
 End.
