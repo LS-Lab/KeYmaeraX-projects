@@ -50,7 +50,7 @@ SharedDefinitions
   Bool OA2ESabstraction(Real por, Real po) <-> po=por;
 End.
 
-Lemma "8 Cruise Control Contract Compliance"
+ArchiveEntry "01 Cruise Control Contract Compliance"
 
 ProgramVariables
   Real d, d0;
@@ -77,7 +77,7 @@ End.
 
 End.
 
-Lemma "9 Obstacle Contract Compliance"
+ArchiveEntry "02 Obstacle Contract Compliance"
 
 ProgramVariables
   Real po, po0;
@@ -106,7 +106,7 @@ End.
 
 End.
 
-Lemma "10 Emergency Braking Contract Compliance"
+ArchiveEntry "03 Emergency Braking Contract Compliance"
 
 ProgramVariables
   Real por, por0;
@@ -137,7 +137,7 @@ End.
 
 End.
 
-Lemma "11 Compatibility of Obstacle and Emergency Braking"
+ArchiveEntry "04 Compatibility of Obstacle and Emergency Braking"
 
 ProgramVariables
   Real po, po0;
@@ -157,7 +157,7 @@ End.
 
 End.
 
-Lemma "12 Communication Guarantee"
+ArchiveEntry "05 Communication Guarantee"
 
 ProgramVariables
   Real por;
@@ -178,7 +178,7 @@ End.
 
 End.
 
-Theorem "13 Emergency Braking System Avoids Obstacles"
+Theorem "06 Emergency Braking System Avoids Obstacles"
 
 Description "Parallel composition of emergency braking system and obstacle".
 

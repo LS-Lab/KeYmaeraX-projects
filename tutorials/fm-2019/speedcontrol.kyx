@@ -1,4 +1,4 @@
-Exercise "01 Exercise: Speed Control Loop Invariant"
+ArchiveEntry "01 Exercise: Speed Control Loop Invariant"
 Description "Find a Loop Invariant for Braking".
 
 Definitions       /* function symbols cannot change their value */
@@ -68,7 +68,7 @@ End.
 
 End.
 
-Exercise "03 Exercise: Speed Control Coasting Condition"
+ArchiveEntry "03 Exercise: Speed Control Coasting Condition"
 Description "Find a Control Condition for Coasting".
 
 Definitions       /* function symbols cannot change their value */
@@ -150,7 +150,7 @@ End.
 
 End.
 
-Exercise "05 Exercise: Accelerating Car"
+ArchiveEntry "05 Exercise: Accelerating Car"
 Description "Find a Control Condition for Accelerating".
 
 Definitions       /* function symbols cannot change their value */

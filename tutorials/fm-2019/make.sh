@@ -15,6 +15,8 @@ sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"6 Coasting Car\"/" < ../../lfcps-tuto
 sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"7 Exercise: Accelerating Car\"/" < ../../lfcps-tutorial/carExc.kyx >> tmp.kya
 sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"7 Solution: Accelerating Car\"/" < ../../popltutorial/time-safe.kyx >> tmp.kya
 
+sed "s/ArchiveEntry *\"\(.*\)\"/ArchiveEntry \"8 \1\"/" < speedcontrol.kyx >> tmp.kya
+
 perl -pe 's/\xEF\xBB\xBF//g' < tmp.kya > fm-2019-tutorial.kyx
 rm tmp.kya
 rm repls
