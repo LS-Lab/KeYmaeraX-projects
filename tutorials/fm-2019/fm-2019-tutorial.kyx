@@ -285,10 +285,12 @@ Problem
 End.
 
 Tactic "Kepler two body: Proof"
+/* requires QE("Mathematica") */
 implyR(1) ; dI(1)
 End.
 
 Tactic "Kepler two body: Proof"
+/* requires QE("Mathematica") */
 master
 End.
 
@@ -422,6 +424,279 @@ End.
        
 Tactic "Safety of time-triggered car: Automatic"
   master
+End.
+
+End.
+ArchiveEntry "8 01 Exercise: Speed Control Loop Invariant"
+Description "Find a Loop Invariant for Braking".
+
+Definitions       /* function symbols cannot change their value */
+  Real D;         /* speed limit sign position */
+  Real S;         /* posted speed limit */
+  Real B;         /* brakes */
+  Real ep;
+  Real A;
+End.
+
+ProgramVariables  /* program variables may change their value over time */
+  Real x, v, a;   /* car position, speed, and acceleration */
+  Real t;         /* time */
+End.
+
+Problem
+  x<=D & S>=0 & B>0 & __________
+ ->
+  [
+    {
+      { a := -B; }
+      {x'=v, v'=a & v>=0}
+    }*@invariant(__________)
+  ](x>=D -> v<=S)
+End.
+
+Tactic "Speed Control: Explore"
+  explore
+End.
+
+Tactic "Speed Control: Solution"
+  implyR(1) ; loop("v^2-S^2<=2*B*(D-x)", 1) ; doall(master)
+End.
+
+End.
+
+ArchiveEntry "8 02 Solution: Speed Control Loop Invariant"
+Description "Find a Loop Invariant for Braking".
+
+Definitions       /* function symbols cannot change their value */
+  Real D;         /* speed limit sign position */
+  Real S;         /* posted speed limit */
+  Real B;         /* brakes */
+  Real ep;
+  Real A;
+End.
+
+ProgramVariables  /* program variables may change their value over time */
+  Real x, v, a;   /* car position, speed, and acceleration */
+  Real t;         /* time */
+End.
+
+Problem
+  x<=D & S>=0 & B>0 & v^2-S^2<=2*B*(D-x)
+ ->
+  [
+    {
+      { a := -B; }
+      {x'=v, v'=a & v>=0}
+    }*@invariant(v^2-S^2<=2*B*(D-x))
+  ](x>=D -> v<=S)
+End.
+
+Tactic "Speed Control: Solution Automatic Proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "8 03 Exercise: Speed Control Coasting Condition"
+Description "Find a Control Condition for Coasting".
+
+Definitions       /* function symbols cannot change their value */
+  Real D;         /* speed limit sign position */
+  Real S;         /* posted speed limit */
+  Real B;         /* brakes */
+  Real ep;        /* reaction time */
+  Real A;
+End.
+
+ProgramVariables  /* program variables may change their value over time */
+  Real x, v, a;   /* car position, speed, and acceleration */
+  Real t;         /* time */
+End.
+
+Problem
+  x<=S & S>=0 &B>0 & v^2-S^2<=2*B*(D-x) & ep>0
+ ->
+  [
+    {
+      {   a := -B;
+       ++ ?v^2-S^2<=2*B*(D-x-__________); a:=0; }
+      t:=0;
+      {x'=v, v'=a, t'=1 & v>=0 & t<=ep}
+    }*@invariant(v^2-S^2<=2*B*(D-x))
+  ](x>=D -> v<=S)
+End.
+
+Tactic "Speed Control: Explore"
+  explore
+End.
+
+End.
+
+ArchiveEntry "8 04 Solution: Speed Control Coasting Condition"
+Description "Find a Control Condition for Coasting".
+
+Definitions       /* function symbols cannot change their value */
+  Real D;         /* speed limit sign position */
+  Real S;         /* posted speed limit */
+  Real B;         /* brakes */
+  Real ep;        /* reaction time */
+  Real A;
+End.
+
+ProgramVariables  /* program variables may change their value over time */
+  Real x, v, a;   /* car position, speed, and acceleration */
+  Real t;         /* time */
+End.
+
+Problem
+  x<=S & S>=0 &B>0 & v^2-S^2<=2*B*(D-x) & ep>0
+ ->
+  [
+    {
+      {   a := -B;
+       ++ ?v^2-S^2<=2*B*(D-x-v*ep); a:=0; }
+      t:=0;
+      {x'=v, v'=a, t'=1 & v>=0 & t<=ep}
+    }*@invariant(v^2-S^2<=2*B*(D-x))
+  ](x>=D -> v<=S)
+End.
+
+Tactic "Speed Control: Solution Interactive Proof"
+  implyR(1) ; loop("v^2-S^2<=2*B*(D-x)", 1) ; <(
+    id,
+    QE,
+    composeb(1) ; composeb(1.1) ; solve(1.1.1) ;
+    assignb(1.1) ; choiceb(1) ; andR(1) ; <(
+      assignb(1) ; QE,
+      composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE
+    )
+  )
+End.
+
+Tactic "Speed Control: Solution Automatic Proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "8 05 Exercise: Accelerating Car"
+Description "Find a Control Condition for Accelerating".
+
+Definitions       /* function symbols cannot change their value */
+  Real D;         /* speed limit sign position */
+  Real S;         /* posted speed limit */
+  Real B;         /* brakes */
+  Real ep;        /* reaction time */
+  Real A;         /* maximum acceleration */
+End.
+
+ProgramVariables  /* program variables may change their value over time */
+  Real x, v, a;   /* car position, speed, and acceleration */
+  Real t;         /* time */
+End.
+
+Problem
+  x<=S & S>=0 &B>0 & v^2-S^2<=2*B*(D-x) & ep>0 & __________
+ ->
+  [
+    {
+      {   a := -B;
+       ++ ?v^2-S^2<=2*B*(D-x-v*ep); a:=0;
+       ++ ?__________;a:=A; }
+      t:=0;
+      {x'=v, v'=a, t'=1 & v>=0 & t<=ep}
+    }*@invariant(v^2-S^2<=2*B*(D-x))
+  ](x>=D -> v<=S)
+End.
+
+Tactic "Accelerating Car: Explore"
+  explore
+End.
+
+End.
+
+ArchiveEntry "8 06 Solution: Accelerating Car"
+Description "Find a Control Condition for Coasting".
+
+Definitions       /* function symbols cannot change their value */
+  Real D;         /* speed limit sign position */
+  Real S;         /* posted speed limit */
+  Real B;         /* brakes */
+  Real ep;        /* reaction time */
+  Real A;         /* maximum acceleration */
+End.
+
+ProgramVariables  /* program variables may change their value over time */
+  Real x, v, a;   /* car position, speed, and acceleration */
+  Real t;         /* time */
+End.
+
+Problem
+  x<=S & S>=0 &B>=0 & v^2-S^2<=2*B*(D-x) & ep>0 & A>=0
+ ->
+  [
+    {
+      {   a := -B;
+       ++ ?v^2-S^2<=2*B*(D-x-v*ep); a:=0;
+       ++ ?(v+A*ep)^2-S^2<=2*B*(D-x-v*ep-A/2*ep^2); a:=A; }
+      t:=0;
+      {x'=v, v'=a, t'=1 & v>=0 & t<=ep}
+    }*@invariant(v^2-S^2<=2*B*(D-x))
+  ](x>=D -> v<=S)
+End.
+
+Tactic "Speed Control: Explore"
+  explore
+End.
+
+End.
+
+ArchiveEntry "8 07 Car Drives Curve"
+
+Description "Car picks steering to not exceed maximum angular speed".
+
+Description "Find a Control Condition for Coasting".
+
+Definitions       /* function symbols cannot change their value */
+  Real ep;        /* reaction time */
+  Real W;         /* maximum angular speed before tires slip */
+  Real A;
+  Real B;
+End.
+
+ProgramVariables   /* program variables may change their value over time */
+  Real x, y, v, a; /* car position, speed, and acceleration */
+  Real k, w;       /* steering, angular speed */
+  Real t;          /* time */
+End.
+
+Problem
+  B>0 & A>=0 & ep>0 & W>=0 & abs(w)<=W
+ ->
+  [
+    {
+      a:=*; ?(-B<=a & a<=A);
+      k:=*; ?((a>=0&abs(k)*(v+a*ep)<=W) | (a<=0&abs(k)*v<=W));
+      w:=v*k;
+      t:=0;
+      {{x'=-k*y*v, y'=k*x*v, v'=a, w'=a*k,
+       t'=1 & v>=0 & t<=ep}@invariant(t>=0,w=v*k,v=old(v)+a*t)}
+    }*@invariant(abs(w)<=W)
+  ]abs(w)<=W
+End.
+
+Tactic "Proof"
+implyR(1) ; loop("abs(w)<=W()", 1) ; <(
+  id,
+  id,
+  unfold ; dC("t>=0&w=v*k", 1) ; <(
+    dC("v=old(v)+a*t", 1) ; <(
+      dW(1) ; QE,
+      dI(1)
+      ),
+    dI(1)
+    )
+  )
 End.
 
 End.

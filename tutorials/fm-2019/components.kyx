@@ -1,0 +1,227 @@
+SharedDefinitions
+  HP skip    ::= { ?true; };
+
+  /* Shared facts */
+  Real D();  /* Maximum change in speed advice issued by the cruise control */
+  Real S();  /* Maximum speed of other agents in the environment */
+  Real ep(); /* Reaction time of emergency braking system */
+  Bool sharedfacts <-> D()>=0 & S()>=0 & ep()>=0;
+
+  /* Cruise Control System */
+  Bool initCC(Real d, Real d0) <-> d=d0;
+  Bool safeCC(Real d, Real d0) <-> abs(d-d0) <= D();
+  HP ctrlCC  ::= { d:=*; ?abs(d-d0)<=D(); };
+  HP plantCC ::= { skip; };
+  HP cpCC    ::= { skip; };
+  HP memCC ::= { d0:=d; };
+  HP inCC    ::= { skip; };
+
+  /* Other Agents (Obstacles) */
+  Bool initOA(R po, R po0, R so) <-> po=po0 & so=0;
+  Bool outPosOA(Real po, Real po0, Real t, Real t0)
+    <-> abs(po-po0) <= S()*(t-t0);
+  Bool safeOA(R po, R po0, R t, R t0)
+    <-> outPosOA(po,po0,t,t0);
+  HP ctrlOA  ::= { so:=*; ?0<=so&so<=S(); };
+  HP plantOA ::= { {t'=1, po'=so & true} };
+  HP cpOA    ::= { skip; };
+  HP memOA ::= { po0:=po; };
+  HP inOA    ::= { skip; };
+
+  /* Emergency Stopping System */
+  Bool initES(Real por, Real por0, Real dr, Real dr0, Real sr)
+    <-> por=por0 & dr=dr0 & sr=0 & ep()>0;
+  Bool safeES(Real sr, Real por, Real pr)
+    <-> (sr>0 -> por != pr);
+  Bool inPosOA(Real por, Real por0, Real t, Real t0)
+    <-> abs(por-por0) <= S()*(t-t0);
+  Bool inD(Real dr, Real dr0) <-> abs(dr-dr0) <= D();
+  Bool drive(Real por, Real pr, Real dr) <-> por-pr > (dr+S())*ep();
+  HP ctrlES  ::= { if (drive(por,pr,dr)) { sr:=dr; }
+                   else { sr:=0; } };
+  HP plantES ::= { { t'=1, pr'=sr & t-t0<=ep() } };
+  HP cpES    ::= { skip; };
+  HP memES ::= { por0:=por; dr0:=dr; };
+  HP inES    ::= { por:=*; ?inPosOA(por,por0,t,t0);
+                   dr:=*; ?inD(dr,dr0); };
+
+  /* Connections */
+  HP OA2ES ::= { por:=po; };
+  Bool OA2ESabstraction(Real por, Real po) <-> po=por;
+End.
+
+ArchiveEntry "01 Cruise Control Contract Compliance"
+
+ProgramVariables
+  Real d, d0;
+End.
+
+Problem
+  sharedfacts() & initCC(d,d0)
+  ->
+  [{ memCC;
+     ctrlCC; plantCC;
+     inCC; cpCC;
+   }*@invariant(safeCC(d,d0))
+  ]safeCC(d,d0)
+End.
+
+Tactic "Proof Remote Control Contract Compliance (Create Lemmas)"
+  implyR(1);
+  loop("safeCC(d,d0)",1); <(
+    master; done("CC base case done", "user/cruisecontrolcomponents/Cruise Control Base Case"),
+    master; done("CC use case done", "user/cruisecontrolcomponents/Cruise Control Use Case"),
+    master; done("CC step done", "user/cruisecontrolcomponents/Cruise Control Step")
+  )
+End.
+
+End.
+
+ArchiveEntry "02 Obstacle Contract Compliance"
+
+ProgramVariables
+  Real po, po0;
+  Real so;
+  Real t, t0;
+End.
+
+Problem
+  t=t0 & sharedfacts() & initOA(po,po0,so)
+  ->
+  [{ memOA;
+     ctrlOA; t0:=t; plantOA;
+     inOA; cpOA;
+   }*@invariant(safeOA(po,po0,t,t0))
+  ]safeOA(po,po0,t,t0)
+End.
+
+Tactic "Proof Obstacle Contract Compliance (Create Lemmas)"
+  implyR(1);
+  loop("safeOA(po,po0,t,t0)",1); <(
+    master; done("Obstacle base case done", "user/cruisecontrolcomponents/Obstacle Base Case"),
+    master; done("Obstacle use case done", "user/cruisecontrolcomponents/Obstacle Use Case"),
+    master; done("Obstacle step done", "user/cruisecontrolcomponents/Obstacle Step")
+  )
+End.
+
+End.
+
+ArchiveEntry "03 Emergency Braking Contract Compliance"
+
+ProgramVariables
+  Real por, por0;
+  Real dr, dr0;
+  Real sr;
+  Real pr;
+  Real t, t0;
+End.
+
+Problem
+  t=t0 & sharedfacts() & initES(por,por0,dr,dr0,sr)
+  ->
+  [{ memES;
+     ctrlES; t0:=t; plantES;
+     inES; cpES;
+   }*@invariant(safeES(sr,por,pr))
+  ]safeES(sr,por,pr)
+End.
+
+Tactic "Proof Robot Contract Compliance (Create Lemmas)"
+  implyR(1);
+  loop("safeES(sr,por,pr)",1); <(
+    master; done("Emergency Braking base case done", "user/cruisecontrolcomponents/Emergency Braking Base Case"),
+    master; done("Emergency Braking use case done", "user/cruisecontrolcomponents/Emergency Braking Use Case"),
+    master; done("Emergency Braking step done", "user/cruisecontrolcomponents/Emergency Braking Step")
+  )
+End.
+
+End.
+
+ArchiveEntry "04 Compatibility of Obstacle and Emergency Braking"
+
+ProgramVariables
+  Real po, po0;
+  Real por, por0;
+  Real t, t0;
+End.
+
+Problem
+  OA2ESabstraction(por0,po0) & sharedfacts()
+  ->
+  [por:=po;](outPosOA(po,po0,t,t0) -> inPosOA(por,por0,t,t0))
+End.
+
+Tactic "Proof Compatibility of Obstacle and Emergency Braking"
+  master & done("Compatibility", "user/cruisecontrolcomponents/Compatibility of Obstacle and Emergency Braking")
+End.
+
+End.
+
+ArchiveEntry "05 Communication Guarantee"
+
+ProgramVariables
+  Real por;
+  Real po;
+End.
+
+Problem
+    [OA2ES;]OA2ESabstraction(por,po)
+  & <OA2ES;>true
+End.
+
+Tactic "Proof Communication Guarantee Safety"
+  andR(1) ; <(
+    master; done("Communication guarantee safety", "user/cruisecontrolcomponents/Communication Guarantee Safety"),
+    master; done("Communication guarantee liveness", "user/cruisecontrolcomponents/Communication Guarantee Liveness")
+  )
+End.
+
+End.
+
+Theorem "06 Emergency Braking System Avoids Obstacles"
+
+Description "Parallel composition of emergency braking system and obstacle".
+
+Definitions
+  HP ctrlsys  ::= { ctrlES; ctrlOA; };
+  HP plantsys ::= { {t'=1, po'=so, pr'=sr & t-t0<=ep()} };
+  HP cpsys    ::= { skip; skip; OA2ES; };
+  HP memsys   ::= { {por0:=por; dr0:=dr;} po0:=po; };
+  HP insys    ::= { {dr:=*; ?inD(dr,dr0);} skip; };
+End.
+
+ProgramVariables
+  Real po, po0;
+  Real so;
+  Real por, por0;
+  Real dr, dr0;
+  Real pr;
+  Real sr;
+  Real t, t0;
+End.
+
+Problem
+  t=t0 & sharedfacts() & 
+  initES(por,por0,dr,dr0,sr) & initOA(po,po0,so) & 
+  OA2ESabstraction(por,po) 
+  -> 
+  [{
+    memsys; ctrlsys; t0:=t; plantsys; insys; cpsys;
+  }*]((safeES(sr,por,pr)&true) & (true&safeOA(po,po0,t,t0)))
+End.
+
+Tactic "System Proof from Component Proofs"
+  proveComponentSystem(
+    "cruisecontrolcomponents/Emergency Braking Avoids Obstacles",
+    "cruisecontrolcomponents/Emergency Braking Base Case",
+    "cruisecontrolcomponents/Emergency Braking Use Case",
+    "cruisecontrolcomponents/Emergency Braking Step",
+    "cruisecontrolcomponents/Obstacle Base Case",
+    "cruisecontrolcomponents/Obstacle Use Case",
+    "cruisecontrolcomponents/Obstacle Step",
+    "cruisecontrolcomponents/Compatibility of Obstacle and Emergency Braking",
+    "cruisecontrolcomponents/Communication Guarantee Safety",
+    "cruisecontrolcomponents/Communication Guarantee Liveness", 1)
+End.
+
+End.
