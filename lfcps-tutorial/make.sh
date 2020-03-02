@@ -5,7 +5,7 @@ sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"2 Coasting Car\"/" < CoastingCar.kyx 
 sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"3 Exercise: Accelerating Car\"/" < carExc.kyx >> tmp.kya
 sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"3 Solution: Accelerating Car\"/" < ../popltutorial/time-safe.kyx >> tmp.kya
 sed "s/Exercise *\".*\"/Exercise \"4 Exercise: Runaround Robot\"/" < ../lics/CurveBotExc.kyx >> tmp.kya
-#sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"3 Solution: Runaround Robot\"/" < ../lics/CurveBotDef.kyx >> tmp.kya
+sed "s/ArchiveEntry *\".*\"/ArchiveEntry \"4 Solution: Runaround Robot\"/" < ../lics/CurveBotDef.kyx >> tmp.kya
 sed "s/Exercise *\".*\"/Exercise \"5 Exercise: Modeling two cars\"/" < TwoCarExc.kyx >> tmp.kya
 cat > repls <<- EOM
 s/ArchiveEntry *"Damp.*"/ArchiveEntry "6 Damped oscillator"/

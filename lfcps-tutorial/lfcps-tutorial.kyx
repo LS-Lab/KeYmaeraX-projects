@@ -205,6 +205,97 @@ End.
 
 Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
 End.
+/* Exported from KeYmaera X v4.7.4 */
+
+ArchiveEntry "4 Solution: Runaround Robot"
+Description "CurveBot: run a robot round the bend".
+
+ProgramVariables
+  Real x, y;    /* robot x/y position */
+  Real v, w;    /* robot orientation in x/y direction */
+  Real om;      /* robot rotational velocity */
+  Real ox, oy;  /* x/y position summary of obstacle */
+End.
+
+Definitions
+  Bool Q(Real om, Real x, Real y, Real ox, Real oy, Real v, Real w) <-> 
+    ((x+w/om-ox)^2+(y-v/om-oy)^2 != v^2+w^2).
+  Bool Qline(Real x, Real y, Real ox, Real oy, Real v, Real w) <-> 
+    ((ox-x)*w != (oy-y)*v).
+End.
+    
+Problem
+  x!=ox | y!=oy ->
+  [{
+    {?Q(-1,x,y,ox,oy,v,w); om:=-1;
+    ++ ?Q(1,x,y,ox,oy,v,w); om:=1;
+    ++ ?Qline(x,y,ox,oy,v,w); om:=0;}
+    {x'=v,y'=w,v'=om*w,w'=-om*v}
+   }* @invariant(!(x=ox & y=oy))
+  ] !(x=ox & y=oy)
+End.
+
+
+Tactic "4 Solution: Runaround Robot: Proof"
+implyR(1) ; loop("!(x=ox&y=oy)", 1) ; <(
+  QE,
+  id,
+  composeb(1) ; choiceb(1) ; andR(1) ; <(
+    unfold ; US("Q((._0,._1,._2,._3,._4,._5,._6))~>(._1+._6/._0-._3)^2+(._2-._5/._0-._4)^2!=._5^2+._6^2") ; ODE(1),
+    unfold ; <(
+      US("Q((._0,._1,._2,._3,._4,._5,._6))~>(._1+._6/._0-._3)^2+(._2-._5/._0-._4)^2!=._5^2+._6^2") ; ODE(1),
+      US("Qline((._0,._1,._2,._3,._4,._5))~>(._2-._0)*._5!=(._3-._1)*._4") ; ODE(1)
+      )
+    )
+  )
+End.
+
+
+Tactic "4 Solution: Runaround Robot: Manual Proof"
+  implyR(1) ; loop("!(x=ox&y=oy)", 1) ; <(
+  QE,
+  id,
+  composeb(1) ; choiceb(1) ; andR(1) ; <(
+    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dC("v=-1*(y-old(y-v/-1))&w=1*(x-old(x+w/-1))", 1) ; <(
+      dC("(x+w/-1-ox)^2+(y-v/-1-oy)^2!=v^2+w^2", 1) ; <(
+        dW(1) ; QE,
+        dI(1)
+        ),
+      dI(1)
+      ),
+    choiceb(1) ; andR(1) ; <(
+      composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dC("v=1*(y-old(y-v/1))&w=-1*(x-old(x+w/1))", 1) ; <(
+        dC("(x+w/1-ox)^2+(y-v/1-oy)^2!=v^2+w^2", 1) ; <(
+          dW(1) ; QE,
+          dI(1)
+          ),
+        dI(1)
+        ),
+      composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dG("t'=1", "!(x=ox&y=oy)", 1) ; existsR("0", 1) ; dC("v=old(v)&w=old(w)&x=old(x)+v*t&y=old(y)+w*t", 1) ; <(
+        dW(1) ; QE,
+        dI(1)
+        )
+      )
+    )
+  )
+End.
+
+Tactic "4 Solution: Runaround Robot: automatic"
+  master
+End.
+
+Tactic "4 Solution: Runaround Robot: unfold"
+unfold ; loop("!(x=ox&y=oy)", 1) ; <(
+  QE,
+  QE,
+  unfold ; doall(ODE(1))
+  )
+End.
+
+
+Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
+
+End.
 Exercise "5 Exercise: Modeling two cars"
 Description "Control one car to safely follow another".
 

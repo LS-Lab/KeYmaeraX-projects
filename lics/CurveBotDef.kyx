@@ -1,5 +1,7 @@
-﻿ArchiveEntry "CurveBot definitions"
-Description "CurveBot: run a robot round the bend (with definitions)".
+﻿/* Exported from KeYmaera X v4.7.4 */
+
+ArchiveEntry "4 Solution: Runaround Robot"
+Description "CurveBot: run a robot round the bend".
 
 ProgramVariables
   Real x, y;    /* robot x/y position */
@@ -26,7 +28,23 @@ Problem
   ] !(x=ox & y=oy)
 End.
 
-Tactic "CurveBot: Proof"
+
+Tactic "4 Solution: Runaround Robot: Proof"
+implyR(1) ; loop("!(x=ox&y=oy)", 1) ; <(
+  QE,
+  id,
+  composeb(1) ; choiceb(1) ; andR(1) ; <(
+    unfold ; US("Q((._0,._1,._2,._3,._4,._5,._6))~>(._1+._6/._0-._3)^2+(._2-._5/._0-._4)^2!=._5^2+._6^2") ; ODE(1),
+    unfold ; <(
+      US("Q((._0,._1,._2,._3,._4,._5,._6))~>(._1+._6/._0-._3)^2+(._2-._5/._0-._4)^2!=._5^2+._6^2") ; ODE(1),
+      US("Qline((._0,._1,._2,._3,._4,._5))~>(._2-._0)*._5!=(._3-._1)*._4") ; ODE(1)
+      )
+    )
+  )
+End.
+
+
+Tactic "4 Solution: Runaround Robot: Manual Proof"
   implyR(1) ; loop("!(x=ox&y=oy)", 1) ; <(
   QE,
   id,
@@ -55,11 +73,11 @@ Tactic "CurveBot: Proof"
   )
 End.
 
-Tactic "CurveBot: automatic"
+Tactic "4 Solution: Runaround Robot: automatic"
   master
 End.
 
-Tactic "CurveBot: unfold"
+Tactic "4 Solution: Runaround Robot: unfold"
 unfold ; loop("!(x=ox&y=oy)", 1) ; <(
   QE,
   QE,
@@ -67,5 +85,7 @@ unfold ; loop("!(x=ox&y=oy)", 1) ; <(
   )
 End.
 
+
 Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
+
 End.
