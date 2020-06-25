@@ -595,10 +595,6 @@ Tactic "Scripted proof"
   implyR(1) ; ODE(1)
 End.
 
-Tactic "Scripted proof"
-  implyR(1) ; ODE(1)
-End.
-
 Tactic "Automated proof"
   master
 End.
@@ -1401,15 +1397,15 @@ Definitions
 End.
 
 ProgramVariables
-  Real x;
+  Real x1;
   Real v;
 End.
 
 Problem
-    v >= 0 & c() > 0 & Kp() = 2 & Kd() = 3 & 5/4*(x-xr())^2 + (x-xr())*v/2 + v^2/4 < c()
+    v >= 0 & c() > 0 & Kp() = 2 & Kd() = 3 & 5/4*(x1-xr())^2 + (x1-xr())*v/2 + v^2/4 < c()
  -> [
-      { x' = v, v' = -Kp()*(x-xr()) - Kd()*v }
-    ] 5/4*(x-xr())^2 + (x-xr())*v/2 + v^2/4 < c()
+      { x1' = v, v' = -Kp()*(x1-xr()) - Kd()*v }
+    ] 5/4*(x1-xr())^2 + (x1-xr())*v/2 + v^2/4 < c()
 End.
 
 Tactic "Scripted proof"
@@ -1435,37 +1431,37 @@ Definitions
 End.
 
 ProgramVariables
-  Real x;
+  Real x2;
   Real xm;
   Real xr;
   Real v;
 End.
 
 Problem
-    v >= 0 & xm <= x & x <= S & xr = (xm + S)/2 & Kp = 2 & Kd = 3
-           & 5/4*(x-xr)^2 + (x-xr)*v/2 + v^2/4 < ((S - xm)/2)^2
- -> [ { {  xm := x;
+    v >= 0 & xm <= x2 & x2 <= S & xr = (xm + S)/2 & Kp = 2 & Kd = 3
+           & 5/4*(x2-xr)^2 + (x2-xr)*v/2 + v^2/4 < ((S - xm)/2)^2
+ -> [ { {  xm := x2;
            xr := (xm + S)/2;
-           ?5/4*(x-xr)^2 + (x-xr)*v/2 + v^2/4 < ((S - xm)/2)^2;
+           ?5/4*(x2-xr)^2 + (x2-xr)*v/2 + v^2/4 < ((S - xm)/2)^2;
         ++ ?true;
         };
-        {{ x' = v, v' = -Kp*(x-xr) - Kd*v & v >= 0 }
+        {{ x2' = v, v' = -Kp*(x2-xr) - Kd*v & v >= 0 }
           @invariant(
-            xm<=x,
-            5/4*(x-(xm+S())/2)^2 + (x-(xm+S())/2)*v/2 + v^2/4 < ((S()-xm)/2)^2
+            xm<=x2,
+            5/4*(x2-(xm+S())/2)^2 + (x2-(xm+S())/2)*v/2 + v^2/4 < ((S()-xm)/2)^2
          )
         }
-      }*@invariant(v >= 0 & xm <= x & xr = (xm + S)/2 & 5/4*(x-xr)^2 + (x-xr)*v/2 + v^2/4 < ((S - xm)/2)^2)
-    ] x <= S
+      }*@invariant(v >= 0 & xm <= x2 & xr = (xm + S)/2 & 5/4*(x2-xr)^2 + (x2-xr)*v/2 + v^2/4 < ((S - xm)/2)^2)
+    ] x2 <= S
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; loop("v >= 0 & xm <= x & xr = (xm + S)/2 & 5/4*(x-xr)^2 + (x-xr)*v/2 + v^2/4 < ((S - xm)/2)^2", 1) ; <(
+  implyR(1) ; loop("v >= 0 & xm <= x2 & xr = (xm + S)/2 & 5/4*(x2-xr)^2 + (x2-xr)*v/2 + v^2/4 < ((S - xm)/2)^2", 1) ; <(
     prop,
     QE,
     unfold ; doall(
-      dC("xm<=x", 1) ; <(
-        dC("5/4*(x-(xm+S())/2)^2+(x-(xm+S())/2)*v/2+v^2/4 < ((S()-xm)/2)^2", 1) ; <(
+      dC("xm<=x2", 1) ; <(
+        dC("5/4*(x2-(xm+S())/2)^2+(x2-(xm+S())/2)*v/2+v^2/4 < ((S()-xm)/2)^2", 1) ; <(
           dW(1) ; QE,
           dI(1)
           ),
