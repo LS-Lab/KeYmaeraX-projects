@@ -16,6 +16,10 @@ Tactic "Scripted proof"
   )
 End.
 
+Tactic "Automated proof"
+  master
+End.
+
 End.
 
 ArchiveEntry "Push-around cart"
@@ -54,6 +58,10 @@ Tactic "Scripted proof"
     ),
   prop ; done
   )
+End.
+
+Tactic "Automated proof"
+  master
 End.
 
 End.

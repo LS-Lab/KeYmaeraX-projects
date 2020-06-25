@@ -66,6 +66,20 @@ initial(m, z, v)  ->
 End.
 
 Tactic "Scripted proof"
+  implyR(1) ; loop("v>=0&m-z>=v^2/(2*b)", 1) ; <(
+    prop,
+    QE,
+    composeb(1) ; composeb(1.1) ; solve(1.1.1) ; unfold ; <(
+      QE,
+      allL("t_",-6) ; implyL(-6) ; <(
+        hideR(1=="A*t_+v>=0&m-(A*(t_^2/2)+v*t_+z)>=(A*t_+v)^2/(2*b)") ; QE,
+        QE
+      )
+    )
+  )
+End.
+
+Tactic "Scripted proof (2)"
 implyR(1) ; loop("v>=0&m-z>=v^2/(2*b)", 1) ; <(
   prop,
   QE,
@@ -168,10 +182,10 @@ em = 0 & d >= 0 & b > 0 & ep > 0 & A > 0 & v>=0
 End.
 
 Tactic "Scripted proof"
-  useSolver("Mathematica");
+  /*useSolver("Mathematica");*/
   implyR(1); equivR(1); <(
-    composeb(-2.0.0.1); composeb(-2.0.0.1.1); solve(-2.0.0.1.1.1); assignb(-2.0.0.1.1); assignb(-2.0.0.1); master,
-    composeb(1.0.0.1); composeb(1.0.0.1.1); solve(1.0.0.1.1.1); master
+    chaseAt(-2.0.0.1); solve(-2.0.0.1.0.1); QE,
+    unfold; ODE(1)
   )
 End.
 
@@ -881,7 +895,7 @@ Definitions
   Real e21, e22, e23, e31, e32, e33;
 
   Bool initial(Real a, Real v, Real s, Real i, Real lvl, Real lu, Real COswitched, Real conf,
-               Real v212, Real v221, Real v222, Real v231, Real v232,
+               Real v211, Real v212, Real v221, Real v222, Real v231, Real v232,
                Real v311, Real v312, Real v321, Real v322, Real v331, Real v332) <-> (
       CA=1
     & Ca=-0.2
@@ -1021,7 +1035,7 @@ End.
 
 Problem.
 
-initial(a, v, s, i, lvl, lu, COswitched, conf, v212, v221, v222, v231, v232, v311, v312, v321, v322, v331, v332)
+initial(a, v, s, i, lvl, lu, COswitched, conf, v211, v212, v221, v222, v231, v232, v311, v312, v321, v322, v331, v332)
 ->
 [{ctrl; drive;}*]s<=x2
 

@@ -10,6 +10,10 @@ Problem
   x>=0 -> [x:=x+1;]x>=1
 End.
 
+Tactic "Scripted proof"
+  implyR(1); assignb(1); QE
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -27,6 +31,17 @@ End.
 
 Problem
   x>=0 -> [x:=x+1;][x:=x+1; ++ y:=x+1;]x>=1
+End.
+
+Tactic "Scripted proof"
+  assignb(1.1) ; choiceb(1.1.0.1) ; assignb(1.1.0.1.0) ; assignb(1.1.0.1.1) ; QE
+End.
+
+Tactic "Scripted proof (2)"
+  implyR(1) ; assignb(1) ; choiceb(1) ; andR(1) ; <(
+    assignb(1) ; QE,
+    assignb(1) ; QE
+  )
 End.
 
 Tactic "Automated proof"
@@ -48,6 +63,14 @@ Problem
   x>=0 -> [x:=x+1;][{x:=x+1;}*@invariant(x>=1)]x>=1
 End.
 
+Tactic "Scripted proof"
+  unfold ; loop("x>=1", 1) ; <(
+    QE,
+    id,
+    assignb(1) ; QE
+  )
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -66,6 +89,10 @@ Problem
   x>=0 -> [x:=x+1;][{x'=2}]x>=1
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; assignb(1) ; ODE(1)
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -82,6 +109,10 @@ End.
 
 Problem
   x>=0 -> [x:=x+1;][x:=*; ?x>=1;]x>=1
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; assignb(1) ; composeb(1) ; randomb(1) ; allR(1) ; testb(1) ; prop
 End.
 
 Tactic "Automated proof"
@@ -103,6 +134,16 @@ Problem
   x>=0 -> [x:=x+1;][?x>=2; x:=x-1; ++ ?\forall x (x>=1 -> y>=1); x:=y;]x>=1
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; assignb(1) ; choiceb(1) ; andR(1) ; <(
+    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE,
+    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; allL("x+1",-2) ; implyL(-2) ; <(
+      QE,
+      id
+    )
+  )
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -120,6 +161,17 @@ End.
 
 Problem
   x>=0 & y>=1 -> [x:=x+1;][{x:=x+1;}*@invariant(x>=1) ++ y:=x+1;][{y'=2}][x:=y;]x>=1
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; assignb(1) ; choiceb(1) ; andR(1) ; <(
+    loop("x>=1", 1) ; <(
+      QE,
+      assignb(1.1) ; ODE(1),
+      assignb(1) ; QE
+    ),
+    assignb(1) ; assignb(1.1) ; ODE(1)
+  )
 End.
 
 Tactic "Automated proof"
@@ -141,6 +193,17 @@ Problem
   x>0 & y>0 -> [{x'=5}][{x:=x+3;}*@invariant(x>0) ++ y:=x;](x>0&y>0)
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1) ; dW(1) ; implyR(1) ; choiceb(1) ; andR(1) ; <(
+    loop("x>0", 1) ; <(
+      QE,
+      prop,
+      assignb(1) ; QE
+    ),
+    assignb(1) ; QE
+  )
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -160,7 +223,20 @@ Problem
   x>0 & y>0 -> [{x'=-x}][{x:=x+3;}*@invariant(x>0) ++ y:=x;](x>0&y>0)
 End.
 
-/* TODO: Cannot prove automatically */
+Tactic "Scripted proof"
+  implyR(1); ODE(1); dW(1); unfold; <(
+    loop("x>0", 1); <(
+      id,
+      prop,
+      assignb(1) ; QE
+    ),
+    prop
+  )
+End.
+
+Tactic "Automated proof"
+  master
+End.
 
 End.
 
@@ -173,6 +249,10 @@ End.
 
 Problem
   x>0 -> [{x'=5};{x'=2};{x'=x}]x>0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; composeb(1) ; ODE(1) ; dW(1) ; implyR(1) ; composeb(1) ; ODE(1) ; dW(1) ; implyR(1) ; ODE(1)
 End.
 
 Tactic "Automated proof"
@@ -189,6 +269,10 @@ End.
 
 Problem
   x=0->[{x'=1}]x>=0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
 End.
 
 Tactic "Automated proof"
@@ -208,6 +292,10 @@ Problem
   x>=0 & y>=0 -> [{x'=y}]x>=0
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -224,6 +312,10 @@ End.
 
 Problem
   x>=0 & y>=0 & z>=0 -> [{x'=y,y'=z}]x>=0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
 End.
 
 Tactic "Automated proof"
@@ -245,6 +337,10 @@ Problem
   x>=0 & y>=0 & z>=0 & j>=0 -> [{x'=y,y'=z,z'=j,j'=j^2}]x>=0
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -261,6 +357,10 @@ Problem
   x>0 -> [{x'=-x}]x>0
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -275,6 +375,10 @@ End.
 
 Problem
   x>0 -> [{x'=-x+1}]x>0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
 End.
 
 Tactic "Automated proof"
@@ -294,6 +398,10 @@ Problem
   x>0 & y>0->[{x'=-y*x}]x>0
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -308,6 +416,10 @@ End.
 
 Problem
   x>=0 -> [{x'=x}]x>=0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
 End.
 
 Tactic "Automated proof"
@@ -327,6 +439,10 @@ Problem
   x>=0 & y>=0 -> [{x'=y, y'=y^2}]x>=0
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -343,6 +459,10 @@ Problem
   x>0 -> [{x'=x^x}]x>0
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -357,6 +477,10 @@ End.
 
 Problem
   x>=1 -> [{x'=x^2+2*x^4}]x^3>=x^2
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
 End.
 
 Tactic "Automated proof"
@@ -376,6 +500,10 @@ Problem
   x^2+y^2=1 -> [{x'=-y, y'=x}]x^2+y^2=1
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -392,6 +520,10 @@ End.
 
 Problem
   x^2+y^2=1 & e=x -> [{x'=-y, y'=e, e'=-y}](x^2+y^2=1 & e=x)
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
 End.
 
 Tactic "Automated proof"
@@ -416,6 +548,10 @@ Problem
     [{x1'=d1, x2'=d2, d1'=-w*d2, d2'=w*d1}](d1^2+d2^2=w^2*p^2 & d1=-w*x2 & d2=w*x1)
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -434,6 +570,10 @@ Problem
   w>=0 & x=0 & y=3 -> [{x'=y, y'=-w^2*x-2*w*y}]w^2*x^2+y^2<=9
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -449,6 +589,14 @@ End.
 
 Problem
   x^3>5 & y>2 -> [{x'=x^3+x^4, y'=5*y+y^2}](x^3>5 & y>2)
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
 End.
 
 Tactic "Automated proof"
@@ -469,6 +617,10 @@ Problem
   x>=1 & y=10 & z=-2 -> [{x'=y, y'=z+y^2-y & y>=0}](x>=1 & y>=0)
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -486,6 +638,10 @@ End.
 Problem
   x1^4*x2^2+x1^2*x2^4-3*x1^2*x2^2+1 <= c ->
     [{x1'=2*x1^4*x2+4*x1^2*x2^3-6*x1^2*x2, x2'=-4*x1^3*x2^2-2*x1*x2^4+6*x1*x2^2}] x1^4*x2^2+x1^2*x2^4-3*x1^2*x2^2+1 <= c
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
 End.
 
 Tactic "Automated proof"
@@ -509,6 +665,10 @@ End.
 
 Problem
   x+z=0 -> [{x'=(A*x^2+B()*x), z' = A*z*x+B()*z}] 0=-x-z
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
 End.
 
 Tactic "Automated proof"
@@ -535,7 +695,7 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1); dbx({`(x*A+B())/z^2`}, 1)
+  implyR(1); dbx("(x*A+B())/z^2", 1)
 End.
 
 End.
@@ -554,6 +714,10 @@ End.
 
 Problem
   x+z>=0 -> [{x'=x^2, z' = z*x+y & y = x^2}] x+z>=0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
 End.
 
 Tactic "Automated proof"
@@ -575,35 +739,35 @@ End.
 
 Tactic "Scripted proof"
   implyR(1);
-  cut({`r=0 | r < 0`}); <(
+  cut("r=0 | r < 0"); <(
     hideL(-1)
     ,
     hideR(1) ; QE
   );
   orL(-1); <(
-    existsR({`0`}, 1);
+    existsR("0", 1);
     implyR(1);
-    dG({`{y'=-x*y}`}, {`y*x=0&y>0`}, 1);
-    existsR({`1`}, 1);
+    dG("{y'=-x*y}", "y*x=0&y>0", 1);
+    existsR("1", 1);
     boxAnd(1); andR(1); <(
       dI(1)
       ,
-      dG({`{z'=x/2*z}`}, {`z^2*y=1`}, 1);
-      existsR({`1`}, 1);
+      dG("{z'=x/2*z}", "z^2*y=1", 1);
+      existsR("1", 1);
       dI(1)
     )
     ,
-    cut({`\exists s r=-s*s`}); <(
+    cut("\exists s r=-s*s"); <(
       existsL(-2);
-      existsR({`-s`}, 1);
+      existsR("-s", 1);
       implyR(1);
-      dG({`{y'=(-(x-s))*y}`}, {`y*(x+s)=0&y>0`}, 1);
-      existsR({`1`}, 1);
+      dG("{y'=(-(x-s))*y}", "y*(x+s)=0&y>0", 1);
+      existsR("1", 1);
       boxAnd(1); andR(1); <(
         dI(1)
         ,
-        dG({`{z'=(x-s)/2*z}`}, {`z^2*y=1`}, 1);
-        existsR({`1`}, 1);
+        dG("{z'=(x-s)/2*z}", "z^2*y=1", 1);
+        existsR("1", 1);
         dI(1)
       ),
       hideR(1);
@@ -645,10 +809,10 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1) & loop({`w^2*x^2+y^2<=c&d>=0&w>=0`},1) <(
+  implyR(1) & loop("w^2*x^2+y^2<=c&d>=0&w>=0",1) <(
     master,
     master,
-    composeb(1); MR({`w^2*x^2+y^2<=c&d>=0&w>=0`},1) <(
+    composeb(1); MR("w^2*x^2+y^2<=c&d>=0&w>=0",1) <(
       master,
       master
     )
@@ -672,6 +836,10 @@ Problem
   x^3 >= -1 -> [{x'=(x-3)^4+a & a>=0}] x^3>=-1
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -691,6 +859,10 @@ End.
 
 Problem
   x1+x2^2/2=a -> [{x1'=x1*x2,x2'=-x1}]x1+x2^2/2=a
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
 End.
 
 Tactic "Automated proof"
@@ -714,6 +886,10 @@ Problem
   x1^2/2-x2^2/2>=a -> [{x1'=x2+x1*x2^2, x2'=-x1+x1^2*x2 & x1>=0 & x2>=0}]x1^2/2-x2^2/2>=a
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -735,6 +911,10 @@ Problem
   -x1*x2>=a -> [{x1'=x1-x2+x1*x2, x2'=-x2-x2^2}]-x1*x2>=a
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -749,6 +929,10 @@ End.
 
 Problem
    2*x^3 >= 1/4 -> [{x'=x^2+x^4}] 2*x^3>=1/4
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
 End.
 
 Tactic "Automated proof"
@@ -766,6 +950,10 @@ End.
 
 Problem
   x^3 >= -1 & y^5 >= 0 -> [{x'=(x-3)^4+y^5, y'=y^2}] (x^3 >= -1 & y^5 >= 0)
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
 End.
 
 Tactic "Automated proof"
@@ -791,6 +979,10 @@ End.
 
 Problem
   v >= 0 & A > 0 -> [ { x' = v, v' = A } ] v >= 0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
 End.
 
 Tactic "Automated proof"
@@ -823,6 +1015,14 @@ Problem
         { x' = v, v' = a & v >= 0 }
       }*@invariant(v >= 0)
     ] v >= 0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; loop("v>=0", 1) ; <(
+    id,
+    id,
+    composeb(1) ; DW(1.1) ; simplify(1) ; GV(1.1) ; GV(1) ; closeT
+  )
 End.
 
 Tactic "Automated proof"
@@ -865,6 +1065,41 @@ Problem
     ] x <= S
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; loop("v>=0&x+v^2/(2*B())<=S()", 1) ; <(
+    QE,
+    QE,
+    unfold ; <(
+      dW(1) ; prop,
+      dW(1) ; prop,
+      diffUnpackEvolDomain(1) ; hideR(1=="[{x'=v,v'=A()&v>=0&x+v^2/(2*B())>=S()}](v>=0&x+v^2/(2*B())<=S())") ; QE,
+      dW(1) ; prop,
+      diffUnpackEvolDomain(1) ; dC("v=old(v)", 1) ; <(
+        dC("x=old(x)", 1) ; <(
+          dWplus(1) ; QE,
+          dI(1)
+        ),
+        dI(1)
+      ),
+      diffUnpackEvolDomain(1) ; dC("v<=old(v)", 1) ; <(
+        dC("x+v^2/(2*B())<=old(x+v^2/(2*B()))", 1) ; <(
+          dWplus(1) ; QE,
+          dI(1)
+        ),
+        dI(1)
+      )
+    )
+  )
+End.
+
+Tactic "Scripted proof (2)"
+  implyR(1) ; loop("v>=0&x+v^2/(2*B())<=S()", 1) ; <(
+    QE,
+    QE,
+    unfold ; doall(ODE(1))
+  )
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -901,6 +1136,14 @@ Problem
     ] v <= V
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; loop("v<=V()", 1) ; <(
+    id,
+    id,
+    composeb(1) ; DW(1.1) ; simplify(1) ; GV(1.1) ; GV(1) ; closeT
+  )
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -932,6 +1175,14 @@ Problem
         {x' = v, v' = a & v <= V}
       }*@invariant(v <= V)
     ] v <= V
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; loop("v<=V()", 1) ; <(
+    id,
+    id,
+    composeb(1) ; DW(1.1) ; simplify(1) ; GV(1.1) ; GV(1) ; closeT
+  )
 End.
 
 Tactic "Automated proof"
@@ -969,6 +1220,17 @@ Problem
         ++ {x' = v, v' = a & v >= V}}
       }*@invariant(v <= V)
     ] v <= V
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; loop("v<=V()", 1) ; <(
+    id,
+    id,
+    composeb(1) ; choiceb(1.1) ; DW(1.1.0) ; simplify(1) ; GV(1.1.0) ; trueAnd(1.1) ; choiceb(1) ; andR(1) ; <(
+      unfold ; ODE(1),
+      unfold ; diffUnpackEvolDomain(1) ; hideR(1=="[{x'=v,v'=A()&v>=V()}]v<=V()") ; QE
+    )
+  )
 End.
 
 Tactic "Automated proof"
@@ -1011,6 +1273,15 @@ Problem
     ] x <= S
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; loop("v>=0&x+v^2/(2*B())<=S()", 1) ; <(
+    QE,
+    QE,
+    composeb(1) ; composeb(1.1) ; boxAnd(1.1.1) ; DW(1.1.1.0) ; simplify(1) ; GV(1.1.1.0) ; trueAnd(1.1.1) ;
+    solve(1.1.1) ; unfold ; doall(QE)
+  )
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -1049,6 +1320,15 @@ Problem
         { x' = v, v' = a, c' = 1 & v >= 0 & c <= ep }
       }*@invariant(v >= 0 & x+v^2/(2*B) <= S)
     ] x <= S
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; loop("v>=0&x+v^2/(2*B())<=S()", 1) ; <(
+    QE,
+    QE,
+    composeb(1) ; composeb(1.1) ; boxAnd(1.1.1) ; DW(1.1.1.0) ; simplify(1) ; GV(1.1.1.0) ; trueAnd(1.1.1) ;
+    solve(1.1.1) ; unfold ; doall(QE)
+  )
 End.
 
 Tactic "Automated proof"
@@ -1092,6 +1372,15 @@ Problem
     ] x <= S
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; loop("v>=0&x+v^2/(2*b())<=S()", 1) ; <(
+    QE,
+    QE,
+    composeb(1) ; composeb(1.1) ; boxAnd(1.1.1) ; DW(1.1.1.0) ; simplify(1) ; GV(1.1.1.0) ; trueAnd(1.1.1) ;
+    solve(1.1.1) ; unfold ; doall(QE)
+  )
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -1121,6 +1410,10 @@ Problem
  -> [
       { x' = v, v' = -Kp()*(x-xr()) - Kd()*v }
     ] 5/4*(x-xr())^2 + (x-xr())*v/2 + v^2/4 < c()
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
 End.
 
 Tactic "Automated proof"
@@ -1164,6 +1457,22 @@ Problem
         }
       }*@invariant(v >= 0 & xm <= x & xr = (xm + S)/2 & 5/4*(x-xr)^2 + (x-xr)*v/2 + v^2/4 < ((S - xm)/2)^2)
     ] x <= S
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; loop("v >= 0 & xm <= x & xr = (xm + S)/2 & 5/4*(x-xr)^2 + (x-xr)*v/2 + v^2/4 < ((S - xm)/2)^2", 1) ; <(
+    prop,
+    QE,
+    unfold ; doall(
+      dC("xm<=x", 1) ; <(
+        dC("5/4*(x-(xm+S())/2)^2+(x-(xm+S())/2)*v/2+v^2/4 < ((S()-xm)/2)^2", 1) ; <(
+          dW(1) ; QE,
+          dI(1)
+          ),
+        dI(1)
+        )
+      )
+    )
 End.
 
 Tactic "Automated proof"
@@ -1224,6 +1533,191 @@ Problem
     ] abs(y-ly) < lw
 End.
 
+Tactic "Scripted proof"
+implyR(1) ; loop("v>=0&dx^2+dy^2=1&r!=0&abs(y-ly())+v^2/(2*b()) < lw()", 1) ; <(
+  prop,
+  QE,
+  composeb(1) ; composeb(1.1) ; boxAnd(1.1.1) ; DW(1.1.1.0) ; simplify(1) ; GV(1.1.1.0) ; trueAnd(1.1.1) ; dC("c>=0", 1.1.1) ; <(
+    dC("dx^2+dy^2=1", 1.1.1) ; <(
+      boxAnd(1.1.1) ; DW(1.1.1.0) ; simplify(1) ; GV(1.1.1.0) ; trueAnd(1.1.1) ; boxAnd(1.1.1) ; GV(1.1.1.0) ; dC("v=old(v)+a*c", 1.1.1.1) ; <(
+        dC("-c*(v-a/2*c)<=y-old(y)&y-old(y)<=c*(v-a/2*c)", 1.1.1.1.0.1) ; <(
+          unfold ; <(
+            hideL(-17=="abs(y-ly())+v^2/(2*b()) < lw()") ; hideL(-16=="r_0!=0") ; hideL(-15=="dx^2+dy^2=1") ; hideL(-10=="w*r=v") ; hideL(-9=="r!=0") ; dWplus(1) ; unfold ; hideL(-14=="dx^2+dy^2=1") ; cut("abs(y_0-ly())+v_0^2/(2*b())+(A()/b()+1)*(A()/2*c^2+c*v_0) < lw()") ; <(
+              hideL(-16=="c<=ep()") ; hideL(-7=="-B()<=a") ; hideL(-6=="abs(y_0-ly())+v_0^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v_0) < lw()") ; hideL(-4=="ep()>0") ; hideL(-2=="B()>=b()") ; hideL(-5=="c_0=0") ; edit("expand(abs(y-ly()))+v^2/(2*b()) < lw()", 1) ; edit("expand(abs(y_0-ly()))+v_0^2/(2*b())+(A()/b()+1)*(A()/2*c^2+c*v_0) < lw()", -11) ; orL(-12) ; <(
+                orL(-13) ; <(
+                  QE,
+                  QE
+                  ),
+                orL(-13) ; <(
+                  QE,
+                  QE
+                  )
+                ),
+              hideR(1=="abs(y-ly())+v^2/(2*b()) < lw()") ; edit("abbrv(abs(y_0-ly()))+v_0^2/(2*b())+(A()/b()+1)*(A()/2*c^2+c*v_0) < lw()", 1) ; hideL(-17=="abbrv=abs(y_0-ly())") ; QE
+              ),
+            dWplus(1) ; unfold ; hideL(-19=="c<=ep()") ; hideL(-16=="dx^2+dy^2=1") ; hideL(-11=="r!=0") ; hideL(-10=="dx_0^2+dy_0^2=1") ; hideL(-8=="c_0=0") ; hideL(-7=="w_0=0") ; hideL(-7=="v_0>=0") ; hideL(-4=="ep()>0") ; hideL(-2=="B()>=b()") ; hideL(-1=="A()>0") ; QE,
+            dWplus(1) ; unfold ; hideL(-19=="c<=ep()") ; hideL(-16=="dx^2+dy^2=1") ; hideL(-11=="r!=0") ; hideL(-10=="dx_0^2+dy_0^2=1") ; hideL(-8=="c_0=0") ; hideL(-6=="-B()<=a") ; hideL(-4=="ep()>0") ; hideL(-2=="B()>=b()") ; QE
+            ),
+          unfold ; <(
+            hideL(-6=="abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw()") ; hideL(-16=="abs(y-ly())+v^2/(2*b()) < lw()") ; dI(1),
+            dI(1),
+            dI(1)
+            )
+          ),
+        unfold ; <(
+          hideL(-6=="abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw()") ; hideL(-15=="abs(y-ly())+v^2/(2*b()) < lw()") ; dI(1),
+          dI(1),
+          dI(1)
+          )
+        ),
+      unfold ; <(
+        hideL(-6=="abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw()") ; hideL(-14=="abs(y-ly())+v^2/(2*b()) < lw()") ; dI(1),
+        dI(1),
+        dI(1)
+        )
+      ),
+    unfold ; <(
+      hideL(-6=="abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw()") ; hideL(-14=="abs(y-ly())+v^2/(2*b()) < lw()") ; dI(1),
+      dI(1),
+      dI(1)
+      )
+    )
+  )
+End.
+
+Tactic "Scripted proof (2)"
+  implyR(1) ; loop("v>=0&dx^2+dy^2=1&r!=0&abs(y-ly())+v^2/(2*b()) < lw()", 1) ; <(
+    prop,
+    QE,
+    unfold ; <(
+      boxAnd(1) ; andR(1) ; <(
+        dW(1) ; prop,
+        dC("c>=0", 1) ; <(
+          dC("dx^2+dy^2=1", 1) ; <(
+            boxAnd(1) ; andR(1) ; <(
+              dW(1) ; prop,
+              boxAnd(1) ; andR(1) ; <(
+                GV(1) ; id,
+                dC("v=old(v)+a*c", 1) ; <(
+                  dC("-c*(v-a/2*c)<=y-old(y)&y-old(y)<=c*(v-a/2*c)", 1) ; <(
+                    dWplus(1) ; unfold ; hideL(-19=="dx^2+dy^2=1") ; hideL(-14=="r_0!=0") ; hideL(-13=="dx_0^2+dy_0^2=1") ; hideL(-11=="c_0=0") ; hideL(-10=="w_0*r=v_0") ; hideL(-9=="r!=0") ; hideL(-7=="-B()<=a") ; hideL(-9=="abs(y_0-ly())+v_0^2/(2*b()) < lw()") ; cut("abs(y_0-ly())+v_0^2/(2*b())+(A()/b()+1)*(A()/2*c^2+c*v_0) < lw()") ; <(
+                      hideL(-14=="c<=ep()") ; hideL(-6=="abs(y_0-ly())+v_0^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v_0) < lw()") ; hideL(-4=="ep()>0") ; QE,
+                      hideR(1=="abs(y-ly())+v^2/(2*b()) < lw()") ; hideL(-9=="-c*(v-a/2*c)<=y-y_0") ; hideL(-9=="y-y_0<=c*(v-a/2*c)") ; edit("abbrv(abs(y_0-ly()))+v_0^2/(2*b())+(A()/b()+1)*(A()/2*c^2+c*v_0) < lw()", 1) ; hideL(-13=="abbrv=abs(y_0-ly())") ; QE
+                    ),
+                    hideL(-6=="abs(y_0-ly())+v_0^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v_0) < lw()") ; hideL(-14=="abs(y_0-ly())+v_0^2/(2*b()) < lw()") ; dI(1)
+                  ),
+                  dI(1)
+                )
+              )
+            ),
+            dI(1)
+          ),
+          dI(1)
+        )
+      ),
+      boxAnd(1) ; andR(1) ; <(
+        dW(1) ; prop,
+        dC("c>=0", 1) ; <(
+          dC("dx^2+dy^2=1", 1) ; <(
+            boxAnd(1) ; andR(1) ; <(
+              dW(1) ; prop,
+              boxAnd(1) ; andR(1) ; <(
+                GV(1) ; id,
+                dC("v=old(v)", 1) ; <(
+                  dC("-c*v<=y-old(y)&y-old(y)<=c*v", 1) ; <(
+                    dWplus(1) ; unfold ; hideL(-19=="c<=ep()") ; hideL(-16=="dx^2+dy^2=1") ; hideL(-11=="r!=0") ; hideL(-10=="dx_0^2+dy_0^2=1") ; hideL(-8=="c_0=0") ; hideL(-7=="w_0=0") ; hideL(-4=="ep()>0") ; hideL(-2=="B()>=b()") ; hideL(-1=="A()>0") ; QE,
+                    dI(1)
+                  ),
+                  dI(1)
+                )
+              )
+            ),
+            dI(1)
+          ),
+          dI(1)
+        )
+      ),
+      boxAnd(1) ; andR(1) ; <(
+        dW(1) ; prop,
+        dC("c>=0", 1) ; <(
+          dC("dx^2+dy^2=1", 1) ; <(
+            boxAnd(1) ; andR(1) ; <(
+              dW(1) ; prop,
+              boxAnd(1) ; andR(1) ; <(
+                GV(1) ; id,
+                dC("v=old(v)+a*c", 1) ; <(
+                  dC("-c*(v-a/2*c)<=y-old(y)&y-old(y)<=c*(v-a/2*c)", 1) ; <(
+                    dWplus(1) ; unfold ; hideL(-16=="dx^2+dy^2=1") ; hideL(-11=="r!=0") ; hideL(-10=="dx_0^2+dy_0^2=1") ; hideL(-8=="c_0=0") ; hideL(-6=="-B()<=a") ; hideL(-14=="c<=ep()") ; hideL(-4=="ep()>0") ; hideL(-2=="B()>=b()") ; QE,
+                    dI(1)
+                  ),
+                  dI(1)
+                )
+              )
+            ),
+            dI(1)
+          ),
+          dI(1)
+        )
+      )
+    )
+  )
+End.
+
+Tactic "Scripted proof (3)"
+implyR(1) ; loop("v >= 0 & dx^2+dy^2 = 1 & r != 0 & abs(y-ly) + v^2/(2*b) < lw", 1) ; <(
+  prop,
+  QE,
+  unfold ; <(
+    dC("c>=0", 1) ; <(
+      dC("dx^2+dy^2=1", 1) ; <(
+        dC("v=old(v)+a*c", 1) ; <(
+          dC("-c*(v-a/2*c)<=y-old(y)&y-old(y)<=c*(v-a/2*c)", 1) ; <(
+            dWplus(1) ; unfold ; simplify(1) ;
+            hideL(-7=="-B()<=a") ; hideL(-8=="r!=0") ; hideL(-9=="r_0!=0") ; hideL(-13=="dx^2+dy^2=1") ;
+            hideL(-9=="abs(y_0-ly())+v_0^2/(2*b()) < lw()") ;
+            edit("expand(abs(y_0-ly()))+v_0^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v_0) < lw()", -6) ;
+            edit("abs_0+v_0^2/(2*b())+(A()/b()+1)*(A()/2*c^2+c*v_0) < lw()", -6) ;
+            hideL(-14=="c<=ep()") ; hideL(-4=="ep()>0") ;
+            edit("expand(abs(y-ly()))+v^2/(2*b()) < lw()", 1) ;
+            QE,
+            dI(1)
+            ),
+          dI(1)
+          ),
+        dI(1)
+        ),
+      dI(1)
+      ),
+    dC("c>=0", 1) ; <(
+      dC("dx^2+dy^2=1", 1) ; <(
+        dC("v=old(v)", 1) ; <(
+          dC("-c*v<=y-old(y)&y-old(y)<=c*v", 1) ; <(
+            dW(1) ; unfold ; simplify(1) ; QE,
+            dI(1)
+            ),
+          dI(1)
+          ),
+        dI(1)
+        ),
+      dI(1)
+      ),
+    dC("c>=0", 1) ; <(
+      dC("dx^2+dy^2=1", 1) ; <(
+        dC("v=old(v)+a*c", 1) ; <(
+          dC("-c*(v-a/2*c)<=y-old(y)&y-old(y)<=c*(v-a/2*c)", 1) ; <(
+            dW(1) ; unfold ; simplify(1) ; hideL(-14=="dx^2+dy^2=1") ; hideL(-9=="r!=0") ; hideL(-4=="ep()>0") ; hideL(-14=="c<=ep()") ; QE,
+            dI(1)
+            ),
+          dI(1)
+          ),
+        dI(1)
+        ),
+      dI(1)
+      )
+    )
+  )
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -1246,6 +1740,10 @@ Problem          /* differential dynamic logic formula */
  -> [
       {x'=v, v'=a & v>=0}
     ] v>=0
+End.
+
+Tactic "Scripted proof"
+  DW(1.1) ; simplify(1) ; GV(1.1) ; implyTrue(1) ; closeT
 End.
 
 Tactic "Automated proof"
@@ -1278,6 +1776,14 @@ Problem          /* differential dynamic logic formula */
         {x'=v, v'=a & v>=0}
       }*@invariant(v>=0)
     ] v>=0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; loop("v>=0", 1) ; <(
+    id,
+    id,
+    composeb(1) ; DW(1.1) ; simplify(1) ; GV(1.1) ; GV(1) ; closeT
+  )
 End.
 
 Tactic "Automated proof"
@@ -1315,6 +1821,14 @@ Problem
   ]v >= 0
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; loop("v>=0", 1) ; <(
+    id,
+    id,
+    composeb(1) ; DW(1.1) ; simplify(1) ; GV(1.1) ; GV(1) ; closeT
+  )
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -1346,6 +1860,14 @@ Problem          /* differential dynamic logic formula */
         {x'=v, v'=a, t'=1 & v>=0 & t<=ep}
       }*@invariant(v^2<=2*b*(m-x))
     ] x <= m
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; loop("v^2<=2*b()*(m-x)", 1) ; <(
+    id,
+    QE,
+    composeb(1) ; composeb(1.1) ; solve(1.1.1) ; unfold ; doall(QE)
+  )
 End.
 
 Tactic "Automated proof"
@@ -1417,6 +1939,14 @@ Problem
   ]x<=m()
 End.
 
+Tactic "Scripted proof"
+  implyR(1) ; loop("v^2<=2*b()*(m()-x)", 1) ; <(
+    solve(-1) ; QE,
+    QE,
+    composeb(1) ; composeb(1.1) ; solve(1.1.1) ; unfold ; doall(QE)
+  )
+End.
+
 Tactic "Automated proof"
   master
 End.
@@ -1437,6 +1967,13 @@ End.
 
 Problem
   v>=0 & b>0 -> ( v^2<=2*b*(m-x) <-> [{x'=v, v'=-b}]x<=m )
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; equivR(1) ; <(
+    solve(1) ; QE,
+    solve(-2) ; QE
+  )
 End.
 
 Tactic "Automated proof"
@@ -1466,6 +2003,27 @@ Problem
     <->
     2*b*(m-x) >= v^2 + (A + b)*(A*ep^2 + 2*ep*v)
    )
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; equivR(1) ; <(
+    composeb(-2) ; solve(-2.1.1) ; solve(-2.1) ; assignb(-2) ; QE,
+    composeb(1) ; assignb(1) ; solve(1.1) ; solve(1) ; allR(1) ; implyR(1) ; implyR(1) ; allR(1) ; implyR(1) ; allR(1) ; implyR(1) ; allL("t__0", -5) ; implyL(-5) ; <(
+      hideR(1=="(-b())*(t_^2/2)+(A()*kyxtime+v)*t_+(A()*(kyxtime^2/2)+v*kyxtime+x)<=m()") ; QE,
+      QE
+    )
+  )
+End.
+
+Tactic "Scripted proof (2)"
+  implyR(1); equivR(1); <(
+    chaseAt(-2); solve(-2.0.1); solve(-2.0.1.0.1.1.1.0.1.0.1); QE,
+    unfold; solve(1); solve(1.0.1.1.0.1.0.1); QE
+  )
+End.
+
+Tactic "Automated proof"
+  master
 End.
 
 End.
