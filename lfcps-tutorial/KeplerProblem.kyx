@@ -21,12 +21,12 @@ Problem
 End.
 
 Tactic "Kepler two body: Proof"
-/* requires QE("Mathematica") */
+useSolver("Mathematica");
 implyR(1) ; dI(1)
 End.
 
 Tactic "Kepler two body: Proof"
-/* requires QE("Mathematica") */
+useSolver("Mathematica");
 master
 End.
 
