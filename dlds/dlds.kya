@@ -1,4 +1,4 @@
-ArchiveEntry "01 Continuous car goes forward"
+ArchiveEntry "01 Continuous car accelerates"
 
 ProgramVariables  /* program variables may change their value over time */
   Real x;         /* position of the car */
@@ -101,7 +101,7 @@ Problem           /* differential dynamic logic formula */
         {?(2*b*(m-x) >= v^2+(A+b)*(A*ep^2+2*ep*v)); a:=A; ++ a:=-b; }
         t := 0;
         {x'=v, v'=a, t'=1 & v>=0 & t<=ep}
-      }*@invariant(v^2<=2*b*(m-x))
+      }* @invariant(v^2<=2*b*(m-x))
     ] x <= m
 End.
 
@@ -371,7 +371,7 @@ Tactic "Parachute: Proof 1"
 End.
 
 Tactic "Parachute: Invariants+Automation"
-/* requires QE("Mathematica") */
+useSolver("Mathematica");
 implyR(1) ; loop("(x>=0&v < 0)&v>-(g/p)^(1/2)", 1) ; <(
   QE,
   QE,
@@ -386,7 +386,7 @@ implyR(1) ; loop("(x>=0&v < 0)&v>-(g/p)^(1/2)", 1) ; <(
 End.
 
 Tactic "Parachute: Automatic"
-  /* requires QE("Mathematica") */
+  useSolver("Mathematica");
   master
 End.
 
