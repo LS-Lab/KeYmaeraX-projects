@@ -1,4 +1,4 @@
-ArchiveEntry "POPL: 1 Bouncing ball"
+ArchiveEntry "POPL/POPL: 1 Bouncing ball"
 Description "Acrophobic Bouncing Ball".
 
 Definitions       /* function symbols cannot change their value */
@@ -44,7 +44,7 @@ End.
 
 Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
 End.
-ArchiveEntry "POPL: 2 Safely stopping car"
+ArchiveEntry "POPL/POPL: 2 Safely stopping car"
 Description "Cars don't run stop signs".
 
 Definitions       /* function symbols cannot change their value */
@@ -104,7 +104,7 @@ Tactic "Safety of time-triggered car: Automatic"
 End.
 
 End.
-Exercise "POPL: 3 Exercise: CurveBot"
+Exercise "POPL/POPL: 3 Exercise: CurveBot"
 Description "CurveBot: run a robot round the bend".
 
 ProgramVariables
@@ -134,8 +134,10 @@ End.
 
 Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
 End.
-ArchiveEntry "POPL: 3 Solution: CurveBot"
-Description "CurveBot: run a robot round the bend (with definitions)".
+/* Exported from KeYmaera X v4.7.4 */
+
+ArchiveEntry "POPL/POPL: 3 Solution: CurveBot"
+Description "CurveBot: run a robot round the bend".
 
 ProgramVariables
   Real x, y;    /* robot x/y position */
@@ -162,7 +164,23 @@ Problem
   ] !(x=ox & y=oy)
 End.
 
-Tactic "CurveBot: Proof"
+
+Tactic "4 Solution: Runaround Robot: Proof"
+implyR(1) ; loop("!(x=ox&y=oy)", 1) ; <(
+  QE,
+  id,
+  composeb(1) ; choiceb(1) ; andR(1) ; <(
+    unfold ; expand "Q" ; ODE(1),
+    unfold ; <(
+      expand "Q" ; ODE(1),
+      expand "Qline" ; ODE(1)
+      )
+    )
+  )
+End.
+
+
+Tactic "4 Solution: Runaround Robot: Manual Proof"
   implyR(1) ; loop("!(x=ox&y=oy)", 1) ; <(
   QE,
   id,
@@ -191,11 +209,11 @@ Tactic "CurveBot: Proof"
   )
 End.
 
-Tactic "CurveBot: automatic"
+Tactic "4 Solution: Runaround Robot: automatic"
   master
 End.
 
-Tactic "CurveBot: unfold"
+Tactic "4 Solution: Runaround Robot: unfold"
 unfold ; loop("!(x=ox&y=oy)", 1) ; <(
   QE,
   QE,
@@ -203,9 +221,11 @@ unfold ; loop("!(x=ox&y=oy)", 1) ; <(
   )
 End.
 
+
 Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
+
 End.
-Exercise "POPL: 4 Exercise: Bouncing ball"
+Exercise "POPL/POPL: 4 Exercise: Bouncing ball"
 Description "Exercise: Bouncing Ball".
 
 Definitions       /* function symbols cannot change their value */
@@ -232,7 +252,7 @@ End.
 
 Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
 End.
-ArchiveEntry "POPL: 5 Damped oscillator"
+ArchiveEntry "POPL/POPL: 5 Damped oscillator"
 Description "Damped oscillators stay in ellipses".
 
 Definitions        /* function symbols cannot change their value */
@@ -264,7 +284,7 @@ Illustration "https://lfcps.org/info/fig-damposc-evo2t-region.png".
 End.
 
 
-ArchiveEntry "POPL: 5 Damped oscillator"
+ArchiveEntry "POPL/POPL: 5 Damped oscillator"
 Description "Increasingly damped oscillators stay in ellipses".
 
 Definitions
@@ -298,7 +318,7 @@ End.
 
 Illustration "https://lfcps.org/info/fig-damped-damped-osc-field-region.png".
 End.
-Exercise "POPL: 6 Exercise: Parachute"
+Exercise "POPL/POPL: 6 Exercise: Parachute"
 Description "Exercise: Safely deployed parachutes".
 
 Definitions
@@ -334,7 +354,7 @@ End.
 
 Illustration "https://lfcps.org/info/fig-parachute.png".
 End.
-ArchiveEntry "POPL: 6 Solution: Parachute"
+ArchiveEntry "POPL/POPL: 6 Solution: Parachute"
 Description "Safely deployed parachutes have bounded velocities".
 
 Definitions
@@ -363,7 +383,10 @@ Problem
       r := p;
     }
     t := 0;
-    {{x'=v, v'=-g+r*v^2, t'=1 & t<=T & x>=0 & v<0}@invariant(v-g*(T-t)>-(g/p)^(1/2))}
+    {{x'=v, v'=-g+r*v^2, t'=1 & t<=T & x>=0 & v<0}@invariant(
+      (v'=-g+a*v^2 -> v-g*(T-t)>-(g/p)^(1/2)),
+      (v'=-g+p*v^2 -> v>=old(v)-g*t))
+    }
   }* @invariant((x>=0 & v<0) & v>-(g/p)^(1/2))
 ](x=0 -> v>=m)
 End.
@@ -386,7 +409,7 @@ Tactic "Parachute: Proof 1"
 End.
 
 Tactic "Parachute: Invariants+Automation"
-/* requires QE("Mathematica") */
+useSolver("Mathematica");
 implyR(1) ; loop("(x>=0&v < 0)&v>-(g/p)^(1/2)", 1) ; <(
   QE,
   QE,
@@ -401,7 +424,7 @@ implyR(1) ; loop("(x>=0&v < 0)&v>-(g/p)^(1/2)", 1) ; <(
 End.
 
 Tactic "Parachute: Automatic"
-  /* requires QE("Mathematica") */
+  useSolver("Mathematica");
   master
 End.
 

@@ -480,7 +480,10 @@ Problem
       r := p;
     }
     t := 0;
-    {{x'=v, v'=-g+r*v^2, t'=1 & t<=T & x>=0 & v<0}@invariant(v-g*(T-t)>-(g/p)^(1/2))}
+    {{x'=v, v'=-g+r*v^2, t'=1 & t<=T & x>=0 & v<0}
+     @invariant((v'=-g+a*v^2 -> v-g*(T-t)>-(g/p)^(1/2)),
+                (v'=-g+p*v^2 -> v>=old(v)-g*t))
+    }
   }* @invariant((x>=0 & v<0) & v>-(g/p)^(1/2))
 ](x=0 -> v>=m)
 End.
@@ -503,7 +506,7 @@ Tactic "Parachute nonaerodynamic: Proof 1"
 End.
 
 Tactic "Parachute nonaerodynamic: Invariants+Automation"
-/* requires QE("Mathematica") */
+useSolver("Mathematica");
 implyR(1) ; loop("(x>=0&v < 0)&v>-(g/p)^(1/2)", 1) ; <(
   QE,
   QE,
@@ -518,7 +521,7 @@ implyR(1) ; loop("(x>=0&v < 0)&v>-(g/p)^(1/2)", 1) ; <(
 End.
 
 Tactic "Parachute nonaerodynamic: Automatic"
-  /* requires QE("Mathematica") */
+  useSolver("Mathematica");
   master
 End.
 
