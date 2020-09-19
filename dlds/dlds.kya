@@ -1,4 +1,4 @@
-ArchiveEntry "01 Continuous car accelerates"
+ArchiveEntry "DLDS/01 Continuous car accelerates"
 
 ProgramVariables  /* program variables may change their value over time */
   Real x;         /* position of the car */
@@ -26,7 +26,7 @@ Tactic "LICS: 1 Continuous car accelerates forward: Automatic Proof"
 End.
 
 End.
-ArchiveEntry "02 Single car drives forward"
+ArchiveEntry "DLDS/02 Single car drives forward"
 Description "Cars have nonnegative velocity".
 
 Definitions       /* function symbols cannot change their value */
@@ -77,7 +77,7 @@ Tactic "LICS: 2 Single car drives forward: Automatic Proof"
 End.
 
 End.
-ArchiveEntry "03 Safe stopping of time-triggered car"
+ArchiveEntry "DLDS/03 Safe stopping of time-triggered car"
 Description "Cars don't run stop signs".
 
 Definitions       /* function symbols cannot change their value */
@@ -135,7 +135,7 @@ Tactic "Safety of time-triggered car: Automatic"
 End.
 
 End.
-ArchiveEntry "04 Bouncing Ball"
+ArchiveEntry "DLDS/04 Bouncing Ball"
 Description "Acrophobic Bouncing Ball".
 
 Definitions       /* function symbols cannot change their value */
@@ -213,7 +213,7 @@ End.
 
 Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
 End.
-ArchiveEntry "05 Simple rotational dynamics"
+ArchiveEntry "DLDS/05 Simple rotational dynamics"
 Description "Rotating points stay on circles".
 
 ProgramVariables
@@ -232,7 +232,7 @@ Tactic "10: Simple rotational dynamics: Proof 1"
 End.
 
 End.
-ArchiveEntry "06 Damped Oscillator"
+ArchiveEntry "DLDS/06 Damped Oscillator"
 Description "Damped oscillators stay in ellipses".
 
 Definitions        /* function symbols cannot change their value */
@@ -264,7 +264,7 @@ Illustration "https://lfcps.org/info/fig-damposc-evo2t-region.png".
 End.
 
 
-ArchiveEntry "06 Increasingly Damped Oscillator"
+ArchiveEntry "DLDS/06 Increasingly Damped Oscillator"
 Description "Increasingly damped oscillators stay in ellipses".
 
 Definitions
@@ -298,7 +298,7 @@ End.
 
 Illustration "https://lfcps.org/info/fig-damped-damped-osc-field-region.png".
 End.
-ArchiveEntry "07 Exponential Decay: [x'=-x]x>0"
+ArchiveEntry "DLDS/07 Exponential Decay: [x'=-x]x>0"
 
 ProgramVariables
   Real x;
@@ -319,7 +319,7 @@ End.
 
 End.
 
-ArchiveEntry "08 Parachute"
+ArchiveEntry "DLDS/08 Parachute"
 Description "Safely deployed parachutes have bounded velocities".
 
 Definitions
@@ -396,7 +396,7 @@ End.
 Illustration "https://lfcps.org/info/fig-parachute.png".
 End.
        
-ArchiveEntry "09 Dual Filibuster Game"
+ArchiveEntry "DLDS/09 Dual Filibuster Game"
 
 ProgramVariables
   Real x;
@@ -415,7 +415,7 @@ Tactic "Dual Filibuster Game: Proof 1"
 End.
 
 End.
-ArchiveEntry "10 Push-around cart"
+ArchiveEntry "DLDS/10 Push-around cart"
 
 ProgramVariables
   Real x;     /* cart position */
@@ -466,7 +466,7 @@ End.
 Illustration "https://lfcps.org/info/fig-push-around-cart.png".
 End.
        
-ArchiveEntry "11 Wall-E & Eve"
+ArchiveEntry "DLDS/11 Wall-E & Eve"
 
 ProgramVariables
   Real w;    /* WALL-E position */
@@ -515,7 +515,7 @@ End.
 
 End.
        
-ArchiveEntry "12 Goalie in robot soccer"
+ArchiveEntry "DLDS/12 Goalie in robot soccer"
 
 ProgramVariables
   Real x, y;   /* x/y-coordinate of ball */
