@@ -1,0 +1,1468 @@
+ArchiveEntry "Static semantics correctness: Assignment 1"
+
+Description "Basic assignment".
+
+ProgramVariables
+  Real x;
+End.
+
+Problem
+  x>=0 -> [x:=x+1;]x>=1
+End.
+
+Tactic "Scripted proof"
+  implyR(1); assignb(1); QE
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Static semantics correctness: Assignment 2"
+
+Description "Overwrite assignment on some branches".
+
+ProgramVariables
+  Real x;
+  Real y;
+End.
+
+Problem
+  x>=0 -> [x:=x+1;][x:=x+1; ++ y:=x+1;]x>=1
+End.
+
+Tactic "Scripted proof"
+  assignb(1.1) ; choiceb(1.1.0.1) ; assignb(1.1.0.1.0) ; assignb(1.1.0.1.1) ; QE
+End.
+
+Tactic "Scripted proof (2)"
+  implyR(1) ; assignb(1) ; choiceb(1) ; andR(1) ; <(
+    assignb(1) ; QE,
+    assignb(1) ; QE
+  )
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+
+ArchiveEntry "Static semantics correctness: Assignment 3"
+
+Description "Overwrite assignment in loop".
+
+ProgramVariables
+  Real x;
+End.
+
+Problem
+  x>=0 -> [x:=x+1;][{x:=x+1;}*@invariant(x>=1)]x>=1
+End.
+
+Tactic "Scripted proof"
+  unfold ; loop("x>=1", 1) ; <(
+    QE,
+    id,
+    assignb(1) ; QE
+  )
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Static semantics correctness: Assignment 4"
+
+Description "Overwrite assignment in ODE".
+
+ProgramVariables
+  Real x;
+End.
+
+Problem
+  x>=0 -> [x:=x+1;][{x'=2}]x>=1
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; assignb(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Static semantics correctness: Assignment 5"
+
+Description "Overwrite with nondeterministic assignment".
+
+ProgramVariables
+  Real x;
+End.
+
+Problem
+  x>=0 -> [x:=x+1;][x:=*; ?x>=1;]x>=1
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; assignb(1) ; composeb(1) ; randomb(1) ; allR(1) ; testb(1) ; prop
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Static semantics correctness: Assignment 6"
+
+Description "Tests and universal quantification".
+
+ProgramVariables
+  Real x;
+  Real y;
+End.
+
+Problem
+  x>=0 -> [x:=x+1;][?x>=2; x:=x-1; ++ ?\forall x (x>=1 -> y>=1); x:=y;]x>=1
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; assignb(1) ; choiceb(1) ; andR(1) ; <(
+    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE,
+    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; allL("x+1",-2) ; implyL(-2) ; <(
+      QE,
+      id
+    )
+  )
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Static semantics correctness: Assignment 7"
+
+Description "Overwrite assignment several times".
+
+ProgramVariables
+  Real x;
+  Real y;
+End.
+
+Problem
+  x>=0 & y>=1 -> [x:=x+1;][{x:=x+1;}*@invariant(x>=1) ++ y:=x+1;][{y'=2}][x:=y;]x>=1
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; assignb(1) ; choiceb(1) ; andR(1) ; <(
+    loop("x>=1", 1) ; <(
+      QE,
+      assignb(1.1) ; ODE(1),
+      assignb(1) ; QE
+    ),
+    assignb(1) ; assignb(1.1) ; ODE(1)
+  )
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Static semantics correctness: Assignment 8"
+
+Description "Potentially overwrite dynamics".
+
+ProgramVariables
+  Real x;
+  Real y;
+End.
+
+Problem
+  x>0 & y>0 -> [{x'=5}][{x:=x+3;}*@invariant(x>0) ++ y:=x;](x>0&y>0)
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1) ; dW(1) ; choiceb(1) ; andR(1) ; <(
+    loop("x>0", 1) ; <(
+      QE,
+      prop,
+      assignb(1) ; QE
+    ),
+    assignb(1) ; QE
+  )
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Static semantics correctness: Assignment 9"
+
+Description "Potentially overwrite exponential decay".
+
+ProgramVariables
+  Real x;
+  Real y;
+End.
+
+Problem
+  x>0 & y>0 -> [{x'=-x}][{x:=x+3;}*@invariant(x>0) ++ y:=x;](x>0&y>0)
+End.
+
+Tactic "Scripted proof"
+  implyR(1); ODE(1); dW(1); unfold; <(
+    loop("x>0", 1); <(
+      id,
+      prop,
+      assignb(1) ; QE
+    ),
+    prop
+  )
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Cascaded"
+
+ProgramVariables
+  Real x;
+  Real y;
+End.
+
+Problem
+  x>0 -> [{x'=5};{x'=2};{x'=x}]x>0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; composeb(1) ; ODE(1) ; dW(1) ; composeb(1) ; ODE(1) ; dW(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Single integrator time"
+
+ProgramVariables
+  Real x;
+End.
+
+Problem
+  x=0->[{x'=1}]x>=0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Single integrator"
+
+ProgramVariables
+  Real x;
+  Real y;
+End.
+
+Problem
+  x>=0 & y>=0 -> [{x'=y}]x>=0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Double integrator"
+
+ProgramVariables
+  Real x;
+  Real y;
+  Real z;
+End.
+
+Problem
+  x>=0 & y>=0 & z>=0 -> [{x'=y,y'=z}]x>=0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Triple integrator"
+
+ProgramVariables
+  Real x;
+  Real y;
+  Real z;
+  Real j;
+End.
+
+Problem
+  x>=0 & y>=0 & z>=0 & j>=0 -> [{x'=y,y'=z,z'=j,j'=j^2}]x>=0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Exponential decay (1)"
+
+ProgramVariables
+  Real x;
+End.
+
+Problem
+  x>0 -> [{x'=-x}]x>0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Exponential decay (2)"
+
+ProgramVariables
+  Real x;
+End.
+
+Problem
+  x>0 -> [{x'=-x+1}]x>0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Exponential decay (3)"
+
+ProgramVariables
+  Real x;
+  Real y;
+End.
+
+Problem
+  x>0 & y>0->[{x'=-y*x}]x>0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Exponential growth (1)"
+
+ProgramVariables
+  Real x;
+End.
+
+Problem
+  x>=0 -> [{x'=x}]x>=0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Exponential growth (2)"
+
+ProgramVariables
+  Real x;
+  Real y;
+End.
+
+Problem
+  x>=0 & y>=0 -> [{x'=y, y'=y^2}]x>=0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Exponential growth (4)"
+
+ProgramVariables
+  Real x;
+End.
+
+Problem
+  x>0 -> [{x'=x^x}]x>0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Exponential growth (5)"
+
+ProgramVariables
+  Real x;
+End.
+
+Problem
+  x>=1 -> [{x'=x^2+2*x^4}]x^3>=x^2
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Rotational dynamics (1)"
+
+ProgramVariables
+  Real x;
+  Real y;
+End.
+
+Problem
+  x^2+y^2=1 -> [{x'=-y, y'=x}]x^2+y^2=1
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Rotational dynamics (2)"
+
+ProgramVariables
+  Real x;
+  Real y;
+  Real e;
+End.
+
+Problem
+  x^2+y^2=1 & e=x -> [{x'=-y, y'=e, e'=-y}](x^2+y^2=1 & e=x)
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Rotational dynamics (3)"
+
+ProgramVariables
+  Real x1;
+  Real x2;
+  Real d1;
+  Real d2;
+  Real w;
+  Real p;
+End.
+
+Problem
+  d1^2+d2^2=w^2*p^2 & d1=-w*x2 & d2=w*x1 ->
+    [{x1'=d1, x2'=d2, d1'=-w*d2, d2'=w*d1}](d1^2+d2^2=w^2*p^2 & d1=-w*x2 & d2=w*x1)
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Spiral to equilibrium"
+
+ProgramVariables
+  Real w;
+  Real x;
+  Real y;
+End.
+
+Problem
+  w>=0 & x=0 & y=3 -> [{x'=y, y'=-w^2*x-2*w*y}]w^2*x^2+y^2<=9
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Open cases"
+
+ProgramVariables
+  Real x;
+  Real y;
+End.
+
+Problem
+  x^3>5 & y>2 -> [{x'=x^3+x^4, y'=5*y+y^2}](x^3>5 & y>2)
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Closed cases"
+
+ProgramVariables
+  Real x;
+  Real y;
+  Real z;
+End.
+
+Problem
+  x>=1 & y=10 & z=-2 -> [{x'=y, y'=z+y^2-y & y>=0}](x>=1 & y>=0)
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Conserved quantity"
+
+ProgramVariables
+  Real x1;
+  Real x2;
+  Real c;
+End.
+
+Problem
+  x1^4*x2^2+x1^2*x2^4-3*x1^2*x2^2+1 <= c ->
+    [{x1'=2*x1^4*x2+4*x1^2*x2^3-6*x1^2*x2, x2'=-4*x1^3*x2^2-2*x1*x2^4+6*x1*x2^2}] x1^4*x2^2+x1^2*x2^4-3*x1^2*x2^2+1 <= c
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Darboux equality"
+
+Definitions
+  Real B().
+End.
+
+ProgramVariables
+  Real x;
+  Real y;
+  Real z;
+  Real A;
+End.
+
+Problem
+  x+z=0 -> [{x'=(A*x^2+B()*x), z' = A*z*x+B()*z}] 0=-x-z
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Fractional Darboux equality"
+
+Definitions
+  Real B().
+End.
+
+ProgramVariables
+  Real x;
+  Real y;
+  Real z;
+  Real A;
+End.
+
+Problem
+  x+z=0 -> [{x'=(A*y+B()*x)/z^2, z' = (A*x+B())/z & y = x^2 & z^2 > 0}] x+z=0
+End.
+
+Tactic "Scripted proof"
+  implyR(1); dbx("(x*A+B())/z^2", 1)
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Darboux inequality"
+
+Definitions
+  Real B();
+End.
+
+ProgramVariables
+  Real x;
+  Real y;
+  Real z;
+End.
+
+Problem
+  x+z>=0 -> [{x'=x^2, z' = z*x+y & y = x^2}] x+z>=0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Nonlinear 1"
+
+ProgramVariables
+  Real x;
+  Real a;
+End.
+
+Problem
+  x^3 >= -1 -> [{x'=(x-3)^4+a & a>=0}] x^3>=-1
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Nonlinear 2"
+
+Description "Example 2".
+Citation "Tiwari, A. & Khanna, G. Alur, R. & Pappas, G. J. (ed.) Nonlinear Systems: Approximating Reach Sets. HSCC, Springer, 2004, 2993, 600-614".
+
+ProgramVariables
+  Real x1;
+  Real x2;
+  Real a;
+End.
+
+Problem
+  x1+x2^2/2=a -> [{x1'=x1*x2,x2'=-x1}]x1+x2^2/2=a
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Nonlinear 4"
+
+Description "Example 4".
+Citation "Tiwari, A. & Khanna, G. Alur, R. & Pappas, G. J. (ed.) Nonlinear Systems: Approximating Reach Sets. HSCC, Springer, 2004, 2993, 600-614".
+
+ProgramVariables
+  Real x1;
+  Real x2;
+  Real a;
+End.
+
+Problem
+  x1^2/2-x2^2/2>=a -> [{x1'=x2+x1*x2^2, x2'=-x1+x1^2*x2 & x1>=0 & x2>=0}]x1^2/2-x2^2/2>=a
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Nonlinear 5"
+
+Description "Example 5".
+Citation "Tiwari, A. & Khanna, G. Alur, R. & Pappas, G. J. (ed.) Nonlinear Systems: Approximating Reach Sets. HSCC, Springer, 2004, 2993, 600-614".
+
+ProgramVariables
+  Real x1;
+  Real x2;
+  Real a;
+End.
+
+Problem
+  -x1*x2>=a -> [{x1'=x1-x2+x1*x2, x2'=-x2-x2^2}]-x1*x2>=a
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Riccati"
+
+ProgramVariables
+  Real x;
+End.
+
+Problem
+   2*x^3 >= 1/4 -> [{x'=x^2+x^4}] 2*x^3>=1/4
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "Dynamics: Nonlinear differential cut"
+
+ProgramVariables
+  Real x;
+  Real y;
+End.
+
+Problem
+  x^3 >= -1 & y^5 >= 0 -> [{x'=(x-3)^4+y^5, y'=y^2}] (x^3 >= -1 & y^5 >= 0)
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "STTT Tutorial: Example 1"
+
+Description "A simple system in which a car starts at some nonnegative velocity and accelerates at a constant rate along a straight lane. The requirement we want to prove is that the car never travels backward in space.".
+Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
+Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=7".
+
+Definitions
+  Real A;
+End.
+
+ProgramVariables
+  Real x;
+  Real v;
+End.
+
+Problem
+  v >= 0 & A > 0 -> [ { x' = v, v' = A } ] v >= 0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; ODE(1)
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "STTT Tutorial: Example 2"
+
+Description "A hybrid system model of a car with discrete control choices: accelerate, stay stopped, or brake. The requirement to prove is that the car never travels backwards in space.".
+Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
+Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=8".
+
+Definitions
+  Real A;
+  Real B;
+End.
+
+ProgramVariables
+  Real x;
+  Real v;
+  Real a;
+End.
+
+Problem
+    v >= 0 & A > 0 & B > 0
+ -> [
+      { {a := A; ++ a := 0; ++ a := -B;};
+        { x' = v, v' = a & v >= 0 }
+      }*@invariant(v >= 0)
+    ] v >= 0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; loop("v>=0", 1) ; <(
+    id,
+    id,
+    composeb(1) ; DW(1.1) ; simplify(1) ; GV(1.1) ; GV(1) ; closeT
+  )
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "STTT Tutorial: Example 4a"
+
+Description "A hybrid car model where the controller runs when the car is about to run a stop sign. The example illustrates that certain modeling pitfalls result in vacuous proofs.".
+Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
+Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=12".
+
+Definitions
+  Real A;
+  Real V;
+End.
+
+ProgramVariables
+  Real x;
+  Real v;
+  Real a;
+End.
+
+Problem
+    v <= V & A > 0
+ -> [
+      { {
+           ?v=V; a:=0;
+        ++ ?v!=V; a:=A;
+        }
+
+        {x' = v, v' = a & v <= V}
+      }*@invariant(v <= V)
+    ] v <= V
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; loop("v<=V()", 1) ; <(
+    id,
+    id,
+    composeb(1) ; DW(1.1) ; simplify(1) ; GV(1.1) ; GV(1) ; closeT
+  )
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "STTT Tutorial: Example 4b"
+
+Description "A hybrid car model where the controller runs when the car is about to run a stop sign. The example illustrates that overly strong evolution domain constraints can result in a vacuous proof.".
+Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
+Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=12".
+
+Definitions
+  Real A;
+  Real V;
+End.
+
+ProgramVariables
+  Real x;
+  Real v;
+  Real a;
+End.
+
+Problem
+    v <= V & A > 0
+ -> [
+      { a := A;
+
+        {x' = v, v' = a & v <= V}
+      }*@invariant(v <= V)
+    ] v <= V
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; loop("v<=V()", 1) ; <(
+    id,
+    id,
+    composeb(1) ; DW(1.1) ; simplify(1) ; GV(1.1) ; GV(1) ; closeT
+  )
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "STTT Tutorial: Example 4c"
+
+Description "A hybrid car model where the controller runs when the car is about to run a stop sign. The example illustrates the correct modeling idiom to prevent vacuous proofs from evolution domain constraints.".
+Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
+Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=12".
+
+Definitions
+  Real A;
+  Real V;
+End.
+
+ProgramVariables
+  Real x;
+  Real v;
+  Real a;
+End.
+
+Problem
+    v <= V & A > 0
+ -> [
+      { {
+           ?v=V; a:=0;
+        ++ ?v!=V; a:=A;
+        }
+
+        {  {x' = v, v' = a & v <= V}
+        ++ {x' = v, v' = a & v >= V}}
+      }*@invariant(v <= V)
+    ] v <= V
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; loop("v<=V()", 1) ; <(
+    id,
+    id,
+    composeb(1) ; choiceb(1.1) ; DW(1.1.0) ; simplify(1) ; GV(1.1.0) ; trueAnd(1.1) ; choiceb(1) ; andR(1) ; <(
+      unfold ; ODE(1),
+      unfold ; diffUnpackEvolDomain(1) ; hideR(1=="[{x'=v,v'=A()&v>=V()}]v<=V()") ; QE
+    )
+  )
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "STTT Tutorial: Example 5"
+
+Description "A hybrid car model where the controller runs periodically at some maximum time interval between executions. The requirement to prove is that the car never runs the stop sign.".
+Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
+Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=13".
+
+Definitions
+  Real A;
+  Real B;
+  Real S;
+  Real ep;
+End.
+
+ProgramVariables
+  Real x;
+  Real v;
+  Real a;
+  Real c;
+End.
+
+Problem
+    v >= 0 & A > 0 & B > 0 & x+v^2/(2*B) <= S & ep > 0
+ -> [
+      { {   ?x+v^2/(2*B) + (A/B+1)*(A/2*ep^2+ep*v) <= S; a := A;
+         ++ ?v=0; a := 0;
+         ++ a := -B;
+        };
+
+        c := 0;
+        { x' = v, v' = a, c' = 1 & v >= 0 & c <= ep }
+      }*@invariant(v >= 0 & x+v^2/(2*B) <= S)
+    ] x <= S
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; loop("v>=0&x+v^2/(2*B())<=S()", 1) ; <(
+    QE,
+    QE,
+    composeb(1) ; composeb(1.1) ; boxAnd(1.1.1) ; DW(1.1.1.0) ; simplify(1) ; GV(1.1.1.0) ; trueAnd(1.1.1) ;
+    solve(1.1.1) ; unfold ; doall(QE)
+  )
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "STTT Tutorial: Example 6"
+
+Description "A hybrid car model where the controller can make non-deterministic decisions on acceleration. The requirement to prove is that the controller never runs the stop sign.".
+Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
+Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=14".
+
+Definitions
+  Real A;
+  Real B;
+  Real S;
+  Real ep;
+End.
+
+ProgramVariables
+  Real x;
+  Real v;
+  Real a;
+  Real c;
+End.
+
+Problem
+    v >= 0 & A > 0 & B > 0 & x+v^2/(2*B) <= S & ep > 0
+ -> [
+      { {   ?x+v^2/(2*B) + (A/B+1)*(A/2*ep^2+ep*v) <= S; a :=*; ?-B <= a & a <= A;
+         ++ ?v=0; a := 0;
+         ++ a := -B;
+        };
+
+        c := 0;
+        { x' = v, v' = a, c' = 1 & v >= 0 & c <= ep }
+      }*@invariant(v >= 0 & x+v^2/(2*B) <= S)
+    ] x <= S
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; loop("v>=0&x+v^2/(2*B())<=S()", 1) ; <(
+    QE,
+    QE,
+    composeb(1) ; composeb(1.1) ; boxAnd(1.1.1) ; DW(1.1.1.0) ; simplify(1) ; GV(1.1.1.0) ; trueAnd(1.1.1) ;
+    solve(1.1.1) ; unfold ; doall(QE)
+  )
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "STTT Tutorial: Example 7"
+
+Description "A hybrid car model with non-deterministic braking characteristics. The requirement to prove is that the car never runs a stop sign.".
+Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
+Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=15".
+
+Definitions
+  Real A;
+  Real B;
+  Real b;
+  Real S;
+  Real ep;
+End.
+
+ProgramVariables
+  Real x;
+  Real v;
+  Real a;
+  Real c;
+End.
+
+Problem
+    v >= 0 & A > 0 & B >= b & b > 0 & x+v^2/(2*b) <= S & ep > 0
+ -> [
+      { {   ?x+v^2/(2*b) + (A/b+1)*(A/2*ep^2+ep*v) <= S; a :=*; ?-B <= a & a <= A;
+         ++ ?v=0; a := 0;
+         ++ a :=*; ?-B <=a & a <= -b;
+        };
+
+        c := 0;
+        { x' = v, v' = a, c' = 1 & v >= 0 & c <= ep }
+      }*@invariant(v >= 0 & x+v^2/(2*b) <= S)
+    ] x <= S
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; loop("v>=0&x+v^2/(2*b())<=S()", 1) ; <(
+    QE,
+    QE,
+    composeb(1) ; composeb(1.1) ; boxAnd(1.1.1) ; DW(1.1.1.0) ; simplify(1) ; GV(1.1.1.0) ; trueAnd(1.1.1) ;
+    solve(1.1.1) ; unfold ; doall(QE)
+  )
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "LICS: Example 1 Continuous car accelerates forward"
+
+Citation "André Platzer. Logics of dynamical systems. ACM/IEEE Symposium on Logic in Computer Science, LICS 2012, June 25–28, 2012, Dubrovnik, Croatia, pp. 13-24. IEEE 2012.".
+Link "http://symbolaris.com/pub/lds-lics.pdf#page=4".
+
+ProgramVariables /* program variables may change their value over time */
+  Real x;            /* position of the car */
+  Real v;            /* velocity of the car */
+  Real a;            /* acceleration of the car */
+End.
+
+Problem          /* differential dynamic logic formula */
+    v>=0 & a>=0
+ -> [
+      {x'=v, v'=a & v>=0}
+    ] v>=0
+End.
+
+Tactic "Scripted proof"
+  DW(1.1) ; simplify(1) ; GV(1.1) ; implyTrue(1) ; closeT
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "LICS: Example 2 Single car drives forward"
+
+Citation "André Platzer. Logics of dynamical systems. ACM/IEEE Symposium on Logic in Computer Science, LICS 2012, June 25–28, 2012, Dubrovnik, Croatia, pp. 13-24. IEEE 2012.".
+Link "http://symbolaris.com/pub/lds-lics.pdf#page=5".
+
+Definitions        /* function symbols cannot change their value */
+  Real b();          /* braking capabilities */
+  Real A();          /* maximum acceleration */
+End.
+
+ProgramVariables /* program variables may change their value over time */
+  Real x;            /* position of the car */
+  Real v;            /* velocity of the car */
+  Real a;            /* acceleration of the car */
+End.
+
+Problem          /* differential dynamic logic formula */
+    v>=0  & A>=0 & b>0
+ -> [
+      {
+        {a:=A; ++ a:=-b;}
+        {x'=v, v'=a & v>=0}
+      }*@invariant(v>=0)
+    ] v>=0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; loop("v>=0", 1) ; <(
+    id,
+    id,
+    composeb(1) ; DW(1.1) ; simplify(1) ; GV(1.1) ; GV(1) ; closeT
+  )
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "LICS: Example 3a event-triggered car drives forward"
+
+Citation "André Platzer. Logics of dynamical systems. ACM/IEEE Symposium on Logic in Computer Science, LICS 2012, June 25–28, 2012, Dubrovnik, Croatia, pp. 13-24. IEEE 2012.".
+Link "http://symbolaris.com/pub/lds-lics.pdf#page=7".
+
+ProgramVariables
+	Real x;  /* x position of car */
+	Real v;  /* v velocity of car */
+	Real a;  /* a acceleration of car */
+	Real b;  /* A max acceleration */
+	Real A;  /* b max braking */
+	Real m;  /* m position of Stop Sign */
+End.
+
+Problem
+   ( v >= 0
+	 & A >= 0
+	 & b > 0 )
+->
+  [
+    {
+      {  ?(m-x>=2); a := A;
+      ++ a := -b;
+      };
+      {x' = v, v' = a & v >= 0}
+    }*@invariant(v >= 0)
+  ]v >= 0
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; loop("v>=0", 1) ; <(
+    id,
+    id,
+    composeb(1) ; DW(1.1) ; simplify(1) ; GV(1.1) ; GV(1) ; closeT
+  )
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "LICS: Example 4a safe stopping of time-triggered car"
+
+Definitions        /* function symbols cannot change their value */
+  Real b();          /* braking capabilities */
+  Real A();          /* maximum acceleration */
+  Real ep();         /* reaction time */
+End.
+
+ProgramVariables /* program variables may change their value over time */
+  Real x;            /* position of the car */
+  Real v;            /* velocity of the car */
+  Real a;            /* acceleration of the car */
+  Real m;            /* stop sign position */
+  Real t;            /* clock variable */
+End.
+
+Problem          /* differential dynamic logic formula */
+    v^2<=2*b*(m-x) & v>=0  & A>=0 & b>0
+ -> [
+      {
+        {?(2*b*(m-x) >= v^2+(A+b)*(A*ep^2+2*ep*v)); a:=A; ++ a:=-b; }
+        t := 0;
+        {x'=v, v'=a, t'=1 & v>=0 & t<=ep}
+      }*@invariant(v^2<=2*b*(m-x))
+    ] x <= m
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; loop("v^2<=2*b()*(m-x)", 1) ; <(
+    id,
+    QE,
+    composeb(1) ; composeb(1.1) ; solve(1.1.1) ; unfold ; doall(QE)
+  )
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "LICS: Example 4b progress of time-triggered car"
+
+Definitions      /* function symbols cannot change their value */
+  Real b();          /* braking capabilities */
+  Real A();          /* maximum acceleration */
+  Real ep();         /* reaction time */
+End.
+
+ProgramVariables /* program variables may change their value over time */
+  Real x;            /* position of the car */
+  Real v;            /* velocity of the car */
+  Real a;            /* acceleration of the car */
+  Real t;            /* clock variable */
+End.
+
+Problem
+  ep() > 0 & A() > 0 & b() > 0
+->
+  \forall p \exists m
+  <
+    {
+        {?(2*b()*(m-x) >= v^2+(A()+b())*(A()*ep()^2+2*ep()*v)); a:=A(); ++ a:=-b(); }
+        t := 0;
+        {x'=v, v'=a, t'=1 & v>=0 & t<=ep()}
+    }*
+  > (x >= p)
+End.
+
+End.
+
+ArchiveEntry "LICS: Example 4c relative safety of time-triggered car"
+
+Definitions      /* function symbols cannot change their value */
+  Real b();          /* braking capabilities */
+  Real A();          /* maximum acceleration */
+  Real ep();         /* reaction time */
+  Real m();          /* stop sign position */
+End.
+
+ProgramVariables /* program variables may change their value over time */
+  Real x;            /* position of the car */
+  Real v;            /* velocity of the car */
+  Real a;            /* acceleration of the car */
+  Real t;            /* clock variable */
+End.
+
+Problem
+   ( [{x' = v, v' = -b()}]x<=m()
+   & v >= 0
+	 & A() >= 0
+	 & b() > 0 )
+->
+  [
+    {
+      {  ?(2*b()*(m()-x) >= v^2 + (A() + b())*(A()*ep()^2 + 2*ep()*v)); a := A();
+      ++ a := -b();
+      };
+      t := 0;
+      {x' = v, v' = a, t' = 1 & v >= 0 & t <= ep()}
+    }*@invariant(v^2<=2*b()*(m()-x))
+  ]x<=m()
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; loop("v^2<=2*b()*(m()-x)", 1) ; <(
+    solve(-1) ; QE,
+    QE,
+    composeb(1) ; composeb(1.1) ; solve(1.1.1) ; unfold ; doall(QE)
+  )
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
+
+ArchiveEntry "LICS: Example 5 Controllability Equivalence"
+
+Definitions
+  Real b;
+  Real m;
+End.
+
+ProgramVariables
+	Real v;
+	Real x;
+End.
+
+Problem
+  v>=0 & b>0 -> ( v^2<=2*b*(m-x) <-> [{x'=v, v'=-b}]x<=m )
+End.
+
+Tactic "Scripted proof"
+  implyR(1) ; equivR(1) ; <(
+    solve(1) ; QE,
+    solve(-2) ; QE
+  )
+End.
+
+Tactic "Automated proof"
+  master
+End.
+
+End.
