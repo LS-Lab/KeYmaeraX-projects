@@ -1,0 +1,105 @@
+﻿/* Exported from KeYmaera X v4.9.2 */
+
+Theorem "and imp right"
+
+Problem
+  P() & (P() -> Q()) -> P() & Q()
+End.
+
+Tactic "and imp right: Proof"
+auto
+End.
+
+End.
+
+/* Exported from KeYmaera X v4.9.2 */
+
+Theorem "Pendulum stability"
+
+Problem
+  a()>0&b()>0->\forall eps (eps>0->\exists del (del>0&\forall theta \forall w (theta*theta+w*w < del*del->[{theta'=w,w'=-a()*theta-b()*w&true}]theta*theta+w*w < eps*eps)))
+End.
+
+Tactic "Pendulum stability: Proof"
+unfold ; cut("\exists k (k>0&\forall theta \forall w (theta*theta+w*w=eps*eps->a()*theta^2/2+((b()*theta+w)^2+w^2)/4>=k))") ; <(
+  unfold ; cut("\exists del (del>0&del < eps&\forall theta \forall w (theta*theta+w*w < del*del->a()*theta^2/2+((b()*theta+w)^2+w^2)/4 < k))") ; <(
+    unfold ; existsR(1) ; unfold ; allL(-8) ; allL(-8) ; implyL(-8) ; <(
+      propClose,
+      dC("theta*theta+w*w=eps*eps->a()*theta^2/2+((b()*theta+w)^2+w^2)/4>=k", 1) ; <(
+        hideL(-5=="\forall theta \forall w (theta*theta+w*w=eps*eps->a()*theta^2/2+((b()*theta+w)^2+w^2)/4>=k)") ; dC("a()*theta^2/2+((b()*theta+w)^2+w^2)/4 < k", 1) ; <(
+          ODE(1),
+          ODE(1)
+          ),
+        dW(1) ; unfold ; allL(-7) ; allL(-7) ; propClose
+        )
+      ),
+    hideR(1=="\exists del (del>0&\forall theta \forall w (theta*theta+w*w < del*del->[{theta'=w,w'=-a()*theta-b()*w&true}]theta*theta+w*w < eps*eps))") ; hideL(-5=="\forall theta \forall w (theta*theta+w*w=eps*eps->a()*theta^2/2+((b()*theta+w)^2+w^2)/4>=k)") ; QE
+    ),
+  hideR(1=="\exists del (del>0&\forall theta \forall w (theta*theta+w*w < del*del->[{theta'=w,w'=-a()*theta-b()*w&true}]theta*theta+w*w < eps*eps))") ; QE
+  )
+End.
+
+End.
+
+/* Exported from KeYmaera X v4.9.2 */
+
+Theorem "Pendulum asymptotic stability"
+
+Problem
+  /* fill in dL formula here */
+  a()>0&b()>0->\forall eps (eps>0->\exists del (del>0&\forall theta \forall w (theta*theta+w*w < del*del->[{theta'=w,w'=-a()*theta-b()*w&true}]theta*theta+w*w < eps*eps)))&\exists del (del>0&\forall theta \forall w (theta*theta+w*w < del*del->\forall eps (eps>0-><{theta'=w,w'=-a()*theta-b()*w&true}>[{theta'=w,w'=-a()*theta-b()*w&true}]theta*theta+w*w < eps*eps)))
+End.
+
+Tactic "Pendulum asymptotic stability: Proof"
+implyR(1) ; useLemmaAt("and imp right", 1) ; andR(1) ; <(
+  useLemmaAt("Pendulum stability", 1) ; propClose,
+  unfold ; cut("\exists del (del>0&\forall theta \forall w (theta*theta+w*w < del*del->\forall eps (eps>0-><{theta'=w,w'=-a()*theta-b()*w&true}>theta*theta+w*w < eps*eps)))") ; <(
+    unfold ; existsR(1) ; unfold ; allL(-5) ; allL(-5) ; implyL(-5) ; <(
+      propClose,
+      allL(-1) ; implyL(-1) ; <(
+        propClose,
+        unfold ; allL("del", -4) ; implyL(-4) ; <(
+          propClose,
+          kDomainDiamond("theta*theta+w*w < del*del", 1) ; <(
+            propClose,
+            dC("theta*theta+w*w < del*del->[{theta'=w,w'=-a()*theta-b()*w&true}]theta*theta+w*w < eps*eps", 1) ; <(
+              dW(1) ; propClose,
+              dW(1) ; unfold ; allL(-7) ; allL(-7) ; propClose
+              )
+            )
+          )
+        )
+      ),
+    hideR(1=="\exists del (del>0&\forall theta \forall w (theta*theta+w*w < del*del->\forall eps (eps>0-><{theta'=w,w'=-a()*theta-b()*w&true}>[{theta'=w,w'=-a()*theta-b()*w&true}]theta*theta+w*w < eps*eps)))") ; allL("1", -1) ; implyL(-1) ; <(
+      hideR(1=="\exists del (del>0&\forall theta \forall w (theta*theta+w*w < del*del->\forall eps (eps>0-><{theta'=w,w'=-a()*theta-b()*w&true}>theta*theta+w*w < eps*eps)))") ; QE,
+      unfold ; existsR(1) ; unfold ; allL(-4) ; allL(-4) ; implyL(-4) ; <(
+        propClose,
+        cut("\exists bnd \forall theta \forall w (theta*theta+w*w < 1*1->a()*theta^2/2+((b()*theta+w)^2+w^2)/4>=bnd)") ; <(
+          unfold ; compatCut("!theta*theta+w*w < eps*eps", 1) ; <(
+            kDomainDiamond("a()*theta^2/2+((b()*theta+w)^2+w^2)/4 < bnd", 1) ; <(
+              hideL(-7=="\forall theta \forall w (theta*theta+w*w < 1*1->a()*theta^2/2+((b()*theta+w)^2+w^2)/4>=bnd)") ; dV(1) ; cut("\exists bnd (bnd>0&\forall theta \forall w (theta*theta+w*w < 1*1&!theta*theta+w*w < eps*eps->-(a()*(2*theta*w)*2/4+(2*(b()*theta+w)*(b()*w+(-a()*theta-b()*w))+2*w*(-a()*theta-b()*w))*4/16)>=bnd))") ; <(
+                unfold ; existsR("bnd", 1) ; andR(1) ; <(
+                  propClose,
+                  unfold ; allL(-7) ; allL(-7) ; implyL(-7) ; <(
+                    propClose,
+                    propClose
+                    )
+                  ),
+                hideR(1=="\exists eps_0 (eps_0>0&\forall theta \forall w (((true&bnd-(a()*theta^2/2+((b()*theta+w)^2+w^2)/4)<=0)&theta*theta+w*w < 1*1)&!theta*theta+w*w < eps*eps->-(a()*(2*theta*w)*2/4+(2*(b()*theta+w)*(b()*w+(-a()*theta-b()*w))+2*w*(-a()*theta-b()*w))*4/16)>=eps_0))") ; QE
+                ),
+              dW(1) ; unfold ; allL(-5) ; allL(-5) ; implyL(-5) ; <(
+                propClose,
+                notLess(1) ; propClose
+                )
+              ),
+            useAt("<> diamond", "1", 1) ; propClose
+            ),
+          hideR(1=="<{theta'=w,w'=-a()*theta-b()*w&true}>theta*theta+w*w < eps*eps") ; hideL(-4=="[{theta'=w,w'=-a()*theta-b()*w&true}]theta*theta+w*w < 1*1") ; QE
+          )
+        )
+      )
+    )
+  )
+End.
+
+End.
