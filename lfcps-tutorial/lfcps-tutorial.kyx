@@ -1,4 +1,4 @@
-ArchiveEntry "1 Bouncing ball"
+ArchiveEntry "LFCPS Tutorial/1 Bouncing ball"
 Description "Acrophobic Bouncing Ball".
 
 Definitions       /* function symbols cannot change their value */
@@ -28,7 +28,7 @@ implyR(1) ; loop("2*g*x<=2*g*H-v^2&x>=0", 1) ; <(
   QE,
   QE,
   composeb(1) ; dC("2*g*x<=2*g*H-v^2", 1) ; <(
-    dW(1) ; implyR(1) ; choiceb(1) ; andR(1) ; <(
+    dW(1) ; choiceb(1) ; andR(1) ; <(
       composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE,
       composeb(1) ; testb(1) ; implyR(1) ; testb(1) ; implyR(1) ; prop ; done
       ),
@@ -38,13 +38,13 @@ implyR(1) ; loop("2*g*x<=2*g*H-v^2&x>=0", 1) ; <(
 End.
 
 Tactic "Bouncing Ball: automatic"
-  /* needs QE("Mathematica") */
+  useSolver("Mathematica");
   master
 End.
 
 Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
 End.
-ArchiveEntry "2 Coasting Car"
+ArchiveEntry "LFCPS Tutorial/2 Coasting Car"
 Description "Coasting cars can stop".
 
 Definitions       /* function symbols cannot change their value */
@@ -86,7 +86,7 @@ Tactic "Coasting Car: Automatic Proof"
 End.
 
 End.
-ArchiveEntry "3 Exercise: Accelerating Car"
+ArchiveEntry "LFCPS Tutorial/3 Exercise: Accelerating Car"
 Description "Cars need invariants and control constraints to stop before m".
 
 Definitions       /* function symbols cannot change their value */
@@ -115,7 +115,7 @@ Problem           /* differential dynamic logic formula */
 End.
 
 End.
-ArchiveEntry "3 Solution: Accelerating Car"
+ArchiveEntry "LFCPS Tutorial/3 Solution: Accelerating Car"
 Description "Cars don't run stop signs".
 
 Definitions       /* function symbols cannot change their value */
@@ -175,7 +175,7 @@ Tactic "Safety of time-triggered car: Automatic"
 End.
 
 End.
-Exercise "4 Exercise: Runaround Robot"
+Exercise "LFCPS Tutorial/4 Exercise: Runaround Robot"
 Description "CurveBot: run a robot round the bend".
 
 ProgramVariables
@@ -207,7 +207,7 @@ Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
 End.
 /* Exported from KeYmaera X v4.7.4 */
 
-ArchiveEntry "4 Solution: Runaround Robot"
+ArchiveEntry "LFCPS Tutorial/4 Solution: Runaround Robot"
 Description "CurveBot: run a robot round the bend".
 
 ProgramVariables
@@ -296,7 +296,7 @@ End.
 Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
 
 End.
-Exercise "5 Exercise: Modeling two cars"
+Exercise "LFCPS Tutorial/5 Exercise: Modeling two cars"
 Description "Control one car to safely follow another".
 
 Functions
@@ -334,7 +334,7 @@ Problem
 
 End.
 End.
-ArchiveEntry "6 Damped oscillator"
+ArchiveEntry "LFCPS Tutorial/6 Damped oscillator"
 Description "Damped oscillators stay in ellipses".
 
 Definitions        /* function symbols cannot change their value */
@@ -366,7 +366,7 @@ Illustration "https://lfcps.org/info/fig-damposc-evo2t-region.png".
 End.
 
 
-ArchiveEntry "6 Increasingly damped oscillator"
+ArchiveEntry "LFCPS Tutorial/6 Increasingly damped oscillator"
 Description "Increasingly damped oscillators stay in ellipses".
 
 Definitions
@@ -400,7 +400,7 @@ End.
 
 Illustration "https://lfcps.org/info/fig-damped-damped-osc-field-region.png".
 End.
-ArchiveEntry "7 Swirl invariant"
+ArchiveEntry "LFCPS Tutorial/7 Swirl invariant"
 Description "LICS'18 hourglass swirl".
 
 ProgramVariables
@@ -418,7 +418,7 @@ End.
 Illustration "https://lfcps.org/info/fig-invariant-swirl-example.png".
 End.
 
-ArchiveEntry "7 Swirl invariant circle"
+ArchiveEntry "LFCPS Tutorial/7 Swirl invariant circle"
 Description "LICS'18 circle swirl".
 
 ProgramVariables
@@ -435,7 +435,7 @@ End.
 Illustration "https://lfcps.org/info/fig-invariant-swirl-example.png".
 End.
 
-ArchiveEntry "7 Swirl invariant disc"
+ArchiveEntry "LFCPS Tutorial/7 Swirl invariant disc"
 Description "LICS'18 disc swirl".
 
 ProgramVariables
@@ -451,7 +451,7 @@ master
 End.
 Illustration "https://lfcps.org/info/fig-invariant-swirl-example.png".
 End.
-ArchiveEntry "8 Parachute simplified"
+ArchiveEntry "LFCPS Tutorial/8 Parachute simplified"
 Description "Simplified parachute with air drag only for parachute".
 
 Definitions
@@ -480,7 +480,10 @@ Problem
       r := p;
     }
     t := 0;
-    {{x'=v, v'=-g+r*v^2, t'=1 & t<=T & x>=0 & v<0}@invariant(v-g*(T-t)>-(g/p)^(1/2))}
+    {{x'=v, v'=-g+r*v^2, t'=1 & t<=T & x>=0 & v<0}
+     @invariant((v'=-g+a*v^2 -> v-g*(T-t)>-(g/p)^(1/2)),
+                (v'=-g+p*v^2 -> v>=old(v)-g*t))
+    }
   }* @invariant((x>=0 & v<0) & v>-(g/p)^(1/2))
 ](x=0 -> v>=m)
 End.
@@ -503,7 +506,7 @@ Tactic "Parachute nonaerodynamic: Proof 1"
 End.
 
 Tactic "Parachute nonaerodynamic: Invariants+Automation"
-/* requires QE("Mathematica") */
+useSolver("Mathematica");
 implyR(1) ; loop("(x>=0&v < 0)&v>-(g/p)^(1/2)", 1) ; <(
   QE,
   QE,
@@ -518,14 +521,14 @@ implyR(1) ; loop("(x>=0&v < 0)&v>-(g/p)^(1/2)", 1) ; <(
 End.
 
 Tactic "Parachute nonaerodynamic: Automatic"
-  /* requires QE("Mathematica") */
+  useSolver("Mathematica");
   master
 End.
 
 Illustration "https://lfcps.org/info/fig-parachute.png".
 End.
        
-ArchiveEntry "9 Kepler two body"
+ArchiveEntry "LFCPS Tutorial/9 Kepler two body"
 Description "Two planets in gravitational force field with one planet as origin, mathematically normalized constants".
 Citation "Ernst Hairer. Geometric Numerical Integration. TU Munich 2010".
 
@@ -548,18 +551,18 @@ Problem
 End.
 
 Tactic "Kepler two body: Proof"
-/* requires QE("Mathematica") */
+useSolver("Mathematica");
 implyR(1) ; dI(1)
 End.
 
 Tactic "Kepler two body: Proof"
-/* requires QE("Mathematica") */
+useSolver("Mathematica");
 master
 End.
 
 Illustration "https://lfcps.org/info/Kepler.png".
 End.
-Exercise "9 Exercise: Moon around Earth"
+Exercise "LFCPS Tutorial/9 Exercise: Moon around Earth"
 Description "Moon of mass m flying in gravitational force field around Earth of mass M at origin".
 
 Definitions
