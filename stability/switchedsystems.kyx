@@ -83,7 +83,7 @@ Problem
     (x1*x1+x2*x2 < del*del ->
     [ t:= 0; {u:=1; ++ u:=2;}
     {
-        if(t >= 168) {t:=0; {u:=1; ++ u:=2;} }
+        if(t >= 3) {t:=0; {u:=1; ++ u:=2;} }
         {
             ?u=1;{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1} ++
             ?u=2;{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1}
@@ -94,27 +94,24 @@ Problem
 End.
 
 Tactic "Stability under slow switching: Proof"
-allR(1) ; implyR(1) ; existsR("eps/4", 1) ; andR(1) ; <(
+allR(1) ; implyR(1) ; existsR("eps/2", 1) ; andR(1) ; <(
   QE,
-  allR(1) ; allR(1) ; implyR(1) ; composeb(1) ; composeb(1.1) ; assignb(1) ; MR("u=1|u=2", 1) ; <(
+  allR(1) ; allR(1) ; implyR(1) ; composeb(1) ; assignb(1) ; composeb(1) ; MR("u=1|u=2", 1) ; <(
     auto,
-    cut("\exists old (2*x1^2+x1*x2/5+x2^2<=old&x1^2+x1*x2/5+2*x2^2<=old&2*old < eps*eps)") ; <(
-      unfold ; loop("t>=0&(u=1&2*x1^2+x1*x2/5+x2^2<=old/(1+t/24)|u=2&x1^2+x1*x2/5+2*x2^2<=old/(1+t/24))", 1) ; <(
+    cut("\exists old (2*x1^2+x2^2<=old&x1^2+2*x2^2<=old&2*old < eps*eps)") ; <(
+      unfold ; loop("t>=0&(u=1&2*x1^2+x2^2<=old/(1+t/4+(t/4)^2/2)|u=2&x1^2+2*x2^2<=old/(1+t/4+(t/4)^2/2))", 1) ; <(
         QE,
         QE,
         composeb(1) ; choiceb(1) ; andR(1) ; <(
-          MR("t=0&(u=1&2*x1^2+x1*x2/5+x2^2<=old/(1+t/24)|u=2&x1^2+x1*x2/5+2*x2^2<=old/(1+t/24))", 1) ; <(
-            unfold ; <(
-              QE,
-              QE
-              ),
+          MR("t=0&(u=1&2*x1^2+x2^2<=old/(1+t/4+(t/4)^2/2)|u=2&x1^2+2*x2^2<=old/(1+t/4+(t/4)^2/2))", 1) ; <(
+            auto,
             unfold ; <(
               orL(-5) ; <(
                 ODE(1),
-                hideR(1=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&true}](t>=0&(u=1&2*x1^2+x1*x2/5+x2^2<=old/(1+t/24)|u=2&x1^2+x1*x2/5+2*x2^2<=old/(1+t/24)))") ; QE
+                hideR(1=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&true}](t>=0&(u=1&2*x1^2+x2^2<=old/(1+t/4+(t/4)^2/2)|u=2&x1^2+2*x2^2<=old/(1+t/4+(t/4)^2/2)))") ; QE
                 ),
               orL(-5) ; <(
-                hideR(1=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&true}](t>=0&(u=1&2*x1^2+x1*x2/5+x2^2<=old/(1+t/24)|u=2&x1^2+x1*x2/5+2*x2^2<=old/(1+t/24)))") ; QE,
+                hideR(1=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&true}](t>=0&(u=1&2*x1^2+x2^2<=old/(1+t/4+(t/4)^2/2)|u=2&x1^2+2*x2^2<=old/(1+t/4+(t/4)^2/2)))") ; QE,
                 ODE(1)
                 )
               )
@@ -125,7 +122,7 @@ allR(1) ; implyR(1) ; existsR("eps/4", 1) ; andR(1) ; <(
             )
           )
         ),
-      hideR(1=="[{{?t>=168;t:=0;{u:=1;++u:=2;}++?!t>=168;?true;}{?u=1;{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&true}++?u=2;{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&true}}}*]x1*x1+x2*x2 < eps*eps") ; QE
+      hideR(1=="[{{?t>=3;t:=0;{u:=1;++u:=2;}++?!t>=3;?true;}{?u=1;{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&true}++?u=2;{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&true}}}*]x1*x1+x2*x2 < eps*eps") ; QE
       )
     )
   )
@@ -144,7 +141,7 @@ Problem
     (x1*x1+x2*x2 < del*del ->
     [ t:= 0; {u:=1; ++ u:=2; ++ u:=3;}
     {
-        if(t >= 168) {t:=0; {u:=1; ++ u:=2; ++ u:=3;} }
+        if(t >= 3) {t:=0; {u:=1; ++ u:=2; ++ u:=3;} }
         {
             ?u=1;{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1} ++
             ?u=2;{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1} ++
@@ -153,44 +150,22 @@ Problem
     }*]
     x1*x1+x2*x2 < eps*eps)
   ))
+
 End.
 
 Tactic "Stability under slow switching (3 systems): Proof"
-allR(1) ; implyR(1) ; existsR("eps/4", 1) ; andR(1) ; <(
+allR(1) ; implyR(1) ; existsR("eps/2", 1) ; andR(1) ; <(
   QE,
-  allR(1) ; allR(1) ; implyR(1) ; composeb(1) ; composeb(1.1) ; assignb(1) ; MR("u=1|u=2|u=3", 1) ; <(
+  allR(1) ; allR(1) ; implyR(1) ; composeb(1) ; assignb(1) ; composeb(1) ; MR("u=1|u=2|u=3", 1) ; <(
     auto,
-    cut("\exists old (2*x1^2+x1*x2/5+x2^2<=old&x1^2+x1*x2/5+2*x2^2<=old&x1^2+x2^2<=old&2*old < eps*eps)") ; <(
-      unfold ; loop("t>=0&(u=1&2*x1^2+x1*x2/5+x2^2<=old/(1+t/24)|u=2&x1^2+x1*x2/5+2*x2^2<=old/(1+t/24)|u=3&x1^2+x2^2<=old/(1+t/24))", 1) ; <(
+    cut("\exists old (2*x1^2+x2^2<=old&x1^2+2*x2^2<=old&x1^2+x2^2<=old&2*old < eps*eps)") ; <(
+      unfold ; loop("t>=0&(u=1&2*x1^2+x2^2<=old/(1+t/4+(t/4)^2/2)|u=2&x1^2+2*x2^2<=old/(1+t/4+(t/4)^2/2)|u=3&x1^2+x2^2<=old/(1+t/4+(t/4)^2/2))", 1) ; <(
         QE,
         QE,
         composeb(1) ; choiceb(1) ; andR(1) ; <(
-          MR("t=0&(u=1&2*x1^2+x1*x2/5+x2^2<=old/(1+t/24)|u=2&x1^2+x1*x2/5+2*x2^2<=old/(1+t/24)|u=3&x1^2+x2^2<=old/(1+t/24))", 1) ; <(
-            unfold ; <(
-              QE,
-              QE,
-              QE
-              ),
-            unfold ; <(
-              orL(-5) ; <(
-                ODE(1),
-                hideR(1=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&true}](t>=0&(u=1&2*x1^2+x1*x2/5+x2^2<=old/(1+t/24)|u=2&x1^2+x1*x2/5+2*x2^2<=old/(1+t/24)|u=3&x1^2+x2^2<=old/(1+t/24)))") ; QE
-                ),
-              orL(-5) ; <(
-                hideR(1=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&true}](t>=0&(u=1&2*x1^2+x1*x2/5+x2^2<=old/(1+t/24)|u=2&x1^2+x1*x2/5+2*x2^2<=old/(1+t/24)|u=3&x1^2+x2^2<=old/(1+t/24)))") ; QE,
-                orL(-5) ; <(
-                  ODE(1),
-                  hideR(1=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&true}](t>=0&(u=1&2*x1^2+x1*x2/5+x2^2<=old/(1+t/24)|u=2&x1^2+x1*x2/5+2*x2^2<=old/(1+t/24)|u=3&x1^2+x2^2<=old/(1+t/24)))") ; QE
-                  )
-                ),
-              orL(-5) ; <(
-                hideR(1=="[{x1'=-x1,x2'=-x2,t'=1&true}](t>=0&(u=1&2*x1^2+x1*x2/5+x2^2<=old/(1+t/24)|u=2&x1^2+x1*x2/5+2*x2^2<=old/(1+t/24)|u=3&x1^2+x2^2<=old/(1+t/24)))") ; QE,
-                orL(-5) ; <(
-                  hideR(1=="[{x1'=-x1,x2'=-x2,t'=1&true}](t>=0&(u=1&2*x1^2+x1*x2/5+x2^2<=old/(1+t/24)|u=2&x1^2+x1*x2/5+2*x2^2<=old/(1+t/24)|u=3&x1^2+x2^2<=old/(1+t/24)))") ; QE,
-                  ODE(1)
-                  )
-                )
-              )
+          MR("t=0&(u=1&2*x1^2+x2^2<=old/(1+t/4+(t/4)^2/2)|u=2&x1^2+2*x2^2<=old/(1+t/4+(t/4)^2/2)|u=3&x1^2+x2^2<=old/(1+t/4+(t/4)^2/2))", 1) ; <(
+            auto,
+            andL(-2) ; auto
             ),
           unfold ; <(
             ODE(1),
@@ -199,7 +174,7 @@ allR(1) ; implyR(1) ; existsR("eps/4", 1) ; andR(1) ; <(
             )
           )
         ),
-      hideR(1=="[{{?t>=168;t:=0;{u:=1;++u:=2;++u:=3;}++?!t>=168;?true;}{?u=1;{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&true}++?u=2;{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&true}++?u=3;{x1'=-x1,x2'=-x2,t'=1&true}}}*]x1*x1+x2*x2 < eps*eps") ; QE
+      hideR(1=="[{{?t>=3;t:=0;{u:=1;++u:=2;++u:=3;}++?!t>=3;?true;}{?u=1;{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&true}++?u=2;{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&true}++?u=3;{x1'=-x1,x2'=-x2,t'=1&true}}}*]x1*x1+x2*x2 < eps*eps") ; QE
       )
     )
   )
