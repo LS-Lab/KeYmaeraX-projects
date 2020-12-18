@@ -8,8 +8,8 @@ Problem
   \forall x1 \forall x2
     (x1*x1+x2*x2 < del*del ->
     [{
-        x1'=-x1+x2^3,x2'=-x1-x2 ++
-        x1'=-x1, x2'=-x2
+        {x1'=-x1+x2^3,x2'=-x1-x2} ++
+        {x1'=-x1, x2'=-x2}
     }*]
     x1*x1+x2*x2 < eps*eps)
   ))
