@@ -1,0 +1,50 @@
+﻿/* Exported from KeYmaera X v4.9.2 */
+
+Theorem "Section 5 Moore-Greitzer Jet Engine"
+
+Definitions
+
+Real tau = 10^-10;
+
+Real normsq(Real x, Real y) = x^2 + y^2;
+
+Bool epsstable <->
+  \forall eps (eps > 0 ->
+  \exists del (del > 0 &
+      \forall x1 \forall x2(
+          normsq(x1,x2) < del^2 ->
+          [
+              {x1'=-x2-3/2*x1^2-1/2*x1^3,x2'=3*x1-x2}
+          ] normsq(x1,x2) < (tau+eps)^2
+      )
+  ));
+
+/* Lyapunov function from Gao et al. */
+Real lyap(Real x1, Real x2) = x2 * (31.294269 * x2 - 9.7437617 * x1 - 18.856765 * x1 * x2 + 22.509931 * (x1 ^ 2) + 11.165278 * (x2 ^ 2)) - 1.0 * x1 * (9.7437617 * x2 - 100.0 * x1 - 48.132286 * x1 * x2 + 60.459815 * (x1 ^ 2) + 12.035111 * (x2 ^ 2)) + (x1 ^ 2) * (22.509931 * x2 - 60.459815 * x1 - 88.160775 * x1 * x2 + 100.0 * (x1 ^ 2) + 31.337433 * (x2 ^ 2)) + (x2 ^ 2) * (11.165278 * x2 - 12.035111 * x1 - 27.051686 * x1 * x2 + 31.337433 * (x1 ^ 2) + 14.189252 * (x2 ^ 2)) - 1.0 * x1 * x2 * (18.856765 * x2 - 48.132286 * x1 - 81.481369 * x1 * x2 + 88.160775 * (x1 ^ 2) + 27.051686 * (x2 ^ 2));
+
+End.
+
+Problem
+  epsstable
+End.
+
+Tactic "Section 5 Moore-Greitzer Jet Engine: Proof"
+expand "epsstable" ; unfold ; cut("\forall x1 \forall x2 (normsq(x1,x2)=(eps+tau())^2->lyap(x1,x2)>=2.95*10^(-19))") ; <(
+  unfold ; cut("\exists del (del>0&del < eps+tau()&\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap(x1,x2) < 2.95*10^(-19)))") ; <(
+    unfold ; existsR(1) ; unfold ; allL(-5) ; allL(-5) ; implyL(-5) ; <(
+      propClose,
+      dC("(normsq(x1,x2)=(eps+tau())^2->lyap(x1,x2)>=2.95*10^(-19))&lyap(x1,x2) < 2.95*10^(-19)", 1) ; <(
+        hideL(-2=="\forall x1 \forall x2 (normsq(x1,x2)=(eps+tau())^2->lyap(x1,x2)>=2.95*10^(-19))") ; expandAllDefs ; ODE(1),
+        boxAnd(1) ; andR(1) ; <(
+          dW(1) ; unfold ; allL(-4) ; allL(-4) ; propClose,
+          hideL(-2=="\forall x1 \forall x2 (normsq(x1,x2)=(eps+tau())^2->lyap(x1,x2)>=2.95*10^(-19))") ; hideL(-5=="normsq(x1,x2) < del^2") ; US("(lyap(•_0,•_1)~>•_1*(31.294269*•_1-9.7437617*•_0-18.856765*•_0*•_1+22.509931*•_0^2+11.165278*•_1^2)-1.0*•_0*(9.7437617*•_1-100.0*•_0-48.132286*•_0*•_1+60.459815*•_0^2+12.035111*•_1^2)+•_0^2*(22.509931*•_1-60.459815*•_0-88.160775*•_0*•_1+100.0*•_0^2+31.337433*•_1^2)+•_1^2*(11.165278*•_1-12.035111*•_0-27.051686*•_0*•_1+31.337433*•_0^2+14.189252*•_1^2)-1.0*•_0*•_1*(18.856765*•_1-48.132286*•_0-81.481369*•_0*•_1+88.160775*•_0^2+27.051686*•_1^2))") ; ODE(1)
+          )
+        )
+      ),
+    hideR(1=="\exists del (del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{x1'=-x2-3/2*x1^2-1/2*x1^3,x2'=3*x1-x2&true}]normsq(x1,x2) < (tau()+eps)^2))") ; hideL(-2=="\forall x1 \forall x2 (normsq(x1,x2)=(eps+tau())^2->lyap(x1,x2)>=2.95*10^(-19))") ; expandAllDefs ; QE
+    ),
+  hideR(1=="\exists del (del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{x1'=-x2-3/2*x1^2-1/2*x1^3,x2'=3*x1-x2&true}]normsq(x1,x2) < (tau()+eps)^2))") ; expandAllDefs ; QE
+  )
+End.
+
+End.
