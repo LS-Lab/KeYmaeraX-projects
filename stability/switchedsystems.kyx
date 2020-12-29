@@ -41,7 +41,7 @@ unfold ; cut("\exists k (k>0&\forall x1 \forall x2 (x1*x1+x2*x2=eps*eps->x1^2/2+
           )
         )
       ),
-    hideR(1=="\exists del (del>0&\forall x1 \forall x2 (x1*x1+x2*x2 < del*del->[{{x1'=-x1+x2^3,x2'=-x1-x2&true}++{x1'=-x1,x2'=-x2&true}}*]x1*x1+x2*x2 < eps*eps))") ; QE
+    hideR(1=="\exists del (del>0&\forall x1 \forall x2 (x1*x1+x2*x2 < del*del->[{{x1'=-x1+x2^3,x2'=-x1-x2&true}++{x1'=-x1,x2'=-x2&true}}*]x1*x1+x2*x2 < eps*eps))") ; hideL(-3=="\forall x1 \forall x2 (x1*x1+x2*x2=eps*eps->x1^2/2+x2^4/4>=k)") ; QE
     ),
   hideR(1=="\exists del (del>0&\forall x1 \forall x2 (x1*x1+x2*x2 < del*del->[{{x1'=-x1+x2^3,x2'=-x1-x2&true}++{x1'=-x1,x2'=-x2&true}}*]x1*x1+x2*x2 < eps*eps))") ; QE
   )
