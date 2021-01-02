@@ -2,6 +2,11 @@
 
 Theorem "Stability under arbitrary switching"
 
+/* Arbitrary switching between the two ODEs:
+ * x1'=-x1+x2^3,x2'=-x1-x2
+ * x1'=-x1, x2'=-x2
+ */
+
 Problem
   \forall eps (eps>0 ->
   \exists del (del>0 &
@@ -53,6 +58,11 @@ End.
 
 Theorem "Stability under state-dependent switching"
 
+/* State-dependent switching between the two ODEs:
+ * x1'=-x1/8-x2,x2'=2*x1-x2/8 & x1*x2 <= 0
+ * x1'=-x1/8-2*x2,x2'=x1-x2/8 & x1*x2 >= 0
+ */
+
 Problem
   \forall eps (eps>0 ->
   \exists del (del>0 &
@@ -75,6 +85,12 @@ End.
 /* Exported from KeYmaera X v4.9.2 */
 
 Theorem "Stability under slow switching"
+
+/* Slow switching between the two ODEs:
+ * x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1
+ * x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1
+ * With minimum dwell time t >= 3
+ */
 
 Problem
   \forall eps (eps>0 ->
@@ -133,6 +149,13 @@ End.
 /* Exported from KeYmaera X v4.9.2 */
 
 Theorem "Stability under slow switching (3 systems)"
+
+/* Slow switching between the three ODEs:
+ * x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1
+ * x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1
+ * x1'=-x1,x2'=-x2,t'=1
+ * With minimum dwell time t >= 3
+ */
 
 Problem
   \forall eps (eps>0 ->

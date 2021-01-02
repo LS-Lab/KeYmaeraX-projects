@@ -4,13 +4,18 @@ Theorem "Section 5 Inverted Pendulum"
 
 Definitions
 
-Real a;
-Real b;
-Real k1;
-Real k2;
+Real a;  /* Parameter a = g/L for the ratio of gravity to length of the rod holding the pendulum */
+Real b;  /* Parameter b >= 0 for the coefficient of friction against angular velocity */
+Real k1; /* Tuning coefficient for "P" in PD control */
+Real k2; /* Tuning coefficient for "D" in PD control */
 
 Real normsq(Real x, Real y) = x^2 + y^2;
 
+/* ODE for (linearized) inverted pendulum with PD control where theta is the angle of displacement and w is the angular velocity:
+ * theta'=w,w'=a*theta-b*w-(k1*theta+k2*w)
+ */
+
+/* Asymptotic stability for the ODE */
 Bool stable <->
   \forall eps (eps > 0 ->
   \exists del (del > 0 &

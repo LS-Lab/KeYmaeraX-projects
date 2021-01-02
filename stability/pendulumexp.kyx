@@ -4,11 +4,16 @@ Theorem "Example 13 Globally exponentially stable pendulum"
 
 Definitions
 
-Real a;
-Real b;
+Real a; /* Parameter a = g/L for the ratio of gravity to length of the rod holding the pendulum */
+Real b; /* Parameter b >= 0 for the coefficient of friction against angular velocity */
 
 Real normsq(Real x, Real y) = x^2 + y^2;
 
+/* ODE for (linearized) pendulum where theta is the angle of displacement and w is the angular velocity:
+ * theta'=w,w'=-a*theta-b*w
+ */
+
+/* Global exponential stability */
 Bool expstable <->
   \exists alp (alp > 0 &
   \exists beta (beta > 0 &

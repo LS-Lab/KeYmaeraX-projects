@@ -4,11 +4,17 @@ Theorem "Example 17 & 20 Stable 1st & 3rd axis of rigid body"
 
 Definitions
 
-Real I1;
-Real I2;
-Real I3;
+Real I1; /* Principal moment of inertia along x1 axis */
+Real I2; /* Principal moment of inertia along x2 axis */
+Real I3; /* Principal moment of inertia along x3 axis */
 
 Real normsq(Real x, Real y) = x^2 + y^2;
+
+/* ODE for rotations of a 3D rigid body along the x1, x2, x3 axes
+ * x1'=(I2-I3)/I1*x2*x3,
+ * x2'=(I3-I1)/I2*x3*x1,
+ * x3'=(I1-I2)/I3*x1*x2
+ */
 
 /* Stability in x1 axis */
 Bool stable1 <->

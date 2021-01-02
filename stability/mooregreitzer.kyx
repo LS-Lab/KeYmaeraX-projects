@@ -2,12 +2,15 @@
 
 Theorem "Section 5 Moore-Greitzer Jet Engine"
 
+Citation "Sicun Gao, James Kapinski, Jyotirmoy V. Deshmukh, Nima Roohi, Armando Solar-Lezama, Nikos Arechiga, and Soonho Kong. Numerically-Robust Inductive Proof Rules for Continuous Dynamical Systems. CAV 2019".
+
 Definitions
 
-Real tau = 10^-10;
+Real tau = 10^-10; /* The "epsilon" parameter in epsilon-stability, renamed to "tau" for clarity */
 
 Real normsq(Real x, Real y) = x^2 + y^2;
 
+/* Epsilon stability for the ODE */
 Bool epsstable <->
   \forall eps (eps > 0 ->
   \exists del (del > 0 &
