@@ -12,3 +12,6 @@ This directory contains [KeYmaera X](http://keymaeraX.org/) stability proofs for
 
 See the respective `.kyx` files for further details.
 
+# References
+Yong Kiam Tan and André Platzer. Deductive stability proofs for ordinary differential equations. 
+In Jan Friso Groote and Kim G. Larsen, editors, Tools and Algorithms for the Construction and Analysis of Systems, TACAS 2021, Proceedings, LNCS. Springer, 2021. 

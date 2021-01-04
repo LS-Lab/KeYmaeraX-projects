@@ -13,6 +13,8 @@ proofs for the components without soundness-critical changes to KeYmaera X. Our 
 of values exchanged between components. These contracts can take into account what has changed between two components 
 in a given amount of time since the last exchange of information.
 
+# References
+
 Andreas Müller, Stefan Mitsch, Werner Retschitzegger, Wieland Schwinger and André Platzer.
 [Tactical contract composition for hybrid system component verification](https://doi.org/10.1007/s10009-018-0502-9). 
 STTT, 20(6), pp. 615-643, 2018. Special issue for selected papers from FASE'17.
