@@ -11,6 +11,8 @@ can be guaranteed despite sensor uncertainty and actuator perturbation. We compl
 safety properties with liveness properties: we prove that provably safe motion is flexible enough to let the robot
 navigate waypoints and pass intersections.
 
+# References
+
 Stefan Mitsch, Khalil Ghorbal, David Vogelbacher, André Platzer.
 [Formal verification of obstacle avoidance and navigation of ground robots](https://doi.org/10.1177/0278364917733549).
 International Journal of Robotics Research. 36(12), pp. 1312-1340, 2017. 

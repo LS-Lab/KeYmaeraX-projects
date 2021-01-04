@@ -6,3 +6,8 @@ Provides a number of instructive simple examples from the
 
   http://keymaeraX.org/
 
+# References
+
+André Platzer.
+[Programming Cyber-Physical Systems With Logic](https://popl19.sigplan.org/event/popl-2019-tutorialfest-t4-programming-cyber-physical-systems-with-logic).
+POPL 2019 Tutorials.
