@@ -1,6 +1,6 @@
 ﻿/* Exported from KeYmaera X v4.9.2 */
 
-Theorem "Example 17 & 20 Stable 1st & 3rd axis of rigid body"
+Theorem "ODE Stability/Example 17 & 20 Stable 1st & 3rd axis of rigid body"
 
 Definitions
 
@@ -44,7 +44,7 @@ Problem
   I1 > I2 & I2 > I3 & I3 > 0 -> stable1 & stable3
 End.
 
-Tactic "Example 17 & 20 Stable 1st & 3rd axis of rigid body: Proof"
+Tactic "ODE Stability/Example 17 & 20 Stable 1st & 3rd axis of rigid body: Proof"
 unfold ; <(
   expand "stable1" ; unfold ; cut("\exists k (\exists del (del>0&del < eps&\forall x2 \forall x3 (normsq(x2,x3) < del^2->lyap1(x2,x3) < k))&\forall x2 \forall x3 (normsq(x2,x3)=eps^2->lyap1(x2,x3)>=k))") ; <(
     unfold ; existsR(1) ; unfold ; allL(-8) ; allL(-8) ; fullSimplify ; dC("(normsq(x2,x3)=eps^2->lyap1(x2,x3)>=k)&lyap1(x2,x3) < k", 1) ; <(

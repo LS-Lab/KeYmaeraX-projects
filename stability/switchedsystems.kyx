@@ -1,6 +1,6 @@
 /* Exported from KeYmaera X v4.9.2 */
 
-Theorem "Stability under arbitrary switching"
+Theorem "Switched Systems Stability/Stability under arbitrary switching"
 
 /* Arbitrary switching between the two ODEs:
  * x1'=-x1+x2^3,x2'=-x1-x2
@@ -20,7 +20,7 @@ Problem
   ))
 End.
 
-Tactic "Stability under arbitrary switching: Proof"
+Tactic "Switched Systems Stability/Stability under arbitrary switching: Proof"
 unfold ; cut("\exists k (k>0&\forall x1 \forall x2 (x1*x1+x2*x2=eps*eps->x1^2/2+x2^4/4>=k))") ; <(
   unfold ; cut("\exists del (del>0&del < eps&\forall x1 \forall x2 (x1*x1+x2*x2 < del*del->x1^2/2+x2^4/4 < k))") ; <(
     unfold ; existsR(1) ; unfold ; allL(-6) ; allL(-6) ; implyL(-6) ; <(
@@ -56,7 +56,7 @@ End.
 
 /* Exported from KeYmaera X v4.9.2 */
 
-Theorem "Stability under state-dependent switching"
+Theorem "Switched Systems Stability/Stability under state-dependent switching"
 
 /* State-dependent switching between the two ODEs:
  * x1'=-x1/8-x2,x2'=2*x1-x2/8 & x1*x2 <= 0
@@ -76,7 +76,7 @@ Problem
   ))
 End.
 
-Tactic "Stability under state-dependent switching: Proof"
+Tactic "Switched Systems Stability/Stability under state-dependent switching: Proof"
 unfold ; existsR("eps", 1) ; auto
 End.
 
@@ -84,7 +84,7 @@ End.
 
 /* Exported from KeYmaera X v4.9.2 */
 
-Theorem "Stability under slow switching"
+Theorem "Switched Systems Stability/Stability under slow switching"
 
 /* Slow switching between the two ODEs:
  * x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1
@@ -109,7 +109,7 @@ Problem
   ))
 End.
 
-Tactic "Stability under slow switching: Proof"
+Tactic "Switched Systems Stability/Stability under slow switching: Proof"
 allR(1) ; implyR(1) ; existsR("eps/2", 1) ; andR(1) ; <(
   QE,
   allR(1) ; allR(1) ; implyR(1) ; composeb(1) ; assignb(1) ; composeb(1) ; MR("u=1|u=2", 1) ; <(
@@ -148,7 +148,7 @@ End.
 
 /* Exported from KeYmaera X v4.9.2 */
 
-Theorem "Stability under slow switching (3 systems)"
+Theorem "Switched Systems Stability/Stability under slow switching (3 systems)"
 
 /* Slow switching between the three ODEs:
  * x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1
@@ -176,7 +176,7 @@ Problem
 
 End.
 
-Tactic "Stability under slow switching (3 systems): Proof"
+Tactic "Switched Systems Stability/Stability under slow switching (3 systems): Proof"
 allR(1) ; implyR(1) ; existsR("eps/2", 1) ; andR(1) ; <(
   QE,
   allR(1) ; allR(1) ; implyR(1) ; composeb(1) ; assignb(1) ; composeb(1) ; MR("u=1|u=2|u=3", 1) ; <(

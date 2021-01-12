@@ -1,6 +1,6 @@
 ﻿/* Exported from KeYmaera X v4.9.2 */
 
-Theorem "Example 7 Asymptotically stable pendulum"
+Theorem "ODE Stability/Example 7 Asymptotically stable pendulum"
 
 Definitions
 
@@ -37,7 +37,7 @@ Problem
   a > 0 & b > 0 -> stable & attractive
 End.
 
-Tactic "Example 7 Asymptotically stable pendulum from tactic"
+Tactic "ODE Stability/Example 7 Asymptotically stable pendulum from tactic"
 implyR(1) ; cut("stable()&(stable()->attractive())") ; <(
   propClose,
   hideR(1=="stable()&attractive()") ; andR(1) ; <(

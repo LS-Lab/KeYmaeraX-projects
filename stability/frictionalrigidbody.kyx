@@ -1,6 +1,6 @@
 ﻿/* Exported from KeYmaera X v4.9.2 */
 
-Theorem "Section 5 Frictional Tennis Racket Theorem"
+Theorem "ODE Stability/Section 5 Frictional Tennis Racket Theorem"
 
 Definitions
 
@@ -61,7 +61,7 @@ Problem
   I1 > I2 & I2 > I3 & I3 > 0 & a1 > 0 & a2 > 0 & a3 > 0 -> (stable1 & gattractive1) & (stable3 & gattractive3)
 End.
 
-Tactic "Section 5 Frictional Tennis Racket Theorem: Proof"
+Tactic "ODE Stability/Section 5 Frictional Tennis Racket Theorem: Proof"
 implyR(1) ; cut("\forall eps (eps>0->\forall x1 \forall x2 \forall x3 <{x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3&true}>I1()*x1^2+I2()*x2^2+I3()*x3^2 < eps*eps)") ; <(
   andR(1) ; <(
     cut("stable1()&(stable1()->gattractive1())") ; <(

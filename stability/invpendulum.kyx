@@ -1,6 +1,6 @@
 ﻿/* Exported from KeYmaera X v4.9.2 */
 
-Theorem "Section 5 Inverted Pendulum"
+Theorem "ODE Stability/Section 5 Inverted Pendulum"
 
 Definitions
 
@@ -39,7 +39,7 @@ Problem
   a > 0 & b >= 0 & k1 > a & k2 > -b -> stable & attractive
 End.
 
-Tactic "Section 5 Inverted Pendulum: Proof"
+Tactic "ODE Stability/Section 5 Inverted Pendulum: Proof"
 implyR(1) ; cut("stable()&(stable()->attractive())") ; <(
   propClose,
   hideR(1=="stable()&attractive()") ; andR(1) ; <(

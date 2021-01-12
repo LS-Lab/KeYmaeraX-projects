@@ -1,6 +1,6 @@
 ﻿/* Exported from KeYmaera X v4.9.2 */
 
-Theorem "Example 13 Globally exponentially stable pendulum"
+Theorem "ODE Stability/Example 13 Globally exponentially stable pendulum"
 
 Definitions
 
@@ -33,7 +33,7 @@ Problem
   a = 1 & b = 1 -> expstable
 End.
 
-Tactic "Example 13 Globally exponentially stable pendulum: Proof"
+Tactic "ODE Stability/Example 13 Globally exponentially stable pendulum: Proof"
 unfold ; expand "expstable" ; existsR("2", 1) ; unfold ; <(
   QE,
   existsR("1/4", 1) ; unfold ; <(

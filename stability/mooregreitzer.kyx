@@ -1,6 +1,6 @@
 ﻿/* Exported from KeYmaera X v4.9.2 */
 
-Theorem "Section 5 Moore-Greitzer Jet Engine"
+Theorem "ODE Stability/Section 5 Moore-Greitzer Jet Engine"
 
 Citation "Sicun Gao, James Kapinski, Jyotirmoy V. Deshmukh, Nima Roohi, Armando Solar-Lezama, Nikos Arechiga, and Soonho Kong. Numerically-Robust Inductive Proof Rules for Continuous Dynamical Systems. CAV 2019".
 
@@ -31,7 +31,7 @@ Problem
   epsstable
 End.
 
-Tactic "Section 5 Moore-Greitzer Jet Engine: Proof"
+Tactic "ODE Stability/Section 5 Moore-Greitzer Jet Engine: Proof"
 expand "epsstable" ; unfold ; cut("\forall x1 \forall x2 (normsq(x1,x2)=(eps+tau())^2->lyap(x1,x2)>=2.95*10^(-19))") ; <(
   unfold ; cut("\exists del (del>0&del < eps+tau()&\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap(x1,x2) < 2.95*10^(-19)))") ; <(
     unfold ; existsR(1) ; unfold ; allL(-5) ; allL(-5) ; implyL(-5) ; <(

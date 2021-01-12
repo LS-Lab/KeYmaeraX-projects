@@ -1,4 +1,4 @@
-Theorem "Section 5 Other Examples, Ahmed et al. Example 5"
+Theorem "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 5"
 
 Citation "Daniele Ahmed, Andrea Peruffo, and Alessandro Abate. Automated and Sound Synthesis of Lyapunov Functions with SMT Solvers. TACAS 2020".
 
@@ -32,7 +32,7 @@ End.
 
 /* Does not prove: QE too slow */
 /*
-Tactic "Section 5 Other Examples, Ahmed et al. Example 5: Proof"
+Tactic "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 5: Proof"
 expand "stable" ; unfold ; cut("\exists k (k>0&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k))") ; <(
   unfold ; cut("\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6) < del^2->lyap(x1,x2,x3,x4,x5,x6) < k))") ; <(
     unfold ; existsR(1) ; unfold ; (allL(-6)*) ; fullSimplify ; dC("(normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)&lyap(x1,x2,x3,x4,x5,x6) < k", 1) ; <(
@@ -53,7 +53,7 @@ End.
 
 /* Exported from KeYmaera X v4.9.2 */
 
-Theorem "Section 5 Other Examples, Ahmed et al. Example 6"
+Theorem "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 6"
 
 Citation "Daniele Ahmed, Andrea Peruffo, and Alessandro Abate. Automated and Sound Synthesis of Lyapunov Functions with SMT Solvers. TACAS 2020".
 
@@ -81,7 +81,7 @@ Problem
   stable
 End.
 
-Tactic "Section 5 Other Examples, Ahmed et al. Example 6: Proof"
+Tactic "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 6: Proof"
 expand "stable" ; unfold ; cut("\exists k (k>0&\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k))") ; <(
   unfold ; cut("\exists del (del>0&del < eps&\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap(x1,x2) < k))") ; <(
     unfold ; existsR(1) ; unfold ; (allL(-6)*) ; fullSimplify ; dC("(normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)&lyap(x1,x2) < k", 1) ; <(
@@ -101,7 +101,7 @@ End.
 
 /* Exported from KeYmaera X v4.9.2 */
 
-Theorem "Section 5 Other Examples, Ahmed et al. Example 7"
+Theorem "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 7"
 
 Citation "Daniele Ahmed, Andrea Peruffo, and Alessandro Abate. Automated and Sound Synthesis of Lyapunov Functions with SMT Solvers. TACAS 2020".
 
@@ -130,7 +130,7 @@ Problem
   stable
 End.
 
-Tactic "Section 5 Other Examples, Ahmed et al. Example 7: Proof"
+Tactic "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 7: Proof"
 expand "stable" ; unfold ; cut("\exists k (k>0&\forall x1 \forall x2 \forall x3 (normsq(x1,x2,x3)=eps^2->lyap(x1,x2,x3)>=k))") ; <(
   unfold ; cut("\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 (normsq(x1,x2,x3) < del^2->lyap(x1,x2,x3) < k))") ; <(
     unfold ; existsR(1) ; unfold ; (allL(-6)*) ; fullSimplify ; dC("(normsq(x1,x2,x3)=eps^2->lyap(x1,x2,x3)>=k)&lyap(x1,x2,x3) < k", 1) ; <(
@@ -150,7 +150,7 @@ End.
 
 /* Exported from KeYmaera X v4.9.2 */
 
-Theorem "Section 5 Other Examples, Ahmed et al. Example 8"
+Theorem "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 8"
 
 Citation "Daniele Ahmed, Andrea Peruffo, and Alessandro Abate. Automated and Sound Synthesis of Lyapunov Functions with SMT Solvers. TACAS 2020".
 
@@ -178,7 +178,7 @@ Problem
   stable
 End.
 
-Tactic "Section 5 Other Examples, Ahmed et al. Example 8: Proof"
+Tactic "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 8: Proof"
 expand "stable" ; unfold ; cut("\exists k (k>0&\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k))") ; <(
   unfold ; cut("\exists del (del>0&del < eps&\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap(x1,x2) < k))") ; <(
     unfold ; existsR(1) ; unfold ; (allL(-6)*) ; fullSimplify ; dC("(normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)&lyap(x1,x2) < k", 1) ; <(
@@ -198,7 +198,7 @@ End.
 
 /* Exported from KeYmaera X v4.9.2 */
 
-Theorem "Section 5 Other Examples, Ahmed et al. Example 9"
+Theorem "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 9"
 
 Citation "Daniele Ahmed, Andrea Peruffo, and Alessandro Abate. Automated and Sound Synthesis of Lyapunov Functions with SMT Solvers. TACAS 2020".
 
@@ -228,7 +228,7 @@ Problem
   stable
 End.
 
-Tactic "Section 5 Other Examples, Ahmed et al. Example 9: Proof"
+Tactic "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 9: Proof"
 expand "stable" ; unfold ; cut("\exists k (k>0&\forall x1 \forall x2 \forall x3 \forall x4 (normsq(x1,x2,x3,x4)=eps^2->lyap(x1,x2,x3,x4)>=k))") ; <(
   unfold ; cut("\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 (normsq(x1,x2,x3,x4) < del^2->lyap(x1,x2,x3,x4) < k))") ; <(
     unfold ; existsR(1) ; unfold ; (allL(-6)*) ; fullSimplify ; dC("(normsq(x1,x2,x3,x4)=eps^2->lyap(x1,x2,x3,x4)>=k)&lyap(x1,x2,x3,x4) < k", 1) ; <(
@@ -248,7 +248,7 @@ End.
 
 /* Exported from KeYmaera X v4.9.2 */
 
-Theorem "Section 5 Other Examples, Ahmed et al. Example 10"
+Theorem "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 10"
 
 Citation "Daniele Ahmed, Andrea Peruffo, and Alessandro Abate. Automated and Sound Synthesis of Lyapunov Functions with SMT Solvers. TACAS 2020".
 
@@ -278,7 +278,7 @@ Problem
   -2 < mu & mu <= 5 -> stable
 End.
 
-Tactic "Section 5 Other Examples, Ahmed et al. Example 10: Proof"
+Tactic "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 10: Proof"
 expand "stable" ; unfold ; cut("\exists k (k>0&\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k))") ; <(
   unfold ; cut("\exists del (del>0&del < eps&\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap(x1,x2) < k))") ; <(
     unfold ; existsR(1) ; unfold ; (allL(-8)*) ; fullSimplify ; dC("(normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)&lyap(x1,x2) < k", 1) ; <(
@@ -298,7 +298,7 @@ End.
 
 /* Exported from KeYmaera X v4.9.2 */
 
-Theorem "Section 5 Other Examples, Ahmed et al. Example 11"
+Theorem "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 11"
 
 Citation "Daniele Ahmed, Andrea Peruffo, and Alessandro Abate. Automated and Sound Synthesis of Lyapunov Functions with SMT Solvers. TACAS 2020".
 
@@ -334,7 +334,7 @@ Problem
   0 <= mu4 & mu4 <= 100 -> stable
 End.
 
-Tactic "Section 5 Other Examples, Ahmed et al. Example 10: Proof"
+Tactic "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 10: Proof"
 expand "stable" ; unfold ; cut("\exists k (k>0&\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k))") ; <(
   unfold ; cut("\exists del (del>0&del < eps&\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap(x1,x2) < k))") ; <(
     unfold ; existsR(1) ; unfold ; allL(-14) ; allL(-14) ; fullSimplify ; dC("(normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)&lyap(x1,x2) < k", 1) ; <(
