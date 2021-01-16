@@ -12,7 +12,7 @@ Bool stable <->
   \exists del (del > 0 &
   \forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 ( normsq(x1,x2,x3,x4,x5,x6) < del^2 ->
     [{
-      x1' = -x1^2-4*x2^3-6*x3*x4,
+      x1' = -x1^3+4*x2^3-6*x3*x4,
       x2' = -x1-x2+x5^3,
       x3' = x1*x4-x3+x4*x6,
       x4' = x1*x3+x3*x6-x4^3,
@@ -30,24 +30,48 @@ Problem
   stable
 End.
 
-/* Does not prove: QE too slow */
-/*
 Tactic "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 5: Proof"
-expand "stable" ; unfold ; cut("\exists k (k>0&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k))") ; <(
-  unfold ; cut("\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6) < del^2->lyap(x1,x2,x3,x4,x5,x6) < k))") ; <(
-    unfold ; existsR(1) ; unfold ; (allL(-6)*) ; fullSimplify ; dC("(normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)&lyap(x1,x2,x3,x4,x5,x6) < k", 1) ; <(
-      hideL(-3) ; expandAllDefs ; ODE(1),
-      boxAnd(1) ; andR(1) ; <(
-        dW(1) ; unfold ; (allL(-5)*) ; propClose,
-        hideL(-3) ; hideL(-6) ; expandAllDefs ; ODE(1)
-        )
-      ),
-    hideR(1) ; hideL(-3) ; expandAllDefs ; QE
+expand "stable" ; unfold ; cut("\exists k (k>0&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)&\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6) < del^2->lyap(x1,x2,x3,x4,x5,x6) < k)))") ; <(
+  unfold ; existsR(1) ; unfold ; allL(-6) ; allL(-6) ; allL(-6) ; allL(-6) ; allL(-6) ; allL(-6) ; fullSimplify ; dC("(normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)&lyap(x1,x2,x3,x4,x5,x6) < k", 1) ; <(
+    hideL(-3=="\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)") ; dR("normsq(x1,x2,x3,x4,x5,x6)!=eps^2", 1) ; <(
+hideL(-5=="lyap(x1,x2,x3,x4,x5,x6) < k") ; expandAllDefs ; barrier(1),
+dW(1) ; expandAllDefs ; QE
+),
+    boxAnd(1) ; andR(1) ; <(
+      dW(1) ; unfold ; allL(-5) ; allL(-5) ; allL(-5) ; allL(-5) ; allL(-5) ; allL(-5) ; propClose,
+      hideL(-3=="\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)") ; hideL(-6=="normsq(x1,x2,x3,x4,x5,x6) < del^2") ; expandAllDefs ; hideL(-1=="eps>0") ; hideL(-1=="k>0") ; hideL(-1=="del>0") ; hideL(-1=="del < eps") ; ODE(1)
+      )
     ),
-  hideR(1) ; expandAllDefs ; QE
+  hideR(1=="\exists del (del>0&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6) < del^2->[{x1'=-x1^3+4*x2^3-6*x3*x4,x2'=-x1-x2+x5^3,x3'=x1*x4-x3+x4*x6,x4'=x1*x3+x3*x6-x4^3,x5'=(-2)*x2^3-x5+x6,x6'=(-3)*x3*x4-x5^3-x6&true}]normsq(x1,x2,x3,x4,x5,x6) < eps^2))") ; cut("eps^2/4 < eps^8|eps^2/4>=eps^8") ; <(
+orL(-2) ; <(
+existsR("eps^2/4", 1) ; expandAllDefs ; andR(1) ; <(
+  QE,
+    andR(1) ; <(
+    QE,
+      cut("\exists del (del>0&del < eps&del^2 < eps^2/44&del^4 < eps^2/44)") ; <(
+      unfold ; existsR(1) ; fullSimplify ; unfold ; cut("11*(x1^2+x2^4+x3^2+x4^2+x5^4+x6^2) < eps^2/4") ; <(
+        hideL(-7=="x1^2+x2^2+x3^2+x4^2+x5^2+x6^2 < del^2") ; hideL(-6=="del^4 < eps^2/44") ; hideL(-5=="del^2 < eps^2/44") ; hideL(-4=="del < eps") ; hideL(-3=="del>0") ; hideL(-2=="eps^2/4 < eps^8") ; QE,
+          hideR(1=="2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < eps^2/4") ; QE
+        ),
+        hideR(1=="\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2 < del^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < eps^2/4))") ; QE
+      )
+    )
+  ),
+  existsR("eps^8", 1) ; andR(1) ; <(
+  QE,
+    expandAllDefs ; andR(1) ; <(
+    QE,
+      cut("\exists del (del>0&del < eps&del^2 < eps^8/11&del^4 < eps^8/11)") ; <(
+      unfold ; existsR(1) ; fullSimplify ; unfold ; QE,
+        hideR(1=="\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2 < del^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < eps^8))") ; QE
+      )
+    )
+  )
+),
+hideR(1=="\exists k (k>0&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)&\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6) < del^2->lyap(x1,x2,x3,x4,x5,x6) < k)))") ; QE
+)
   )
 End.
-*/
 
 End.
 
