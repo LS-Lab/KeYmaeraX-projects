@@ -1,0 +1,551 @@
+/* Example: local asymptotic stability under arbitrary switching for parametric 1D ODEs */
+
+SharedDefinitions
+
+Real c;
+
+Real normsq(Real x) = x^2;
+
+/* System with two 1D ODEs */
+HP ode1 ::= {x' = -x, t'=1};
+HP ode2 ::= {x' = x*(a*x^2+c), t'=1};
+
+HP sys ::=
+{
+  {
+    {ode1; ++ ode2;}
+  }*
+};
+
+/* Common Lyapunov function (slightly complicated, for sake of example) */
+Real lyap(Real x) = x^4+x^2;
+
+End.
+
+Theorem "Arbitrary Switching/Parametric 1D (Stability)"
+
+Problem
+  a > 0 & c < 0 ->
+  \forall eps (eps > 0 ->
+  \exists del (del > 0 &
+  \forall x (normsq(x) < del^2 ->
+    [sys;] normsq(x) < eps^2)
+  ))
+End.
+
+Tactic "Arbitrary Switching/Parametric 1D (Stability): Proof"
+unfold;
+cut("\exists gam (0 < gam&gam<=eps&\forall x (normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)&\exists k (k>0&\forall x (normsq(x)=gam^2->lyap(x)>=k)))"); <(
+  "Use":
+    expand "sys";
+    expand "ode1";
+    expand "ode2";
+    unfold;
+    existsRmon("del>0&del < gam&\forall x (normsq(x) < del^2->lyap(x) < k)", 'R=="\exists del (del>0&\forall x (normsq(x) < del^2->[{{x'=-x,t'=1}++{x'=x*(a*x^2+c()),t'=1}}*]normsq(x) < eps^2))"); <(
+      "Use":
+        hideL('L=="\forall x (normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)");
+        hideL('L=="\forall x (normsq(x)=gam^2->lyap(x)>=k)");
+        expandAllDefs;
+        QE,
+      "Show":
+        unfold;
+        allL('L=="\forall x (normsq(x) < del^2->lyap(x) < k)");
+        fullSimplify;
+        loop("normsq(x) < gam^2&lyap(x) < k", 'R=="[{{x'=-x,t'=1}++{x'=x*(a*x^2+c()),t'=1}}*]normsq(x) < eps^2"); <(
+          "Init":
+            andR('R=="normsq(x) < gam^2&lyap(x) < k"); <(
+              "normsq(x) < gam^2":
+                hideL('L=="\forall x (normsq(x)=gam^2->lyap(x)>=k)");
+                hideL('L=="\forall x (normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)");
+                expandAllDefs;
+                QE,
+              "lyap(x) < k":
+                propClose
+            ),
+          "Post":
+            hideL('L=="\forall x (normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)");
+            hideL('L=="\forall x (normsq(x)=gam^2->lyap(x)>=k)");
+            expandAllDefs;
+            QE,
+          "Step":
+            unfold; <(
+              "[{x'=-x,t'=1}](normsq(x) < gam^2&lyap(x) < k)":
+                expandAllDefs;
+                dCClosure('R=="[{x'=-x,t'=1}](x^2 < gam^2&x^4+x^2 < k)"); <(
+                  "0":
+                    hideL('L=="\forall x (x^2<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)");
+                    hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=k)");
+                    QE,
+                  "Use":
+                    dC("4*x^3*(-x)+2*x*(-x)<=0", 'R=="[{x'=-x,t'=1&true&gam^2-x^2>=0&k-(x^4+x^2)>=0}](gam^2-x^2>0&k-(x^4+x^2)>0)"); <(
+                      "Use":
+                        hideL('L=="\forall x (x^2<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)");
+                        dC("normsq(x)=gam^2->lyap(x)>=k", 'R=="[{x'=-x,t'=1&(true&gam^2-x^2>=0&k-(x^4+x^2)>=0)&4*x^3*(-x)+2*x*(-x)<=0}](gam^2-x^2>0&k-(x^4+x^2)>0)"); <(
+                          "Use":
+                            hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=k)");
+                            expandAllDefs;
+                            ODE('R=="[{x'=-x,t'=1&((true&gam^2-x^2>=0&k-(x^4+x^2)>=0)&4*x^3*(-x)+2*x*(-x)<=0)&(x^2=gam^2->x^4+x^2>=k)}](gam^2-x^2>0&k-(x^4+x^2)>0)"),
+                          "Show":
+                            dW('R=="[{x'=-x,t'=1&(true&gam^2-x^2>=0&k-(x^4+x^2)>=0)&4*x^3*(-x)+2*x*(-x)<=0}](normsq(x)=gam^2->lyap(x)>=k)");
+                            expandAllDefs;
+                            unfold;
+                            allL('L=="\forall x (x^2=gam^2->x^4+x^2>=k)");
+                            propClose
+                        ),
+                      "Show":
+                        dW('R=="[{x'=-x,t'=1&true&gam^2-x^2>=0&k-(x^4+x^2)>=0}]4*x^3*(-x)+2*x*(-x)<=0");
+                        unfold;
+                        allL('L=="\forall x (x^2<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)");
+                        implyL('L=="x^2<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0"); <(
+                          "x^2<=gam^2":
+                            hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=k)");
+                            QE,
+                          "4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0":
+                            propClose
+                        )
+                    )
+                ),
+              "[{x'=x*(a*x^2+c()),t'=1}](normsq(x) < gam^2&lyap(x) < k)":
+                expandAllDefs;
+                dCClosure('R=="[{x'=x*(a*x^2+c()),t'=1}](x^2 < gam^2&x^4+x^2 < k)"); <(
+                  "0":
+                    hideL('L=="\forall x (x^2<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)");
+                    hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=k)");
+                    QE,
+                  "Use":
+                    dC("4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0", 'R=="[{x'=x*(a*x^2+c()),t'=1&true&gam^2-x^2>=0&k-(x^4+x^2)>=0}](gam^2-x^2>0&k-(x^4+x^2)>0)"); <(
+                      "Use":
+                        hideL('L=="\forall x (x^2<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)");
+                        dC("x^4+x^2 < k", 'R=="[{x'=x*(a*x^2+c()),t'=1&(true&gam^2-x^2>=0&k-(x^4+x^2)>=0)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0}](gam^2-x^2>0&k-(x^4+x^2)>0)"); <(
+                          "Use":
+                            dC("x^2=gam^2->x^4+x^2>=k", 'R=="[{x'=x*(a*x^2+c()),t'=1&((true&gam^2-x^2>=0&k-(x^4+x^2)>=0)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)&x^4+x^2 < k}](gam^2-x^2>0&k-(x^4+x^2)>0)"); <(
+                              "Use":
+                                hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=k)");
+                                ODE('R=="[{x'=x*(a*x^2+c()),t'=1&(((true&gam^2-x^2>=0&k-(x^4+x^2)>=0)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)&x^4+x^2 < k)&(x^2=gam^2->x^4+x^2>=k)}](gam^2-x^2>0&k-(x^4+x^2)>0)"),
+                              "Show":
+                                dW('R=="[{x'=x*(a*x^2+c()),t'=1&((true&gam^2-x^2>=0&k-(x^4+x^2)>=0)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)&x^4+x^2 < k}](x^2=gam^2->x^4+x^2>=k)");
+                                unfold;
+                                allL('L=="\forall x (x^2=gam^2->x^4+x^2>=k)");
+                                propClose
+                            ),
+                          "Show":
+                            hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=k)");
+                            ODE('R=="[{x'=x*(a*x^2+c()),t'=1&(true&gam^2-x^2>=0&k-(x^4+x^2)>=0)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0}]x^4+x^2 < k")
+                        ),
+                      "Show":
+                        dW('R=="[{x'=x*(a*x^2+c()),t'=1&true&gam^2-x^2>=0&k-(x^4+x^2)>=0}]4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0");
+                        unfold;
+                        allL('L=="\forall x (x^2<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)");
+                        implyL('L=="x^2<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0"); <(
+                          "x^2<=gam^2":
+                            hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=k)");
+                            QE,
+                          "4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0":
+                            propClose
+                        )
+                    )
+                )
+            )
+        )
+    ),
+  "Show":
+    hideR('R=="\exists del (del>0&\forall x (normsq(x) < del^2->[sys{|^@|};]normsq(x) < eps^2))");
+    expandAllDefs;
+    QE
+)
+End.
+
+End.
+
+Theorem "Arbitrary Switching/Parametric 1D (Local Pre-attractivity)"
+
+Problem
+  a > 0 & c < 0 ->
+  \exists del (del > 0 &
+  \forall eps (eps > 0 ->
+  \exists T (T >= 0 &
+  \forall x (normsq(x) < del^2 ->
+    [ t:=0; sys; ] (t>=T -> normsq(x) < eps^2)
+  ))))
+End.
+
+Tactic "Arbitrary Switching/Parametric 1D (Local Pre-attractivity): Proof"
+expand "sys";
+expand "ode1";
+expand "ode2";
+unfold;
+cut("\exists gam (0 < gam&\forall x (0 < normsq(x)&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x) < 0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c())) < 0)&\exists b (b>0&\forall x (normsq(x)=gam^2->lyap(x)>=b)))"); <(
+  "Use":
+    unfold;
+    existsRmon("del>0&del<=gam&\forall x (normsq(x) < del^2->lyap(x) < b)", 'R=="\exists del (del>0&\forall eps (eps>0->\exists T (T>=0&\forall x (normsq(x) < del^2->\forall t (t=0->[{{x'=-x,t'=1}++{x'=x*(a*x^2+c()),t'=1}}*](t>=T->normsq(x) < eps^2))))))"); <(
+      "Use":
+        hideL('L=="\forall x (0 < normsq(x)&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x) < 0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c())) < 0)");
+        hideL('L=="\forall x (normsq(x)=gam^2->lyap(x)>=b)");
+        expandAllDefs;
+        QE,
+      "Show":
+        unfold;
+        cut("\exists v1 (v1>0&\forall x (normsq(x) < gam^2&normsq(x)>=eps^2->lyap(x)>=v1))"); <(
+          "Use":
+            unfold;
+            cut("\exists k (k < 0&\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k))"); <(
+              "Use":
+                unfold;
+                existsRmon("T>=0&b+k*T < v1", 'R=="\exists T (T>=0&\forall x (normsq(x) < del^2->\forall t (t=0->[{{x'=-x,t'=1}++{x'=x*(a*x^2+c()),t'=1}}*](t>=T->normsq(x) < eps^2))))"); <(
+                  "Use":
+                    hideL('L=="\forall x (0 < normsq(x)&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x) < 0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c())) < 0)");
+                    hideL('L=="\forall x (normsq(x)=gam^2->lyap(x)>=b)");
+                    hideL('L=="\forall x (normsq(x) < del^2->lyap(x) < b)");
+                    hideL('L=="\forall x (normsq(x) < gam^2&normsq(x)>=eps^2->lyap(x)>=v1)");
+                    hideL('L=="\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k)");
+                    QE,
+                  "Show":
+                    unfold;
+                    allL('L=="\forall x (normsq(x) < del^2->lyap(x) < b)");
+                    fullSimplify;
+                    cut("normsq(x) < gam^2"); <(
+                      "Use":
+                        hideL('L=="del>0");
+                        hideL('L=="del<=gam");
+                        hideL('L=="normsq(x) < del^2");
+                        loop("(lyap(x) < b&normsq(x) < gam^2)&(lyap(x)>=v1->lyap(x)<=b+k*t)", 'R=="[{{x'=-x,t'=1}++{x'=x*(a*x^2+c()),t'=1}}*](t>=T->normsq(x) < eps^2)"); <(
+                          "Init":
+                            allL2R('L=="t=0");
+                            fullSimplify;
+                            propClose,
+                          "Post":
+                            hideL('L=="\forall x (0 < normsq(x)&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x) < 0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c())) < 0)");
+                            hideL('L=="\forall x (normsq(x)=gam^2->lyap(x)>=b)");
+                            allL('L=="\forall x (normsq(x) < gam^2&normsq(x)>=eps^2->lyap(x)>=v1)");
+                            hideL('L=="\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k)");
+                            expandAllDefs;
+                            QE,
+                          "Step":
+                            hideL('L=="\forall x (normsq(x) < gam^2&normsq(x)>=eps^2->lyap(x)>=v1)");
+                            hideL('L=="eps>0");
+                            hideL('L=="T>=0");
+                            hideL('L=="b+k*T < v1");
+                            unfold; <(
+                              "[{x'=-x,t'=1}]((lyap(x) < b&normsq(x) < gam^2)&(lyap(x)>=v1->lyap(x)<=b+k*t))":
+                                dC("lyap(x) < b&normsq(x) < gam^2", 'R=="[{x'=-x,t'=1}]((lyap(x) < b&normsq(x) < gam^2)&(lyap(x)>=v1->lyap(x)<=b+k*t))"); <(
+                                  "Use":
+                                    boxAnd('R=="[{x'=-x,t'=1&true&lyap(x) < b&normsq(x) < gam^2}]((lyap(x) < b&normsq(x) < gam^2)&(lyap(x)>=v1->lyap(x)<=b+k*t))");
+                                    andR('R=="[{x'=-x,t'=1&true&lyap(x) < b&normsq(x) < gam^2}](lyap(x) < b&normsq(x) < gam^2)&[{x'=-x,t'=1&true&lyap(x) < b&normsq(x) < gam^2}](lyap(x)>=v1->lyap(x)<=b+k*t)"); <(
+                                      "[{x'=-x,t'=1&true&lyap(x) < b&normsq(x) < gam^2}](lyap(x) < b&normsq(x) < gam^2)":
+                                        ODE('R=="[{x'=-x,t'=1&true&lyap(x) < b&normsq(x) < gam^2}](lyap(x) < b&normsq(x) < gam^2)"),
+                                      "[{x'=-x,t'=1&true&lyap(x) < b&normsq(x) < gam^2}](lyap(x)>=v1->lyap(x)<=b+k*t)":
+                                        hideL('L=="\forall x (normsq(x)=gam^2->lyap(x)>=b)");
+                                        hideL('L=="b>0");
+                                        dC("4*x^3*(-x)+2*x*(-x)<=0", 'R=="[{x'=-x,t'=1&true&lyap(x) < b&normsq(x) < gam^2}](lyap(x)>=v1->lyap(x)<=b+k*t)"); <(
+                                          "Use":
+                                            hideL('L=="\forall x (0 < normsq(x)&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x) < 0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c())) < 0)");
+                                            useAt("DCC", "1", 'R=="[{x'=-x,t'=1&(true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(-x)+2*x*(-x)<=0}](lyap(x)>=v1->lyap(x)<=b+k*t)");
+                                            unfold; <(
+                                              "[{x'=-x,t'=1&((true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(-x)+2*x*(-x)<=0)&lyap(x)>=v1}]lyap(x)<=b+k*t":
+                                                dC("4*x^3*(-x)+2*x*(-x)<=k", 'R=="[{x'=-x,t'=1&((true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(-x)+2*x*(-x)<=0)&lyap(x)>=v1}]lyap(x)<=b+k*t"); <(
+                                                  "Use":
+                                                    hideL('L=="\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k)");
+                                                    expandAllDefs;
+                                                    ODE('R=="[{x'=-x,t'=1&(((true&x^4+x^2 < b&x^2 < gam^2)&4*x^3*(-x)+2*x*(-x)<=0)&x^4+x^2>=v1)&4*x^3*(-x)+2*x*(-x)<=k}]x^4+x^2<=b+k*t"),
+                                                  "Show":
+                                                    dW('R=="[{x'=-x,t'=1&((true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(-x)+2*x*(-x)<=0)&lyap(x)>=v1}]4*x^3*(-x)+2*x*(-x)<=k");
+                                                    unfold;
+                                                    allL('L=="\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k)");
+                                                    fullSimplify;
+                                                    propClose
+                                                ),
+                                              "[{x'=-x,t'=1&(true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(-x)+2*x*(-x)<=0}](!lyap(x)>=v1->[{x'=-x,t'=1&(true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(-x)+2*x*(-x)<=0}](!lyap(x)>=v1))":
+                                                hideL('L=="\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k)");
+                                                dW('R=="[{x'=-x,t'=1&(true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(-x)+2*x*(-x)<=0}](!lyap(x)>=v1->[{x'=-x,t'=1&(true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(-x)+2*x*(-x)<=0}](!lyap(x)>=v1))");
+                                                implyR('R=="!lyap(x)>=v1->[{x'=-x,t'=1&(true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(-x)+2*x*(-x)<=0}](!lyap(x)>=v1)");
+                                                expandAllDefs;
+                                                ODE('R=="[{x'=-x,t'=1&(true&x^4+x^2 < b&x^2 < gam^2)&4*x^3*(-x)+2*x*(-x)<=0}](!x^4+x^2>=v1)")
+                                            ),
+                                          "Show":
+                                            hideL('L=="\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k)");
+                                            dW('R=="[{x'=-x,t'=1&true&lyap(x) < b&normsq(x) < gam^2}]4*x^3*(-x)+2*x*(-x)<=0");
+                                            unfold;
+                                            allL('L=="\forall x (0 < normsq(x)&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x) < 0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c())) < 0)");
+                                            expandAllDefs;
+                                            QE
+                                        )
+                                    ),
+                                  "Show":
+                                    hideL('L=="v1>0");
+                                    hideL('L=="k < 0");
+                                    hideL('L=="\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k)");
+                                    hideL('L=="lyap(x)>=v1->lyap(x)<=b+k*t");
+                                    expandAllDefs;
+                                    dCClosure('R=="[{x'=-x,t'=1}](x^4+x^2 < b&x^2 < gam^2)"); <(
+                                      "0":
+                                        hideL('L=="\forall x (0 < x^2&x^2<=gam^2->4*x^3*(-x)+2*x*(-x) < 0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c())) < 0)");
+                                        hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=b)");
+                                        QE,
+                                      "Use":
+                                        dC("4*x^3*(-x)+2*x*(-x)<=0", 'R=="[{x'=-x,t'=1&true&b-(x^4+x^2)>=0&gam^2-x^2>=0}](b-(x^4+x^2)>0&gam^2-x^2>0)"); <(
+                                          "Use":
+                                            hideL('L=="\forall x (0 < x^2&x^2<=gam^2->4*x^3*(-x)+2*x*(-x) < 0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c())) < 0)");
+                                            dC("normsq(x)=gam^2->lyap(x)>=b", 'R=="[{x'=-x,t'=1&(true&b-(x^4+x^2)>=0&gam^2-x^2>=0)&4*x^3*(-x)+2*x*(-x)<=0}](b-(x^4+x^2)>0&gam^2-x^2>0)"); <(
+                                              "Use":
+                                                expandAllDefs;
+                                                hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=b)");
+                                                ODE('R=="[{x'=-x,t'=1&((true&b-(x^4+x^2)>=0&gam^2-x^2>=0)&4*x^3*(-x)+2*x*(-x)<=0)&(x^2=gam^2->x^4+x^2>=b)}](b-(x^4+x^2)>0&gam^2-x^2>0)"),
+                                              "Show":
+                                                dW('R=="[{x'=-x,t'=1&(true&b-(x^4+x^2)>=0&gam^2-x^2>=0)&4*x^3*(-x)+2*x*(-x)<=0}](normsq(x)=gam^2->lyap(x)>=b)");
+                                                unfold;
+                                                expandAllDefs;
+                                                allL('L=="\forall x (x^2=gam^2->x^4+x^2>=b)");
+                                                propClose
+                                            ),
+                                          "Show":
+                                            hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=b)");
+                                            dW('R=="[{x'=-x,t'=1&true&b-(x^4+x^2)>=0&gam^2-x^2>=0}]4*x^3*(-x)+2*x*(-x)<=0");
+                                            unfold;
+                                            allL('L=="\forall x (0 < x^2&x^2<=gam^2->4*x^3*(-x)+2*x*(-x) < 0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c())) < 0)");
+                                            QE
+                                        )
+                                    )
+                                ),
+                              "[{x'=x*(a*x^2+c()),t'=1}]((lyap(x) < b&normsq(x) < gam^2)&(lyap(x)>=v1->lyap(x)<=b+k*t))":
+                                dC("lyap(x) < b&normsq(x) < gam^2", 'R=="[{x'=x*(a*x^2+c()),t'=1}]((lyap(x) < b&normsq(x) < gam^2)&(lyap(x)>=v1->lyap(x)<=b+k*t))"); <(
+                                  "Use":
+                                    boxAnd('R=="[{x'=x*(a*x^2+c()),t'=1&true&lyap(x) < b&normsq(x) < gam^2}]((lyap(x) < b&normsq(x) < gam^2)&(lyap(x)>=v1->lyap(x)<=b+k*t))");
+                                    andR('R=="[{x'=x*(a*x^2+c()),t'=1&true&lyap(x) < b&normsq(x) < gam^2}](lyap(x) < b&normsq(x) < gam^2)&[{x'=x*(a*x^2+c()),t'=1&true&lyap(x) < b&normsq(x) < gam^2}](lyap(x)>=v1->lyap(x)<=b+k*t)"); <(
+                                      "[{x'=x*(a*x^2+c()),t'=1&true&lyap(x) < b&normsq(x) < gam^2}](lyap(x) < b&normsq(x) < gam^2)":
+                                        ODE('R=="[{x'=x*(a*x^2+c()),t'=1&true&lyap(x) < b&normsq(x) < gam^2}](lyap(x) < b&normsq(x) < gam^2)"),
+                                      "[{x'=x*(a*x^2+c()),t'=1&true&lyap(x) < b&normsq(x) < gam^2}](lyap(x)>=v1->lyap(x)<=b+k*t)":
+                                        hideL('L=="b>0");
+                                        hideL('L=="\forall x (normsq(x)=gam^2->lyap(x)>=b)");
+                                        dC("4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0", 'R=="[{x'=x*(a*x^2+c()),t'=1&true&lyap(x) < b&normsq(x) < gam^2}](lyap(x)>=v1->lyap(x)<=b+k*t)"); <(
+                                          "Use":
+                                            hideL('L=="\forall x (0 < normsq(x)&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x) < 0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c())) < 0)");
+                                            useAt("DCC", "1", 'R=="[{x'=x*(a*x^2+c()),t'=1&(true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0}](lyap(x)>=v1->lyap(x)<=b+k*t)");
+                                            andR('R=="[{x'=x*(a*x^2+c()),t'=1&((true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)&lyap(x)>=v1}]lyap(x)<=b+k*t&[{x'=x*(a*x^2+c()),t'=1&(true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0}](!lyap(x)>=v1->[{x'=x*(a*x^2+c()),t'=1&(true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0}](!lyap(x)>=v1))"); <(
+                                              "[{x'=x*(a*x^2+c()),t'=1&((true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)&lyap(x)>=v1}]lyap(x)<=b+k*t":
+                                                dC("4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k", 'R=="[{x'=x*(a*x^2+c()),t'=1&((true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)&lyap(x)>=v1}]lyap(x)<=b+k*t"); <(
+                                                  "Use":
+                                                    hideL('L=="\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k)");
+                                                    expandAllDefs;
+                                                    ODE('R=="[{x'=x*(a*x^2+c()),t'=1&(((true&x^4+x^2 < b&x^2 < gam^2)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)&x^4+x^2>=v1)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k}]x^4+x^2<=b+k*t"),
+                                                  "Show":
+                                                    dW('R=="[{x'=x*(a*x^2+c()),t'=1&((true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)&lyap(x)>=v1}]4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k");
+                                                    unfold;
+                                                    allL('L=="\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k)");
+                                                    expandAllDefs;
+                                                    QE
+                                                ),
+                                              "[{x'=x*(a*x^2+c()),t'=1&(true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0}](!lyap(x)>=v1->[{x'=x*(a*x^2+c()),t'=1&(true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0}](!lyap(x)>=v1))":
+                                                hideL('L=="\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k)");
+                                                dW('R=="[{x'=x*(a*x^2+c()),t'=1&(true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0}](!lyap(x)>=v1->[{x'=x*(a*x^2+c()),t'=1&(true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0}](!lyap(x)>=v1))");
+                                                implyR('R=="!lyap(x)>=v1->[{x'=x*(a*x^2+c()),t'=1&(true&lyap(x) < b&normsq(x) < gam^2)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0}](!lyap(x)>=v1)");
+                                                expandAllDefs;
+                                                ODE('R=="[{x'=x*(a*x^2+c()),t'=1&(true&x^4+x^2 < b&x^2 < gam^2)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0}](!x^4+x^2>=v1)")
+                                            ),
+                                          "Show":
+                                            hideL('L=="k < 0");
+                                            hideL('L=="\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k)");
+                                            dW('R=="[{x'=x*(a*x^2+c()),t'=1&true&lyap(x) < b&normsq(x) < gam^2}]4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0");
+                                            unfold;
+                                            allL('L=="\forall x (0 < normsq(x)&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x) < 0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c())) < 0)");
+                                            expandAllDefs;
+                                            QE
+                                        )
+                                    ),
+                                  "Show":
+                                    hideL('L=="k < 0");
+                                    hideL('L=="\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k)");
+                                    hideL('L=="lyap(x)>=v1->lyap(x)<=b+k*t");
+                                    hideL('L=="v1>0");
+                                    expandAllDefs;
+                                    dCClosure('R=="[{x'=x*(a*x^2+c()),t'=1}](x^4+x^2 < b&x^2 < gam^2)"); <(
+                                      "0":
+                                        hideL('L=="\forall x (0 < x^2&x^2<=gam^2->4*x^3*(-x)+2*x*(-x) < 0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c())) < 0)");
+                                        hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=b)");
+                                        QE,
+                                      "Use":
+                                        dC("4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0", 'R=="[{x'=x*(a*x^2+c()),t'=1&true&b-(x^4+x^2)>=0&gam^2-x^2>=0}](b-(x^4+x^2)>0&gam^2-x^2>0)"); <(
+                                          "Use":
+                                            hideL('L=="\forall x (0 < x^2&x^2<=gam^2->4*x^3*(-x)+2*x*(-x) < 0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c())) < 0)");
+                                            dC("x^2=gam^2->x^4+x^2>=b", 'R=="[{x'=x*(a*x^2+c()),t'=1&(true&b-(x^4+x^2)>=0&gam^2-x^2>=0)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0}](b-(x^4+x^2)>0&gam^2-x^2>0)"); <(
+                                              "Use":
+                                                hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=b)");
+                                                ODE('R=="[{x'=x*(a*x^2+c()),t'=1&((true&b-(x^4+x^2)>=0&gam^2-x^2>=0)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)&(x^2=gam^2->x^4+x^2>=b)}](b-(x^4+x^2)>0&gam^2-x^2>0)"),
+                                              "Show":
+                                                dW('R=="[{x'=x*(a*x^2+c()),t'=1&(true&b-(x^4+x^2)>=0&gam^2-x^2>=0)&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0}](x^2=gam^2->x^4+x^2>=b)");
+                                                unfold;
+                                                allL('L=="\forall x (x^2=gam^2->x^4+x^2>=b)");
+                                                propClose
+                                            ),
+                                          "Show":
+                                            dW('R=="[{x'=x*(a*x^2+c()),t'=1&true&b-(x^4+x^2)>=0&gam^2-x^2>=0}]4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0");
+                                            unfold;
+                                            hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=b)");
+                                            allL('L=="\forall x (0 < x^2&x^2<=gam^2->4*x^3*(-x)+2*x*(-x) < 0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c())) < 0)");
+                                            QE
+                                        )
+                                    )
+                                )
+                            )
+                        ),
+                      "Show":
+                        hideR('R=="[{{x'=-x,t'=1}++{x'=x*(a*x^2+c()),t'=1}}*](t>=T->normsq(x) < eps^2)");
+                        hideL('L=="\forall x (0 < normsq(x)&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x) < 0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c())) < 0)");
+                        hideL('L=="\forall x (normsq(x)=gam^2->lyap(x)>=b)");
+                        hideL('L=="\forall x (normsq(x) < gam^2&normsq(x)>=eps^2->lyap(x)>=v1)");
+                        hideL('L=="\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k)");
+                        expandAllDefs;
+                        QE
+                    )
+                ),
+              "Show":
+                hideR('R=="\exists T (T>=0&\forall x (normsq(x) < del^2->\forall t (t=0->[{{x'=-x,t'=1}++{x'=x*(a*x^2+c()),t'=1}}*](t>=T->normsq(x) < eps^2))))");
+                hideL('L=="b>0");
+                hideL('L=="\forall x (normsq(x)=gam^2->lyap(x)>=b)");
+                hideL('L=="eps>0");
+                hideL('L=="del>0");
+                hideL('L=="del<=gam");
+                hideL('L=="\forall x (normsq(x) < del^2->lyap(x) < b)");
+                hideL('L=="\forall x (normsq(x) < gam^2&normsq(x)>=eps^2->lyap(x)>=v1)");
+                cut("\exists k1 (k1 < 0&\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k1))&\exists k2 (k2 < 0&\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k2))"); <(
+                  "Use":
+                    unfold;
+                    existsRmon("k < 0&k1<=k&k2<=k", 'R=="\exists k (k < 0&\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k))"); <(
+                      "Use":
+                        hideL('L=="\forall x (0 < normsq(x)&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x) < 0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c())) < 0)");
+                        hideL('L=="\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k2)");
+                        hideL('L=="\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k1)");
+                        QE,
+                      "Show":
+                        andR('R=="k < 0&\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k)"); <(
+                          "k < 0":
+                            propClose,
+                          "\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k)":
+                            unfold;
+                            allL('L=="\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k2)");
+                            allL('L=="\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k1)");
+                            fullSimplify;
+                            hideL('L=="\forall x (0 < normsq(x)&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x) < 0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c())) < 0)");
+                            expandAllDefs;
+                            QE
+                        )
+                    ),
+                  "Show":
+                    hideR('R=="\exists k (k < 0&\forall x (lyap(x)>=v1&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=k&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=k))");
+                    expandAllDefs;
+                    QE
+                )
+            ),
+          "Show":
+            hideR('R=="\exists T (T>=0&\forall x (normsq(x) < del^2->\forall t (t=0->[{{x'=-x,t'=1}++{x'=x*(a*x^2+c()),t'=1}}*](t>=T->normsq(x) < eps^2))))");
+            hideL('L=="\forall x (normsq(x) < del^2->lyap(x) < b)");
+            hideL('L=="del<=gam");
+            hideL('L=="del>0");
+            hideL('L=="\forall x (normsq(x)=gam^2->lyap(x)>=b)");
+            hideL('L=="\forall x (0 < normsq(x)&normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x) < 0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c())) < 0)");
+            expandAllDefs;
+            QE
+        )
+    ),
+  "Show":
+    hideR('R=="\exists del (del>0&\forall eps (eps>0->\exists T (T>=0&\forall x (normsq(x) < del^2->\forall t (t=0->[{{x'=-x,t'=1}++{x'=x*(a*x^2+c()),t'=1}}*](t>=T->normsq(x) < eps^2))))))");
+    expandAllDefs;
+    QE
+)
+End.
+
+End.
+
+Theorem "Arbitrary Switching/Parametric 1D (Local Complete Solutions)"
+
+Problem
+  a > 0 & c < 0 ->
+  \exists del (del > 0 &
+  \forall x (normsq(x) < del^2 ->
+  [{t:=0; sys;}]
+  \forall T ( T > 0 ->
+    <ode1;> t > T &
+    <ode2;> t > T
+  )))
+End.
+
+Tactic "Arbitrary Switching/Parametric 1D (Local Complete Solutions): Proof"
+expand "sys";
+expand "ode1";
+expand "ode2";
+unfold;
+cut("\exists gam (0 < gam&\forall x (normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)&\exists k (k>0&\forall x (normsq(x)=gam^2->lyap(x)>=k)))"); <(
+  "Use":
+    unfold;
+    existsRmon("del>0&del < gam&\forall x (normsq(x) < del^2->lyap(x) < k)", 'R=="\exists del (del>0&\forall x (normsq(x) < del^2->\forall t (t=0->[{{x'=-x,t'=1}++{x'=x*(a*x^2+c()),t'=1}}*]\forall T (T>0-><{x'=-x,t'=1}>t>T&<{x'=x*(a*x^2+c()),t'=1}>t>T))))"); <(
+      "Use":
+        hideL('L=="\forall x (normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)");
+        hideL('L=="\forall x (normsq(x)=gam^2->lyap(x)>=k)");
+        expandAllDefs;
+        QE,
+      "Show":
+        unfold;
+        allL('L=="\forall x (normsq(x) < del^2->lyap(x) < k)");
+        fullSimplify;
+        loop("normsq(x) < gam^2&lyap(x) < k", 'R=="[{{x'=-x,t'=1}++{x'=x*(a*x^2+c()),t'=1}}*]\forall T (T>0-><{x'=-x,t'=1}>t>T&<{x'=x*(a*x^2+c()),t'=1}>t>T)"); <(
+          "Init":
+            hideL('L=="\forall x (normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)");
+            hideL('L=="\forall x (normsq(x)=gam^2->lyap(x)>=k)");
+            expandAllDefs;
+            QE,
+          "Post":
+            unfold; <(
+              "<{x'=-x,t'=1}>t>T":
+                gEx('R=="<{x'=-x,t'=1}>t>T"),
+              "<{x'=x*(a*x^2+c()),t'=1}>t>T":
+                compatCut("normsq(x) < gam^2", 'R=="<{x'=x*(a*x^2+c()),t'=1}>t>T"); <(
+                  "Use":
+                    hideL('L=="\forall x (normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)");
+                    hideL('L=="\forall x (normsq(x)=gam^2->lyap(x)>=k)");
+                    expandAllDefs;
+                    gEx("x*x<=gam^2", 'R=="<{x'=x*(a*x^2+c()),t'=1}>t>T"),
+                  "Show":
+                    hideR('R=="<{x'=x*(a*x^2+c()),t'=1}>t>T");
+                    expandAllDefs;
+                    dCClosure('R=="[{x'=x*(a*x^2+c()),t'=1}]x^2 < gam^2"); <(
+                      "0":
+                        hideL('L=="\forall x (x^2<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)");
+                        hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=k)");
+                        QE,
+                      "Use":
+                        ODE('R=="[{x'=x*(a*x^2+c()),t'=1&true&gam^2-x^2>=0}]gam^2-x^2>0")
+                    )
+                )
+            ),
+          "Step":
+            unfold; <(
+              "[{x'=-x,t'=1}](normsq(x) < gam^2&lyap(x) < k)":
+                expandAllDefs;
+                dCClosure('R=="[{x'=-x,t'=1}](x^2 < gam^2&x^4+x^2 < k)"); <(
+                  "0":
+                    hideL('L=="\forall x (x^2<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)");
+                    hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=k)");
+                    QE,
+                  "Use":
+                    ODE('R=="[{x'=-x,t'=1&true&gam^2-x^2>=0&k-(x^4+x^2)>=0}](gam^2-x^2>0&k-(x^4+x^2)>0)")
+                ),
+              "[{x'=x*(a*x^2+c()),t'=1}](normsq(x) < gam^2&lyap(x) < k)":
+                expandAllDefs;
+                dCClosure('R=="[{x'=x*(a*x^2+c()),t'=1}](x^2 < gam^2&x^4+x^2 < k)"); <(
+                  "0":
+                    hideL('L=="\forall x (x^2<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)");
+                    hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=k)");
+                    QE,
+                  "Use":
+                    ODE('R=="[{x'=x*(a*x^2+c()),t'=1&true&gam^2-x^2>=0&k-(x^4+x^2)>=0}](gam^2-x^2>0&k-(x^4+x^2)>0)")
+                )
+            )
+        )
+    ),
+  "Show":
+    hideR('R=="\exists del (del>0&\forall x (normsq(x) < del^2->\forall t (t=0->[{{x'=-x,t'=1}++{x'=x*(a*x^2+c()),t'=1}}*]\forall T (T>0-><{x'=-x,t'=1}>t>T&<{x'=x*(a*x^2+c()),t'=1}>t>T))))");
+    expandAllDefs;
+    QE
+)
+End.
+
+End.
