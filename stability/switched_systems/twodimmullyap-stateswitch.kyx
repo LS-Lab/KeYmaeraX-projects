@@ -1,0 +1,325 @@
+/* Example: global pre-asymptotic stability under state-dependent switching for 2D ODEs with multiple Lyapunov functions */
+
+SharedDefinitions
+
+Real normsq(Real x1, Real x2) = x1^2+x2^2;
+
+/* System with 2D ODEs */
+HP ode1 ::= {x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1 & x1 >= 0};
+HP ode2 ::= {x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1 & x1 <= 0};
+
+HP sys ::=
+{
+  {
+    {ode1; ++ ode2;}
+  }*
+};
+
+/* Multiple Lyapunov functions */
+Real lyap1(Real x1, Real x2) = 2*x1^2+x2^2;
+Real lyap2(Real x1, Real x2) = 1/2*x1^2+x2^2;
+
+End.
+
+Theorem "State-Dependent Switching/Multiple Lyapunov Function 2D (Stability)"
+
+Problem
+  \forall eps (eps > 0 ->
+  \exists del (del > 0 &
+  \forall x1 \forall x2 (normsq(x1,x2) < del^2 ->
+    [sys;] normsq(x1,x2) < eps^2)
+  ))
+End.
+
+Tactic "State-Dependent Switching/Multiple Lyapunov Function 2D (Stability): Proof"
+expand "sys";
+expand "ode1";
+expand "ode2";
+unfold;
+cut("\exists k (k>0&\forall x1 \forall x2 (normsq(x1,x2)=eps^2->(x1>=0->lyap1(x1,x2)>=k)&(x1<=0->lyap2(x1,x2)>=k)))"); <(
+  "Use":
+    unfold;
+    existsRmon("del>0&del < eps&\forall x1 \forall x2 (normsq(x1,x2) < del^2->(x1>=0->lyap1(x1,x2) < k)&(x1<=0->lyap2(x1,x2) < k))", 'R=="\exists del (del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0}++{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0}}*]normsq(x1,x2) < eps^2))"); <(
+      "Use":
+        hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->(x1>=0->lyap1(x1,x2)>=k)&(x1<=0->lyap2(x1,x2)>=k))");
+        expandAllDefs;
+        QE,
+      "Show":
+        unfold;
+        allL('L=="\forall x1 \forall x2 (normsq(x1,x2) < del^2->(x1>=0->lyap1(x1,x2) < k)&(x1<=0->lyap2(x1,x2) < k))");
+        allL('L=="\forall x2 (normsq(x1,x2) < del^2->(x1>=0->lyap1(x1,x2) < k)&(x1<=0->lyap2(x1,x2) < k))");
+        fullSimplify;
+        loop("(x1>=0->lyap1(x1,x2) < k)&(x1<=0->lyap2(x1,x2) < k)&normsq(x1,x2) < eps^2", 'R=="[{{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0}++{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0}}*]normsq(x1,x2) < eps^2"); <(
+          "Init":
+            hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->(x1>=0->lyap1(x1,x2)>=k)&(x1<=0->lyap2(x1,x2)>=k))");
+            expandAllDefs;
+            QE,
+          "Post":
+            propClose,
+          "Step":
+            unfold; <(
+              "[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0}]((x1>=0->lyap1(x1,x2) < k)&(x1<=0->lyap2(x1,x2) < k)&normsq(x1,x2) < eps^2)":
+                dC("lyap1(x1,x2) < k", 'R=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0}]((x1>=0->lyap1(x1,x2) < k)&(x1<=0->lyap2(x1,x2) < k)&normsq(x1,x2) < eps^2)"); <(
+                  "Use":
+                    hideL('L=="eps>0");
+                    hideL('L=="k>0");
+                    dC("normsq(x1,x2)!=eps^2", 'R=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0&lyap1(x1,x2) < k}]((x1>=0->lyap1(x1,x2) < k)&(x1<=0->lyap2(x1,x2) < k)&normsq(x1,x2) < eps^2)"); <(
+                      "Use":
+                        hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->(x1>=0->lyap1(x1,x2)>=k)&(x1<=0->lyap2(x1,x2)>=k))");
+                        dC("normsq(x1,x2) < eps^2", 'R=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&(x1>=0&lyap1(x1,x2) < k)&normsq(x1,x2)!=eps^2}]((x1>=0->lyap1(x1,x2) < k)&(x1<=0->lyap2(x1,x2) < k)&normsq(x1,x2) < eps^2)"); <(
+                          "Use":
+                            dW('R=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&((x1>=0&lyap1(x1,x2) < k)&normsq(x1,x2)!=eps^2)&normsq(x1,x2) < eps^2}]((x1>=0->lyap1(x1,x2) < k)&(x1<=0->lyap2(x1,x2) < k)&normsq(x1,x2) < eps^2)");
+                            expandAllDefs;
+                            QE,
+                          "Show":
+                            expandAllDefs;
+                            ODE('R=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&(x1>=0&2*x1^2+x2^2 < k)&x1^2+x2^2!=eps^2}]x1^2+x2^2 < eps^2")
+                        ),
+                      "Show":
+                        dW('R=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0&lyap1(x1,x2) < k}]normsq(x1,x2)!=eps^2");
+                        unfold;
+                        allL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->(x1>=0->lyap1(x1,x2)>=k)&(x1<=0->lyap2(x1,x2)>=k))");
+                        allL('L=="\forall x2 (normsq(x1,x2)=eps^2->(x1>=0->lyap1(x1,x2)>=k)&(x1<=0->lyap2(x1,x2)>=k))");
+                        expandAllDefs;
+                        QE
+                    ),
+                  "Show":
+                    hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->(x1>=0->lyap1(x1,x2)>=k)&(x1<=0->lyap2(x1,x2)>=k))");
+                    hideL('L=="x1<=0->lyap2(x1,x2) < k");
+                    hideL('L=="normsq(x1,x2) < eps^2");
+                    expandAllDefs;
+                    ODE('R=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0}]2*x1^2+x2^2 < k")
+                ),
+              "[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0}]((x1>=0->lyap1(x1,x2) < k)&(x1<=0->lyap2(x1,x2) < k)&normsq(x1,x2) < eps^2)":
+                dC("lyap2(x1,x2) < k", 'R=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0}]((x1>=0->lyap1(x1,x2) < k)&(x1<=0->lyap2(x1,x2) < k)&normsq(x1,x2) < eps^2)"); <(
+                  "Use":
+                    dC("normsq(x1,x2)!=eps^2", 'R=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0&lyap2(x1,x2) < k}]((x1>=0->lyap1(x1,x2) < k)&(x1<=0->lyap2(x1,x2) < k)&normsq(x1,x2) < eps^2)"); <(
+                      "Use":
+                        hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->(x1>=0->lyap1(x1,x2)>=k)&(x1<=0->lyap2(x1,x2)>=k))");
+                        dC("normsq(x1,x2) < eps^2", 'R=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&(x1<=0&lyap2(x1,x2) < k)&normsq(x1,x2)!=eps^2}]((x1>=0->lyap1(x1,x2) < k)&(x1<=0->lyap2(x1,x2) < k)&normsq(x1,x2) < eps^2)"); <(
+                          "Use":
+                            dW('R=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&((x1<=0&lyap2(x1,x2) < k)&normsq(x1,x2)!=eps^2)&normsq(x1,x2) < eps^2}]((x1>=0->lyap1(x1,x2) < k)&(x1<=0->lyap2(x1,x2) < k)&normsq(x1,x2) < eps^2)");
+                            expandAllDefs;
+                            QE,
+                          "Show":
+                            expandAllDefs;
+                            ODE('R=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&(x1<=0&1/2*x1^2+x2^2 < k)&x1^2+x2^2!=eps^2}]x1^2+x2^2 < eps^2")
+                        ),
+                      "Show":
+                        dW('R=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0&lyap2(x1,x2) < k}]normsq(x1,x2)!=eps^2");
+                        unfold;
+                        expandAllDefs;
+                        QE
+                    ),
+                  "Show":
+                    hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->(x1>=0->lyap1(x1,x2)>=k)&(x1<=0->lyap2(x1,x2)>=k))");
+                    hideL('L=="x1>=0->lyap1(x1,x2) < k");
+                    hideL('L=="normsq(x1,x2) < eps^2");
+                    expandAllDefs;
+                    ODE('R=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0}]1/2*x1^2+x2^2 < k")
+                )
+            )
+        )
+    ),
+  "Show":
+    hideR('R=="\exists del (del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0}++{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0}}*]normsq(x1,x2) < eps^2))");
+    expandAllDefs;
+    QE
+)
+End.
+
+End.
+
+Theorem "State-Dependent Switching/Multiple Lyapunov Function 2D (Global Pre-attractivity)"
+
+Problem
+  \forall del (del > 0 ->
+  \forall eps (eps > 0 ->
+  \exists T (T >= 0 &
+  \forall x1 \forall x2 (normsq(x1,x2) < del^2 ->
+    [ t:=0; sys; ] (t>=T -> normsq(x1,x2) < eps^2)
+  ))))
+End.
+
+Tactic "State-Dependent Switching/Multiple Lyapunov Function 2D (Global Pre-attractivity): Proof"
+expand "sys";
+expand "ode1";
+expand "ode2";
+unfold;
+cut("\exists w (w>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->(x1>=0->lyap1(x1,x2) < w)&(x1<=0->lyap2(x1,x2) < w)))"); <(
+  "Use":
+    unfold;
+    cut("\exists u (w>=u&u>0&\forall x1 \forall x2 (normsq(x1,x2)>=eps^2->(x1>=0&lyap1(x1,x2)<=w->lyap1(x1,x2)>=u)&(x1<=0&lyap2(x1,x2)<=w->lyap2(x1,x2)>=u)))"); <(
+      "Use":
+        unfold;
+        cut("\exists k (k < 0&\forall x1 \forall x2 ((x1>=0&lyap1(x1,x2)<=w&lyap1(x1,x2)>=u->4*x1*(-x1/8-x2)+2*x2*(2*x1-x2/8)<=k)&(x1<=0&lyap2(x1,x2)<=w&lyap2(x1,x2)>=u->x1*(-x1/8-2*x2)+2*x2*(x1-x2/8)<=k)))"); <(
+          "Use":
+            unfold;
+            existsRmon("T>=0&w+k*T<=u", 'R=="\exists T (T>=0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->\forall t (t=0->[{{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0}++{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0}}*](t>=T->normsq(x1,x2) < eps^2))))"); <(
+              "Use":
+                hideL('L=="\forall x1 \forall x2 (normsq(x1,x2) < del^2->(x1>=0->lyap1(x1,x2) < w)&(x1<=0->lyap2(x1,x2) < w))");
+                hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)>=eps^2->(x1>=0&lyap1(x1,x2)<=w->lyap1(x1,x2)>=u)&(x1<=0&lyap2(x1,x2)<=w->lyap2(x1,x2)>=u))");
+                hideL('L=="\forall x1 \forall x2 ((x1>=0&lyap1(x1,x2)<=w&lyap1(x1,x2)>=u->4*x1*(-x1/8-x2)+2*x2*(2*x1-x2/8)<=k)&(x1<=0&lyap2(x1,x2)<=w&lyap2(x1,x2)>=u->x1*(-x1/8-2*x2)+2*x2*(x1-x2/8)<=k))");
+                QE,
+              "Show":
+                unfold;
+                allL('L=="\forall x1 \forall x2 (normsq(x1,x2) < del^2->(x1>=0->lyap1(x1,x2) < w)&(x1<=0->lyap2(x1,x2) < w))");
+                allL('L=="\forall x2 (normsq(x1,x2) < del^2->(x1>=0->lyap1(x1,x2) < w)&(x1<=0->lyap2(x1,x2) < w))");
+                fullSimplify;
+                hideL('L=="normsq(x1,x2) < del^2");
+                loop("(x1>=0->lyap1(x1,x2) < w&(lyap1(x1,x2)>=u->lyap1(x1,x2) < w+k*t))&(x1<=0->lyap2(x1,x2) < w&(lyap2(x1,x2)>=u->lyap2(x1,x2) < w+k*t))", 'R=="[{{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0}++{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0}}*](t>=T->normsq(x1,x2) < eps^2)"); <(
+                  "Init":
+                    allL2R('L=="t=0");
+                    fullSimplify;
+                    propClose,
+                  "Post":
+                    hideL('L=="k < 0");
+                    hideL('L=="\forall x1 \forall x2 ((x1>=0&lyap1(x1,x2)<=w&lyap1(x1,x2)>=u->4*x1*(-x1/8-x2)+2*x2*(2*x1-x2/8)<=k)&(x1<=0&lyap2(x1,x2)<=w&lyap2(x1,x2)>=u->x1*(-x1/8-2*x2)+2*x2*(x1-x2/8)<=k))");
+                    allL('L=="\forall x1 \forall x2 (normsq(x1,x2)>=eps^2->(x1>=0&lyap1(x1,x2)<=w->lyap1(x1,x2)>=u)&(x1<=0&lyap2(x1,x2)<=w->lyap2(x1,x2)>=u))");
+                    allL('L=="\forall x2 (normsq(x1,x2)>=eps^2->(x1>=0&lyap1(x1,x2)<=w->lyap1(x1,x2)>=u)&(x1<=0&lyap2(x1,x2)<=w->lyap2(x1,x2)>=u))");
+                    implyL('L=="normsq(x1,x2)>=eps^2->(x1>=0&lyap1(x1,x2)<=w->lyap1(x1,x2)>=u)&(x1<=0&lyap2(x1,x2)<=w->lyap2(x1,x2)>=u)"); <(
+                      "normsq(x1,x2)>=eps^2":
+                        hideL('L=="(x1>=0->lyap1(x1,x2) < w&(lyap1(x1,x2)>=u->lyap1(x1,x2) < w+k*t))&(x1<=0->lyap2(x1,x2) < w&(lyap2(x1,x2)>=u->lyap2(x1,x2) < w+k*t))");
+                        expandAllDefs;
+                        QE,
+                      "(x1>=0&lyap1(x1,x2)<=w->lyap1(x1,x2)>=u)&(x1<=0&lyap2(x1,x2)<=w->lyap2(x1,x2)>=u)":
+                        unfold;
+                        expandAllDefs;
+                        QE
+                    ),
+                  "Step":
+                    hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)>=eps^2->(x1>=0&lyap1(x1,x2)<=w->lyap1(x1,x2)>=u)&(x1<=0&lyap2(x1,x2)<=w->lyap2(x1,x2)>=u))");
+                    hideL('L=="del>0");
+                    hideL('L=="eps>0");
+                    hideL('L=="w+k*T<=u");
+                    unfold; <(
+                      "[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0}]((x1>=0->lyap1(x1,x2) < w&(lyap1(x1,x2)>=u->lyap1(x1,x2) < w+k*t))&(x1<=0->lyap2(x1,x2) < w&(lyap2(x1,x2)>=u->lyap2(x1,x2) < w+k*t)))":
+                        dC("lyap1(x1,x2) < w", 'R=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0}]((x1>=0->lyap1(x1,x2) < w&(lyap1(x1,x2)>=u->lyap1(x1,x2) < w+k*t))&(x1<=0->lyap2(x1,x2) < w&(lyap2(x1,x2)>=u->lyap2(x1,x2) < w+k*t)))"); <(
+                          "Use":
+                            dC("lyap1(x1,x2)>=u->lyap1(x1,x2) < w+k*t", 'R=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0&lyap1(x1,x2) < w}]((x1>=0->lyap1(x1,x2) < w&(lyap1(x1,x2)>=u->lyap1(x1,x2) < w+k*t))&(x1<=0->lyap2(x1,x2) < w&(lyap2(x1,x2)>=u->lyap2(x1,x2) < w+k*t)))"); <(
+                              "Use":
+                                hideL('L=="\forall x1 \forall x2 ((x1>=0&lyap1(x1,x2)<=w&lyap1(x1,x2)>=u->4*x1*(-x1/8-x2)+2*x2*(2*x1-x2/8)<=k)&(x1<=0&lyap2(x1,x2)<=w&lyap2(x1,x2)>=u->x1*(-x1/8-2*x2)+2*x2*(x1-x2/8)<=k))");
+                                dW('R=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&(x1>=0&lyap1(x1,x2) < w)&(lyap1(x1,x2)>=u->lyap1(x1,x2) < w+k*t)}]((x1>=0->lyap1(x1,x2) < w&(lyap1(x1,x2)>=u->lyap1(x1,x2) < w+k*t))&(x1<=0->lyap2(x1,x2) < w&(lyap2(x1,x2)>=u->lyap2(x1,x2) < w+k*t)))");
+                                expandAllDefs;
+                                QE,
+                              "Show":
+                                hideL('L=="x1<=0->lyap2(x1,x2) < w&(lyap2(x1,x2)>=u->lyap2(x1,x2) < w+k*t)");
+                                useAt("DCC", "1", 'R=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0&lyap1(x1,x2) < w}](lyap1(x1,x2)>=u->lyap1(x1,x2) < w+k*t)");
+                                andR('R=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&(x1>=0&lyap1(x1,x2) < w)&lyap1(x1,x2)>=u}]lyap1(x1,x2) < w+k*t&[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0&lyap1(x1,x2) < w}](!lyap1(x1,x2)>=u->[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0&lyap1(x1,x2) < w}](!lyap1(x1,x2)>=u))"); <(
+                                  "[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&(x1>=0&lyap1(x1,x2) < w)&lyap1(x1,x2)>=u}]lyap1(x1,x2) < w+k*t":
+                                    dC("4*x1*(-x1/8-x2)+2*x2*(2*x1-x2/8)<=k", 'R=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&(x1>=0&lyap1(x1,x2) < w)&lyap1(x1,x2)>=u}]lyap1(x1,x2) < w+k*t"); <(
+                                      "Use":
+                                        hideL('L=="\forall x1 \forall x2 ((x1>=0&lyap1(x1,x2)<=w&lyap1(x1,x2)>=u->4*x1*(-x1/8-x2)+2*x2*(2*x1-x2/8)<=k)&(x1<=0&lyap2(x1,x2)<=w&lyap2(x1,x2)>=u->x1*(-x1/8-2*x2)+2*x2*(x1-x2/8)<=k))");
+                                        expandAllDefs;
+                                        dIRule('R=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&((x1>=0&2*x1^2+x2^2 < w)&2*x1^2+x2^2>=u)&4*x1*(-x1/8-x2)+2*x2*(2*x1-x2/8)<=k}]2*x1^2+x2^2 < w+k*t"); <(
+                                          "dI Init":
+                                            QE,
+                                          "dI Step":
+                                            unfold;
+                                            QE
+                                        ),
+                                      "Show":
+                                        dW('R=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&(x1>=0&lyap1(x1,x2) < w)&lyap1(x1,x2)>=u}]4*x1*(-x1/8-x2)+2*x2*(2*x1-x2/8)<=k");
+                                        unfold;
+                                        allL('L=="\forall x1 \forall x2 ((x1>=0&lyap1(x1,x2)<=w&lyap1(x1,x2)>=u->4*x1*(-x1/8-x2)+2*x2*(2*x1-x2/8)<=k)&(x1<=0&lyap2(x1,x2)<=w&lyap2(x1,x2)>=u->x1*(-x1/8-2*x2)+2*x2*(x1-x2/8)<=k))");
+                                        allL('L=="\forall x2 ((x1>=0&lyap1(x1,x2)<=w&lyap1(x1,x2)>=u->4*x1*(-x1/8-x2)+2*x2*(2*x1-x2/8)<=k)&(x1<=0&lyap2(x1,x2)<=w&lyap2(x1,x2)>=u->x1*(-x1/8-2*x2)+2*x2*(x1-x2/8)<=k))");
+                                        andL('L=="(x1>=0&lyap1(x1,x2)<=w&lyap1(x1,x2)>=u->4*x1*(-x1/8-x2)+2*x2*(2*x1-x2/8)<=k)&(x1<=0&lyap2(x1,x2)<=w&lyap2(x1,x2)>=u->x1*(-x1/8-2*x2)+2*x2*(x1-x2/8)<=k)");
+                                        fullSimplify;
+                                        propClose
+                                    ),
+                                  "[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0&lyap1(x1,x2) < w}](!lyap1(x1,x2)>=u->[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0&lyap1(x1,x2) < w}](!lyap1(x1,x2)>=u))":
+                                    hideL('L=="\forall x1 \forall x2 ((x1>=0&lyap1(x1,x2)<=w&lyap1(x1,x2)>=u->4*x1*(-x1/8-x2)+2*x2*(2*x1-x2/8)<=k)&(x1<=0&lyap2(x1,x2)<=w&lyap2(x1,x2)>=u->x1*(-x1/8-2*x2)+2*x2*(x1-x2/8)<=k))");
+                                    dW('R=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0&lyap1(x1,x2) < w}](!lyap1(x1,x2)>=u->[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0&lyap1(x1,x2) < w}](!lyap1(x1,x2)>=u))");
+                                    implyR('R=="!lyap1(x1,x2)>=u->[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0&lyap1(x1,x2) < w}](!lyap1(x1,x2)>=u)");
+                                    expandAllDefs;
+                                    ODE('R=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0&2*x1^2+x2^2 < w}](!2*x1^2+x2^2>=u)")
+                                )
+                            ),
+                          "Show":
+                            hideL('L=="\forall x1 \forall x2 ((x1>=0&lyap1(x1,x2)<=w&lyap1(x1,x2)>=u->4*x1*(-x1/8-x2)+2*x2*(2*x1-x2/8)<=k)&(x1<=0&lyap2(x1,x2)<=w&lyap2(x1,x2)>=u->x1*(-x1/8-2*x2)+2*x2*(x1-x2/8)<=k))");
+                            hideL('L=="x1<=0->lyap2(x1,x2) < w&(lyap2(x1,x2)>=u->lyap2(x1,x2) < w+k*t)");
+                            expandAllDefs;
+                            dIRule('R=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0}]2*x1^2+x2^2 < w"); <(
+                              "dI Init":
+                                QE,
+                              "dI Step":
+                                unfold;
+                                QE
+                            )
+                        ),
+                      "[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0}]((x1>=0->lyap1(x1,x2) < w&(lyap1(x1,x2)>=u->lyap1(x1,x2) < w+k*t))&(x1<=0->lyap2(x1,x2) < w&(lyap2(x1,x2)>=u->lyap2(x1,x2) < w+k*t)))":
+                        dC("lyap2(x1,x2) < w", 'R=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0}]((x1>=0->lyap1(x1,x2) < w&(lyap1(x1,x2)>=u->lyap1(x1,x2) < w+k*t))&(x1<=0->lyap2(x1,x2) < w&(lyap2(x1,x2)>=u->lyap2(x1,x2) < w+k*t)))"); <(
+                          "Use":
+                            dC("lyap2(x1,x2)>=u->lyap2(x1,x2) < w+k*t", 'R=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0&lyap2(x1,x2) < w}]((x1>=0->lyap1(x1,x2) < w&(lyap1(x1,x2)>=u->lyap1(x1,x2) < w+k*t))&(x1<=0->lyap2(x1,x2) < w&(lyap2(x1,x2)>=u->lyap2(x1,x2) < w+k*t)))"); <(
+                              "Use":
+                                hideL('L=="\forall x1 \forall x2 ((x1>=0&lyap1(x1,x2)<=w&lyap1(x1,x2)>=u->4*x1*(-x1/8-x2)+2*x2*(2*x1-x2/8)<=k)&(x1<=0&lyap2(x1,x2)<=w&lyap2(x1,x2)>=u->x1*(-x1/8-2*x2)+2*x2*(x1-x2/8)<=k))");
+                                dW('R=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&(x1<=0&lyap2(x1,x2) < w)&(lyap2(x1,x2)>=u->lyap2(x1,x2) < w+k*t)}]((x1>=0->lyap1(x1,x2) < w&(lyap1(x1,x2)>=u->lyap1(x1,x2) < w+k*t))&(x1<=0->lyap2(x1,x2) < w&(lyap2(x1,x2)>=u->lyap2(x1,x2) < w+k*t)))");
+                                expandAllDefs;
+                                QE,
+                              "Show":
+                                useAt("DCC", "1", 'R=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0&lyap2(x1,x2) < w}](lyap2(x1,x2)>=u->lyap2(x1,x2) < w+k*t)");
+                                andR('R=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&(x1<=0&lyap2(x1,x2) < w)&lyap2(x1,x2)>=u}]lyap2(x1,x2) < w+k*t&[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0&lyap2(x1,x2) < w}](!lyap2(x1,x2)>=u->[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0&lyap2(x1,x2) < w}](!lyap2(x1,x2)>=u))"); <(
+                                  "[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&(x1<=0&lyap2(x1,x2) < w)&lyap2(x1,x2)>=u}]lyap2(x1,x2) < w+k*t":
+                                    dC("x1*(-x1/8-2*x2)+2*x2*(x1-x2/8)<=k", 'R=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&(x1<=0&lyap2(x1,x2) < w)&lyap2(x1,x2)>=u}]lyap2(x1,x2) < w+k*t"); <(
+                                      "Use":
+                                        hideL('L=="\forall x1 \forall x2 ((x1>=0&lyap1(x1,x2)<=w&lyap1(x1,x2)>=u->4*x1*(-x1/8-x2)+2*x2*(2*x1-x2/8)<=k)&(x1<=0&lyap2(x1,x2)<=w&lyap2(x1,x2)>=u->x1*(-x1/8-2*x2)+2*x2*(x1-x2/8)<=k))");
+                                        expandAllDefs;
+                                        dIRule('R=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&((x1<=0&1/2*x1^2+x2^2 < w)&1/2*x1^2+x2^2>=u)&x1*(-x1/8-2*x2)+2*x2*(x1-x2/8)<=k}]1/2*x1^2+x2^2 < w+k*t"); <(
+                                          "dI Init":
+                                            QE,
+                                          "dI Step":
+                                            unfold;
+                                            QE
+                                        ),
+                                      "Show":
+                                        dW('R=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&(x1<=0&lyap2(x1,x2) < w)&lyap2(x1,x2)>=u}]x1*(-x1/8-2*x2)+2*x2*(x1-x2/8)<=k");
+                                        unfold;
+                                        allL('L=="\forall x1 \forall x2 ((x1>=0&lyap1(x1,x2)<=w&lyap1(x1,x2)>=u->4*x1*(-x1/8-x2)+2*x2*(2*x1-x2/8)<=k)&(x1<=0&lyap2(x1,x2)<=w&lyap2(x1,x2)>=u->x1*(-x1/8-2*x2)+2*x2*(x1-x2/8)<=k))");
+                                        allL('L=="\forall x2 ((x1>=0&lyap1(x1,x2)<=w&lyap1(x1,x2)>=u->4*x1*(-x1/8-x2)+2*x2*(2*x1-x2/8)<=k)&(x1<=0&lyap2(x1,x2)<=w&lyap2(x1,x2)>=u->x1*(-x1/8-2*x2)+2*x2*(x1-x2/8)<=k))");
+                                        andL('L=="(x1>=0&lyap1(x1,x2)<=w&lyap1(x1,x2)>=u->4*x1*(-x1/8-x2)+2*x2*(2*x1-x2/8)<=k)&(x1<=0&lyap2(x1,x2)<=w&lyap2(x1,x2)>=u->x1*(-x1/8-2*x2)+2*x2*(x1-x2/8)<=k)");
+                                        fullSimplify;
+                                        propClose
+                                    ),
+                                  "[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0&lyap2(x1,x2) < w}](!lyap2(x1,x2)>=u->[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0&lyap2(x1,x2) < w}](!lyap2(x1,x2)>=u))":
+                                    hideL('L=="\forall x1 \forall x2 ((x1>=0&lyap1(x1,x2)<=w&lyap1(x1,x2)>=u->4*x1*(-x1/8-x2)+2*x2*(2*x1-x2/8)<=k)&(x1<=0&lyap2(x1,x2)<=w&lyap2(x1,x2)>=u->x1*(-x1/8-2*x2)+2*x2*(x1-x2/8)<=k))");
+                                    dW('R=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0&lyap2(x1,x2) < w}](!lyap2(x1,x2)>=u->[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0&lyap2(x1,x2) < w}](!lyap2(x1,x2)>=u))");
+                                    unfold;
+                                    expandAllDefs;
+                                    ODE('R=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0&1/2*x1^2+x2^2 < w}](!1/2*x1^2+x2^2>=u)")
+                                )
+                            ),
+                          "Show":
+                            hideL('L=="\forall x1 \forall x2 ((x1>=0&lyap1(x1,x2)<=w&lyap1(x1,x2)>=u->4*x1*(-x1/8-x2)+2*x2*(2*x1-x2/8)<=k)&(x1<=0&lyap2(x1,x2)<=w&lyap2(x1,x2)>=u->x1*(-x1/8-2*x2)+2*x2*(x1-x2/8)<=k))");
+                            expandAllDefs;
+                            dIRule('R=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0}]1/2*x1^2+x2^2 < w"); <(
+                              "dI Init":
+                                QE,
+                              "dI Step":
+                                unfold;
+                                QE
+                            )
+                        )
+                    )
+                )
+            ),
+          "Show":
+            hideR('R=="\exists T (T>=0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->\forall t (t=0->[{{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0}++{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0}}*](t>=T->normsq(x1,x2) < eps^2))))");
+            hideL('L=="\forall x1 \forall x2 (normsq(x1,x2) < del^2->(x1>=0->lyap1(x1,x2) < w)&(x1<=0->lyap2(x1,x2) < w))");
+            hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)>=eps^2->(x1>=0&lyap1(x1,x2)<=w->lyap1(x1,x2)>=u)&(x1<=0&lyap2(x1,x2)<=w->lyap2(x1,x2)>=u))");
+            expandAllDefs;
+            QE
+        ),
+      "Show":
+        hideR('R=="\exists T (T>=0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->\forall t (t=0->[{{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0}++{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0}}*](t>=T->normsq(x1,x2) < eps^2))))");
+        hideL('L=="\forall x1 \forall x2 (normsq(x1,x2) < del^2->(x1>=0->lyap1(x1,x2) < w)&(x1<=0->lyap2(x1,x2) < w))");
+        expandAllDefs;
+        QE
+    ),
+  "Show":
+    hideR('R=="\exists T (T>=0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->\forall t (t=0->[{{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&x1>=0}++{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&x1<=0}}*](t>=T->normsq(x1,x2) < eps^2))))");
+    expandAllDefs;
+    QE
+)
+End.
+
+End.

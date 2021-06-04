@@ -2,6 +2,7 @@
 
 SharedDefinitions
 
+Real a;
 Real c;
 
 Real normsq(Real x) = x^2;
