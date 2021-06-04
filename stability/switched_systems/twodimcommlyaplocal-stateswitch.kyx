@@ -68,7 +68,7 @@ cut("\exists gam (gam>0&gam<=eps&gam<=1)"); <(
                   "[{x1'=(-4)*x1+3*x2+6*x1*x2,x2'=(-3)*x1-2*x2,t'=1&dom1(x1,x2)}](lyap(x1,x2) < k&normsq(x1,x2) < gam^2)":
                     expandAllDefs;
                     dCClosure('R=="[{x1'=(-4)*x1+3*x2+6*x1*x2,x2'=(-3)*x1-2*x2,t'=1&3*x1+4*x2>=0&4*x1+3*x2>=0|3*x1+4*x2<=0&4*x1+3*x2<=0}](x1^2+x2^2 < k&x1^2+x2^2 < gam^2)"); <(
-                      "0":
+                      "Show":
                         QE using "x1^2+x2^2 < k :: x1^2+x2^2 < gam^2 :: k-(x1^2+x2^2)>0&gam^2-(x1^2+x2^2)>0 :: nil",
                       "Use":
                         dC("x1^2+x2^2 < k", 'R=="[{x1'=(-4)*x1+3*x2+6*x1*x2,x2'=(-3)*x1-2*x2,t'=1&(3*x1+4*x2>=0&4*x1+3*x2>=0|3*x1+4*x2<=0&4*x1+3*x2<=0)&k-(x1^2+x2^2)>=0&gam^2-(x1^2+x2^2)>=0}](k-(x1^2+x2^2)>0&gam^2-(x1^2+x2^2)>0)"); <(
@@ -91,7 +91,7 @@ cut("\exists gam (gam>0&gam<=eps&gam<=1)"); <(
                   "[{x1'=(-4)*x1+x2,x2'=-x1-2*x1+x1^2,t'=1&dom2(x1,x2)}](lyap(x1,x2) < k&normsq(x1,x2) < gam^2)":
                     expandAllDefs;
                     dCClosure('R=="[{x1'=(-4)*x1+x2,x2'=-x1-2*x1+x1^2,t'=1&3*x1+4*x2>=0&4*x1+3*x2<=0|3*x1+4*x2<=0&4*x1+3*x2>=0}](x1^2+x2^2 < k&x1^2+x2^2 < gam^2)"); <(
-                      "0":
+                      "Show":
                         QE using "x1^2+x2^2 < k :: x1^2+x2^2 < gam^2 :: k-(x1^2+x2^2)>0&gam^2-(x1^2+x2^2)>0 :: nil",
                       "Use":
                         dC("x1^2+x2^2 < k", 'R=="[{x1'=(-4)*x1+x2,x2'=-x1-2*x1+x1^2,t'=1&(3*x1+4*x2>=0&4*x1+3*x2<=0|3*x1+4*x2<=0&4*x1+3*x2>=0)&k-(x1^2+x2^2)>=0&gam^2-(x1^2+x2^2)>=0}](k-(x1^2+x2^2)>0&gam^2-(x1^2+x2^2)>0)"); <(
@@ -139,7 +139,7 @@ Problem
   ))))
 End.
 
-Tactic "State_Dependent_Switching_She___Xue_Example_7_1__Local_Pre_attractivity__2021-05-28_13-03-15"
+Tactic "State-Dependent Switching/She & Xue Example 7.1 (Local Pre-attractivity)"
 expand "sys";
 expand "ode1";
 expand "ode2";
@@ -220,7 +220,7 @@ cut("\exists w (w>0&\forall x1 \forall x2 (normsq(x1,x2)=1->lyap(x1,x2)>=w))"); 
                               "Show":
                                 expandAllDefs;
                                 dCClosure('R=="[{x1'=(-4)*x1+3*x2+6*x1*x2,x2'=(-3)*x1-2*x2,t'=1&3*x1+4*x2>=0&4*x1+3*x2>=0|3*x1+4*x2<=0&4*x1+3*x2<=0}](x1^2+x2^2 < w&x1^2+x2^2 < 1)"); <(
-                                  "0":
+                                  "Show":
                                     QE using "x1^2+x2^2 < w :: x1^2+x2^2 < 1 :: w-(x1^2+x2^2)>0&1-(x1^2+x2^2)>0 :: nil",
                                   "Use":
                                     dC("x1^2+x2^2 < w", 'R=="[{x1'=(-4)*x1+3*x2+6*x1*x2,x2'=(-3)*x1-2*x2,t'=1&(3*x1+4*x2>=0&4*x1+3*x2>=0|3*x1+4*x2<=0&4*x1+3*x2<=0)&w-(x1^2+x2^2)>=0&1-(x1^2+x2^2)>=0}](w-(x1^2+x2^2)>0&1-(x1^2+x2^2)>0)"); <(
@@ -286,7 +286,7 @@ cut("\exists w (w>0&\forall x1 \forall x2 (normsq(x1,x2)=1->lyap(x1,x2)>=w))"); 
                               "Show":
                                 expandAllDefs;
                                 dCClosure('R=="[{x1'=(-4)*x1+x2,x2'=-x1-2*x1+x1^2,t'=1&3*x1+4*x2>=0&4*x1+3*x2<=0|3*x1+4*x2<=0&4*x1+3*x2>=0}](x1^2+x2^2 < w&x1^2+x2^2 < 1)"); <(
-                                  "0":
+                                  "Show":
                                     QE using "x1^2+x2^2 < w :: x1^2+x2^2 < 1 :: w-(x1^2+x2^2)>0&1-(x1^2+x2^2)>0 :: nil",
                                   "Use":
                                     dC("x1^2+x2^2 < w", 'R=="[{x1'=(-4)*x1+x2,x2'=-x1-2*x1+x1^2,t'=1&(3*x1+4*x2>=0&4*x1+3*x2<=0|3*x1+4*x2<=0&4*x1+3*x2>=0)&w-(x1^2+x2^2)>=0&1-(x1^2+x2^2)>=0}](w-(x1^2+x2^2)>0&1-(x1^2+x2^2)>0)"); <(

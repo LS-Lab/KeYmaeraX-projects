@@ -73,7 +73,7 @@ cut("\exists gam (0 < gam&gam<=eps&\forall x (normsq(x)<=gam^2->4*x^3*(-x)+2*x*(
               "[{x'=-x,t'=1}](normsq(x) < gam^2&lyap(x) < k)":
                 expandAllDefs;
                 dCClosure('R=="[{x'=-x,t'=1}](x^2 < gam^2&x^4+x^2 < k)"); <(
-                  "0":
+                  "Show":
                     hideL('L=="\forall x (x^2<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)");
                     hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=k)");
                     QE,
@@ -109,7 +109,7 @@ cut("\exists gam (0 < gam&gam<=eps&\forall x (normsq(x)<=gam^2->4*x^3*(-x)+2*x*(
               "[{x'=x*(a*x^2+c()),t'=1}](normsq(x) < gam^2&lyap(x) < k)":
                 expandAllDefs;
                 dCClosure('R=="[{x'=x*(a*x^2+c()),t'=1}](x^2 < gam^2&x^4+x^2 < k)"); <(
-                  "0":
+                  "Show":
                     hideL('L=="\forall x (x^2<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)");
                     hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=k)");
                     QE,
@@ -278,7 +278,7 @@ cut("\exists gam (0 < gam&\forall x (0 < normsq(x)&normsq(x)<=gam^2->4*x^3*(-x)+
                                     hideL('L=="lyap(x)>=v1->lyap(x)<=b+k*t");
                                     expandAllDefs;
                                     dCClosure('R=="[{x'=-x,t'=1}](x^4+x^2 < b&x^2 < gam^2)"); <(
-                                      "0":
+                                      "Show":
                                         hideL('L=="\forall x (0 < x^2&x^2<=gam^2->4*x^3*(-x)+2*x*(-x) < 0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c())) < 0)");
                                         hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=b)");
                                         QE,
@@ -359,7 +359,7 @@ cut("\exists gam (0 < gam&\forall x (0 < normsq(x)&normsq(x)<=gam^2->4*x^3*(-x)+
                                     hideL('L=="v1>0");
                                     expandAllDefs;
                                     dCClosure('R=="[{x'=x*(a*x^2+c()),t'=1}](x^4+x^2 < b&x^2 < gam^2)"); <(
-                                      "0":
+                                      "Show":
                                         hideL('L=="\forall x (0 < x^2&x^2<=gam^2->4*x^3*(-x)+2*x*(-x) < 0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c())) < 0)");
                                         hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=b)");
                                         QE,
@@ -508,7 +508,7 @@ cut("\exists gam (0 < gam&\forall x (normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*
                     hideR('R=="<{x'=x*(a*x^2+c()),t'=1}>t>T");
                     expandAllDefs;
                     dCClosure('R=="[{x'=x*(a*x^2+c()),t'=1}]x^2 < gam^2"); <(
-                      "0":
+                      "Show":
                         hideL('L=="\forall x (x^2<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)");
                         hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=k)");
                         QE,
@@ -522,7 +522,7 @@ cut("\exists gam (0 < gam&\forall x (normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*
               "[{x'=-x,t'=1}](normsq(x) < gam^2&lyap(x) < k)":
                 expandAllDefs;
                 dCClosure('R=="[{x'=-x,t'=1}](x^2 < gam^2&x^4+x^2 < k)"); <(
-                  "0":
+                  "Show":
                     hideL('L=="\forall x (x^2<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)");
                     hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=k)");
                     QE,
@@ -532,7 +532,7 @@ cut("\exists gam (0 < gam&\forall x (normsq(x)<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*
               "[{x'=x*(a*x^2+c()),t'=1}](normsq(x) < gam^2&lyap(x) < k)":
                 expandAllDefs;
                 dCClosure('R=="[{x'=x*(a*x^2+c()),t'=1}](x^2 < gam^2&x^4+x^2 < k)"); <(
-                  "0":
+                  "Show":
                     hideL('L=="\forall x (x^2<=gam^2->4*x^3*(-x)+2*x*(-x)<=0&4*x^3*(x*(a*x^2+c()))+2*x*(x*(a*x^2+c()))<=0)");
                     hideL('L=="\forall x (x^2=gam^2->x^4+x^2>=k)");
                     QE,
