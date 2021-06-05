@@ -2,7 +2,6 @@
 
 SharedDefinitions
 
-Real tau = 3;
 Real normsq(Real x1, Real x2) = x1^2+x2^2;
 
 /* System with 2D ODEs */
@@ -20,10 +19,7 @@ End.
 
 Theorem "Time-Dependent Switching/Slow Switching 2D (Stability)"
 
-ProgramVariables
-Real u;
-Real t;
-End.
+ProgramVariables Real u, s, t, x1, x2; End.
 
 Problem
   \forall eps (eps > 0 ->
@@ -169,10 +165,7 @@ End.
 
 Theorem "Time-Dependent Switching/Slow Switching 2D (Global Pre-attractivity)"
 
-ProgramVariables
-Real u;
-Real t;
-End.
+ProgramVariables Real u, s, t, x1, x2; End.
 
 Problem
   \forall del (del > 0 ->
