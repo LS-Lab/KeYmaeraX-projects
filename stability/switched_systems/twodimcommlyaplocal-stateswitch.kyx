@@ -25,6 +25,8 @@ End.
 
 Theorem "State-Dependent Switching/She & Xue Example 7.1 (Stability)"
 
+ProgramVariables Real x1, x2, t; End.
+
 Problem
   \forall eps (eps > 0 ->
   \exists del (del > 0 &
@@ -129,6 +131,8 @@ End.
 End.
 
 Theorem "State-Dependent Switching/She & Xue Example 7.1 (Local Pre-attractivity)"
+
+ProgramVariables Real x1, x2, t; End.
 
 Problem
   \exists del (del > 0 ->

@@ -22,6 +22,8 @@ End.
 
 Theorem "Arbitrary Switching/Simple 2D (Stability)"
 
+ProgramVariables Real x1, x2, t; End.
+
 Problem
   \forall eps (eps > 0 ->
   \exists del (del > 0 &
@@ -117,6 +119,8 @@ End.
 End.
 
 Theorem "Arbitrary Switching/Simple 2D (Global Pre-attractivity)"
+
+ProgramVariables Real x1, x2, t; End.
 
 Problem
   \forall del (del > 0 ->
@@ -264,6 +268,8 @@ End.
 End.
 
 Theorem "Arbitrary Switching/Simple 2D (Complete Solutions)"
+
+ProgramVariables Real x1, x2, t; End.
 
 Problem
   \forall T ( T > 0 ->

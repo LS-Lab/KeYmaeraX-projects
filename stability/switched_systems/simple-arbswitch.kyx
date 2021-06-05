@@ -23,6 +23,8 @@ End.
 
 Theorem "Arbitrary Switching/Simple 1D (Stability)"
 
+ProgramVariables Real x, t; End.
+
 Problem
   \forall eps (eps > 0 ->
   \exists del (del > 0 &
@@ -41,6 +43,8 @@ End.
 End.
 
 Theorem "Arbitrary Switching/Simple 1D (Global Pre-attractivity)"
+
+ProgramVariables Real x, t; End.
 
 Problem
   \forall del (del > 0 ->
@@ -141,6 +145,8 @@ End.
 End.
 
 Theorem "Arbitrary Switching/Simple 1D (Complete Solutions)"
+
+ProgramVariables Real x, t; End.
 
 Problem
   \forall T ( T > 0 ->
