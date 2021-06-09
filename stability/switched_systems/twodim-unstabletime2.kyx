@@ -31,7 +31,7 @@ Problem
         {
           {
             ?u=1; { u := 2; } ++
-            ?u=2; { { ?s >= 9/2;   u:=2;} }
+            ?u=2; { { ?s >= 9/2; u:=1; ++  u:=2;} }
           } ;
           s := 0;
         }
@@ -44,31 +44,31 @@ End.
 Tactic "Time-Dependent Switching/Zhai, Hu, Yasuda & Michel Example 2 (Stability): Proof"
 expand "ode1";
 expand "ode2";
-allR('R=="\forall eps (eps>0->\exists del (del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2)))");
-implyR('R=="eps>0->\exists del (del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2))");
+allR('R=="\forall eps (eps>0->\exists del (del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2)))");
+implyR('R=="eps>0->\exists del (del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2))");
 cut("\exists k (k>0&\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap1(x1,x2)>=k&lyap2(x1,x2)>=k))"); <(
   "Use":
     existsL('L=="\exists k (k>0&\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap1(x1,x2)>=k&lyap2(x1,x2)>=k))");
     andL('L=="k>0&\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap1(x1,x2)>=k&lyap2(x1,x2)>=k)");
-    existsRmon("del>0&del<=eps&\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap1(x1,x2)*exp(11*0.6) < k&lyap2(x1,x2) < k)", 'R=="\exists del (del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2))"); <(
+    existsRmon("del>0&del<=eps&\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap1(x1,x2)*exp(11*0.6) < k&lyap2(x1,x2) < k)", 'R=="\exists del (del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2))"); <(
       "Use":
         hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap1(x1,x2)>=k&lyap2(x1,x2)>=k)");
         expandAllDefs;
         QE,
       "Show":
-        andR('R=="del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2)"); <(
+        andR('R=="del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2)"); <(
           "del>0":
             propClose,
-          "\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2)":
-            allR('R=="\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2)");
-            allR('R=="\forall x2 (normsq(x1,x2) < del^2->[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2)");
-            implyR('R=="normsq(x1,x2) < del^2->[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2");
-            composeb('R=="[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2");
-            MR("s=0&(u=1|u=2)", 'R=="[s:=0;{u:=1;++u:=2;}][{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2"); <(
+          "\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2)":
+            allR('R=="\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2)");
+            allR('R=="\forall x2 (normsq(x1,x2) < del^2->[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2)");
+            implyR('R=="normsq(x1,x2) < del^2->[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2");
+            composeb('R=="[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2");
+            MR("s=0&(u=1|u=2)", 'R=="[s:=0;{u:=1;++u:=2;}][{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2"); <(
               "Use Q->P":
                 auto,
               "Show [a]Q":
-                loop("s>=0&normsq(x1,x2) < eps^2&(u=1&s<=1/2&lyap1(x1,x2)*exp((-11)*s)*exp(11*0.6) < k|u=2&lyap2(x1,x2)*exp(2*s) < k)", 'R=="[{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2"); <(
+                loop("s>=0&normsq(x1,x2) < eps^2&(u=1&s<=1/2&lyap1(x1,x2)*exp((-11)*s)*exp(11*0.6) < k|u=2&lyap2(x1,x2)*exp(2*s) < k)", 'R=="[{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2"); <(
                   "Init":
                     hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap1(x1,x2)>=k&lyap2(x1,x2)>=k)");
                     allL('L=="\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap1(x1,x2)*exp(11*0.6) < k&lyap2(x1,x2) < k)");
@@ -81,15 +81,18 @@ cut("\exists k (k>0&\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap1(x1,x2)>=k&
                     hideL('L=="del>0");
                     hideL('L=="del<=eps");
                     hideL('L=="\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap1(x1,x2)*exp(11*0.6) < k&lyap2(x1,x2) < k)");
-                    composeb('R=="[{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}](s>=0&normsq(x1,x2) < eps^2&(u=1&s<=1/2&lyap1(x1,x2)*exp((-11)*s)*exp(11*0.6) < k|u=2&lyap2(x1,x2)*exp(2*s) < k))");
-                    MR("s>=0&normsq(x1,x2) < eps^2&(u=1&s<=1/2&lyap1(x1,x2)*exp((-11)*s)*exp(11*0.6) < k|u=2&lyap2(x1,x2)*exp(2*s) < k)", 'R=="[{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;][?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}](s>=0&normsq(x1,x2) < eps^2&(u=1&s<=1/2&lyap1(x1,x2)*exp((-11)*s)*exp(11*0.6) < k|u=2&lyap2(x1,x2)*exp(2*s) < k))"); <(
+                    composeb('R=="[{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}](s>=0&normsq(x1,x2) < eps^2&(u=1&s<=1/2&lyap1(x1,x2)*exp((-11)*s)*exp(11*0.6) < k|u=2&lyap2(x1,x2)*exp(2*s) < k))");
+                    MR("s>=0&normsq(x1,x2) < eps^2&(u=1&s<=1/2&lyap1(x1,x2)*exp((-11)*s)*exp(11*0.6) < k|u=2&lyap2(x1,x2)*exp(2*s) < k)", 'R=="[{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;][?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}](s>=0&normsq(x1,x2) < eps^2&(u=1&s<=1/2&lyap1(x1,x2)*exp((-11)*s)*exp(11*0.6) < k|u=2&lyap2(x1,x2)*exp(2*s) < k))"); <(
                       "Use Q->P":
                         hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap1(x1,x2)>=k&lyap2(x1,x2)>=k)");
                         unfold; <(
                           "[?u=1;u:=2;][s:=0;](s>=0&normsq(x1,x2) < eps^2&(u=1&s<=1/2&lyap1(x1,x2)*exp((-11)*s)*exp(11*0.6) < k|u=2&lyap2(x1,x2)*exp(2*s) < k))":
                             expandAllDefs;
                             QE,
-                          "[?u=2;?s>=9/2;u:=2;][s:=0;](s>=0&normsq(x1,x2) < eps^2&(u=1&s<=1/2&lyap1(x1,x2)*exp((-11)*s)*exp(11*0.6) < k|u=2&lyap2(x1,x2)*exp(2*s) < k))":
+                          "[?s>=9/2;u:=1;][s:=0;](s>=0&normsq(x1,x2) < eps^2&(u=1&s<=1/2&lyap1(x1,x2)*exp((-11)*s)*exp(11*0.6) < k|u=2&lyap2(x1,x2)*exp(2*s) < k))":
+                            expandAllDefs;
+                            QE,
+                          "[u:=2;][s:=0;](s>=0&normsq(x1,x2) < eps^2&(u=1&s<=1/2&lyap1(x1,x2)*exp((-11)*s)*exp(11*0.6) < k|u=2&lyap2(x1,x2)*exp(2*s) < k))":
                             expandAllDefs;
                             QE
                         ),
@@ -164,7 +167,7 @@ cut("\exists k (k>0&\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap1(x1,x2)>=k&
         )
     ),
   "Show":
-    hideR('R=="\exists del (del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2))");
+    hideR('R=="\exists del (del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*]normsq(x1,x2) < eps^2))");
     expandAllDefs;
     QE
 )
@@ -187,7 +190,7 @@ Problem
         {
           {
             ?u=1; { u := 2; } ++
-            ?u=2; { { ?s >= 9/2;   u:=2;} }
+            ?u=2; { { ?s >= 9/2; u:=1; ++  u:=2;} }
           } ;
           s := 0;
         }
@@ -200,38 +203,38 @@ End.
 Tactic "Time-Dependent Switching/Zhai, Hu, Yasuda & Michel Example 2 (Global Pre-attractivity): Proof"
 expand "ode1";
 expand "ode2";
-allR('R=="\forall del (del>0->\forall eps (eps>0->\exists T (T>=0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[t:=0;{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)))))");
-implyR('R=="del>0->\forall eps (eps>0->\exists T (T>=0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[t:=0;{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2))))");
-allR('R=="\forall eps (eps>0->\exists T (T>=0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[t:=0;{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2))))");
-implyR('R=="eps>0->\exists T (T>=0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[t:=0;{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)))");
+allR('R=="\forall del (del>0->\forall eps (eps>0->\exists T (T>=0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[t:=0;{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)))))");
+implyR('R=="del>0->\forall eps (eps>0->\exists T (T>=0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[t:=0;{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2))))");
+allR('R=="\forall eps (eps>0->\exists T (T>=0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[t:=0;{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2))))");
+implyR('R=="eps>0->\exists T (T>=0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[t:=0;{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)))");
 cut("\exists W (W>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap1(x1,x2)*exp(11*0.6) < W&lyap2(x1,x2) < W))"); <(
   "Use":
     existsL('L=="\exists W (W>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap1(x1,x2)*exp(11*0.6) < W&lyap2(x1,x2) < W))");
     cut("\exists U (W>=U&U>0&\forall x1 \forall x2 (normsq(x1,x2)>=eps^2->(lyap1(x1,x2)<=W->lyap1(x1,x2)>=U)&(lyap2(x1,x2)<=W->lyap2(x1,x2)>=U)))"); <(
       "Use":
         existsL('L=="\exists U (W>=U&U>0&\forall x1 \forall x2 (normsq(x1,x2)>=eps^2->(lyap1(x1,x2)<=W->lyap1(x1,x2)>=U)&(lyap2(x1,x2)<=W->lyap2(x1,x2)>=U)))");
-        existsRmon("T>=0&W<=U*exp(T*0.01)", 'R=="\exists T (T>=0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[t:=0;{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)))"); <(
+        existsRmon("T>=0&W<=U*exp(T*0.01)", 'R=="\exists T (T>=0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[t:=0;{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)))"); <(
           "Use":
             andL('L=="W>=U&U>0&\forall x1 \forall x2 (normsq(x1,x2)>=eps^2->(lyap1(x1,x2)<=W->lyap1(x1,x2)>=U)&(lyap2(x1,x2)<=W->lyap2(x1,x2)>=U))");
             andL('L=="U>0&\forall x1 \forall x2 (normsq(x1,x2)>=eps^2->(lyap1(x1,x2)<=W->lyap1(x1,x2)>=U)&(lyap2(x1,x2)<=W->lyap2(x1,x2)>=U))");
             expandAllDefs;
             QE using "W>=U :: U>0 :: \exists T (T>=0&W<=U*(1+T*0.01+(T*0.01)^2/2+(T*0.01)^3/6+(T*0.01)^4/24+(T*0.01)^5/120+(T*0.01)^6/720+(T*0.01)^7/5040+(T*0.01)^8/40320+(T*0.01)^9/362880+(T*0.01)^10/3628800+(T*0.01)^11/39916800+(T*0.01)^12/479001600+(T*0.01)^13/6227020800+(T*0.01)^14/87178291200+(T*0.01)^15/1307674368000+(T*0.01)^16/20922789888000+(T*0.01)^17/355687428096000)) :: nil",
           "Show":
-            andR('R=="T>=0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[t:=0;{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2))"); <(
+            andR('R=="T>=0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[t:=0;{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2))"); <(
               "T>=0":
                 propClose,
-              "\forall x1 \forall x2 (normsq(x1,x2) < del^2->[t:=0;{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2))":
-                composeb('R=="\forall x1 \forall x2 (normsq(x1,x2) < del^2->#[t:=0;{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)#)");
-                allR('R=="\forall x1 \forall x2 (normsq(x1,x2) < del^2->[t:=0;][{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2))");
-                allR('R=="\forall x2 (normsq(x1,x2) < del^2->[t:=0;][{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2))");
-                implyR('R=="normsq(x1,x2) < del^2->[t:=0;][{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)");
-                assignb('R=="[t:=0;][{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)");
-                composeb('R=="[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)");
-                MR("s=0&(u=1|u=2)", 'R=="[s:=0;{u:=1;++u:=2;}][{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)"); <(
+              "\forall x1 \forall x2 (normsq(x1,x2) < del^2->[t:=0;{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2))":
+                composeb('R=="\forall x1 \forall x2 (normsq(x1,x2) < del^2->#[t:=0;{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)#)");
+                allR('R=="\forall x1 \forall x2 (normsq(x1,x2) < del^2->[t:=0;][{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2))");
+                allR('R=="\forall x2 (normsq(x1,x2) < del^2->[t:=0;][{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2))");
+                implyR('R=="normsq(x1,x2) < del^2->[t:=0;][{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)");
+                assignb('R=="[t:=0;][{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)");
+                composeb('R=="[{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)");
+                MR("s=0&(u=1|u=2)", 'R=="[s:=0;{u:=1;++u:=2;}][{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)"); <(
                   "Use Q->P":
                     auto,
                   "Show [a]Q":
-                    loop("t>=s&s>=0&(u=1&s<=1/2&lyap1(x1,x2)*exp(t*0.01)*exp(s*((-11)-0.01))*exp(11*0.6) < W|u=2&lyap2(x1,x2)*exp(t*0.01)*exp(s*(2-0.01)) < W)", 'R=="[{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)"); <(
+                    loop("t>=s&s>=0&(u=1&s<=1/2&lyap1(x1,x2)*exp(t*0.01)*exp(s*((-11)-0.01))*exp(11*0.6) < W|u=2&lyap2(x1,x2)*exp(t*0.01)*exp(s*(2-0.01)) < W)", 'R=="[{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)"); <(
                       "Init":
                         hideL('L=="W>=U");
                         hideL('L=="U>0");
@@ -295,14 +298,21 @@ cut("\exists W (W>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap1(x1,x2)*e
                         hideL('L=="W<=U*exp(T*0.01)");
                         hideL('L=="eps>0");
                         hideL('L=="W>0");
-                        composeb('R=="[{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}](t>=s&s>=0&(u=1&s<=1/2&lyap1(x1,x2)*exp(t*0.01)*exp(s*((-11)-0.01))*exp(11*0.6) < W|u=2&lyap2(x1,x2)*exp(t*0.01)*exp(s*(2-0.01)) < W))");
-                        MR("t>=s&s>=0&(u=1&s<=1/2&lyap1(x1,x2)*exp(t*0.01)*exp(s*((-11)-0.01))*exp(11*0.6) < W|u=2&lyap2(x1,x2)*exp(t*0.01)*exp(s*(2-0.01)) < W)", 'R=="[{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;][?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}](t>=s&s>=0&(u=1&s<=1/2&lyap1(x1,x2)*exp(t*0.01)*exp(s*((-11)-0.01))*exp(11*0.6) < W|u=2&lyap2(x1,x2)*exp(t*0.01)*exp(s*(2-0.01)) < W))"); <(
+                        composeb('R=="[{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}](t>=s&s>=0&(u=1&s<=1/2&lyap1(x1,x2)*exp(t*0.01)*exp(s*((-11)-0.01))*exp(11*0.6) < W|u=2&lyap2(x1,x2)*exp(t*0.01)*exp(s*(2-0.01)) < W))");
+                        MR("t>=s&s>=0&(u=1&s<=1/2&lyap1(x1,x2)*exp(t*0.01)*exp(s*((-11)-0.01))*exp(11*0.6) < W|u=2&lyap2(x1,x2)*exp(t*0.01)*exp(s*(2-0.01)) < W)", 'R=="[{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;][?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}](t>=s&s>=0&(u=1&s<=1/2&lyap1(x1,x2)*exp(t*0.01)*exp(s*((-11)-0.01))*exp(11*0.6) < W|u=2&lyap2(x1,x2)*exp(t*0.01)*exp(s*(2-0.01)) < W))"); <(
                           "Use Q->P":
+                            pending("unfold ; <(
+                \"[?u=1;u:=2;][s:=0;](t>=s&s>=0&(u=1&s<=1/2&lyap1(x1,x2)*exp(t*0.01)*exp(s*((-11)-0.01))*exp(11*0.6) < W|u=2&lyap2(x1,x2)*exp(t*0.01)*exp(s*(2-0.01)) < W))\": expandAllDefs ; QE,
+                \"[?u=2;{?s>=9/2;u:=1;++u:=2;}][s:=0;](t>=s&s>=0&(u=1&s<=1/2&lyap1(x1,x2)*exp(t*0.01)*exp(s*((-11)-0.01))*exp(11*0.6) < W|u=2&lyap2(x1,x2)*exp(t*0.01)*exp(s*(2-0.01)) < W))\": expandAllDefs ; QE
+              )");
                             unfold; <(
                               "[?u=1;u:=2;][s:=0;](t>=s&s>=0&(u=1&s<=1/2&lyap1(x1,x2)*exp(t*0.01)*exp(s*((-11)-0.01))*exp(11*0.6) < W|u=2&lyap2(x1,x2)*exp(t*0.01)*exp(s*(2-0.01)) < W))":
                                 expandAllDefs;
                                 QE,
-                              "[?u=2;?s>=9/2;u:=2;][s:=0;](t>=s&s>=0&(u=1&s<=1/2&lyap1(x1,x2)*exp(t*0.01)*exp(s*((-11)-0.01))*exp(11*0.6) < W|u=2&lyap2(x1,x2)*exp(t*0.01)*exp(s*(2-0.01)) < W))":
+                              "[?s>=9/2;u:=1;][s:=0;](t>=s&s>=0&(u=1&s<=1/2&lyap1(x1,x2)*exp(t*0.01)*exp(s*((-11)-0.01))*exp(11*0.6) < W|u=2&lyap2(x1,x2)*exp(t*0.01)*exp(s*(2-0.01)) < W))":
+                                expandAllDefs;
+                                QE,
+                              "[u:=2;][s:=0;](t>=s&s>=0&(u=1&s<=1/2&lyap1(x1,x2)*exp(t*0.01)*exp(s*((-11)-0.01))*exp(11*0.6) < W|u=2&lyap2(x1,x2)*exp(t*0.01)*exp(s*(2-0.01)) < W))":
                                 expandAllDefs;
                                 QE
                             ),
@@ -406,14 +416,14 @@ cut("\exists W (W>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap1(x1,x2)*e
             )
         ),
       "Show":
-        hideR('R=="\exists T (T>=0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[t:=0;{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)))");
+        hideR('R=="\exists T (T>=0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[t:=0;{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)))");
         andL('L=="W>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap1(x1,x2)*exp(11*0.6) < W&lyap2(x1,x2) < W)");
         hideL('L=="\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap1(x1,x2)*exp(11*0.6) < W&lyap2(x1,x2) < W)");
         expandAllDefs;
         QE
     ),
   "Show":
-    hideR('R=="\exists T (T>=0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[t:=0;{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;?s>=9/2;u:=2;}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)))");
+    hideR('R=="\exists T (T>=0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[t:=0;{s:=0;{u:=1;++u:=2;}}{{{?u=1;u:=2;++?u=2;{?s>=9/2;u:=1;++u:=2;}}s:=0;}{?u=1;{x1'=2*x1+2*x2,x2'=x1+3*x2,s'=1,t'=1&s<=1/2}++?u=2;{x1'=(-2)*x1+x2,x2'=x1-2*x2,s'=1,t'=1}}}*](t>=T->normsq(x1,x2) < eps^2)))");
     expandAllDefs;
     QE
 )
