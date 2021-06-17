@@ -1,0 +1,168 @@
+﻿/* Exported from KeYmaera X v4.9.3 */
+
+Theorem "ODE Stability/Set attractive but unstable ODE"
+
+Definitions
+
+/* The e-neighborhood of points x=-1, x=1 */
+Bool n(Real x, Real e) <-> (x+1)^2 < e^2 | (x-1)^2 < e^2;
+
+/* Stability for the ODE */
+Bool stable <->
+  \forall eps (eps > 0 ->
+  \exists del (del > 0 &
+  \forall x ( n(x,del) ->
+    [{x' = (1+x)^2*(1-x)}] n(x,eps)
+  )));
+
+Bool gattractive <->
+  \forall x (
+  \forall eps (eps > 0 ->
+    <{x' = (1+x)^2*(1-x)}> [{x' = (1+x)^2*(1-x)}] n(x,eps)
+  ));
+
+End.
+
+Problem
+  !stable & gattractive
+End.
+
+Tactic "ODE Stability/Set attractive but unstable ODE: Proof"
+andR('R=="!stable()&gattractive()"); <(
+  "!stable()":
+    expandAllDefs;
+    chaseAt('R=="!\forall eps (eps>0->\exists del (del>0&\forall x ((x+1)^2 < del^2|(x-1)^2 < del^2->[{x'=(1+x)^2*(1-x)}]((x+1)^2 < eps^2|(x-1)^2 < eps^2))))");
+    existsR("1/2", 'R=="\exists eps (eps>0&\forall del (del<=0|\exists x (((x+1)^2 < del^2|(x-1)^2 < del^2)&<{x'=(1+x)^2*(1-x)}>((x+1)^2>=eps^2&(x-1)^2>=eps^2))))");
+    unfold; <(
+      "1/2>0":
+    QE,
+      "\forall del (del<=0|\exists x (((x+1)^2 < del^2|(x-1)^2 < del^2)&<{x'=(1+x)^2*(1-x)}>((x+1)^2>=(1/2)^2&(x-1)^2>=(1/2)^2)))":
+        cut("\exists x (x>(-1)&(x+1)^2 < del^2&x < (-1)/2)"); <(
+          "Use":
+            hideR('R=="del<=0");
+            unfold;
+            existsR('R=="\exists x (((x+1)^2 < del^2|(x-1)^2 < del^2)&<{x'=(1+x)^2*(1-x)}>((x+1)^2>=(1/2)^2&(x-1)^2>=(1/2)^2))");
+            unfold;
+            hideL('L=="(x+1)^2 < del^2");
+            kDomainDiamond("x>=(-1)/2", 'R=="<{x'=(1+x)^2*(1-x)}>((x+1)^2>=(1/2)^2&(x-1)^2>=(1/2)^2)"); <(
+              "Use":
+                cut("\exists x0 x=x0"); <(
+                  "Use":
+                    existsL('L=="\exists x0 x=x0");
+                    compatCut("x>=x0", 'R=="<{x'=(1+x)^2*(1-x)}>x>=(-1)/2"); <(
+                      "Use":
+                        dV('R=="<{x'=(1+x)^2*(1-x)}>x>=(-1)/2");
+                        QE,
+                      "Show":
+                        hideR('R=="<{x'=(1+x)^2*(1-x)}>x>=(-1)/2");
+                        ODE('R=="[{x'=(1+x)^2*(1-x)}]x>=x0")
+                    ),
+                  "Show":
+                    hideR('R=="<{x'=(1+x)^2*(1-x)}>x>=(-1)/2");
+                    QE
+                ),
+              "Show":
+        ODE('R=="[{x'=(1+x)^2*(1-x)&true&!((x+1)^2>=(1/2)^2&(x-1)^2>=(1/2)^2)}](!x>=(-1)/2)")
+            ),
+          "Show":
+            hideR('R=="\exists x (((x+1)^2 < del^2|(x-1)^2 < del^2)&<{x'=(1+x)^2*(1-x)}>((x+1)^2>=(1/2)^2&(x-1)^2>=(1/2)^2))");
+            QE
+        )
+    ),
+  "gattractive()":
+    expandAllDefs;
+    unfold;
+    cut("x<=(-1)|x>(-1)&x < 1|x>=1"); <(
+      "Use":
+        cut("\exists x0 x=x0"); <(
+          "Use":
+            existsL('L=="\exists x0 x=x0");
+            orL('L=="x<=(-1)|x>(-1)&x < 1|x>=1"); <(
+              "x<=(-1)":
+                kDomainDiamond("(-1)-eps < x&x<=(-1)", 'R=="<{x'=(1+x)^2*(1-x)}>[{x'=(1+x)^2*(1-x)}]((x+1)^2 < eps^2|(x-1)^2 < eps^2)"); <(
+                  "Use":
+                    compatCut("x>=x0&x<=(-1)", 'R=="<{x'=(1+x)^2*(1-x)}>((-1)-eps < x&x<=(-1))"); <(
+                      "Use":
+                        kDomainDiamond("(-1)-eps < x", 'R=="<{x'=(1+x)^2*(1-x)}>((-1)-eps < x&x<=(-1))"); <(
+                          "Use":
+                            dV('R=="<{x'=(1+x)^2*(1-x)}>(-1)-eps < x");
+                            QE,
+                          "Show":
+              ODE('R=="[{x'=(1+x)^2*(1-x)&(true&!((-1)-eps < x&x<=(-1)))&x>=x0&x<=(-1)}](!(-1)-eps < x)")
+                        ),
+                      "Show":
+                        hideR('R=="<{x'=(1+x)^2*(1-x)}>((-1)-eps < x&x<=(-1))");
+                        ODE('R=="[{x'=(1+x)^2*(1-x)}](x>=x0&x<=(-1))")
+                    ),
+                  "Show":
+                    dW('R=="[{x'=(1+x)^2*(1-x)&true&![{x'=(1+x)^2*(1-x)}]((x+1)^2 < eps^2|(x-1)^2 < eps^2)}](!((-1)-eps < x&x<=(-1)))");
+                    unfold;
+                    notR('R=="!((-1)-eps < x&x<=(-1))");
+                    dC("(-1)-eps < x&x<=(-1)", 'R=="[{x'=(1+x)^2*(1-x)}]((x+1)^2 < eps^2|(x-1)^2 < eps^2)"); <(
+                      "Use":
+            ODE('R=="[{x'=(1+x)^2*(1-x)&true&(-1)-eps < x&x<=(-1)}]((x+1)^2 < eps^2|(x-1)^2 < eps^2)"),
+                      "Show":
+            ODE('R=="[{x'=(1+x)^2*(1-x)}]((-1)-eps < x&x<=(-1))")
+                    )
+                ),
+              "x>(-1)&x < 1|x>=1":
+                kDomainDiamond("(x-1)^2 < eps^2", 'R=="<{x'=(1+x)^2*(1-x)}>[{x'=(1+x)^2*(1-x)}]((x+1)^2 < eps^2|(x-1)^2 < eps^2)"); <(
+                  "Use":
+                    orL('L=="x>(-1)&x < 1|x>=1"); <(
+                      "x>(-1)&x < 1":
+                        kDomainDiamond("1-eps < x&x<=1", 'R=="<{x'=(1+x)^2*(1-x)}>(x-1)^2 < eps^2"); <(
+                          "Use":
+                            compatCut("x>=x0&x<=1", 'R=="<{x'=(1+x)^2*(1-x)}>(1-eps < x&x<=1)"); <(
+                              "Use":
+                                kDomainDiamond("1-eps < x", 'R=="<{x'=(1+x)^2*(1-x)}>(1-eps < x&x<=1)"); <(
+                                  "Use":
+                                    dV('R=="<{x'=(1+x)^2*(1-x)}>1-eps < x");
+                                    QE,
+                                  "Show":
+                  ODE('R=="[{x'=(1+x)^2*(1-x)&(true&!(1-eps < x&x<=1))&x>=x0&x<=1}](!1-eps < x)")
+                                ),
+                              "Show":
+                                hideR('R=="<{x'=(1+x)^2*(1-x)}>(1-eps < x&x<=1)");
+                                ODE('R=="[{x'=(1+x)^2*(1-x)}](x>=x0&x<=1)")
+                            ),
+                          "Show":
+              ODE('R=="[{x'=(1+x)^2*(1-x)&true&!(x-1)^2 < eps^2}](!(1-eps < x&x<=1))")
+                        ),
+                      "x>=1":
+                        kDomainDiamond("x < 1+eps", 'R=="<{x'=(1+x)^2*(1-x)}>(x-1)^2 < eps^2"); <(
+                          "Use":
+                            dV('R=="<{x'=(1+x)^2*(1-x)}>x < 1+eps");
+                            QE,
+                          "Show":
+                            dC("x>=1", 'R=="[{x'=(1+x)^2*(1-x)&true&!(x-1)^2 < eps^2}](!x < 1+eps)"); <(
+                              "Use":
+                ODE('R=="[{x'=(1+x)^2*(1-x)&(true&!(x-1)^2 < eps^2)&x>=1}](!x < 1+eps)"),
+                              "Show":
+                ODE('R=="[{x'=(1+x)^2*(1-x)&true&!(x-1)^2 < eps^2}]x>=1")
+                            )
+                        )
+                    ),
+                  "Show":
+                    dW('R=="[{x'=(1+x)^2*(1-x)&true&![{x'=(1+x)^2*(1-x)}]((x+1)^2 < eps^2|(x-1)^2 < eps^2)}](!(x-1)^2 < eps^2)");
+                    unfold;
+                    notR('R=="!(x-1)^2 < eps^2");
+                    dC("(x-1)^2 < eps^2", 'R=="[{x'=(1+x)^2*(1-x)}]((x+1)^2 < eps^2|(x-1)^2 < eps^2)"); <(
+                      "Use":
+            ODE('R=="[{x'=(1+x)^2*(1-x)&true&(x-1)^2 < eps^2}]((x+1)^2 < eps^2|(x-1)^2 < eps^2)"),
+                      "Show":
+            ODE('R=="[{x'=(1+x)^2*(1-x)}](x-1)^2 < eps^2")
+                    )
+                )
+            ),
+          "Show":
+            hideR('R=="<{x'=(1+x)^2*(1-x)}>[{x'=(1+x)^2*(1-x)}]((x+1)^2 < eps^2|(x-1)^2 < eps^2)");
+            QE
+        ),
+      "Show":
+        hideR('R=="<{x'=(1+x)^2*(1-x)}>[{x'=(1+x)^2*(1-x)}]((x+1)^2 < eps^2|(x-1)^2 < eps^2)");
+        QE
+    )
+)
+End.
+
+End.

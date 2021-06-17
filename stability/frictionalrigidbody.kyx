@@ -1,0 +1,140 @@
+﻿/* Exported from KeYmaera X v4.9.2 */
+
+Theorem "ODE Stability/Section 5 Frictional Tennis Racket Theorem"
+
+Definitions
+
+Real I1; /* Principal moment of inertia along x1 axis */
+Real I2; /* Principal moment of inertia along x2 axis */
+Real I3; /* Principal moment of inertia along x3 axis */
+Real a1; /* Friction against rotation in x1 axis */
+Real a2; /* Friction against rotation in x2 axis */
+Real a3; /* Friction against rotation in x3 axis */
+
+Real normsq(Real x, Real y) = x^2 + y^2;
+
+/* ODE for rotations of a 3D rigid body along the x1, x2, x3 axes with friction
+ * x1'=(I2-I3)/I1*x2*x3-a1*x1,
+ * x2'=(I3-I1)/I2*x3*x1-a2*x2,
+ * x3'=(I1-I2)/I3*x1*x2-a3*x3
+ */
+
+/* Stability in x1 axis */
+Bool stable1 <->
+  \forall eps (eps > 0 ->
+  \exists del (del > 0 &
+  \forall x1 \forall x2 \forall x3 ( normsq(x2,x3) < del^2 ->
+    [{x1'=(I2-I3)/I1*x2*x3-a1*x1,x2'=(I3-I1)/I2*x3*x1-a2*x2,x3'=(I1-I2)/I3*x1*x2-a3*x3}] normsq(x2,x3) < eps^2
+  )));
+
+/* Global attractivity in x1 axis (consequence of energy going to 0) */
+Bool gattractive1 <->
+  \forall eps (eps > 0 ->
+  \forall x1 \forall x2 \forall x3 (
+    <{x1'=(I2-I3)/I1*x2*x3-a1*x1,x2'=(I3-I1)/I2*x3*x1-a2*x2,x3'=(I1-I2)/I3*x1*x2-a3*x3}>[{x1'=(I2-I3)/I1*x2*x3-a1*x1,x2'=(I3-I1)/I2*x3*x1-a2*x2,x3'=(I1-I2)/I3*x1*x2-a3*x3}] normsq(x2,x3) < eps^2
+  ));
+
+/* Lyapunov function (x1 axis) */
+Real lyap1(Real x2, Real x3) = 1/2*((I1-I2)/I3 *x2^2 - (I3-I1)/I2*x3^2);
+
+/* Stability in x3 axis */
+Bool stable3 <->
+  \forall eps (eps > 0 ->
+  \exists del (del > 0 &
+  \forall x1 \forall x2 \forall x3 ( normsq(x1,x2) < del^2 ->
+    [{x1'=(I2-I3)/I1*x2*x3-a1*x1,x2'=(I3-I1)/I2*x3*x1-a2*x2,x3'=(I1-I2)/I3*x1*x2-a3*x3}] normsq(x1,x2) < eps^2
+  )));
+
+/* Global attractivity in x3 axis (consequence of energy going to 0) */
+Bool gattractive3 <->
+  \forall eps (eps > 0 ->
+  \forall x1 \forall x2 \forall x3 (
+    <{x1'=(I2-I3)/I1*x2*x3-a1*x1,x2'=(I3-I1)/I2*x3*x1-a2*x2,x3'=(I1-I2)/I3*x1*x2-a3*x3}>[{x1'=(I2-I3)/I1*x2*x3-a1*x1,x2'=(I3-I1)/I2*x3*x1-a2*x2,x3'=(I1-I2)/I3*x1*x2-a3*x3}] normsq(x1,x2) < eps^2
+  ));
+
+/* Lyapunov function (x3 axis) */
+Real lyap3(Real x1, Real x2) = 1/2*(-(I3-I1)/I2*x1^2 + (I2-I3)/I1 *x2^2);
+
+End.
+
+Problem
+  I1 > I2 & I2 > I3 & I3 > 0 & a1 > 0 & a2 > 0 & a3 > 0 -> (stable1 & gattractive1) & (stable3 & gattractive3)
+End.
+
+Tactic "ODE Stability/Section 5 Frictional Tennis Racket Theorem: Proof"
+implyR(1) ; cut("\forall eps (eps>0->\forall x1 \forall x2 \forall x3 <{x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3&true}>I1()*x1^2+I2()*x2^2+I3()*x3^2 < eps*eps)") ; <(
+  andR(1) ; <(
+    cut("stable1()&(stable1()->gattractive1())") ; <(
+      propClose,
+      hideR(1=="stable1()&gattractive1()") ; andR(1) ; <(
+        hideL(-2=="\forall eps (eps>0->\forall x1 \forall x2 \forall x3 <{x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3&true}>I1()*x1^2+I2()*x2^2+I3()*x3^2 < eps*eps)") ; expand "stable1" ; unfold ; cut("\exists k (\exists del (del>0&del < eps&\forall x2 \forall x3 (normsq(x2,x3) < del^2->lyap1(x2,x3) < k))&\forall x2 \forall x3 (normsq(x2,x3)=eps^2->lyap1(x2,x3)>=k))") ; <(
+          unfold ; existsR(1) ; unfold ; allL(-11) ; allL(-11) ; fullSimplify ; dC("(normsq(x2,x3)=eps^2->lyap1(x2,x3)>=k)&lyap1(x2,x3) < k", 1) ; <(
+            hideL(-8=="\forall x2 \forall x3 (normsq(x2,x3)=eps^2->lyap1(x2,x3)>=k)") ; expandAllDefs ; ODE(1),
+            boxAnd(1) ; andR(1) ; <(
+              dW(1) ; unfold ; allL(-10) ; allL(-10) ; propClose,
+              hideL(-8=="\forall x2 \forall x3 (normsq(x2,x3)=eps^2->lyap1(x2,x3)>=k)") ; expandAllDefs ; ODE(1)
+              )
+            ),
+          hideR(1=="\exists del (del>0&\forall x1 \forall x2 \forall x3 (normsq(x2,x3) < del^2->[{x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3&true}]normsq(x2,x3) < eps^2))") ; expandAllDefs ; QE
+          ),
+        implyR(1) ; expand "stable1" ; expand "gattractive1" ; unfold ; allL(-2) ; fullSimplify ; unfold ; allL("del*I3()^(1/2)", -1) ; implyL(-1) ; <(
+          hideR(1=="<{x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3&true}>[{x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3&true}]normsq(x2,x3) < eps^2") ; hideL(-9=="\forall x1 \forall x2 \forall x3 (normsq(x2,x3) < del^2->[{x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3&true}]normsq(x2,x3) < eps^2)") ; QE,
+          allL(-1) ; allL(-1) ; allL(-1) ; kDomainDiamond("I1()*x1^2+I2()*x2^2+I3()*x3^2 < del*I3()^(1/2)*(del*I3()^(1/2))", 1) ; <(
+            propClose,
+            dC("normsq(x2,x3) < del^2->[{x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3&true}]normsq(x2,x3) < eps^2", 1) ; <(
+              dW(1) ; unfold ; implyL(-10) ; <(
+                hideR(2=="[{x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3&true}]normsq(x2,x3) < eps^2") ; hideL(-9=="\forall x1 \forall x2 \forall x3 (normsq(x2,x3) < del^2->[{x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3&true}]normsq(x2,x3) < eps^2)") ; expandAllDefs ; QE,
+                propClose
+                ),
+              dW(1) ; unfold ; allL(-10) ; allL(-10) ; allL(-10) ; propClose
+              )
+            )
+          )
+        )
+      ),
+    cut("stable3()&(stable3()->gattractive3())") ; <(
+      propClose,
+      hideR(1=="stable3()&gattractive3()") ; andR(1) ; <(
+        hideL(-2=="\forall eps (eps>0->\forall x1 \forall x2 \forall x3 <{x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3&true}>I1()*x1^2+I2()*x2^2+I3()*x3^2 < eps*eps)") ; expand "stable3" ; unfold ; cut("\exists k (\exists del (del>0&del < eps&\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap3(x1,x2) < k))&\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap3(x1,x2)>=k))") ; <(
+          unfold ; existsR(1) ; unfold ; allL(-11) ; allL(-11) ; fullSimplify ; dC("(normsq(x1,x2)=eps^2->lyap3(x1,x2)>=k)&lyap3(x1,x2) < k", 1) ; <(
+            hideL(-8=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap3(x1,x2)>=k)") ; expandAllDefs ; ODE(1),
+            boxAnd(1) ; andR(1) ; <(
+              dW(1) ; unfold ; allL(-10) ; allL(-10) ; propClose,
+              hideL(-8=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap3(x1,x2)>=k)") ; expandAllDefs ; ODE(1)
+              )
+            ),
+          hideR(1=="\exists del (del>0&\forall x1 \forall x2 \forall x3 (normsq(x1,x2) < del^2->[{x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3&true}]normsq(x1,x2) < eps^2))") ; expandAllDefs ; QE
+          ),
+        implyR(1) ; expand "stable3" ; expand "gattractive3" ; unfold ; allL(-2) ; fullSimplify ; unfold ; allL("del*I3()^(1/2)", -1) ; implyL(-1) ; <(
+          hideR(1=="<{x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3&true}>[{x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3&true}]normsq(x1,x2) < eps^2") ; hideL(-9=="\forall x1 \forall x2 \forall x3 (normsq(x1,x2) < del^2->[{x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3&true}]normsq(x1,x2) < eps^2)") ; QE,
+          allL(-1) ; allL(-1) ; allL(-1) ; kDomainDiamond("I1()*x1^2+I2()*x2^2+I3()*x3^2 < del*I3()^(1/2)*(del*I3()^(1/2))", 1) ; <(
+            propClose,
+            dC("normsq(x1,x2) < del^2->[{x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3&true}]normsq(x1,x2) < eps^2", 1) ; <(
+              dW(1) ; unfold ; implyL(-10) ; <(
+                hideR(2=="[{x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3&true}]normsq(x1,x2) < eps^2") ; hideL(-9=="\forall x1 \forall x2 \forall x3 (normsq(x1,x2) < del^2->[{x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3&true}]normsq(x1,x2) < eps^2)") ; expandAllDefs ; QE,
+                propClose
+                ),
+              dW(1) ; unfold ; allL(-10) ; allL(-10) ; allL(-10) ; propClose
+              )
+            )
+          )
+        )
+      )
+    ),
+  hideR(1=="(stable1()&gattractive1())&stable3()&gattractive3()") ; unfold ; dV(1) ; <(
+QE,
+cut("\exists r I1()*x1^2+I2()*x2^2+I3()*x3^2=r") ; <(
+existsL(-10) ; compatCut("x2*x2+x1*x1+x3*x3<=r/I3()", 1) ; <(
+  gEx("x2*x2+x1*x1+x3*x3<=r/I3()", 1),
+    hideR(1=="<{x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3,t'=1&true}>t>-oldp/eps_0") ; dC("I1()*x1^2+I2()*x2^2+I3()*x3^2<=r", 1) ; <(
+    ODE(1),
+      ODE(1)
+    )
+  ),
+  hideR(1=="<{x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3,t'=1&true}>t>-oldp/eps_0") ; QE
+)
+)
+  )
+End.
+
+End.

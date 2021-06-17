@@ -12,8 +12,13 @@ with the -check flag on the appropriate .kya file. For example,
     cd nitrogen;
     java -jar path/to/keymaerax.jar -check final.kya
 
-Notice tht you will need:
+Notice that you will need:
 
  * Mathematica installed
  * KeYmaera X version 4.4 installed
  * KeYmaera X version 4.4 configured to use Mathematica as its arithmetic backend.
+ 
+# References
+
+Viren Bajaj, Karim Elmaaroufi, Nathan Fulton, André Platzer:
+[Verifiably safe SCUBA diving using commodity sensors: work-in-progress](https://doi.org/10.1145/3349568.3351554). EMSOFT Companion 2019: 8

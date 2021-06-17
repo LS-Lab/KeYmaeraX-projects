@@ -1,0 +1,206 @@
+/* Exported from KeYmaera X v4.9.2 */
+
+Theorem "Switched Systems Stability/Stability under arbitrary switching"
+
+/* Arbitrary switching between the two ODEs:
+ * x1'=-x1+x2^3,x2'=-x1-x2
+ * x1'=-x1, x2'=-x2
+ */
+
+Problem
+  \forall eps (eps>0 ->
+  \exists del (del>0 &
+  \forall x1 \forall x2
+    (x1*x1+x2*x2 < del*del ->
+    [{
+        {x1'=-x1+x2^3,x2'=-x1-x2} ++
+        {x1'=-x1, x2'=-x2}
+    }*]
+    x1*x1+x2*x2 < eps*eps)
+  ))
+End.
+
+Tactic "Switched Systems Stability/Stability under arbitrary switching: Proof"
+unfold ; cut("\exists k (k>0&\forall x1 \forall x2 (x1*x1+x2*x2=eps*eps->x1^2/2+x2^4/4>=k))") ; <(
+  unfold ; cut("\exists del (del>0&del < eps&\forall x1 \forall x2 (x1*x1+x2*x2 < del*del->x1^2/2+x2^4/4 < k))") ; <(
+    unfold ; existsR(1) ; unfold ; allL(-6) ; allL(-6) ; implyL(-6) ; <(
+      propClose,
+      loop("x1^2/2+x2^4/4 < k&x1^2+x2^2 < eps*eps", 1) ; <(
+        hideL(-3=="\forall x1 \forall x2 (x1*x1+x2*x2=eps*eps->x1^2/2+x2^4/4>=k)") ; QE,
+        hideL(-4=="\forall x1 \forall x2 (x1*x1+x2*x2=eps*eps->x1^2/2+x2^4/4>=k)") ; QE,
+        unfold ; <(
+          dC("x1*x1+x2*x2=eps*eps->x1^2/2+x2^4/4>=k", 1) ; <(
+            hideL(-3=="\forall x1 \forall x2 (x1*x1+x2*x2=eps*eps->x1^2/2+x2^4/4>=k)") ; ODE(1),
+            dW(1) ; unfold ; allL(-5) ; allL(-5) ; implyL(-5) ; <(
+              propClose,
+              propClose
+              )
+            ),
+          dC("x1*x1+x2*x2=eps*eps->x1^2/2+x2^4/4>=k", 1) ; <(
+            hideL(-3=="\forall x1 \forall x2 (x1*x1+x2*x2=eps*eps->x1^2/2+x2^4/4>=k)") ; ODE(1),
+            dW(1) ; unfold ; allL(-5) ; allL(-5) ; implyL(-5) ; <(
+              propClose,
+              propClose
+              )
+            )
+          )
+        )
+      ),
+    hideR(1=="\exists del (del>0&\forall x1 \forall x2 (x1*x1+x2*x2 < del*del->[{{x1'=-x1+x2^3,x2'=-x1-x2&true}++{x1'=-x1,x2'=-x2&true}}*]x1*x1+x2*x2 < eps*eps))") ; hideL(-3=="\forall x1 \forall x2 (x1*x1+x2*x2=eps*eps->x1^2/2+x2^4/4>=k)") ; QE
+    ),
+  hideR(1=="\exists del (del>0&\forall x1 \forall x2 (x1*x1+x2*x2 < del*del->[{{x1'=-x1+x2^3,x2'=-x1-x2&true}++{x1'=-x1,x2'=-x2&true}}*]x1*x1+x2*x2 < eps*eps))") ; QE
+  )
+End.
+
+End.
+
+/* Exported from KeYmaera X v4.9.2 */
+
+Theorem "Switched Systems Stability/Stability under state-dependent switching"
+
+/* State-dependent switching between the two ODEs:
+ * x1'=-x1/8-x2,x2'=2*x1-x2/8 & x1*x2 <= 0
+ * x1'=-x1/8-2*x2,x2'=x1-x2/8 & x1*x2 >= 0
+ */
+
+Problem
+  \forall eps (eps>0 ->
+  \exists del (del>0 &
+  \forall x1 \forall x2
+    (x1*x1+x2*x2 < del*del ->
+    [{
+        {x1'=-x1/8-x2,x2'=2*x1-x2/8 & x1*x2 <= 0} ++
+        {x1'=-x1/8-2*x2,x2'=x1-x2/8 & x1*x2 >= 0}
+    }*]
+    x1*x1+x2*x2 < eps*eps)
+  ))
+End.
+
+Tactic "Switched Systems Stability/Stability under state-dependent switching: Proof"
+unfold ; existsR("eps", 1) ; auto
+End.
+
+End.
+
+/* Exported from KeYmaera X v4.9.2 */
+
+Theorem "Switched Systems Stability/Stability under slow switching"
+
+/* Slow switching between the two ODEs:
+ * x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1
+ * x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1
+ * With minimum dwell time t >= 3
+ */
+
+Problem
+  \forall eps (eps>0 ->
+  \exists del (del>0 &
+  \forall x1 \forall x2
+    (x1*x1+x2*x2 < del*del ->
+    [ t:= 0; {u:=1; ++ u:=2;}
+    {
+        if(t >= 3) {t:=0; {u:=1; ++ u:=2;} }
+        {
+            ?u=1;{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1} ++
+            ?u=2;{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1}
+        }
+    }*]
+    x1*x1+x2*x2 < eps*eps)
+  ))
+End.
+
+Tactic "Switched Systems Stability/Stability under slow switching: Proof"
+allR(1) ; implyR(1) ; existsR("eps/2", 1) ; andR(1) ; <(
+  QE,
+  allR(1) ; allR(1) ; implyR(1) ; composeb(1) ; assignb(1) ; composeb(1) ; MR("u=1|u=2", 1) ; <(
+    auto,
+    cut("\exists old (2*x1^2+x2^2<=old&x1^2+2*x2^2<=old&2*old < eps*eps)") ; <(
+      unfold ; loop("t>=0&(u=1&2*x1^2+x2^2<=old/(1+t/4+(t/4)^2/2)|u=2&x1^2+2*x2^2<=old/(1+t/4+(t/4)^2/2))", 1) ; <(
+        QE,
+        QE,
+        composeb(1) ; choiceb(1) ; andR(1) ; <(
+          MR("t=0&(u=1&2*x1^2+x2^2<=old/(1+t/4+(t/4)^2/2)|u=2&x1^2+2*x2^2<=old/(1+t/4+(t/4)^2/2))", 1) ; <(
+            auto,
+            unfold ; <(
+              orL(-5) ; <(
+                ODE(1),
+                hideR(1=="[{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&true}](t>=0&(u=1&2*x1^2+x2^2<=old/(1+t/4+(t/4)^2/2)|u=2&x1^2+2*x2^2<=old/(1+t/4+(t/4)^2/2)))") ; QE
+                ),
+              orL(-5) ; <(
+                hideR(1=="[{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&true}](t>=0&(u=1&2*x1^2+x2^2<=old/(1+t/4+(t/4)^2/2)|u=2&x1^2+2*x2^2<=old/(1+t/4+(t/4)^2/2)))") ; QE,
+                ODE(1)
+                )
+              )
+            ),
+          unfold ; <(
+            ODE(1),
+            ODE(1)
+            )
+          )
+        ),
+      hideR(1=="[{{?t>=3;t:=0;{u:=1;++u:=2;}++?!t>=3;?true;}{?u=1;{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&true}++?u=2;{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&true}}}*]x1*x1+x2*x2 < eps*eps") ; QE
+      )
+    )
+  )
+End.
+
+End.
+
+/* Exported from KeYmaera X v4.9.2 */
+
+Theorem "Switched Systems Stability/Stability under slow switching (3 systems)"
+
+/* Slow switching between the three ODEs:
+ * x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1
+ * x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1
+ * x1'=-x1,x2'=-x2,t'=1
+ * With minimum dwell time t >= 3
+ */
+
+Problem
+  \forall eps (eps>0 ->
+  \exists del (del>0 &
+  \forall x1 \forall x2
+    (x1*x1+x2*x2 < del*del ->
+    [ t:= 0; {u:=1; ++ u:=2; ++ u:=3;}
+    {
+        if(t >= 3) {t:=0; {u:=1; ++ u:=2; ++ u:=3;} }
+        {
+            ?u=1;{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1} ++
+            ?u=2;{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1} ++
+            ?u=3;{x1'=-x1,x2'=-x2,t'=1}
+        }
+    }*]
+    x1*x1+x2*x2 < eps*eps)
+  ))
+
+End.
+
+Tactic "Switched Systems Stability/Stability under slow switching (3 systems): Proof"
+allR(1) ; implyR(1) ; existsR("eps/2", 1) ; andR(1) ; <(
+  QE,
+  allR(1) ; allR(1) ; implyR(1) ; composeb(1) ; assignb(1) ; composeb(1) ; MR("u=1|u=2|u=3", 1) ; <(
+    auto,
+    cut("\exists old (2*x1^2+x2^2<=old&x1^2+2*x2^2<=old&x1^2+x2^2<=old&2*old < eps*eps)") ; <(
+      unfold ; loop("t>=0&(u=1&2*x1^2+x2^2<=old/(1+t/4+(t/4)^2/2)|u=2&x1^2+2*x2^2<=old/(1+t/4+(t/4)^2/2)|u=3&x1^2+x2^2<=old/(1+t/4+(t/4)^2/2))", 1) ; <(
+        QE,
+        QE,
+        composeb(1) ; choiceb(1) ; andR(1) ; <(
+          MR("t=0&(u=1&2*x1^2+x2^2<=old/(1+t/4+(t/4)^2/2)|u=2&x1^2+2*x2^2<=old/(1+t/4+(t/4)^2/2)|u=3&x1^2+x2^2<=old/(1+t/4+(t/4)^2/2))", 1) ; <(
+            auto,
+            andL(-2) ; auto
+            ),
+          unfold ; <(
+            ODE(1),
+            ODE(1),
+            ODE(1)
+            )
+          )
+        ),
+      hideR(1=="[{{?t>=3;t:=0;{u:=1;++u:=2;++u:=3;}++?!t>=3;?true;}{?u=1;{x1'=-x1/8-x2,x2'=2*x1-x2/8,t'=1&true}++?u=2;{x1'=-x1/8-2*x2,x2'=x1-x2/8,t'=1&true}++?u=3;{x1'=-x1,x2'=-x2,t'=1&true}}}*]x1*x1+x2*x2 < eps*eps") ; QE
+      )
+    )
+  )
+End.
+
+End.

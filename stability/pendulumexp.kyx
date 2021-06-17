@@ -1,0 +1,49 @@
+﻿/* Exported from KeYmaera X v4.9.2 */
+
+Theorem "ODE Stability/Example 13 Globally exponentially stable pendulum"
+
+Definitions
+
+Real a; /* Parameter a = g/L for the ratio of gravity to length of the rod holding the pendulum */
+Real b; /* Parameter b >= 0 for the coefficient of friction against angular velocity */
+
+Real normsq(Real x, Real y) = x^2 + y^2;
+
+/* ODE for (linearized) pendulum where theta is the angle of displacement and w is the angular velocity:
+ * theta'=w,w'=-a*theta-b*w
+ */
+
+/* Global exponential stability */
+Bool expstable <->
+  \exists alp (alp > 0 &
+  \exists beta (beta > 0 &
+  \forall theta \forall w (
+  [
+      aux:=alp^2*normsq(theta,w);
+      {aux'=(-2)*(beta*aux),theta'=w,w'=-a*theta-b*w}
+  ] normsq(theta,w)<=aux
+  )));
+
+/* Lyapunov function */
+Real lyap(Real theta, Real w) = a*(theta^2)/2 + ((b*theta+w)^2+w^2)/4;
+
+End.
+
+Problem
+  a = 1 & b = 1 -> expstable
+End.
+
+Tactic "ODE Stability/Example 13 Globally exponentially stable pendulum: Proof"
+unfold ; expand "expstable" ; existsR("2", 1) ; unfold ; <(
+  QE,
+  existsR("1/4", 1) ; unfold ; <(
+    QE,
+    dC("lyap(theta,w)<=aux/4", 1) ; <(
+      expandAllDefs ; ODE(1),
+      expandAllDefs ; allL2R(-1) ; allL2R(-2) ; hideL(-1=="a()=1") ; hideL(-1=="b()=1") ; ODE(1)
+      )
+    )
+  )
+End.
+
+End.

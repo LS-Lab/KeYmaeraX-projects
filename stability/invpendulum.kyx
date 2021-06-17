@@ -1,0 +1,91 @@
+﻿/* Exported from KeYmaera X v4.9.2 */
+
+Theorem "ODE Stability/Section 5 Inverted Pendulum"
+
+Definitions
+
+Real a;  /* Parameter a = g/L for the ratio of gravity to length of the rod holding the pendulum */
+Real b;  /* Parameter b >= 0 for the coefficient of friction against angular velocity */
+Real k1; /* Tuning coefficient for "P" in PD control */
+Real k2; /* Tuning coefficient for "D" in PD control */
+
+Real normsq(Real x, Real y) = x^2 + y^2;
+
+/* ODE for (linearized) inverted pendulum with PD control where theta is the angle of displacement and w is the angular velocity:
+ * theta'=w,w'=a*theta-b*w-(k1*theta+k2*w)
+ */
+
+/* Asymptotic stability for the ODE */
+Bool stable <->
+  \forall eps (eps > 0 ->
+  \exists del (del > 0 &
+  \forall theta \forall w (normsq(theta,w) < del^2 ->
+    [{theta'=w,w'=a*theta-b*w-(k1*theta+k2*w)}] normsq(theta,w) < eps^2
+  )));
+
+Bool attractive <->
+  \exists del (del > 0 &
+  \forall theta \forall w ( normsq(theta,w) < del^2 ->
+  \forall eps (eps > 0 ->
+    <{theta'=w,w'=a*theta-b*w-(k1*theta+k2*w)}> [{theta'=w,w'=a*theta-b*w-(k1*theta+k2*w)}] normsq(theta,w) < eps^2
+  )));
+
+/* Lyapunov function */
+Real lyap(Real theta, Real w) = (k1-a)*(theta^2)/2 + (((b+k2)*theta+w)^2+w^2)/4;
+
+End.
+
+Problem
+  a > 0 & b >= 0 & k1 > a & k2 > -b -> stable & attractive
+End.
+
+Tactic "ODE Stability/Section 5 Inverted Pendulum: Proof"
+implyR(1) ; cut("stable()&(stable()->attractive())") ; <(
+  propClose,
+  hideR(1=="stable()&attractive()") ; andR(1) ; <(
+    expand "stable" ; unfold ; cut("\exists k (k>0&\forall theta \forall w (normsq(theta,w)=eps^2->lyap(theta,w)>=k))") ; <(
+      unfold ; cut("\exists del (del>0&del < eps&\forall theta \forall w (normsq(theta,w) < del^2->lyap(theta,w) < k))") ; <(
+        unfold ; existsR(1) ; unfold ; allL(-10) ; allL(-10) ; fullSimplify ; dC("(normsq(theta,w)=eps^2->lyap(theta,w)>=k)&lyap(theta,w) < k", 1) ; <(
+          hideL(-7=="\forall theta \forall w (normsq(theta,w)=eps^2->lyap(theta,w)>=k)") ; expandAllDefs ; ODE(1),
+          boxAnd(1) ; andR(1) ; <(
+            dW(1) ; unfold ; allL(-9) ; allL(-9) ; propClose,
+            hideL(-7=="\forall theta \forall w (normsq(theta,w)=eps^2->lyap(theta,w)>=k)") ; expandAllDefs ; ODE(1)
+            )
+          ),
+        hideR(1=="\exists del (del>0&\forall theta \forall w (normsq(theta,w) < del^2->[{theta'=w,w'=a()*theta-b()*w-(k1()*theta+k2()*w)&true}]normsq(theta,w) < eps^2))") ; hideL(-7=="\forall theta \forall w (normsq(theta,w)=eps^2->lyap(theta,w)>=k)") ; expandAllDefs ; QE
+        ),
+      hideR(1=="\exists del (del>0&\forall theta \forall w (normsq(theta,w) < del^2->[{theta'=w,w'=a()*theta-b()*w-(k1()*theta+k2()*w)&true}]normsq(theta,w) < eps^2))") ; expandAllDefs ; QE
+      ),
+    implyR(1) ; cut("\exists del (del>0&\forall theta \forall w (normsq(theta,w) < del^2->\forall eps (eps>0-><{theta'=w,w'=a()*theta-b()*w-(k1()*theta+k2()*w)&true}>normsq(theta,w) < eps^2)))") ; <(
+      unfold ; expand "attractive" ; existsR(1) ; unfold ; allL(-7) ; allL(-7) ; fullSimplify ; expand "stable" ; allL(-1) ; fullSimplify ; unfold ; allL("del", -6) ; fullSimplify ; kDomainDiamond("normsq(theta,w) < del^2", 1) ; <(
+        propClose,
+        dC("normsq(theta,w) < del^2->[{theta'=w,w'=a()*theta-b()*w-(k1()*theta+k2()*w)&true}]normsq(theta,w) < eps^2", 1) ; <(
+          dW(1) ; unfold,
+          dW(1) ; unfold ; allL(-9) ; allL(-9) ; propClose
+          )
+        ),
+      hideR(1=="attractive()") ; expand "stable" ; allL("1", -2) ; implyL(-2) ; <(
+        hideR(1=="\exists del (del>0&\forall theta \forall w (normsq(theta,w) < del^2->\forall eps (eps>0-><{theta'=w,w'=a()*theta-b()*w-(k1()*theta+k2()*w)&true}>normsq(theta,w) < eps^2)))") ; QE,
+        unfold ; existsR(1) ; unfold ; allL(-6) ; allL(-6) ; fullSimplify ; cut("\exists bnd \forall theta \forall w (normsq(theta,w) < 1*1->lyap(theta,w)>=bnd)") ; <(
+          unfold ; compatCut("!normsq(theta,w) < eps^2", 1) ; <(
+            kDomainDiamond("lyap(theta,w) < bnd", 1) ; <(
+              hideL(-9=="\forall theta \forall w (normsq(theta,w) < 1*1->lyap(theta,w)>=bnd)") ; US("(lyap(•_0,•_1)~>(k1()-a())*•_0^2/2+(((b()+k2())*•_0+•_1)^2+•_1^2)/4)") ; dV(1) ; cut("\exists bnd (bnd>0&\forall theta \forall w (normsq(theta,w) < 1&!normsq(theta,w) < eps^2->-((k1()-a())*(2*theta*w)*2/4+(2*((b()+k2())*theta+w)*((b()+k2())*w+(a()*theta-b()*w-(k1()*theta+k2()*w)))+2*w*(a()*theta-b()*w-(k1()*theta+k2()*w)))*4/16)>=bnd))") ; <(
+                unfold ; existsR("bnd", 1) ; andR(1) ; <(
+                  propClose,
+                  unfold ; allL(-9) ; allL(-9) ; fullSimplify ; closeTrue(1)
+                  ),
+                hideR(1=="\exists eps_0 (eps_0>0&\forall theta \forall w (((true&bnd-((k1()-a())*theta^2/2+(((b()+k2())*theta+w)^2+w^2)/4)<=0)&normsq(theta,w) < 1)&!normsq(theta,w) < eps^2->-((k1()-a())*(2*theta*w)*2/4+(2*((b()+k2())*theta+w)*((b()+k2())*w+(a()*theta-b()*w-(k1()*theta+k2()*w)))+2*w*(a()*theta-b()*w-(k1()*theta+k2()*w)))*4/16)>=eps_0))") ; expandAllDefs ; QE
+                ),
+              dW(1) ; unfold ; allL(-7) ; allL(-7) ; fullSimplify ; closeTrue(1)
+              ),
+            diamondd(1) ; propClose
+            ),
+          hideR(1=="<{theta'=w,w'=a()*theta-b()*w-(k1()*theta+k2()*w)&true}>normsq(theta,w) < eps^2") ; hideL(-6=="[{theta'=w,w'=a()*theta-b()*w-(k1()*theta+k2()*w)&true}]normsq(theta,w) < 1") ; expandAllDefs ; QE
+          )
+        )
+      )
+    )
+  )
+End.
+
+End.

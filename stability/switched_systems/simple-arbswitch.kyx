@@ -1,0 +1,171 @@
+/* Example: global asymptotic stability under arbitrary switching for simple 1D ODEs */
+
+SharedDefinitions
+
+Real normsq(Real x) = x^2;
+
+/* System with three 1D ODEs */
+HP ode1 ::= {x' = -x, t'=1};
+HP ode2 ::= {x' = -x^3, t'=1};
+HP ode3 ::= {x' = -x^5, t'=1};
+
+HP sys ::=
+{
+  {
+    {ode1; ++ ode2; ++ ode3;}
+  }*
+};
+
+/* Common Lyapunov function */
+Real lyap(Real x) = x^2;
+
+End.
+
+Theorem "Arbitrary Switching/Simple 1D (Stability)"
+
+ProgramVariables Real x, t; End.
+
+Problem
+  \forall eps (eps > 0 ->
+  \exists del (del > 0 &
+  \forall x (normsq(x) < del^2 ->
+    [sys;] normsq(x) < eps^2)
+  ))
+End.
+
+Tactic "Arbitrary Switching/Simple 1D (Stability): Proof"
+expandAllDefs;
+unfold;
+existsR("eps", 'R=="\exists del (del>0&\forall x (x^2 < del^2->[{{x'=-x,t'=1}++{x'=-x^3,t'=1}++{x'=-x^5,t'=1}}*]x^2 < eps^2))");
+auto
+End.
+
+End.
+
+Theorem "Arbitrary Switching/Simple 1D (Global Pre-attractivity)"
+
+ProgramVariables Real x, t; End.
+
+Problem
+  \forall del (del > 0 ->
+  \forall eps (eps > 0 ->
+  \exists T (T >= 0 &
+  \forall x (normsq(x) < del^2 ->
+    [ t:=0; sys; ] (t>=T -> normsq(x) < eps^2)
+  ))))
+End.
+
+Tactic "Arbitrary Switching/Simple 1D (Global Pre-attractivity): Proof"
+expandAllDefs;
+unfold;
+cut("\exists k (k < 0&\forall x (x^2>=eps^2->(-2)*x^2<=k&(-2)*x^4<=k&(-2)*x^6<=k))"); <(
+  "Use":
+    unfold;
+    existsRmon("T>=0&del^2+k*T < eps^2", 'R=="\exists T (T>=0&\forall x (x^2 < del^2->\forall t (t=0->[{{x'=-x,t'=1}++{x'=-x^3,t'=1}++{x'=-x^5,t'=1}}*](t>=T->x^2 < eps^2))))"); <(
+      "Use":
+        hideL('L=="\forall x (x^2>=eps^2->(-2)*x^2<=k&(-2)*x^4<=k&(-2)*x^6<=k)");
+        QE,
+      "Show":
+        unfold;
+        loop("x^2>=eps^2->x^2<=del^2+k*t", 'R=="[{{x'=-x,t'=1}++{x'=-x^3,t'=1}++{x'=-x^5,t'=1}}*](t>=T->x^2 < eps^2)"); <(
+          "Init":
+            hideL('L=="\forall x (x^2>=eps^2->(-2)*x^2<=k&(-2)*x^4<=k&(-2)*x^6<=k)");
+            QE,
+          "Post":
+            hideL('L=="\forall x (x^2>=eps^2->(-2)*x^2<=k&(-2)*x^4<=k&(-2)*x^6<=k)");
+            QE,
+          "Step":
+            unfold; <(
+              "[{x'=-x,t'=1}](x^2>=eps^2->x^2<=del^2+k*t)":
+                dC("x^2>=eps^2->(-2)*x^2<=k", 'R=="[{x'=-x,t'=1}](x^2>=eps^2->x^2<=del^2+k*t)"); <(
+                  "Use":
+                    hideL('L=="\forall x (x^2>=eps^2->(-2)*x^2<=k&(-2)*x^4<=k&(-2)*x^6<=k)");
+                    useAt("DCC", "1", 'R=="[{x'=-x,t'=1&true&(x^2>=eps^2->(-2)*x^2<=k)}](x^2>=eps^2->x^2<=del^2+k*t)");
+                    unfold; <(
+                      "[{x'=-x,t'=1&(true&(x^2>=eps^2->(-2)*x^2<=k))&x^2>=eps^2}]x^2<=del^2+k*t":
+                        ODE('R=="[{x'=-x,t'=1&(true&(x^2>=eps^2->(-2)*x^2<=k))&x^2>=eps^2}]x^2<=del^2+k*t"),
+                      "[{x'=-x,t'=1&true&(x^2>=eps^2->(-2)*x^2<=k)}](!x^2>=eps^2->[{x'=-x,t'=1&true&(x^2>=eps^2->(-2)*x^2<=k)}](!x^2>=eps^2))":
+                        dW('R=="[{x'=-x,t'=1&true&(x^2>=eps^2->(-2)*x^2<=k)}](!x^2>=eps^2->[{x'=-x,t'=1&true&(x^2>=eps^2->(-2)*x^2<=k)}](!x^2>=eps^2))");
+                        implyR('R=="!x^2>=eps^2->[{x'=-x,t'=1&true&(x^2>=eps^2->(-2)*x^2<=k)}](!x^2>=eps^2)");
+                        ODE('R=="[{x'=-x,t'=1&true&(x^2>=eps^2->(-2)*x^2<=k)}](!x^2>=eps^2)")
+                    ),
+                  "Show":
+                    dW('R=="[{x'=-x,t'=1}](x^2>=eps^2->(-2)*x^2<=k)");
+                    unfold;
+                    allL('L=="\forall x (x^2>=eps^2->(-2)*x^2<=k&(-2)*x^4<=k&(-2)*x^6<=k)");
+                    propClose
+                ),
+              "[{x'=-x^3,t'=1}](x^2>=eps^2->x^2<=del^2+k*t)":
+                dC("x^2>=eps^2->(-2)*x^4<=k", 'R=="[{x'=-x^3,t'=1}](x^2>=eps^2->x^2<=del^2+k*t)"); <(
+                  "Use":
+                    hideL('L=="\forall x (x^2>=eps^2->(-2)*x^2<=k&(-2)*x^4<=k&(-2)*x^6<=k)");
+                    useAt("DCC", "1", 'R=="[{x'=-x^3,t'=1&true&(x^2>=eps^2->(-2)*x^4<=k)}](x^2>=eps^2->x^2<=del^2+k*t)");
+                    unfold; <(
+                      "[{x'=-x^3,t'=1&(true&(x^2>=eps^2->(-2)*x^4<=k))&x^2>=eps^2}]x^2<=del^2+k*t":
+                        ODE('R=="[{x'=-x^3,t'=1&(true&(x^2>=eps^2->(-2)*x^4<=k))&x^2>=eps^2}]x^2<=del^2+k*t"),
+                      "[{x'=-x^3,t'=1&true&(x^2>=eps^2->(-2)*x^4<=k)}](!x^2>=eps^2->[{x'=-x^3,t'=1&true&(x^2>=eps^2->(-2)*x^4<=k)}](!x^2>=eps^2))":
+                        dW('R=="[{x'=-x^3,t'=1&true&(x^2>=eps^2->(-2)*x^4<=k)}](!x^2>=eps^2->[{x'=-x^3,t'=1&true&(x^2>=eps^2->(-2)*x^4<=k)}](!x^2>=eps^2))");
+                        implyR('R=="!x^2>=eps^2->[{x'=-x^3,t'=1&true&(x^2>=eps^2->(-2)*x^4<=k)}](!x^2>=eps^2)");
+                        ODE('R=="[{x'=-x^3,t'=1&true&(x^2>=eps^2->(-2)*x^4<=k)}](!x^2>=eps^2)")
+                    ),
+                  "Show":
+                    dW('R=="[{x'=-x^3,t'=1}](x^2>=eps^2->(-2)*x^4<=k)");
+                    unfold;
+                    allL('L=="\forall x (x^2>=eps^2->(-2)*x^2<=k&(-2)*x^4<=k&(-2)*x^6<=k)");
+                    propClose
+                ),
+              "[{x'=-x^5,t'=1}](x^2>=eps^2->x^2<=del^2+k*t)":
+                dC("x^2>=eps^2->(-2)*x^6<=k", 'R=="[{x'=-x^5,t'=1}](x^2>=eps^2->x^2<=del^2+k*t)"); <(
+                  "Use":
+                    hideL('L=="\forall x (x^2>=eps^2->(-2)*x^2<=k&(-2)*x^4<=k&(-2)*x^6<=k)");
+                    useAt("DCC", "1", 'R=="[{x'=-x^5,t'=1&true&(x^2>=eps^2->(-2)*x^6<=k)}](x^2>=eps^2->x^2<=del^2+k*t)");
+                    unfold; <(
+                      "[{x'=-x^5,t'=1&(true&(x^2>=eps^2->(-2)*x^6<=k))&x^2>=eps^2}]x^2<=del^2+k*t":
+                        ODE('R=="[{x'=-x^5,t'=1&(true&(x^2>=eps^2->(-2)*x^6<=k))&x^2>=eps^2}]x^2<=del^2+k*t"),
+                      "[{x'=-x^5,t'=1&true&(x^2>=eps^2->(-2)*x^6<=k)}](!x^2>=eps^2->[{x'=-x^5,t'=1&true&(x^2>=eps^2->(-2)*x^6<=k)}](!x^2>=eps^2))":
+                        dW('R=="[{x'=-x^5,t'=1&true&(x^2>=eps^2->(-2)*x^6<=k)}](!x^2>=eps^2->[{x'=-x^5,t'=1&true&(x^2>=eps^2->(-2)*x^6<=k)}](!x^2>=eps^2))");
+                        implyR('R=="!x^2>=eps^2->[{x'=-x^5,t'=1&true&(x^2>=eps^2->(-2)*x^6<=k)}](!x^2>=eps^2)");
+                        ODE('R=="[{x'=-x^5,t'=1&true&(x^2>=eps^2->(-2)*x^6<=k)}](!x^2>=eps^2)")
+                    ),
+                  "Show":
+                    dW('R=="[{x'=-x^5,t'=1}](x^2>=eps^2->(-2)*x^6<=k)");
+                    unfold;
+                    allL('L=="\forall x (x^2>=eps^2->(-2)*x^2<=k&(-2)*x^4<=k&(-2)*x^6<=k)");
+                    propClose
+                )
+            )
+        )
+    ),
+  "Show":
+    hideR('R=="\exists T (T>=0&\forall x (x^2 < del^2->\forall t (t=0->[{{x'=-x,t'=1}++{x'=-x^3,t'=1}++{x'=-x^5,t'=1}}*](t>=T->x^2 < eps^2))))");
+    QE
+)
+End.
+
+End.
+
+Theorem "Arbitrary Switching/Simple 1D (Complete Solutions)"
+
+ProgramVariables Real x, t; End.
+
+Problem
+  \forall T ( T > 0 ->
+    <t:=0; ode1;> t > T &
+    <t:=0; ode2;> t > T &
+    <t:=0; ode3;> t > T
+  )
+End.
+
+Tactic "Arbitrary Switching/Simple 1D (Complete Solutions): Proof"
+expandAllDefs;
+unfold; <(
+  "<t:=0;{x'=-x,t'=1}>t>T":
+    gEx('R=="<{x'=-x,t'=1}>t>T"),
+  "<t:=0;{x'=-x^3,t'=1}>t>T":
+    gEx('R=="<{x'=-x^3,t'=1}>t>T"),
+  "<t:=0;{x'=-x^5,t'=1}>t>T":
+    gEx('R=="<{x'=-x^5,t'=1}>t>T")
+)
+End.
+
+End.

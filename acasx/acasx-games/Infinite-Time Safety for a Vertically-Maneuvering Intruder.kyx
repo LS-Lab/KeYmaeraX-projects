@@ -1,0 +1,206 @@
+﻿/* Exported from KeYmaera X v4.9.1 */
+
+SharedDefinitions
+R hp.
+R rp.
+R a.
+R c.
+R wUp() = (-1).
+R wLo() = (1).
+R abs(R).
+R min(R, R).
+R max(R, R).
+B C(R w, R dhf, R dhd, R r, R rv, R h) <-> (
+    \forall t \forall ro \forall ho (
+        (0 <= t & t < w * (dhf - dhd)/a() & ro = rv * t & ho = (w * a()/2 * t^2 + dhd * t)
+      | (0 <= t & t >= w * (dhf - dhd)/a() & ro = rv * t & w * dhf > w * dhd & ho = dhf * t - w * (dhf - dhd)^2/(2*a()))
+      | (0 <= t & t >= w* (dhf - dhd)/a() & ro = rv * t & w * dhf <= w * dhd & ho = dhf * t))
+      -> (abs(r - ro) > rp() | w * h < w * ho - hp())
+    )
+  ).
+B init(R rv, R hai, R ao) <-> (hp()>0 & rp()>=0 & rv>=0 & a()>0 & c()>0 & hai > -c() & hai < c() & a() > c()).
+B loopInv(R dhd, R dhf, R ao, R w, R r, R rv, R h, R hai) <-> ( ((w=wUp() | w=wLo()) & init(rv,hai,ao)) & C(w,dhf,dhd,r,rv,h)).
+HP motion ::= { {r' = -rv, h' = -dhd, dhd' = ao-hai & w*dhd>=w*dhf|w*ao>=a()+c() } }.
+End.
+Theorem "ACAS X Hybrid Games: Vertical Intruder REFORMULATED v2 - attempt 2 (4.9.1) v3".
+
+ProgramVariables.
+
+  /* horizontal */
+  R r.    /* relative distance in ft; xi - xo */
+          /* x = r */
+  R rv.   /* relative speed -(vi - vo) */
+  
+  R hai.   /* intruder vertical acceleration */
+
+  /* vertical */
+  R h.    /* relative altitude in ft */
+          /* if negative: the intruder is lower than the ownship */
+          /* h := hi - ho */
+          /* z = h */
+  R dhd.  /* vertical velocity of ownship */
+  R dhf.  /* target minimum velocity */
+  R w.    /* velocity bound */
+  R ao.
+
+End.
+
+Problem.
+    init(rv,hai,ao)
+  & ( (w=wUp() | w=wLo()) & C(w,dhf,dhd,r,rv,h) )
+  ->
+  [{
+     { ?true;
+       ++
+       {dhf := *;
+        { w:=wUp(); ++ w:=wLo(); }
+        ?( C(w,dhf,dhd,r,rv,h));
+       }
+     }
+     { ao := *; }^@
+     { hai := * ; ?(hai > -c() & hai < c()); motion; }*@invariant(loopInv(dhd,dhf,ao,w,r,rv,h,hai))
+   }*@invariant(loopInv(dhd,dhf,ao,w,r,rv,h,hai))
+  ] ( (abs(r) > rp() | abs(h) > hp()))
+End.
+
+/* HP motion ::= { {r' = -rv, hvi' = hai, h' = -dhd + hvi, dhd' = ao & w*dhd>=w*(dhf+hvi)|w*ao>=a()+c() } }. */
+
+Tactic "ACAS X Hybrid Games: Vertical Intruder REFORMULATED v2 - attempt 2 (4.9.1) v3: Proof"
+implyR(1) ; loop("loopInv(dhd,dhf,ao,w,r,rv,h,hai)", 1) ; <(
+  expand "loopInv" ; fullSimplify ; QE,
+  composeb(1) ; MR("loopInv(dhd,dhf,ao,w,r,rv,h,hai)", 1) ; <(
+    chaseAt(1) ; trueImply(1.0) ; andR(1) ; <(
+      id,
+      allR(1) ; andR(1) ; <(
+        implyR(1) ; expand "loopInv" ; fullSimplify ; prop,
+        implyR(1) ; expand "loopInv" ; fullSimplify ; prop
+        )
+      ),
+    composeb(1) ; dualDirectb(1) ; expandAllDefs ; randomd(1) ; existsR(1) ; loop("((w=(-1)|w=1)&hp()>0&rp()>=0&rv>=0&a()>0&c()>0&hai>-c()&hai < c()&a()>c())&\forall t \forall ro \forall ho (0<=t&t < w*(dhf-dhd)/a()&ro=rv*t&ho=w*a()/2*t^2+dhd*t|0<=t&t>=w*(dhf-dhd)/a()&ro=rv*t&w*dhf>w*dhd&ho=dhf*t-w*(dhf-dhd)^2/(2*a())|0<=t&t>=w*(dhf-dhd)/a()&ro=rv*t&w*dhf<=w*dhd&ho=dhf*t->abs(r-ro)>rp()|w*h < w*ho-hp())", 1) ; <(
+      prop,
+      prop,
+      chaseAt(1) ; allR(1) ; implyR(1) ; boxAnd(1) ; andR(1) ; <(
+        ODE(1),
+        cut("w*dhd>=w*dhf|w*ao>=a()+c()") ; <(
+          solve(1) ; allR(1) ; implyR(1) ; implyR(1) ; allL("t_", -12) ; implyL(-12) ; <(
+            hideR(1=="\forall t \forall ro \forall ho (0<=t&t < w*(dhf-((ao-hai)*t_+dhd))/a()&ro=rv*t&ho=w*a()/2*t^2+((ao-hai)*t_+dhd)*t|0<=t&t>=w*(dhf-((ao-hai)*t_+dhd))/a()&ro=rv*t&w*dhf>w*((ao-hai)*t_+dhd)&ho=dhf*t-w*(dhf-((ao-hai)*t_+dhd))^2/(2*a())|0<=t&t>=w*(dhf-((ao-hai)*t_+dhd))/a()&ro=rv*t&w*dhf<=w*((ao-hai)*t_+dhd)&ho=dhf*t->abs((-rv)*t_+r-ro)>rp()|w*(-((ao-hai)*(t_^2/2)+dhd*t_)+h) < w*ho-hp())") ; hideL(-1=="((w=(-1)|w=1)&hp()>0&rp()>=0&rv>=0&a()>0&c()>0&hai_0>-c()&hai_0 < c()&a()>c())&\forall t \forall ro \forall ho (0<=t&t < w*(dhf-dhd)/a()&ro=rv*t&ho=w*a()/2*t^2+dhd*t|0<=t&t>=w*(dhf-dhd)/a()&ro=rv*t&w*dhf>w*dhd&ho=dhf*t-w*(dhf-dhd)^2/(2*a())|0<=t&t>=w*(dhf-dhd)/a()&ro=rv*t&w*dhf<=w*dhd&ho=dhf*t->abs(r-ro)>rp()|w*h < w*ho-hp())") ; QE,
+            allR(1) ; allR(1) ; allR(1) ; andL('L)* ; fullSimplify ; allL("t+t_", -4) ; allL("rv*(t+t_)", -4) ; cut("0<=t+t_&t+t_ < w*(dhf-dhd)/a()|0<=t+t_&t+t_>=w*(dhf-dhd)/a()&w*dhf>w*dhd|0<=t+t_&t+t_>=w*(dhf-dhd)/a()&w*dhf<=w*dhd") ; <(
+              orL(-16) ; <(
+                allL("w*a()/2*(t+t_)^2+dhd*(t+t_)", -4) ; implyL(-4) ; <(
+                  fullSimplify ; QE,
+                  orL(-7) ; <(
+                    allL2R(-7) ; fullSimplify ; orL(-4) ; <(
+                      implyR(1) ; orL(-17) ; <(
+                        QE,
+                        orL(-17) ; <(
+                          QE,
+                          QE
+                          )
+                        ),
+                      implyR(1) ; orL(-17) ; <(
+                        QE,
+                        orL(-17) ; <(
+                          QE,
+                          QE
+                          )
+                        )
+                      ),
+                    allL2R(-7) ; fullSimplify ; orL(-4) ; <(
+                      implyR(1) ; orL(-17) ; <(
+                        QE,
+                        orL(-17) ; <(
+                          QE,
+                          QE
+                          )
+                        ),
+                      implyR(1) ; orL(-17) ; <(
+                        QE,
+                        orL(-17) ; <(
+                          QE,
+                          QE
+                          )
+                        )
+                      )
+                    )
+                  ),
+                orL(-16) ; <(
+                  allL("dhf*(t+t_)-w*(dhf-dhd)^2/(2*a())", -4) ; implyL(-4) ; <(
+                    fullSimplify ; QE,
+                    orL(-7) ; <(
+                      allL2R(-7) ; fullSimplify ; orL(-4) ; <(
+                        implyR(1) ; orL(-17) ; <(
+                          QE,
+                          orL(-17) ; <(
+                            QE,
+                            QE
+                            )
+                          ),
+                        implyR(1) ; orL(-17) ; <(
+                          QE,
+                          orL(-17) ; <(
+                            QE,
+                            QE
+                            )
+                          )
+                        ),
+                      allL2R(-7) ; fullSimplify ; orL(-4) ; <(
+                        implyR(1) ; orL(-17) ; <(
+                          QE,
+                          orL(-17) ; <(
+                            QE,
+                            QE
+                            )
+                          ),
+                        implyR(1) ; orL(-17) ; <(
+                          QE,
+                          orL(-17) ; <(
+                            QE,
+                            QE
+                            )
+                          )
+                        )
+                      )
+                    ),
+                  allL("dhf*(t+t_)", -4) ; implyL(-4) ; <(
+                    fullSimplify ; QE,
+                    orL(-7) ; <(
+                      allL2R(-7) ; fullSimplify ; orL(-4) ; <(
+                        implyR(1) ; orL(-17) ; <(
+                          QE,
+                          orL(-17) ; <(
+                            QE,
+                            QE
+                            )
+                          ),
+                        implyR(1) ; orL(-17) ; <(
+                          QE,
+                          orL(-17) ; <(
+                            QE,
+                            QE
+                            )
+                          )
+                        ),
+                      allL2R(-7) ; fullSimplify ; implyR(1) ; orL(-17) ; <(
+                        QE,
+                        orL(-17) ; <(
+                          QE,
+                          QE
+                          )
+                        )
+                      )
+                    )
+                  )
+                ),
+              hideL(-4=="\forall ho (0<=t+t_&t+t_ < w*(dhf-dhd)/a()&rv*(t+t_)=rv*(t+t_)&ho=w*a()/2*(t+t_)^2+dhd*(t+t_)|0<=t+t_&t+t_>=w*(dhf-dhd)/a()&rv*(t+t_)=rv*(t+t_)&w*dhf>w*dhd&ho=dhf*(t+t_)-w*(dhf-dhd)^2/(2*a())|0<=t+t_&t+t_>=w*(dhf-dhd)/a()&rv*(t+t_)=rv*(t+t_)&w*dhf<=w*dhd&ho=dhf*(t+t_)->abs(r-rv*(t+t_))>rp()|w*h < w*ho-hp())") ; QE
+              )
+            ),
+          DI(1) ; implyR(1) ; id
+          )
+        )
+      )
+    ),
+  expandAllDefs ; andL('L)* ; allL("0", -1) ; allL("0", -1) ; allL("0", -1) ; fullSimplify ; QE
+  )
+End.
+
+End.

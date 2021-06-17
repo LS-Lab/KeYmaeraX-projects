@@ -11,6 +11,8 @@ some cases where our safety theorem conflicts with the actual advisory given by 
 formal hybrid systems proving approaches are helping to ensure the safety of ACAS X. Our approach is general and 
 could also be used to identify unsafe advice issued by other collision avoidance systems or confirm their safety.
 
+# References
+
 Jean-Baptiste Jeannin, Khalil Ghorbal, Yanni Kouskoulas, Aurora Schmidt, Ryan Gardner, Stefan Mitsch, and André Platzer. 
 [A formally verified hybrid system for safe advisories in the next-generation airborne collision avoidance system.](https://doi.org/10.1007/s10009-016-0434-1)
 STTT, 19(6), pp. 717-741, 2017. 
