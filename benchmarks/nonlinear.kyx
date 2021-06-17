@@ -1,6 +1,6 @@
 /* 2D Problems */
 
-ArchiveEntry "Ahmadi Parrilo Krstic".
+ArchiveEntry "Benchmarks/Nonlinear/Ahmadi Parrilo Krstic".
 
 Description "Theorem 1.1 (1)".
 Citation "Amir Ali Ahmadi, Miroslav Krstic, and Pablo A. Parrilo. A globally asymptotically stable polynomial vector field with no polynomial Lyapunov function. CDC-ECE 2011".
@@ -28,12 +28,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof".
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Arrowsmith Place Fig_3_11 page 83".
+ArchiveEntry "Benchmarks/Nonlinear/Arrowsmith Place Fig_3_11 page 83".
 
 Description "Fig 3.11 Page 83".
 Citation "D. K. Arrowsmith and C. M. Place. An Introduction to Dynamical Systems".
@@ -59,12 +59,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Arrowsmith Place Fig_3_5e page 79".
+ArchiveEntry "Benchmarks/Nonlinear/Arrowsmith Place Fig_3_5e page 79".
 
 Description "Fig 3.5e Page 79".
 Citation "D. K. Arrowsmith and C. M. Place. An Introduction to Dynamical Systems".
@@ -91,12 +91,12 @@ Tactic "Scripted proof".
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Ben Sassi Girard 20104 Moore-Greitzer Jet".
+ArchiveEntry "Benchmarks/Nonlinear/Ben Sassi Girard 20104 Moore-Greitzer Jet".
 
 Description "6.1 Moore-Greitzer jet engine model".
 Citation "Mohamed Amin Ben Sassi, Antoine Girard. Controller synthesis for robust invariance of polynomial dynamical systems using linear programming".
@@ -124,12 +124,12 @@ Tactic "Scripted proof".
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Ben Sassi Girard Sankaranarayanan 2014 Fitzhugh-Nagumo".
+ArchiveEntry "Benchmarks/Nonlinear/Ben Sassi Girard Sankaranarayanan 2014 Fitzhugh-Nagumo".
 
 Description "Fitzhugh-Nagumo system".
 Citation "Mohamed Amin Ben Sassi, Antoine Girard, Sriram Sankaranarayanan. Iterative computation of polyhedral invariants sets for polynomial dynamical systems".
@@ -165,12 +165,12 @@ Tactic "Scripted proof (2)".
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Bhatia Szego Ex_2_4 page 68".
+ArchiveEntry "Benchmarks/Nonlinear/Bhatia Szego Ex_2_4 page 68".
 
 Description "Ex 2.4 Page 68".
 Citation "Bhatia, N. P. and Szego, G. P.. Stability Theory of Dynamical Systems".
@@ -204,12 +204,12 @@ Tactic "Scripted proof (2)".
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Collin Goriely page 60".
+ArchiveEntry "Benchmarks/Nonlinear/Collin Goriely page 60".
 
 ProgramVariables.
   R x.
@@ -243,12 +243,12 @@ Tactic "Scripted proof (2)"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dai Gan Xia Zhan JSC14 Ex. 2".
+ArchiveEntry "Benchmarks/Nonlinear/Dai Gan Xia Zhan JSC14 Ex. 2".
 
 Description "Example 2".
 Citation "Liyun Dai, Ting Gan, Bican Xia, Naijun Zhan. Barrier certificates revisited. J. Symb. Comput.".
@@ -276,12 +276,12 @@ Tactic "Scripted proof".
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dai Gan Xia Zhan JSC14 Ex. 5".
+ArchiveEntry "Benchmarks/Nonlinear/Dai Gan Xia Zhan JSC14 Ex. 5".
 
 Description "Example 5".
 Citation "Liyun Dai, Ting Gan, Bican Xia, Naijun Zhan. Barrier certificates revisited. J. Symb. Comput.".
@@ -315,12 +315,12 @@ Tactic "Scripted proof".
 End.
 
 Tactic "Autoamted proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Darboux Christoffel Int Goriely page 58".
+ArchiveEntry "Benchmarks/Nonlinear/Darboux Christoffel Int Goriely page 58".
 
 ProgramVariables.
   R x.
@@ -337,7 +337,7 @@ End.
 
 End.
 
-ArchiveEntry "Djaballah Chapoutot Kieffer Bouissou 2017 Ex. 2".
+ArchiveEntry "Benchmarks/Nonlinear/Djaballah Chapoutot Kieffer Bouissou 2017 Ex. 2".
 
 Description "Example 2, p. 293".
 Citation "Adel Djaballah, Alexandre Chapoutot, Michel Kieffer, Olivier Bouissou. Construction of parametric barrier functions for dynamical systems using interval analysis. Automatica 78 (2017) 287–296.".
@@ -367,12 +367,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dumortier Llibre Artes Ex. 10_11".
+ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 10_11".
 
 Description "Exercise 10.11".
 Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
@@ -392,7 +392,7 @@ End.
 
 End.
 
-ArchiveEntry "Dumortier Llibre Artes Ex. 10_11b".
+ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 10_11b".
 
 Description "Exercise 10.11b".
 Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
@@ -418,12 +418,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dumortier Llibre Artes Ex. 10_15_i".
+ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 10_15_i".
 
 Description "Exercise 10.15".
 Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
@@ -450,12 +450,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dumortier Llibre Artes Ex. 10_15_ii".
+ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 10_15_ii".
 
 Description "Exercise 10.15 (modified)".
 Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
@@ -482,12 +482,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dumortier Llibre Artes Ex. 10_9".
+ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 10_9".
 
 Description "Exercise 10.9".
 Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
@@ -513,12 +513,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dumortier Llibre Artes Ex. 1_11a".
+ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 1_11a".
 
 Description "Exercise 1.11".
 Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
@@ -547,12 +547,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dumortier Llibre Artes Ex. 1_9a".
+ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 1_9a".
 
 Description "Example 1.9a".
 Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
@@ -581,12 +581,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dumortier Llibre Artes Ex. 5_2".
+ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 5_2".
 
 Description "Example 5.2".
 Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
@@ -623,12 +623,12 @@ Tactic "Scripted proof (2) fails".
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dumortier Llibre Artes Ex. 5_2_ii".
+ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 5_2_ii".
 
 Description "Exercise 5.2 ii".
 Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
@@ -654,12 +654,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Fitzhugh Nagumo Ben Sassi Girard 2".
+ArchiveEntry "Benchmarks/Nonlinear/Fitzhugh Nagumo Ben Sassi Girard 2".
 
 Description "Fitzhugh-Nagumo system (modified)".
 Citation "Mohamed Amin Ben Sassi, Antoine Girard, Sriram Sankaranarayanan. Iterative computation of polyhedral invariants sets for polynomial dynamical systems".
@@ -687,12 +687,12 @@ Tactic "Scripted proof".
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Forsman Phd Ex 6_1 page 99".
+ArchiveEntry "Benchmarks/Nonlinear/Forsman Phd Ex 6_1 page 99".
 
 ProgramVariables.
   R x.
@@ -718,12 +718,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Forsman Phd Ex 6_14 page 119".
+ArchiveEntry "Benchmarks/Nonlinear/Forsman Phd Ex 6_14 page 119".
 
 ProgramVariables.
   R x.
@@ -746,12 +746,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Hamiltonian System 1".
+ArchiveEntry "Benchmarks/Nonlinear/Hamiltonian System 1".
 
 ProgramVariables.
   R x.
@@ -786,12 +786,12 @@ Tactic "Scripted proof (2)".
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Hybrid Controller Mode 1".
+ArchiveEntry "Benchmarks/Nonlinear/Hybrid Controller Mode 1".
 
 Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems. CoRR abs/1605.01450 (2016)".
 
@@ -827,12 +827,12 @@ Tactic "Scripted proof (2)".
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Hybrid Controller Mode 2".
+ArchiveEntry "Benchmarks/Nonlinear/Hybrid Controller Mode 2".
 
 Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems. CoRR abs/1605.01450 (2016)".
 
@@ -868,12 +868,12 @@ Tactic "Scripted proof (2)".
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Invariant Clusters Example 6".
+ArchiveEntry "Benchmarks/Nonlinear/Invariant Clusters Example 6".
 
 Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems. CoRR abs/1605.01450 (2016)".
 
@@ -910,12 +910,12 @@ Tactic "Scripted proof (3)".
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Invariant Clusters Example 7".
+ArchiveEntry "Benchmarks/Nonlinear/Invariant Clusters Example 7".
 
 Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems. CoRR abs/1605.01450 (2016)".
 
@@ -958,12 +958,12 @@ Tactic "Scripted proof (2)".
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Locally stable nonlinear system".
+ArchiveEntry "Benchmarks/Nonlinear/Locally stable nonlinear system".
 
 ProgramVariables.
  R x.   /* x-coordinate */
@@ -987,12 +987,12 @@ Tactic "Scripted proof".
 End.
 
 Tactic "Automated proof".
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "MIT astronautics Lyapunov".
+ArchiveEntry "Benchmarks/Nonlinear/MIT astronautics Lyapunov".
 
 ProgramVariables.
  R x.   /* x-coordinate */
@@ -1009,7 +1009,7 @@ End.
 
 End.
 
-ArchiveEntry "Man Maccallum Goriely Page 57".
+ArchiveEntry "Benchmarks/Nonlinear/Man Maccallum Goriely Page 57".
 
 ProgramVariables.
   R x.
@@ -1032,12 +1032,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Nonlinear Circuit Example 3".
+ArchiveEntry "Benchmarks/Nonlinear/Nonlinear Circuit Example 3".
 
 Citation "Mohamed H. Zaki, William Denman, Sofiène Tahar, Guy Bois. Integrating Abstraction Techniques for Formal Verification of Analog Designs".
 
@@ -1062,12 +1062,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Nonlinear Circuit Example 4".
+ArchiveEntry "Benchmarks/Nonlinear/Nonlinear Circuit Example 4".
 
 Citation "Mohamed H. Zaki, William Denman, Sofiène Tahar, Guy Bois. Integrating Abstraction Techniques for Formal Verification of Analog Designs".
 
@@ -1086,7 +1086,7 @@ End.
 
 End.
 
-ArchiveEntry "Nonlinear Circuit RLC Circuit Oscillator".
+ArchiveEntry "Benchmarks/Nonlinear/Nonlinear Circuit RLC Circuit Oscillator".
 
 Citation "Mohamed H. Zaki, William Denman, Sofiène Tahar, Guy Bois. Integrating Abstraction Techniques for Formal Verification of Analog Designs".
 
@@ -1117,13 +1117,13 @@ Tactic "Scripted proof (2)".
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
 
-ArchiveEntry "Prajna PhD Thesis 2-4-1 Page 31 (Variant)".
+ArchiveEntry "Benchmarks/Nonlinear/Prajna PhD Thesis 2-4-1 Page 31 (Variant)".
 
 Description "Variant of Page 31 with x'=x instead of x'=y".
 Citation "Prajna, Stephen (2005) Optimization-based methods for nonlinear and hybrid systems verification. Dissertation (Ph.D.), California Institute of Technology.".
@@ -1150,12 +1150,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Stable Limit Cycle 2".
+ArchiveEntry "Benchmarks/Nonlinear/Stable Limit Cycle 2".
 
 ProgramVariables.
   R a.
@@ -1178,12 +1178,12 @@ Tactic "Scripted proof".
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Strogatz Example 6_3_2".
+ArchiveEntry "Benchmarks/Nonlinear/Strogatz Example 6_3_2".
 
 Description "Example 6.3.2".
 Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
@@ -1209,12 +1209,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Strogatz Example 6_8_3".
+ArchiveEntry "Benchmarks/Nonlinear/Strogatz Example 6_8_3".
 
 Description "Example 6.8.3".
 Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
@@ -1240,12 +1240,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Strogatz Exercise 6_1_5".
+ArchiveEntry "Benchmarks/Nonlinear/Strogatz Exercise 6_1_5".
 
 Description "Exercise 6.1.5".
 Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
@@ -1282,12 +1282,12 @@ Tactic "Scripted proof (2)".
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Strogatz Exercise 6_1_9 Dipole".
+ArchiveEntry "Benchmarks/Nonlinear/Strogatz Exercise 6_1_9 Dipole".
 
 Description "Exercise 6.1.9".
 Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
@@ -1313,12 +1313,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Strogatz Exercise 6_6_1 Reversible System".
+ArchiveEntry "Benchmarks/Nonlinear/Strogatz Exercise 6_6_1 Reversible System".
 
 Description "Exercise 6.6.1".
 Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
@@ -1347,12 +1347,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Strogatz Exercise 6_6_2 Limit Cycle".
+ArchiveEntry "Benchmarks/Nonlinear/Strogatz Exercise 6_6_2 Limit Cycle".
 
 Description "Exercise 6.6.2".
 Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
@@ -1389,12 +1389,12 @@ Tactic "Scripted proof (2)".
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Strogatz Exercise 7_3_5".
+ArchiveEntry "Benchmarks/Nonlinear/Strogatz Exercise 7_3_5".
 
 Description "Exercise 7.3.5".
 Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
@@ -1431,12 +1431,12 @@ Tactic "Scripted proof (2)".
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Unstable Unit Circle 2".
+ArchiveEntry "Benchmarks/Nonlinear/Unstable Unit Circle 2".
 
 ProgramVariables.
   R b.
@@ -1459,12 +1459,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Wien bridge oscillator".
+ArchiveEntry "Benchmarks/Nonlinear/Wien bridge oscillator".
 
 ProgramVariables.
  R x.   /* x-coordinate */
@@ -1492,12 +1492,12 @@ Tactic "Scripted proof (2)".
 End.
 
 Tactic "Automated proof".
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Wiggins Example 17_1_2".
+ArchiveEntry "Benchmarks/Nonlinear/Wiggins Example 17_1_2".
 
 ProgramVariables.
   R x.
@@ -1520,12 +1520,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Wiggins Example 18_7_3_n".
+ArchiveEntry "Benchmarks/Nonlinear/Wiggins Example 18_7_3_n".
 
 ProgramVariables.
   R x.
@@ -1548,12 +1548,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "ZYLZCL Example C1".
+ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C1".
 
 Description "Example C1 (initial set expanded)".
 Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of Nonlinear Hybrid Systems Based on Bilinear Programming.".
@@ -1585,12 +1585,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "ZYLZCL Example C3".
+ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C3".
 
 Description "Example C3".
 Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of Nonlinear Hybrid Systems Based on Bilinear Programming.".
@@ -1622,12 +1622,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "ZYLZCL Example C4".
+ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C4".
 
 Description "Example C4".
 Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of Nonlinear Hybrid Systems Based on Bilinear Programming.".
@@ -1659,12 +1659,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "ZYLZCL Example C6".
+ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C6".
 
 Description "Example C6".
 Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of Nonlinear Hybrid Systems Based on Bilinear Programming.".
@@ -1696,12 +1696,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "ZYLZCL Example C7".
+ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C7".
 
 Description "Example C7".
 Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of Nonlinear Hybrid Systems Based on Bilinear Programming.".
@@ -1733,12 +1733,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "ZYLZCL Example C8".
+ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C8".
 
 Description "Example C8".
 Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of Nonlinear Hybrid Systems Based on Bilinear Programming.".
@@ -1770,12 +1770,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Papachristodoulou Prajna 2002: Example 2 (Chemical Oscillator)"
+ArchiveEntry "Benchmarks/Nonlinear/Papachristodoulou Prajna 2002: Example 2 (Chemical Oscillator)"
 
 Citation "Antonis Papachristodoulou, Stephen Prajna. On the Construction of Lyapunov Functions using the Sum of Squares Decomposition. 2002.".
 Link "https://doi.org/10.1109/CDC.2002.1184414".
@@ -1799,7 +1799,7 @@ End.
 
 End.
 
-ArchiveEntry "Prajna PhD Thesis 2-4-1 Page 31".
+ArchiveEntry "Benchmarks/Nonlinear/Prajna PhD Thesis 2-4-1 Page 31".
 
 Description "Page 31".
 Citation "Prajna, Stephen (2005) Optimization-based methods for nonlinear and hybrid systems verification. Dissertation (Ph.D.), California Institute of Technology.".
@@ -1820,7 +1820,7 @@ End.
 
 End.
 
-ArchiveEntry "Ferragut Giacomini 2010: Example 1"
+ArchiveEntry "Benchmarks/Nonlinear/Ferragut Giacomini 2010: Example 1"
 
 Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields. Qual. Theory Dyn. Syst. (2010)".
 
@@ -1839,7 +1839,7 @@ End.
 
 End.
 
-ArchiveEntry "Ferragut Giacomini 2010: Example 1 (Variant)"
+ArchiveEntry "Benchmarks/Nonlinear/Ferragut Giacomini 2010: Example 1 (Variant)"
 
 Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields. Qual. Theory Dyn. Syst. (2010)".
 
@@ -1858,7 +1858,7 @@ End.
 
 End.
 
-ArchiveEntry "Ferragut Giacomini 2010: Example 2"
+ArchiveEntry "Benchmarks/Nonlinear/Ferragut Giacomini 2010: Example 2"
 
 Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields. Qual. Theory Dyn. Syst. (2010)".
 
@@ -1875,7 +1875,7 @@ End.
 
 End.
 
-ArchiveEntry "Ferragut Giacomini 2010: Example 2 (Variant)"
+ArchiveEntry "Benchmarks/Nonlinear/Ferragut Giacomini 2010: Example 2 (Variant)"
 
 Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields. Qual. Theory Dyn. Syst. (2010)".
 
@@ -1901,12 +1901,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Ferragut Giacomini 2010: Example 3"
+ArchiveEntry "Benchmarks/Nonlinear/Ferragut Giacomini 2010: Example 3"
 
 Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields. Qual. Theory Dyn. Syst. (2010)".
 
@@ -1929,12 +1929,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Ferragut Giacomini 2010: Example 4"
+ArchiveEntry "Benchmarks/Nonlinear/Ferragut Giacomini 2010: Example 4"
 
 Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields. Qual. Theory Dyn. Syst. (2010)".
 
@@ -1953,7 +1953,7 @@ End.
 
 End.
 
-ArchiveEntry "Ferragut Giacomini 2010: Example 5"
+ArchiveEntry "Benchmarks/Nonlinear/Ferragut Giacomini 2010: Example 5"
 
 Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields. Qual. Theory Dyn. Syst. (2010)".
 
@@ -1979,12 +1979,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Ferragut Giacomini 2010: Example 5 (Variant 1)"
+ArchiveEntry "Benchmarks/Nonlinear/Ferragut Giacomini 2010: Example 5 (Variant 1)"
 
 Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields. Qual. Theory Dyn. Syst. (2010)".
 
@@ -2013,12 +2013,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Ferragut Giacomini 2010: Example 5 (Variant 2)"
+ArchiveEntry "Benchmarks/Nonlinear/Ferragut Giacomini 2010: Example 5 (Variant 2)"
 
 Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields. Qual. Theory Dyn. Syst. (2010)".
 
@@ -2044,13 +2044,13 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
 
-ArchiveEntry "Yang Wu Lin 2020: Benchmark C1"
+ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C1"
 
 Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C1".
 
@@ -2070,7 +2070,7 @@ End.
 
 End.
 
-ArchiveEntry "Yang Wu Lin 2020: Benchmark C1 (Nonparametric)"
+ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C1 (Nonparametric)"
 
 Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C1".
 
@@ -2091,7 +2091,7 @@ End.
 End.
 
 
-ArchiveEntry "Yang Wu Lin 2020: Benchmark C2"
+ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C2"
 
 Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C2".
 
@@ -2111,7 +2111,7 @@ End.
 
 End.
 
-ArchiveEntry "Yang Wu Lin 2020: Benchmark C2 (Nonparametric)"
+ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C2 (Nonparametric)"
 
 Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C2".
 
@@ -2138,12 +2138,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Djaballah Chapoutot Kieffer Bouissou 2017: Example 3"
+ArchiveEntry "Benchmarks/Nonlinear/Djaballah Chapoutot Kieffer Bouissou 2017: Example 3"
 
 Description "Example 3, p. 293".
 Citation "Adel Djaballah, Alexandre Chapoutot, Michel Kieffer, Olivier Bouissou. Construction of parametric barrier functions for dynamical systems using interval analysis. Automatica 78 (2017) 287–296.".
@@ -2168,12 +2168,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Djaballah Chapoutot Kieffer Bouissou 2017: Example 5"
+ArchiveEntry "Benchmarks/Nonlinear/Djaballah Chapoutot Kieffer Bouissou 2017: Example 5"
 
 Description "Example 5, p. 293".
 Citation "Adel Djaballah, Alexandre Chapoutot, Michel Kieffer, Olivier Bouissou. Construction of parametric barrier functions for dynamical systems using interval analysis. Automatica 78 (2017) 287–296.".
@@ -2199,7 +2199,7 @@ End.
 
 /* 3D Problems */
 
-ArchiveEntry "3D Lotka Volterra (I)".
+ArchiveEntry "Benchmarks/Nonlinear/3D Lotka Volterra (I)".
 
 Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems. CoRR abs/1605.01450 (2016)".
 
@@ -2242,12 +2242,12 @@ Tactic "Scripted proof (2)".
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "3D Lotka Volterra (II)".
+ArchiveEntry "Benchmarks/Nonlinear/3D Lotka Volterra (II)".
 
 Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems. CoRR abs/1605.01450 (2016)".
 
@@ -2285,12 +2285,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "3D Lotka Volterra (III)".
+ArchiveEntry "Benchmarks/Nonlinear/3D Lotka Volterra (III)".
 
 Citation "Sriram Sankaranarayanan. Automatic Invariant Generation For Hybrid Systems Using Ideal Fixed Points".
 
@@ -2321,12 +2321,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Alongi Nelson Ex_4_1_9 page 143".
+ArchiveEntry "Benchmarks/Nonlinear/Alongi Nelson Ex_4_1_9 page 143".
 
 Description "Ex 4.1.9 Page 143".
 Citation "John M. Alongi and Gail S. Nelson. Recurrence and Topology".
@@ -2359,12 +2359,12 @@ Tactic "Scripted proof (2)"
 End.
 
 Tactic "Automated proof".
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Constraint-based Example 8 (Phytoplankton Growth)".
+ArchiveEntry "Benchmarks/Nonlinear/Constraint-based Example 8 (Phytoplankton Growth)".
 
 Citation "Sumit Gulwani and Ashish Tiwari. Constraint-based Approach for Analysis of Hybrid Systems".
 
@@ -2399,12 +2399,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Invariant 3-dim sphere".
+ArchiveEntry "Benchmarks/Nonlinear/Invariant 3-dim sphere".
 
 ProgramVariables.
   R x.
@@ -2428,12 +2428,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Invariant Clusters Example 4".
+ArchiveEntry "Benchmarks/Nonlinear/Invariant Clusters Example 4".
 
 Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems. CoRR abs/1605.01450 (2016)".
 
@@ -2467,12 +2467,12 @@ Tactic "Scripted proof (2)".
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Invariant Clusters Example 5".
+ArchiveEntry "Benchmarks/Nonlinear/Invariant Clusters Example 5".
 
 Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems. CoRR abs/1605.01450 (2016)".
 
@@ -2498,12 +2498,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Looping Particle".
+ArchiveEntry "Benchmarks/Nonlinear/Looping Particle".
 
 Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems. CoRR abs/1605.01450 (2016)".
 
@@ -2549,12 +2549,12 @@ Tactic "Scripted proof (3)"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Shimizu Morioka System".
+ArchiveEntry "Benchmarks/Nonlinear/Shimizu Morioka System".
 
 ProgramVariables.
   R x.
@@ -2574,12 +2574,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "ZYLZCL Example C2".
+ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C2".
 
 Description "Example C2".
 Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of Nonlinear Hybrid Systems Based on Bilinear Programming.".
@@ -2615,12 +2615,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Yang Wu Lin 2020: Benchmark C3"
+ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C3"
 
 Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C3".
 
@@ -2642,7 +2642,7 @@ End.
 
 End.
 
-ArchiveEntry "Yang Wu Lin 2020: Benchmark C3 (Nonparametric)"
+ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C3 (Nonparametric)"
 
 Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C3".
 
@@ -2668,12 +2668,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Yang Wu Lin 2020: Benchmark C4"
+ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C4"
 
 Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C4".
 
@@ -2693,7 +2693,7 @@ End.
 
 End.
 
-ArchiveEntry "Yang Wu Lin 2020: Benchmark C4 (Nonparametric)"
+ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C4 (Nonparametric)"
 
 Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C4".
 
@@ -2719,12 +2719,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Gorbuzov Pranevich 2012: Example 1.2"
+ArchiveEntry "Benchmarks/Nonlinear/Gorbuzov Pranevich 2012: Example 1.2"
 
 Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems. ".
 
@@ -2746,12 +2746,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Gorbuzov Pranevich 2012: Example 1.4"
+ArchiveEntry "Benchmarks/Nonlinear/Gorbuzov Pranevich 2012: Example 1.4"
 
 Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems. ".
 
@@ -2776,12 +2776,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Gorbuzov Pranevich 2012: Example 1.5 Variant 1"
+ArchiveEntry "Benchmarks/Nonlinear/Gorbuzov Pranevich 2012: Example 1.5 Variant 1"
 
 Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems. ".
 
@@ -2807,12 +2807,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Gorbuzov Pranevich 2012: Example 1.5 Variant 2"
+ArchiveEntry "Benchmarks/Nonlinear/Gorbuzov Pranevich 2012: Example 1.5 Variant 2"
 
 Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems. ".
 
@@ -2837,12 +2837,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Gorbuzov Pranevich 2012: Example 1.5 Variant 3"
+ArchiveEntry "Benchmarks/Nonlinear/Gorbuzov Pranevich 2012: Example 1.5 Variant 3"
 
 Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems. ".
 
@@ -2874,13 +2874,13 @@ Tactic "Scripted proof (2)"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
 
-ArchiveEntry "Djaballah Chapoutot Kieffer Bouissou 2017: Example 7"
+ArchiveEntry "Benchmarks/Nonlinear/Djaballah Chapoutot Kieffer Bouissou 2017: Example 7"
 
 Description "Example 7, p. 293".
 Citation "Adel Djaballah, Alexandre Chapoutot, Michel Kieffer, Olivier Bouissou. Construction of parametric barrier functions for dynamical systems using interval analysis. Automatica 78 (2017) 287–296.".
@@ -2899,7 +2899,7 @@ End.
 
 End.
 
-ArchiveEntry "Llibre Zhang 2002: Lorenz System (Parametric)"
+ArchiveEntry "Benchmarks/Nonlinear/Llibre Zhang 2002: Lorenz System (Parametric)"
 
 Citation "Jaume Llibre, Xiang Zhang. On the invariant algebraic surfaces of the Lorenz systems. J. Math. Phys. 43, 1622 (2002)".
 Link "https://doi.org/10.1063/1.1435078".
@@ -2930,12 +2930,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Llibre Zhang 2002: Lorenz System (p. 1623 b=2s Variant s=1 r=1)"
+ArchiveEntry "Benchmarks/Nonlinear/Llibre Zhang 2002: Lorenz System (p. 1623 b=2s Variant s=1 r=1)"
 
 Citation "Jaume Llibre, Xiang Zhang. On the invariant algebraic surfaces of the Lorenz systems. J. Math. Phys. 43, 1622 (2002)".
 Link "https://doi.org/10.1063/1.1435078".
@@ -2966,12 +2966,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Llibre Zhang 2002: Lorenz System (p. 1623 b=0 s=0.33)"
+ArchiveEntry "Benchmarks/Nonlinear/Llibre Zhang 2002: Lorenz System (p. 1623 b=0 s=0.33)"
 
 Citation "Jaume Llibre, Xiang Zhang. On the invariant algebraic surfaces of the Lorenz systems. J. Math. Phys. 43, 1622 (2002)".
 Link "https://doi.org/10.1063/1.1435078".
@@ -3003,13 +3003,13 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
 
-ArchiveEntry "Llibre Zhang 2002: Lorenz System (p. 1623 b=0 s=0.33 Variant r=1)"
+ArchiveEntry "Benchmarks/Nonlinear/Llibre Zhang 2002: Lorenz System (p. 1623 b=0 s=0.33 Variant r=1)"
 
 Citation "Jaume Llibre, Xiang Zhang. On the invariant algebraic surfaces of the Lorenz systems. J. Math. Phys. 43, 1622 (2002)".
 Link "https://doi.org/10.1063/1.1435078".
@@ -3040,12 +3040,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Llibre Zhang 2002: Lorenz System (p. 1623 b=1 r=0)"
+ArchiveEntry "Benchmarks/Nonlinear/Llibre Zhang 2002: Lorenz System (p. 1623 b=1 r=0)"
 
 Citation "Jaume Llibre, Xiang Zhang. On the invariant algebraic surfaces of the Lorenz systems. J. Math. Phys. 43, 1622 (2002)".
 Link "https://doi.org/10.1063/1.1435078".
@@ -3076,12 +3076,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Llibre Zhang 2002: Lorenz System (p. 1623 b=1 r=0 Variant s=1)"
+ArchiveEntry "Benchmarks/Nonlinear/Llibre Zhang 2002: Lorenz System (p. 1623 b=1 r=0 Variant s=1)"
 
 Citation "Jaume Llibre, Xiang Zhang. On the invariant algebraic surfaces of the Lorenz systems. J. Math. Phys. 43, 1622 (2002)".
 Link "https://doi.org/10.1063/1.1435078".
@@ -3119,7 +3119,7 @@ Tactic "Scripted proof (2)"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
@@ -3128,7 +3128,7 @@ End.
 
 /* 4 D */
 
-ArchiveEntry "Coupled Spring-Mass System (I)".
+ArchiveEntry "Benchmarks/Nonlinear/Coupled Spring-Mass System (I)".
 
 Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems. CoRR abs/1605.01450 (2016)".
 
@@ -3189,12 +3189,12 @@ Tactic "Scripted proof (2)"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Coupled Spring-Mass System (II)".
+ArchiveEntry "Benchmarks/Nonlinear/Coupled Spring-Mass System (II)".
 
 Citation "Sriram Sankaranarayanan. Automatic Invariant Generation For Hybrid Systems Using Ideal Fixed Points".
 
@@ -3227,7 +3227,7 @@ End.
 
 End.
 
-ArchiveEntry "Damped Mathieu System".
+ArchiveEntry "Benchmarks/Nonlinear/Damped Mathieu System".
 
 Citation "James Kapinski, Jyotirmoy V. Deshmukh, Sriram Sankaranarayanan, and Nikos Arechiga. 2014. Simulation-guided Lyapunov analysis for hybrid dynamical systems. In Proceedings of the 17th International Conference on Hybrid systems: computation and control (HSCC '14). ACM, New York, NY, USA, 133-142. DOI=http://dx.doi.org/10.1145/2562059.2562139".
 
@@ -3259,12 +3259,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Flight Maneuvers (I)".
+ArchiveEntry "Benchmarks/Nonlinear/Flight Maneuvers (I)".
 
 Citation "Khalil Ghorbal, Jean-Baptiste Jeannin, Erik Zawadzki, André Platzer, Geoffrey J. Gordon, and Peter Capell. Hybrid Theorem Proving of Aerospace Systems: Applications and Challenges".
 
@@ -3291,7 +3291,7 @@ End.
 
 End.
 
-ArchiveEntry "Gorbuzov Pranevich 2012: Example 1.1"
+ArchiveEntry "Benchmarks/Nonlinear/Gorbuzov Pranevich 2012: Example 1.1"
 
 Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems.".
 
@@ -3316,12 +3316,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Gorbuzov Pranevich 2012: Example 1.3 Variant 1"
+ArchiveEntry "Benchmarks/Nonlinear/Gorbuzov Pranevich 2012: Example 1.3 Variant 1"
 
 Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems. ".
 
@@ -3355,12 +3355,12 @@ Tactic "Scripted proof (2)"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Gorbuzov Pranevich 2012: Example 1.3 Variant 2"
+ArchiveEntry "Benchmarks/Nonlinear/Gorbuzov Pranevich 2012: Example 1.3 Variant 2"
 
 Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems. ".
 
@@ -3386,12 +3386,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Yang Wu Lin 2020: Benchmark C5"
+ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C5"
 
 Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C5".
 
@@ -3411,7 +3411,7 @@ End.
 
 End.
 
-ArchiveEntry "Yang Wu Lin 2020: Benchmark C5 (Nonparametric)"
+ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C5 (Nonparametric)"
 
 Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C5".
 
@@ -3431,7 +3431,7 @@ End.
 
 End.
 
-ArchiveEntry "Yang Wu Lin 2020: Benchmark C6"
+ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C6"
 
 Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C6".
 
@@ -3459,7 +3459,7 @@ End.
 
 End.
 
-ArchiveEntry "Yang Wu Lin 2020: Benchmark C6 (Nonparametric)"
+ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C6 (Nonparametric)"
 
 Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C6".
 
@@ -3486,7 +3486,7 @@ End.
 
 End.
 
-ArchiveEntry "Papachristodoulou Prajna 2002: Example 3 (Whirling Pendulum)"
+ArchiveEntry "Benchmarks/Nonlinear/Papachristodoulou Prajna 2002: Example 3 (Whirling Pendulum)"
 
 Citation "Antonis Papachristodoulou, Stephen Prajna. On the Construction of Lyapunov Functions using the Sum of Squares Decomposition. 2002.".
 Link "https://doi.org/10.1109/CDC.2002.1184414".
@@ -3521,12 +3521,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Lunar lander descent guidance (slow descent low thrust)".
+ArchiveEntry "Benchmarks/Nonlinear/Lunar lander descent guidance (slow descent low thrust)".
 
 Citation "Hengjun Zhao, Mengfei Yang, Naijun Zhan, Bin Gu, Liang Zou, Yao Chen. Formal Verification of a Descent Guidance Control Program of a Lunar Lander. FM 2014.".
 
@@ -3570,7 +3570,7 @@ End.
 
 End.
 
-ArchiveEntry "Lunar lander descent guidance (slow descent high thrust)".
+ArchiveEntry "Benchmarks/Nonlinear/Lunar lander descent guidance (slow descent high thrust)".
 
 Citation "Hengjun Zhao, Mengfei Yang, Naijun Zhan, Bin Gu, Liang Zou, Yao Chen. Formal Verification of a Descent Guidance Control Program of a Lunar Lander. FM 2014.".
 
@@ -3616,7 +3616,7 @@ End.
 
 /* 5D */
 
-ArchiveEntry "Gorbuzov Pranevich 2012: Example 1.13"
+ArchiveEntry "Benchmarks/Nonlinear/Gorbuzov Pranevich 2012: Example 1.13"
 
 Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems. ".
 
@@ -3638,7 +3638,7 @@ End.
 
 End.
 
-ArchiveEntry "Space Craft: Collision Avoidance"
+ArchiveEntry "Benchmarks/Nonlinear/Space Craft: Collision Avoidance"
 
 Citation "Fabian Immler, Matthias Althoff, Xin Chen, Chuchu Fan, Goran Frehse, Niklas Kochdumper, Yangge Li, Sayan Mitra, Mahendra Singh Tomar, and Majid Zamani. ARCH-COMP18 Category Report: Continuous and Hybrid Systems with Nonlinear Dynamics".
 
@@ -3678,7 +3678,7 @@ End.
 
 /* 6D */
 
-ArchiveEntry "Yang Wu Lin 2020: Benchmark C7"
+ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C7"
 
 Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C7".
 
@@ -3708,7 +3708,7 @@ End.
 
 End.
 
-ArchiveEntry "Yang Wu Lin 2020: Benchmark C7 (Nonparametric)"
+ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C7 (Nonparametric)"
 
 Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C7".
 
@@ -3738,7 +3738,7 @@ End.
 
 End.
 
-ArchiveEntry "Gorbuzov Pranevich 2012: Example 1.6"
+ArchiveEntry "Benchmarks/Nonlinear/Gorbuzov Pranevich 2012: Example 1.6"
 
 Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems. ".
 
@@ -3769,12 +3769,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Djaballah Chapoutot Kieffer Bouissou 2017: Example 8"
+ArchiveEntry "Benchmarks/Nonlinear/Djaballah Chapoutot Kieffer Bouissou 2017: Example 8"
 
 Description "Example 8, p. 293".
 Citation "Adel Djaballah, Alexandre Chapoutot, Michel Kieffer, Olivier Bouissou. Construction of parametric barrier functions for dynamical systems using interval analysis. Automatica 78 (2017) 287–296. From Antonis Papachristodoulou, Stephen Prajna. On the Construction of Lyapunov Functions using the Sum of Squares Decomposition. 2002. (Example 1)".
@@ -3807,7 +3807,7 @@ End.
 
 /* 7 D */
 
-ArchiveEntry "ZYLZCL Example C9".
+ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C9".
 
 Description "Example C9".
 Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of Nonlinear Hybrid Systems Based on Bilinear Programming.".
@@ -3867,13 +3867,13 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
 /* 8 D */
-ArchiveEntry "Collision Avoidance Maneuver (I)".
+ArchiveEntry "Benchmarks/Nonlinear/Collision Avoidance Maneuver (I)".
 
 Citation "Sriram Sankaranarayanan. Automatic Invariant Generation For Hybrid Systems Using Ideal Fixed Points".
 
@@ -3942,12 +3942,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "ATC: 2 Aircraft Tangential Roundabout Maneuver (ODE)".
+ArchiveEntry "Benchmarks/Nonlinear/ATC: 2 Aircraft Tangential Roundabout Maneuver (ODE)".
 
 Description "Essentials of Tangential Roundabout Maneuver (TRM) in Air Traffic Control (ATC)".
 Citation "Andre Platzer. Differential-algebraic dynamic logic for differential-algebraic programs. Journal of Logic and Computation, 20(1), pages 309-352, 2010.".
@@ -3993,12 +3993,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Collision Avoidance Maneuver (II)".
+ArchiveEntry "Benchmarks/Nonlinear/Collision Avoidance Maneuver (II)".
 
 Citation "Jiang Liu, Naijun Zhan, Hengjun Zhao. Computing Semi-algebraic Invariants for Polynomial Dynamical Systems".
 
@@ -4060,12 +4060,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Collision Avoidance Maneuver (III)".
+ArchiveEntry "Benchmarks/Nonlinear/Collision Avoidance Maneuver (III)".
 
 Citation "Khalil Ghorbal and André Platzer. Characterizing algebraic invariants by differential radical invariants. In Erika Ábrahám and Klaus Havelund, editors, Tools and Algorithms for the Construction and Analysis of Systems, TACAS 2014, Proceedings, volume 8413 of LNCS, pp. 279-294. Springer, 2014.".
 
@@ -4103,7 +4103,7 @@ End.
 
 End.
 
-ArchiveEntry "Laub-Loomis".
+ArchiveEntry "Benchmarks/Nonlinear/Laub-Loomis".
 
 Citation "Fabian Immler, Matthias Althoff, Xin Chen, Chuchu Fan, Goran Frehse, Niklas Kochdumper, Yangge Li, Sayan Mitra, Mahendra Singh Tomar, and Majid Zamani. ARCH-COMP18 Category Report: Continuous and Hybrid Systems with Nonlinear Dynamics".
 
@@ -4142,7 +4142,7 @@ End.
 
 /* 9 D */
 
-ArchiveEntry "Planar 2-body problem".
+ArchiveEntry "Benchmarks/Nonlinear/Planar 2-body problem".
 
 Definitions.
   R m.
@@ -4181,7 +4181,7 @@ End.
 
 End.
 
-ArchiveEntry "ZYLZCL Example C10".
+ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C10".
 
 Description "Example C10".
 Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of Nonlinear Hybrid Systems Based on Bilinear Programming.".
@@ -4252,14 +4252,14 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
 /* 12D */
 
-ArchiveEntry "ATC: 3 Aircraft Tangential Roundabout Maneuver (ODE)".
+ArchiveEntry "Benchmarks/Nonlinear/ATC: 3 Aircraft Tangential Roundabout Maneuver (ODE)".
 
 Description "Essentials of Tangential Roundabout Maneuver (TRM) in Air Traffic Control (ATC)".
 Citation "Andre Platzer. Differential-algebraic dynamic logic for differential-algebraic programs. Journal of Logic and Computation, 20(1), pages 309-352, 2010.".
@@ -4319,14 +4319,14 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
 /* 16D */
 
-ArchiveEntry "ATC: 4 Aircraft Tangential Roundabout Maneuver (ODE)".
+ArchiveEntry "Benchmarks/Nonlinear/ATC: 4 Aircraft Tangential Roundabout Maneuver (ODE)".
 
 Description "Essentials of Tangential Roundabout Maneuver (TRM) in Air Traffic Control (ATC)".
 Citation "Andre Platzer. Differential-algebraic dynamic logic for differential-algebraic programs. Journal of Logic and Computation, 20(1), pages 309-352, 2010.".
@@ -4396,7 +4396,7 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
@@ -4405,7 +4405,7 @@ End.
 
 /* 4 D */
 
-ArchiveEntry "Product of Arrowsmith Place Fig_3_5e page 79 and Dumortier Llibre Artes Ex. 10_9"
+ArchiveEntry "Benchmarks/Nonlinear/Product of Arrowsmith Place Fig_3_5e page 79 and Dumortier Llibre Artes Ex. 10_9"
 
 ProgramVariables
   Real yleft;
@@ -4420,7 +4420,7 @@ End.
 
 End.
 
-ArchiveEntry "Product of Ben Sassi Girard Sankaranarayanan 2014 Fitzhugh-Nagumo and Strogatz Example 6_8_3"
+ArchiveEntry "Benchmarks/Nonlinear/Product of Ben Sassi Girard Sankaranarayanan 2014 Fitzhugh-Nagumo and Strogatz Example 6_8_3"
 
 ProgramVariables
   Real yleft;
@@ -4436,7 +4436,7 @@ End.
 
 End.
 
-ArchiveEntry "Product of Dai Gan Xia Zhan JSC14 Ex. 2 and Fitzhugh Nagumo Ben Sassi Girard 2"
+ArchiveEntry "Benchmarks/Nonlinear/Product of Dai Gan Xia Zhan JSC14 Ex. 2 and Fitzhugh Nagumo Ben Sassi Girard 2"
 
 ProgramVariables
   Real yleft;
@@ -4452,7 +4452,7 @@ End.
 
 End.
 
-ArchiveEntry "Product of Dai Gan Xia Zhan JSC14 Ex. 2 and Strogatz Exercise 6_6_1 Reversible System"
+ArchiveEntry "Benchmarks/Nonlinear/Product of Dai Gan Xia Zhan JSC14 Ex. 2 and Strogatz Exercise 6_6_1 Reversible System"
 
 ProgramVariables
   Real yleft;
@@ -4467,7 +4467,7 @@ End.
 
 End.
 
-ArchiveEntry "Product of Dumortier Llibre Artes Ex. 1_11a and ZYLZCL Example C4"
+ArchiveEntry "Benchmarks/Nonlinear/Product of Dumortier Llibre Artes Ex. 1_11a and ZYLZCL Example C4"
 
 ProgramVariables
   Real yleft;
@@ -4483,7 +4483,7 @@ End.
 
 End.
 
-ArchiveEntry "Product of Forsman Phd Ex 6_1 page 99 and ZYLZCL Example C7"
+ArchiveEntry "Benchmarks/Nonlinear/Product of Forsman Phd Ex 6_1 page 99 and ZYLZCL Example C7"
 
 ProgramVariables
   Real yleft;
@@ -4516,12 +4516,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Product of Hamiltonian System 1 and Nonlinear Circuit Example 4"
+ArchiveEntry "Benchmarks/Nonlinear/Product of Hamiltonian System 1 and Nonlinear Circuit Example 4"
 
 ProgramVariables
   Real yleft;
@@ -4540,7 +4540,7 @@ End.
 
 End.
 
-ArchiveEntry "Product of Man Maccallum Goriely Page 57 and ZYLZCL Example C1"
+ArchiveEntry "Benchmarks/Nonlinear/Product of Man Maccallum Goriely Page 57 and ZYLZCL Example C1"
 
 ProgramVariables
   Real yleft;
@@ -4568,14 +4568,14 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
 /* 5 D */
 
-ArchiveEntry "Product of Arrowsmith Place Fig_3_5e page 79 and 3D Lotka Volterra (I)"
+ArchiveEntry "Benchmarks/Nonlinear/Product of Arrowsmith Place Fig_3_5e page 79 and 3D Lotka Volterra (I)"
 
 ProgramVariables
   Real yleft;
@@ -4592,7 +4592,7 @@ End.
 
 End.
 
-ArchiveEntry "Product of Darboux Christoffel Int Goriely page 58 and Invariant Clusters Example 5"
+ArchiveEntry "Benchmarks/Nonlinear/Product of Darboux Christoffel Int Goriely page 58 and Invariant Clusters Example 5"
 
 ProgramVariables
   Real yleft;
@@ -4608,7 +4608,7 @@ End.
 
 End.
 
-ArchiveEntry "Product of Djaballah Chapoutot Kieffer Bouissou 2015 Ex. 1 and Invariant Clusters Example 4"
+ArchiveEntry "Benchmarks/Nonlinear/Product of Djaballah Chapoutot Kieffer Bouissou 2015 Ex. 1 and Invariant Clusters Example 4"
 
 ProgramVariables
   Real yleft;
@@ -4624,7 +4624,7 @@ End.
 
 End.
 
-ArchiveEntry "Product of Forsman Phd Ex 6_14 page 119 and ZYLZCL Example C2"
+ArchiveEntry "Benchmarks/Nonlinear/Product of Forsman Phd Ex 6_14 page 119 and ZYLZCL Example C2"
 
 ProgramVariables
   Real x3right;
@@ -4641,7 +4641,7 @@ End.
 
 End.
 
-ArchiveEntry "Product of Locally stable nonlinear system and Invariant 3-dim sphere"
+ArchiveEntry "Benchmarks/Nonlinear/Product of Locally stable nonlinear system and Invariant 3-dim sphere"
 
 ProgramVariables
   Real yleft;
@@ -4657,7 +4657,7 @@ End.
 
 End.
 
-ArchiveEntry "Product of Invariant 3-dim sphere and Invariant Clusters Example 4"
+ArchiveEntry "Benchmarks/Nonlinear/Product of Invariant 3-dim sphere and Invariant Clusters Example 4"
 
 ProgramVariables
   Real yleft;

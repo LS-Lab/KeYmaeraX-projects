@@ -1,4 +1,4 @@
-ArchiveEntry "Static semantics correctness: Assignment 1"
+ArchiveEntry "Benchmarks/Basic/Static semantics correctness: Assignment 1"
 
 Description "Basic assignment".
 
@@ -11,16 +11,18 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1); assignb(1); QE
+  implyR('R=="x>=0 -> [x:=x+1;]x>=1");
+  assignb('R=="[x:=x+1;]x>=1");
+  QE
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Static semantics correctness: Assignment 2"
+ArchiveEntry "Benchmarks/Basic/Static semantics correctness: Assignment 2"
 
 Description "Overwrite assignment on some branches".
 
@@ -34,24 +36,35 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  assignb(1.1) ; choiceb(1.1.0.1) ; assignb(1.1.0.1.0) ; assignb(1.1.0.1.1) ; QE
+assignb('R=="x>=0->#[x:=x+1;][x:=x+1;++y:=x+1;]x>=1#");
+choiceb('R=="x_0>=0->\forall x (x=x_0+1->#[x:=x+1;++y:=x+1;]x>=1#)");
+assignb('R=="x_0>=0->\forall x (x=x_0+1->#[x:=x+1;]x>=1#&[y:=x+1;]x>=1)");
+assignb('R=="x_0>=0->\forall x (x=x_0+1->x+1>=1&#[y:=x+1;]x>=1#)");
+QE
 End.
 
 Tactic "Scripted proof (2)"
-  implyR(1) ; assignb(1) ; choiceb(1) ; andR(1) ; <(
-    assignb(1) ; QE,
-    assignb(1) ; QE
-  )
+implyR('R=="x>=0->[x:=x+1;][x:=x+1;++y:=x+1;]x>=1");
+assignb('R=="[x:=x+1;][x:=x+1;++y:=x+1;]x>=1");
+choiceb('R=="[x:=x+1;++y:=x+1;]x>=1");
+andR('R=="[x:=x+1;]x>=1&[y:=x+1;]x>=1"); <(
+  "[x:=x+1;]x>=1":
+    assignb('R=="[x:=x+1;]x>=1");
+    QE,
+  "[y:=x+1;]x>=1":
+    assignb('R=="[y:=x+1;]x>=1");
+    QE
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
 
-ArchiveEntry "Static semantics correctness: Assignment 3"
+ArchiveEntry "Benchmarks/Basic/Static semantics correctness: Assignment 3"
 
 Description "Overwrite assignment in loop".
 
@@ -64,20 +77,25 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  unfold ; loop("x>=1", 1) ; <(
+unfold;
+loop("x>=1", 'R=="[{x:=x+1;}*]x>=1"); <(
+  "Init":
     QE,
+  "Post":
     id,
-    assignb(1) ; QE
-  )
+  "Step":
+    assignb('R=="[x:=x+1;]x>=1");
+    QE
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Static semantics correctness: Assignment 4"
+ArchiveEntry "Benchmarks/Basic/Static semantics correctness: Assignment 4"
 
 Description "Overwrite assignment in ODE".
 
@@ -94,12 +112,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Static semantics correctness: Assignment 5"
+ArchiveEntry "Benchmarks/Basic/Static semantics correctness: Assignment 5"
 
 Description "Overwrite with nondeterministic assignment".
 
@@ -116,12 +134,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Static semantics correctness: Assignment 6"
+ArchiveEntry "Benchmarks/Basic/Static semantics correctness: Assignment 6"
 
 Description "Tests and universal quantification".
 
@@ -135,22 +153,38 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; assignb(1) ; choiceb(1) ; andR(1) ; <(
-    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE,
-    composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; allL("x+1",-2) ; implyL(-2) ; <(
-      QE,
-      id
+implyR('R=="x>=0->[x:=x+1;][?x>=2;x:=x-1;++?\forall x (x>=1->y>=1);x:=y;]x>=1");
+assignb('R=="[x:=x+1;][?x>=2;x:=x-1;++?\forall x (x>=1->y>=1);x:=y;]x>=1");
+choiceb('R=="[?x+1>=2;x:=x+1-1;++?\forall x (x>=1->y>=1);x:=y;]x>=1");
+andR('R=="[?x+1>=2;x:=x+1-1;]x>=1&[?\forall x (x>=1->y>=1);x:=y;]x>=1"); <(
+  "[?x+1>=2;x:=x+1-1;]x>=1":
+    composeb('R=="[?x+1>=2;x:=x+1-1;]x>=1");
+    testb('R=="[?x+1>=2;][x:=x+1-1;]x>=1");
+    implyR('R=="x+1>=2->[x:=x+1-1;]x>=1");
+    assignb('R=="[x:=x+1-1;]x>=1");
+    QE,
+  "[?\forall x (x>=1->y>=1);x:=y;]x>=1":
+    composeb('R=="[?\forall x (x>=1->y>=1);x:=y;]x>=1");
+    testb('R=="[?\forall x (x>=1->y>=1);][x:=y;]x>=1");
+    implyR('R=="\forall x (x>=1->y>=1)->[x:=y;]x>=1");
+    assignb('R=="[x:=y;]x>=1");
+    allL("x+1", 'L=="\forall x (x>=1->y>=1)");
+    implyL('L=="x+1>=1->y>=1"); <(
+      "x+1>=1":
+        QE,
+      "y>=1":
+        id
     )
-  )
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Static semantics correctness: Assignment 7"
+ArchiveEntry "Benchmarks/Basic/Static semantics correctness: Assignment 7"
 
 Description "Overwrite assignment several times".
 
@@ -164,23 +198,35 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; assignb(1) ; choiceb(1) ; andR(1) ; <(
-    loop("x>=1", 1) ; <(
-      QE,
-      assignb(1.1) ; ODE(1),
-      assignb(1) ; QE
+implyR('R=="x>=0&y>=1->[x:=x+1;][{x:=x+1;}*++y:=x+1;][{y'=2}][x:=y;]x>=1");
+assignb('R=="[x:=x+1;][{x:=x+1;}*++y:=x+1;][{y'=2}][x:=y;]x>=1");
+choiceb('R=="[{x:=x+1;}*++y:=x+1;][{y'=2}][x:=y;]x>=1");
+andR('R=="[{x:=x+1;}*][{y'=2}][x:=y;]x>=1&[y:=x+1;][{y'=2}][x:=y;]x>=1"); <(
+  "[{x:=x+1;}*][{y'=2}][x:=y;]x>=1":
+    loop("x>=1", 'R=="[{x:=x+1;}*][{y'=2}][x:=y;]x>=1"); <(
+      "Init":
+        QE,
+      "Post":
+        assignb('R=="[{y'=2}]#[x:=y;]x>=1#");
+        ODE('R=="[{y'=2}]y>=1"),
+      "Step":
+        assignb('R=="[x:=x+1;]x>=1");
+        QE
     ),
-    assignb(1) ; assignb(1.1) ; ODE(1)
-  )
+  "[y:=x+1;][{y'=2}][x:=y;]x>=1":
+    assignb('R=="[y:=x+1;][{y'=2}][x:=y;]x>=1");
+    assignb('R=="[{y'=2}]#[x:=y;]x>=1#");
+    ODE('R=="[{y'=2}]y>=1")
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Static semantics correctness: Assignment 8"
+ArchiveEntry "Benchmarks/Basic/Static semantics correctness: Assignment 8"
 
 Description "Potentially overwrite dynamics".
 
@@ -194,23 +240,34 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; ODE(1) ; dW(1) ; choiceb(1) ; andR(1) ; <(
-    loop("x>0", 1) ; <(
-      QE,
-      prop,
-      assignb(1) ; QE
+implyR('R=="x>0&y>0->[{x'=5}][{x:=x+3;}*++y:=x;](x>0&y>0)");
+ODE('R=="[{x'=5}][{x:=x+3;}*++y:=x;](x>0&y>0)");
+dW('R=="[{x'=5,time_'=1&true&time_>=0&x=5*time_+x_0}][{x:=x+3;}*++y:=x;](x>0&y>0)");
+choiceb('R=="[{x:=x+3;}*++y:=x;](x>0&y>0)");
+andR('R=="[{x:=x+3;}*](x>0&y>0)&[y:=x;](x>0&y>0)"); <(
+  "[{x:=x+3;}*](x>0&y>0)":
+    loop("x>0", 'R=="[{x:=x+3;}*](x>0&y>0)"); <(
+      "Init":
+        QE,
+      "Post":
+        prop,
+      "Step":
+        assignb('R=="[x:=x+3;]x>0");
+        QE
     ),
-    assignb(1) ; QE
-  )
+  "[y:=x;](x>0&y>0)":
+    assignb('R=="[y:=x;](x>0&y>0)");
+    QE
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Static semantics correctness: Assignment 9"
+ArchiveEntry "Benchmarks/Basic/Static semantics correctness: Assignment 9"
 
 Description "Potentially overwrite exponential decay".
 
@@ -224,23 +281,32 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1); ODE(1); dW(1); unfold; <(
-    loop("x>0", 1); <(
-      id,
-      prop,
-      assignb(1) ; QE
+implyR('R=="x>0&y>0->[{x'=-x}][{x:=x+3;}*++y:=x;](x>0&y>0)");
+ODE('R=="[{x'=-x}][{x:=x+3;}*++y:=x;](x>0&y>0)");
+dW('R=="[{x'=-x&x>0}][{x:=x+3;}*++y:=x;](x>0&y>0)");
+unfold; <(
+  "[{x:=x+3;}*](x>0&y>0)":
+    loop("x>0", 'R=="[{x:=x+3;}*](x>0&y>0)"); <(
+      "Init":
+        id,
+      "Post":
+        prop,
+      "Step":
+        assignb('R=="[x:=x+3;]x>0");
+        QE
     ),
+  "[y:=x;](x>0&y>0)":
     prop
-  )
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Cascaded"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Cascaded"
 
 ProgramVariables
   Real x;
@@ -252,16 +318,23 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; composeb(1) ; ODE(1) ; dW(1) ; composeb(1) ; ODE(1) ; dW(1) ; ODE(1)
+implyR('R=="x>0->[{x'=5}{x'=2}{x'=x}]x>0");
+composeb('R=="[{x'=5}{x'=2}{x'=x}]x>0");
+ODE('R=="[{x'=5}][{x'=2}{x'=x}]x>0");
+dW('R=="[{x'=5,time_'=1&true&time_>=0&x=5*time_+x_0}][{x'=2}{x'=x}]x>0");
+composeb('R=="[{x'=2}{x'=x}]x>0");
+ODE('R=="[{x'=2}][{x'=x}]x>0");
+dW('R=="[{x'=2,time__0'=1&true&time__0>=0&x=2*time__0+x_1}][{x'=x}]x>0");
+ODE('R=="[{x'=x}]x>0")
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Single integrator time"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Single integrator time"
 
 ProgramVariables
   Real x;
@@ -276,12 +349,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Single integrator"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Single integrator"
 
 ProgramVariables
   Real x;
@@ -297,12 +370,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Double integrator"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Double integrator"
 
 ProgramVariables
   Real x;
@@ -319,12 +392,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Triple integrator"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Triple integrator"
 
 ProgramVariables
   Real x;
@@ -342,12 +415,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Exponential decay (1)"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Exponential decay (1)"
 
 ProgramVariables
   Real x;
@@ -362,12 +435,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Exponential decay (2)"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Exponential decay (2)"
 
 ProgramVariables
   Real x;
@@ -382,12 +455,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Exponential decay (3)"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Exponential decay (3)"
 
 ProgramVariables
   Real x;
@@ -403,12 +476,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Exponential growth (1)"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Exponential growth (1)"
 
 ProgramVariables
   Real x;
@@ -423,12 +496,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Exponential growth (2)"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Exponential growth (2)"
 
 ProgramVariables
   Real x;
@@ -444,12 +517,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Exponential growth (4)"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Exponential growth (4)"
 
 ProgramVariables
   Real x;
@@ -464,12 +537,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Exponential growth (5)"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Exponential growth (5)"
 
 ProgramVariables
   Real x;
@@ -484,12 +557,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Rotational dynamics (1)"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Rotational dynamics (1)"
 
 ProgramVariables
   Real x;
@@ -505,12 +578,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Rotational dynamics (2)"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Rotational dynamics (2)"
 
 ProgramVariables
   Real x;
@@ -527,12 +600,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Rotational dynamics (3)"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Rotational dynamics (3)"
 
 ProgramVariables
   Real x1;
@@ -553,12 +626,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Spiral to equilibrium"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Spiral to equilibrium"
 
 ProgramVariables
   Real w;
@@ -575,12 +648,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Open cases"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Open cases"
 
 ProgramVariables
   Real x;
@@ -596,12 +669,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Closed cases"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Closed cases"
 
 ProgramVariables
   Real x;
@@ -618,12 +691,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Conserved quantity"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Conserved quantity"
 
 ProgramVariables
   Real x1;
@@ -641,12 +714,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Darboux equality"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Darboux equality"
 
 Definitions
   Real B().
@@ -668,12 +741,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Fractional Darboux equality"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Fractional Darboux equality"
 
 Definitions
   Real B().
@@ -696,7 +769,7 @@ End.
 
 End.
 
-ArchiveEntry "Dynamics: Darboux inequality"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Darboux inequality"
 
 Definitions
   Real B();
@@ -717,12 +790,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Bifurcation"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Bifurcation"
 
 ProgramVariables
   Real r;
@@ -734,47 +807,56 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1);
-  cut("r=0 | r < 0"); <(
-    hideL(-1)
-    ,
-    hideR(1) ; QE
-  );
-  orL(-1); <(
-    existsR("0", 1);
-    implyR(1);
-    dG("{y'=-x*y}", "y*x=0&y>0", 1);
-    existsR("1", 1);
-    boxAnd(1); andR(1); <(
-      dI(1)
-      ,
-      dG("{z'=x/2*z}", "z^2*y=1", 1);
-      existsR("1", 1);
-      dI(1)
-    )
-    ,
-    cut("\exists s r=-s*s"); <(
-      existsL(-2);
-      existsR("-s", 1);
-      implyR(1);
-      dG("{y'=(-(x-s))*y}", "y*(x+s)=0&y>0", 1);
-      existsR("1", 1);
-      boxAnd(1); andR(1); <(
-        dI(1)
-        ,
-        dG("{z'=(x-s)/2*z}", "z^2*y=1", 1);
-        existsR("1", 1);
-        dI(1)
-      ),
-      hideR(1);
-      QE
-    )
-  )
+implyR('R=="r<=0->\exists f (x=f->[{x'=r+x^2}]x=f)");
+cut("r=0|r < 0"); <(
+  "Use":
+    hideL('L=="r<=0");
+    orL('L=="r=0|r < 0"); <(
+      "r=0":
+        existsR("0", 'R=="\exists f (x=f->[{x'=r+x^2}]x=f)");
+        implyR('R=="x=0->[{x'=r+x^2}]x=0");
+        dG("{y'=-x*y}", "y*x=0&y>0", 'R=="[{x'=r+x^2}]x=0");
+        existsR("1", 'R=="\exists y [{x'=r+x^2,y'=(-x)*y+0}](y*x=0&y>0)");
+        boxAnd('R=="[{x'=r+x^2,y'=(-x)*y+0}](y*x=0&y>0)");
+        andR('R=="[{x'=r+x^2,y'=(-x)*y+0}]y*x=0&[{x'=r+x^2,y'=(-x)*y+0}]y>0"); <(
+          "[{x'=r+x^2,y'=(-x)*y+0}]y*x=0":
+            dI('R=="[{x'=r+x^2,y'=(-x)*y+0}]y*x=0"),
+          "[{x'=r+x^2,y'=(-x)*y+0}]y>0":
+            dG("{z'=x/2*z}", "z^2*y=1", 'R=="[{x'=r+x^2,y'=(-x)*y+0}]y>0");
+            existsR("1", 'R=="\exists z [{x'=r+x^2,y'=(-x)*y+0,z'=x/2*z+0}]z^2*y=1");
+            dI('R=="[{x'=r+x^2,y'=(-x)*y+0,z'=x/2*z+0}]z^2*y=1")
+        ),
+      "r < 0":
+        cut("\exists s r=-s*s"); <(
+          "Use":
+            existsL('L=="\exists s r=-s*s");
+            existsR("-s", 'R=="\exists f (x=f->[{x'=r+x^2}]x=f)");
+            implyR('R=="x=-s->[{x'=r+x^2}]x=-s");
+            dG("{y'=(-(x-s))*y}", "y*(x+s)=0&y>0", 'R=="[{x'=r+x^2}]x=-s");
+            existsR("1", 'R=="\exists y [{x'=r+x^2,y'=(-(x-s))*y+0}](y*(x+s)=0&y>0)");
+            boxAnd('R=="[{x'=r+x^2,y'=(-(x-s))*y+0}](y*(x+s)=0&y>0)");
+            andR('R=="[{x'=r+x^2,y'=(-(x-s))*y+0}]y*(x+s)=0&[{x'=r+x^2,y'=(-(x-s))*y+0}]y>0"); <(
+              "[{x'=r+x^2,y'=(-(x-s))*y+0}]y*(x+s)=0":
+                dI('R=="[{x'=r+x^2,y'=(-(x-s))*y+0}]y*(x+s)=0"),
+              "[{x'=r+x^2,y'=(-(x-s))*y+0}]y>0":
+                dG("{z'=(x-s)/2*z}", "z^2*y=1", 'R=="[{x'=r+x^2,y'=(-(x-s))*y+0}]y>0");
+                existsR("1", 'R=="\exists z [{x'=r+x^2,y'=(-(x-s))*y+0,z'=(x-s)/2*z+0}]z^2*y=1");
+                dI('R=="[{x'=r+x^2,y'=(-(x-s))*y+0,z'=(x-s)/2*z+0}]z^2*y=1")
+            ),
+          "Show":
+            hideR('R=="\exists f (x=f->[{x'=r+x^2}]x=f)");
+            QE
+        )
+    ),
+  "Show":
+    hideR('R=="\exists f (x=f->[{x'=r+x^2}]x=f)");
+    QE
+)
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Parametric switching between two different damped oscillators"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Parametric switching between two different damped oscillators"
 
 Description "Parametric switching between two different damped oscillators".
 Citation "Andre Platzer. Logical Analysis of Hybrid Systems: Proving Theorems for Complex Dynamics. Springer, 2010".
@@ -805,23 +887,30 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1) & loop("w^2*x^2+y^2<=c&d>=0&w>=0",1) <(
-    master,
-    master,
-    composeb(1); MR("w^2*x^2+y^2<=c&d>=0&w>=0",1) <(
-      master,
-      master
+implyR('R=="w>=0&d>=0&(-2)<=a&a<=2&b^2>=1/3&w^2*x^2+y^2<=c->[{{x'=y,y'=-w^2*x-2*d*w*y}{?x=y*a;w:=2*w;d:=d/2;c:=c*((2*w)^2+1^2)/(w^2+1^2);++?x=y*b;w:=w/2;d:=2*d;c:=c*(w^2+1^2)/(2*w^2+1^2);++?true;}}*]w^2*x^2+y^2<=c");
+loop("w^2*x^2+y^2<=c&d>=0&w>=0", 'R=="[{{x'=y,y'=-w^2*x-2*d*w*y}{?x=y*a;w:=2*w;d:=d/2;c:=c*((2*w)^2+1^2)/(w^2+1^2);++?x=y*b;w:=w/2;d:=2*d;c:=c*(w^2+1^2)/(2*w^2+1^2);++?true;}}*]w^2*x^2+y^2<=c"); <(
+  "Init":
+    auto,
+  "Post":
+    auto,
+  "Step":
+    composeb('R=="[{x'=y,y'=-w^2*x-2*d*w*y}{?x=y*a;w:=2*w;d:=d/2;c:=c*((2*w)^2+1^2)/(w^2+1^2);++?x=y*b;w:=w/2;d:=2*d;c:=c*(w^2+1^2)/(2*w^2+1^2);++?true;}](w^2*x^2+y^2<=c&d>=0&w>=0)");
+    MR("w^2*x^2+y^2<=c&d>=0&w>=0", 'R=="[{x'=y,y'=-w^2*x-2*d*w*y}][?x=y*a;w:=2*w;d:=d/2;c:=c*((2*w)^2+1^2)/(w^2+1^2);++?x=y*b;w:=w/2;d:=2*d;c:=c*(w^2+1^2)/(2*w^2+1^2);++?true;](w^2*x^2+y^2<=c&d>=0&w>=0)"); <(
+      "Use Q->P":
+        auto,
+      "Show [a]Q":
+        auto
     )
-  )
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Nonlinear 1"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Nonlinear 1"
 
 ProgramVariables
   Real x;
@@ -837,12 +926,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Nonlinear 2"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Nonlinear 2"
 
 Description "Example 2".
 Citation "Tiwari, A. & Khanna, G. Alur, R. & Pappas, G. J. (ed.) Nonlinear Systems: Approximating Reach Sets. HSCC, Springer, 2004, 2993, 600-614".
@@ -862,12 +951,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Nonlinear 4"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Nonlinear 4"
 
 Description "Example 4".
 Citation "Tiwari, A. & Khanna, G. Alur, R. & Pappas, G. J. (ed.) Nonlinear Systems: Approximating Reach Sets. HSCC, Springer, 2004, 2993, 600-614".
@@ -887,12 +976,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Nonlinear 5"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Nonlinear 5"
 
 Description "Example 5".
 Citation "Tiwari, A. & Khanna, G. Alur, R. & Pappas, G. J. (ed.) Nonlinear Systems: Approximating Reach Sets. HSCC, Springer, 2004, 2993, 600-614".
@@ -912,12 +1001,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Riccati"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Riccati"
 
 ProgramVariables
   Real x;
@@ -932,12 +1021,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Dynamics: Nonlinear differential cut"
+ArchiveEntry "Benchmarks/Basic/Dynamics: Nonlinear differential cut"
 
 ProgramVariables
   Real x;
@@ -953,12 +1042,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "STTT Tutorial: Example 1"
+ArchiveEntry "Benchmarks/Basic/STTT Tutorial: Example 1"
 
 Description "A simple system in which a car starts at some nonnegative velocity and accelerates at a constant rate along a straight lane. The requirement we want to prove is that the car never travels backward in space.".
 Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
@@ -982,12 +1071,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "STTT Tutorial: Example 2"
+ArchiveEntry "Benchmarks/Basic/STTT Tutorial: Example 2"
 
 Description "A hybrid system model of a car with discrete control choices: accelerate, stay stopped, or brake. The requirement to prove is that the car never travels backwards in space.".
 Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
@@ -1014,20 +1103,29 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; loop("v>=0", 1) ; <(
+implyR('R=="v>=0&A()>0&B()>0->[{{a:=A();++a:=0;++a:=-B();}{x'=v,v'=a&v>=0}}*]v>=0");
+loop("v>=0", 'R=="[{{a:=A();++a:=0;++a:=-B();}{x'=v,v'=a&v>=0}}*]v>=0"); <(
+  "Init":
     id,
+  "Post":
     id,
-    composeb(1) ; DW(1.1) ; simplify(1) ; GV(1.1) ; GV(1) ; closeT
-  )
+  "Step":
+    composeb('R=="[{a:=A();++a:=0;++a:=-B();}{x'=v,v'=a&v>=0}]v>=0");
+    DW('R=="[a:=A();++a:=0;++a:=-B();]#[{x'=v,v'=a&v>=0}]v>=0#");
+    simplify('R=="[a:=A();++a:=0;++a:=-B();][{x'=v,v'=a&v>=0}](v>=0->v>=0)");
+    GV('R=="[a:=A();++a:=0;++a:=-B();]#[{x'=v,v'=a&v>=0}]true#");
+    GV('R=="[a:=A();++a:=0;++a:=-B();]true");
+    closeT
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "STTT Tutorial: Example 3a"
+ArchiveEntry "Benchmarks/Basic/STTT Tutorial: Example 3a"
 
 Description "A hybrid car model where the controller runs when the car is about to run a stop sign. The requirement to prove is that the car never runs the stop sign.".
 Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
@@ -1062,47 +1160,80 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; loop("v>=0&x+v^2/(2*B())<=S()", 1) ; <(
+implyR('R=="v>=0&A()>0&B()>0&x+v^2/(2*B()) < S()->[{{?x+v^2/(2*B()) < S();a:=A();++?v=0;a:=0;++a:=-B();}{{x'=v,v'=a&v>=0&x+v^2/(2*B())<=S()}++{x'=v,v'=a&v>=0&x+v^2/(2*B())>=S()}}}*]x<=S()");
+loop("v>=0&x+v^2/(2*B())<=S()", 'R=="[{{?x+v^2/(2*B()) < S();a:=A();++?v=0;a:=0;++a:=-B();}{{x'=v,v'=a&v>=0&x+v^2/(2*B())<=S()}++{x'=v,v'=a&v>=0&x+v^2/(2*B())>=S()}}}*]x<=S()"); <(
+  "Init":
     QE,
+  "Post":
     QE,
-    unfold ; <(
-      dW(1) ; prop,
-      dW(1) ; prop,
-      diffUnpackEvolDomain(1) ; hideR(1=="[{x'=v,v'=A()&v>=0&x+v^2/(2*B())>=S()}](v>=0&x+v^2/(2*B())<=S())") ; QE,
-      dW(1) ; prop,
-      diffUnpackEvolDomain(1) ; dC("v=old(v)", 1) ; <(
-        dC("x=old(x)", 1) ; <(
-          dWplus(1) ; QE,
-          dI(1)
-        ),
-        dI(1)
-      ),
-      diffUnpackEvolDomain(1) ; dC("v<=old(v)", 1) ; <(
-        dC("x+v^2/(2*B())<=old(x+v^2/(2*B()))", 1) ; <(
-          dWplus(1) ; QE,
-          dI(1)
-        ),
-        dI(1)
-      )
-    )
-  )
+  "Step":
+    unfold;
+    doall(ODE(1))
+)
 End.
 
 Tactic "Scripted proof (2)"
-  implyR(1) ; loop("v>=0&x+v^2/(2*B())<=S()", 1) ; <(
+unfold;
+loop("v>=0&x+v^2/(2*B())<=S()", 'R=="[{{?x+v^2/(2*B()) < S();a:=A();++?v=0;a:=0;++a:=-B();}{{x'=v,v'=a&v>=0&x+v^2/(2*B())<=S()}++{x'=v,v'=a&v>=0&x+v^2/(2*B())>=S()}}}*]x<=S()"); <(
+  "Init":
     QE,
+  "Post":
     QE,
-    unfold ; doall(ODE(1))
-  )
+  "Step":
+    unfold; <(
+      "[{x'=v,v'=A()&v>=0&x+v^2/(2*B())<=S()}](v>=0&x+v^2/(2*B())<=S())":
+        dW('R=="[{x'=v,v'=A()&v>=0&x+v^2/(2*B())<=S()}](v>=0&x+v^2/(2*B())<=S())");
+        propClose,
+      "[{x'=v,v'=0&v>=0&x+v^2/(2*B())<=S()}](v>=0&x+v^2/(2*B())<=S())":
+        dW('R=="[{x'=v,v'=0&v>=0&x+v^2/(2*B())<=S()}](v>=0&x+v^2/(2*B())<=S())");
+        propClose,
+      "[{x'=v,v'=-B()&v>=0&x+v^2/(2*B())<=S()}](v>=0&x+v^2/(2*B())<=S())":
+        dW('R=="[{x'=v,v'=-B()&v>=0&x+v^2/(2*B())<=S()}](v>=0&x+v^2/(2*B())<=S())");
+        propClose,
+      "[{x'=v,v'=-B()&v>=0&x+v^2/(2*B())>=S()}](v>=0&x+v^2/(2*B())<=S())":
+        diffUnpackEvolDomain('R=="[{x'=v,v'=-B()&v>=0&x+v^2/(2*B())>=S()}](v>=0&x+v^2/(2*B())<=S())");
+        dC("v<=old(v)", 'R=="[{x'=v,v'=-B()&v>=0&x+v^2/(2*B())>=S()}](v>=0&x+v^2/(2*B())<=S())"); <(
+          "Use":
+            dC("x+v^2/(2*B())<=old(x+v^2/(2*B()))", 'R=="[{x'=v,v'=-B()&(v>=0&x+v^2/(2*B())>=S())&v<=v_0}](v>=0&x+v^2/(2*B())<=S())"); <(
+              "Use":
+                dWplus('R=="[{x'=v,v'=-B()&((v>=0&x+v^2/(2*B())>=S())&v<=v_0)&x+v^2/(2*B())<=old}](v>=0&x+v^2/(2*B())<=S())");
+                unfold;
+                QE using "B()>0 :: x_0+v_0^2/(2*B())<=S() :: old=x_0+v_0^2/(2*B()) :: x_0+v_0^2/(2*B())>=S() :: x+v^2/(2*B())<=old :: v>=0 :: v>=0&x+v^2/(2*B())<=S() :: nil",
+              "Show":
+                dIClose(1) using "B()>0 :: old=x+v^2/(2*B()) :: [{x'=v,v'=-B()&(v>=0&x+v^2/(2*B())>=S())&v<=v_0}]x+v^2/(2*B())<=old :: nil"
+            ),
+          "Show":
+            dIClose(1) using "B()>0 :: v_0=v :: [{x'=v,v'=-B()&v>=0&x+v^2/(2*B())>=S()}]v<=v_0 :: nil"
+        ),
+      "[{x'=v,v'=A()&v>=0&x+v^2/(2*B())>=S()}](v>=0&x+v^2/(2*B())<=S())":
+        diffUnpackEvolDomain('R=="[{x'=v,v'=A()&v>=0&x+v^2/(2*B())>=S()}](v>=0&x+v^2/(2*B())<=S())");
+        QE using "B()>0 :: x+v^2/(2*B()) < S() :: v>=0&x+v^2/(2*B())>=S() :: nil",
+      "[{x'=v,v'=0&v>=0&x+v^2/(2*B())>=S()}](v>=0&x+v^2/(2*B())<=S())":
+        diffUnpackEvolDomain('R=="[{x'=v,v'=0&v>=0&x+v^2/(2*B())>=S()}](v>=0&x+v^2/(2*B())<=S())");
+        dC("v=old(v)", 'R=="[{x'=v,v'=0&v>=0&x+v^2/(2*B())>=S()}](v>=0&x+v^2/(2*B())<=S())"); <(
+          "Use":
+            dC("x=old(x)", 'R=="[{x'=v,v'=0&(v>=0&x+v^2/(2*B())>=S())&v=v_0}](v>=0&x+v^2/(2*B())<=S())"); <(
+              "Use":
+                dWplus('R=="[{x'=v,v'=0&((v>=0&x+v^2/(2*B())>=S())&v=v_0)&x=x_0}](v>=0&x+v^2/(2*B())<=S())");
+                unfold;
+                QE using "x_0+v_0^2/(2*B())<=S() :: x=x_0 :: v=v_0 :: v>=0 :: v>=0&x+v^2/(2*B())<=S() :: nil",
+              "Show":
+                dIClose(1) using "v_0=0 :: x_0=x :: [{x'=v,v'=0&(v>=0&x+v^2/(2*B())>=S())&v=v_0}]x=x_0 :: nil"
+            ),
+          "Show":
+            dIClose(1) using "v_0=v :: [{x'=v,v'=0&v>=0&x+v^2/(2*B())>=S()}]v=v_0 :: nil"
+        )
+    )
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "STTT Tutorial: Example 4a"
+ArchiveEntry "Benchmarks/Basic/STTT Tutorial: Example 4a"
 
 Description "A hybrid car model where the controller runs when the car is about to run a stop sign. The example illustrates that certain modeling pitfalls result in vacuous proofs.".
 Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
@@ -1133,20 +1264,29 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; loop("v<=V()", 1) ; <(
+implyR('R=="v<=V()&A()>0->[{{?v=V();a:=0;++?v!=V();a:=A();}{x'=v,v'=a&v<=V()}}*]v<=V()");
+loop("v<=V()", 'R=="[{{?v=V();a:=0;++?v!=V();a:=A();}{x'=v,v'=a&v<=V()}}*]v<=V()"); <(
+  "Init":
     id,
+  "Post":
     id,
-    composeb(1) ; DW(1.1) ; simplify(1) ; GV(1.1) ; GV(1) ; closeT
-  )
+  "Step":
+    composeb('R=="[{?v=V();a:=0;++?v!=V();a:=A();}{x'=v,v'=a&v<=V()}]v<=V()");
+    DW('R=="[?v=V();a:=0;++?v!=V();a:=A();]#[{x'=v,v'=a&v<=V()}]v<=V()#");
+    simplify('R=="[?v=V();a:=0;++?v!=V();a:=A();][{x'=v,v'=a&v<=V()}](v<=V()->v<=V())");
+    GV('R=="[?v=V();a:=0;++?v!=V();a:=A();]#[{x'=v,v'=a&v<=V()}]true#");
+    GV('R=="[?v=V();a:=0;++?v!=V();a:=A();]true");
+    closeT
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "STTT Tutorial: Example 4b"
+ArchiveEntry "Benchmarks/Basic/STTT Tutorial: Example 4b"
 
 Description "A hybrid car model where the controller runs when the car is about to run a stop sign. The example illustrates that overly strong evolution domain constraints can result in a vacuous proof.".
 Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
@@ -1174,20 +1314,29 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; loop("v<=V()", 1) ; <(
+implyR('R=="v<=V()&A()>0->[{a:=A();{x'=v,v'=a&v<=V()}}*]v<=V()");
+loop("v<=V()", 'R=="[{a:=A();{x'=v,v'=a&v<=V()}}*]v<=V()"); <(
+  "Init":
     id,
+  "Post":
     id,
-    composeb(1) ; DW(1.1) ; simplify(1) ; GV(1.1) ; GV(1) ; closeT
-  )
+  "Step":
+    composeb('R=="[a:=A();{x'=v,v'=a&v<=V()}]v<=V()");
+    DW('R=="[a:=A();]#[{x'=v,v'=a&v<=V()}]v<=V()#");
+    simplify('R=="[a:=A();][{x'=v,v'=a&v<=V()}](v<=V()->v<=V())");
+    GV('R=="[a:=A();]#[{x'=v,v'=a&v<=V()}]true#");
+    GV('R=="[a:=A();]true");
+    closeT
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "STTT Tutorial: Example 4c"
+ArchiveEntry "Benchmarks/Basic/STTT Tutorial: Example 4c"
 
 Description "A hybrid car model where the controller runs when the car is about to run a stop sign. The example illustrates the correct modeling idiom to prevent vacuous proofs from evolution domain constraints.".
 Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
@@ -1219,23 +1368,40 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; loop("v<=V()", 1) ; <(
+implyR('R=="v<=V()&A()>0->[{{?v=V();a:=0;++?v!=V();a:=A();}{{x'=v,v'=a&v<=V()}++{x'=v,v'=a&v>=V()}}}*]v<=V()");
+loop("v<=V()", 'R=="[{{?v=V();a:=0;++?v!=V();a:=A();}{{x'=v,v'=a&v<=V()}++{x'=v,v'=a&v>=V()}}}*]v<=V()"); <(
+  "Init":
     id,
+  "Post":
     id,
-    composeb(1) ; choiceb(1.1) ; DW(1.1.0) ; simplify(1) ; GV(1.1.0) ; trueAnd(1.1) ; choiceb(1) ; andR(1) ; <(
-      unfold ; ODE(1),
-      unfold ; diffUnpackEvolDomain(1) ; hideR(1=="[{x'=v,v'=A()&v>=V()}]v<=V()") ; QE
+  "Step":
+    composeb('R=="[{?v=V();a:=0;++?v!=V();a:=A();}{{x'=v,v'=a&v<=V()}++{x'=v,v'=a&v>=V()}}]v<=V()");
+    choiceb('R=="[?v=V();a:=0;++?v!=V();a:=A();]#[{x'=v,v'=a&v<=V()}++{x'=v,v'=a&v>=V()}]v<=V()#");
+    DW('R=="[?v=V();a:=0;++?v!=V();a:=A();](#[{x'=v,v'=a&v<=V()}]v<=V()#&[{x'=v,v'=a&v>=V()}]v<=V())");
+    simplify('R=="[?v=V();a:=0;++?v!=V();a:=A();]([{x'=v,v'=a&v<=V()}](v<=V()->v<=V())&[{x'=v,v'=a&v>=V()}]v<=V())");
+    GV('R=="[?v=V();a:=0;++?v!=V();a:=A();](#[{x'=v,v'=a&v<=V()}]true#&[{x'=v,v'=a&v>=V()}]v<=V())");
+    trueAnd('R=="[?v=V();a:=0;++?v!=V();a:=A();]#true&[{x'=v,v'=a&v>=V()}]v<=V()#");
+    choiceb('R=="[?v=V();a:=0;++?v!=V();a:=A();][{x'=v,v'=a&v>=V()}]v<=V()");
+    andR('R=="[?v=V();a:=0;][{x'=v,v'=a&v>=V()}]v<=V()&[?v!=V();a:=A();][{x'=v,v'=a&v>=V()}]v<=V()"); <(
+      "[?v=V();a:=0;][{x'=v,v'=a&v>=V()}]v<=V()":
+        unfold;
+        ODE('R=="[{x'=v,v'=0&v>=V()}]v<=V()"),
+      "[?v!=V();a:=A();][{x'=v,v'=a&v>=V()}]v<=V()":
+        unfold;
+        diffUnpackEvolDomain('R=="[{x'=v,v'=A()&v>=V()}]v<=V()");
+        hideR('R=="[{x'=v,v'=A()&v>=V()}]v<=V()");
+        QE
     )
-  )
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "STTT Tutorial: Example 5"
+ArchiveEntry "Benchmarks/Basic/STTT Tutorial: Example 5"
 
 Description "A hybrid car model where the controller runs periodically at some maximum time interval between executions. The requirement to prove is that the car never runs the stop sign.".
 Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
@@ -1270,21 +1436,42 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; loop("v>=0&x+v^2/(2*B())<=S()", 1) ; <(
+implyR('R=="v>=0&A()>0&B()>0&x+v^2/(2*B())<=S()&ep()>0->[{{?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=A();++?v=0;a:=0;++a:=-B();}c:=0;{x'=v,v'=a,c'=1&v>=0&c<=ep()}}*]x<=S()");
+loop("v>=0&x+v^2/(2*B())<=S()", 'R=="[{{?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=A();++?v=0;a:=0;++a:=-B();}c:=0;{x'=v,v'=a,c'=1&v>=0&c<=ep()}}*]x<=S()"); <(
+  "Init":
     QE,
+  "Post":
     QE,
-    composeb(1) ; composeb(1.1) ; boxAnd(1.1.1) ; DW(1.1.1.0) ; simplify(1) ; GV(1.1.1.0) ; trueAnd(1.1.1) ;
-    solve(1.1.1) ; unfold ; doall(QE)
-  )
+  "Step":
+    composeb('R=="[{?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=A();++?v=0;a:=0;++a:=-B();}c:=0;{x'=v,v'=a,c'=1&v>=0&c<=ep()}](v>=0&x+v^2/(2*B())<=S())");
+    composeb('R=="[?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=A();++?v=0;a:=0;++a:=-B();]#[c:=0;{x'=v,v'=a,c'=1&v>=0&c<=ep()}](v>=0&x+v^2/(2*B())<=S())#");
+    boxAnd('R=="[?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=A();++?v=0;a:=0;++a:=-B();][c:=0;]#[{x'=v,v'=a,c'=1&v>=0&c<=ep()}](v>=0&x+v^2/(2*B())<=S())#");
+    DW('R=="[?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=A();++?v=0;a:=0;++a:=-B();][c:=0;](#[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]v>=0#&[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]x+v^2/(2*B())<=S())");
+    simplify('R=="[?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=A();++?v=0;a:=0;++a:=-B();][c:=0;]([{x'=v,v'=a,c'=1&v>=0&c<=ep()}](v>=0&c<=ep()->v>=0)&[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]x+v^2/(2*B())<=S())");
+    GV('R=="[?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=A();++?v=0;a:=0;++a:=-B();][c:=0;](#[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]true#&[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]x+v^2/(2*B())<=S())");
+    trueAnd('R=="[?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=A();++?v=0;a:=0;++a:=-B();][c:=0;]#true&[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]x+v^2/(2*B())<=S()#");
+    solve('R=="[?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=A();++?v=0;a:=0;++a:=-B();][c:=0;]#[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]x+v^2/(2*B())<=S()#");
+    unfold; <(
+      "[?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=A();][c:=0;]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a*s_+v>=0&s_+c<=ep())->a*(t_^2/2)+v*t_+x+(a*t_+v)^2/(2*B())<=S())":
+        QE,
+      "[?v=0;a:=0;][c:=0;]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a*s_+v>=0&s_+c<=ep())->a*(t_^2/2)+v*t_+x+(a*t_+v)^2/(2*B())<=S())":
+        allL2R('L=="v=0");
+        simplify('R=="#0*(t_^2/2)+0*t_+x+(0*t_+0)^2/(2*B())#<=S()");
+        simplify('L=="x+#0^2/(2*B())#<=S()");
+        id,
+      "[a:=-B();][c:=0;]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a*s_+v>=0&s_+c<=ep())->a*(t_^2/2)+v*t_+x+(a*t_+v)^2/(2*B())<=S())":
+        QE
+    )
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "STTT Tutorial: Example 6"
+ArchiveEntry "Benchmarks/Basic/STTT Tutorial: Example 6"
 
 Description "A hybrid car model where the controller can make non-deterministic decisions on acceleration. The requirement to prove is that the controller never runs the stop sign.".
 Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
@@ -1319,21 +1506,33 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; loop("v>=0&x+v^2/(2*B())<=S()", 1) ; <(
+implyR('R=="v>=0&A()>0&B()>0&x+v^2/(2*B())<=S()&ep()>0->[{{?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=*;?-B()<=a&a<=A();++?v=0;a:=0;++a:=-B();}c:=0;{x'=v,v'=a,c'=1&v>=0&c<=ep()}}*]x<=S()");
+loop("v>=0&x+v^2/(2*B())<=S()", 'R=="[{{?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=*;?-B()<=a&a<=A();++?v=0;a:=0;++a:=-B();}c:=0;{x'=v,v'=a,c'=1&v>=0&c<=ep()}}*]x<=S()"); <(
+  "Init":
     QE,
+  "Post":
     QE,
-    composeb(1) ; composeb(1.1) ; boxAnd(1.1.1) ; DW(1.1.1.0) ; simplify(1) ; GV(1.1.1.0) ; trueAnd(1.1.1) ;
-    solve(1.1.1) ; unfold ; doall(QE)
-  )
+  "Step":
+    composeb('R=="[{?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=*;?-B()<=a&a<=A();++?v=0;a:=0;++a:=-B();}c:=0;{x'=v,v'=a,c'=1&v>=0&c<=ep()}](v>=0&x+v^2/(2*B())<=S())");
+    composeb('R=="[?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=*;?-B()<=a&a<=A();++?v=0;a:=0;++a:=-B();]#[c:=0;{x'=v,v'=a,c'=1&v>=0&c<=ep()}](v>=0&x+v^2/(2*B())<=S())#");
+    boxAnd('R=="[?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=*;?-B()<=a&a<=A();++?v=0;a:=0;++a:=-B();][c:=0;]#[{x'=v,v'=a,c'=1&v>=0&c<=ep()}](v>=0&x+v^2/(2*B())<=S())#");
+    DW('R=="[?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=*;?-B()<=a&a<=A();++?v=0;a:=0;++a:=-B();][c:=0;](#[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]v>=0#&[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]x+v^2/(2*B())<=S())");
+    simplify('R=="[?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=*;?-B()<=a&a<=A();++?v=0;a:=0;++a:=-B();][c:=0;]([{x'=v,v'=a,c'=1&v>=0&c<=ep()}](v>=0&c<=ep()->v>=0)&[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]x+v^2/(2*B())<=S())");
+    GV('R=="[?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=*;?-B()<=a&a<=A();++?v=0;a:=0;++a:=-B();][c:=0;](#[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]true#&[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]x+v^2/(2*B())<=S())");
+    trueAnd('R=="[?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=*;?-B()<=a&a<=A();++?v=0;a:=0;++a:=-B();][c:=0;]#true&[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]x+v^2/(2*B())<=S()#");
+    solve('R=="[?x+v^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=*;?-B()<=a&a<=A();++?v=0;a:=0;++a:=-B();][c:=0;]#[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]x+v^2/(2*B())<=S()#");
+    unfold;
+    doall(QE)
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "STTT Tutorial: Example 7"
+ArchiveEntry "Benchmarks/Basic/STTT Tutorial: Example 7"
 
 Description "A hybrid car model with non-deterministic braking characteristics. The requirement to prove is that the car never runs a stop sign.".
 Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
@@ -1369,21 +1568,33 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; loop("v>=0&x+v^2/(2*b())<=S()", 1) ; <(
+implyR('R=="v>=0&A()>0&B()>=b()&b()>0&x+v^2/(2*b())<=S()&ep()>0->[{{?x+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=*;?-B()<=a&a<=A();++?v=0;a:=0;++a:=*;?-B()<=a&a<=-b();}c:=0;{x'=v,v'=a,c'=1&v>=0&c<=ep()}}*]x<=S()");
+loop("v>=0&x+v^2/(2*b())<=S()", 'R=="[{{?x+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=*;?-B()<=a&a<=A();++?v=0;a:=0;++a:=*;?-B()<=a&a<=-b();}c:=0;{x'=v,v'=a,c'=1&v>=0&c<=ep()}}*]x<=S()"); <(
+  "Init":
     QE,
+  "Post":
     QE,
-    composeb(1) ; composeb(1.1) ; boxAnd(1.1.1) ; DW(1.1.1.0) ; simplify(1) ; GV(1.1.1.0) ; trueAnd(1.1.1) ;
-    solve(1.1.1) ; unfold ; doall(QE)
-  )
+  "Step":
+    composeb('R=="[{?x+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=*;?-B()<=a&a<=A();++?v=0;a:=0;++a:=*;?-B()<=a&a<=-b();}c:=0;{x'=v,v'=a,c'=1&v>=0&c<=ep()}](v>=0&x+v^2/(2*b())<=S())");
+    composeb('R=="[?x+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=*;?-B()<=a&a<=A();++?v=0;a:=0;++a:=*;?-B()<=a&a<=-b();]#[c:=0;{x'=v,v'=a,c'=1&v>=0&c<=ep()}](v>=0&x+v^2/(2*b())<=S())#");
+    boxAnd('R=="[?x+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=*;?-B()<=a&a<=A();++?v=0;a:=0;++a:=*;?-B()<=a&a<=-b();][c:=0;]#[{x'=v,v'=a,c'=1&v>=0&c<=ep()}](v>=0&x+v^2/(2*b())<=S())#");
+    DW('R=="[?x+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=*;?-B()<=a&a<=A();++?v=0;a:=0;++a:=*;?-B()<=a&a<=-b();][c:=0;](#[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]v>=0#&[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]x+v^2/(2*b())<=S())");
+    simplify('R=="[?x+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=*;?-B()<=a&a<=A();++?v=0;a:=0;++a:=*;?-B()<=a&a<=-b();][c:=0;]([{x'=v,v'=a,c'=1&v>=0&c<=ep()}](v>=0&c<=ep()->v>=0)&[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]x+v^2/(2*b())<=S())");
+    GV('R=="[?x+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=*;?-B()<=a&a<=A();++?v=0;a:=0;++a:=*;?-B()<=a&a<=-b();][c:=0;](#[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]true#&[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]x+v^2/(2*b())<=S())");
+    trueAnd('R=="[?x+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=*;?-B()<=a&a<=A();++?v=0;a:=0;++a:=*;?-B()<=a&a<=-b();][c:=0;]#true&[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]x+v^2/(2*b())<=S()#");
+    solve('R=="[?x+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v)<=S();a:=*;?-B()<=a&a<=A();++?v=0;a:=0;++a:=*;?-B()<=a&a<=-b();][c:=0;]#[{x'=v,v'=a,c'=1&v>=0&c<=ep()}]x+v^2/(2*b())<=S()#");
+    unfold;
+    doall(QE)
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "STTT Tutorial: Example 9a"
+ArchiveEntry "Benchmarks/Basic/STTT Tutorial: Example 9a"
 
 Description "A PD controlled car. The requirement to prove is that the Lyapunov function is a differential invariant.".
 Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
@@ -1413,12 +1624,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "STTT Tutorial: Example 9b"
+ArchiveEntry "Benchmarks/Basic/STTT Tutorial: Example 9b"
 
 Description "A PD controlled car with a trajectory generator for setting target speeds. The requirement to prove is that the car never runs a stop sign.".
 Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
@@ -1456,28 +1667,38 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; loop("v >= 0 & xm <= x2 & xr = (xm + S)/2 & 5/4*(x2-xr)^2 + (x2-xr)*v/2 + v^2/4 < ((S - xm)/2)^2", 1) ; <(
+implyR('R=="v>=0&xm<=x2&x2<=S()&xr=(xm+S())/2&Kp()=2&Kd()=3&5/4*(x2-xr)^2+(x2-xr)*v/2+v^2/4 < ((S()-xm)/2)^2->[{{xm:=x2;xr:=(xm+S())/2;?5/4*(x2-xr)^2+(x2-xr)*v/2+v^2/4 < ((S()-xm)/2)^2;++?true;}{x2'=v,v'=-Kp()*(x2-xr)-Kd()*v&v>=0}}*]x2<=S()");
+loop("v>=0&xm<=x2&xr=(xm+S())/2&5/4*(x2-xr)^2+(x2-xr)*v/2+v^2/4 < ((S()-xm)/2)^2", 'R=="[{{xm:=x2;xr:=(xm+S())/2;?5/4*(x2-xr)^2+(x2-xr)*v/2+v^2/4 < ((S()-xm)/2)^2;++?true;}{x2'=v,v'=-Kp()*(x2-xr)-Kd()*v&v>=0}}*]x2<=S()"); <(
+  "Init":
     prop,
+  "Post":
     QE,
-    unfold ; doall(
-      dC("xm<=x2", 1) ; <(
-        dC("5/4*(x2-(xm+S())/2)^2+(x2-(xm+S())/2)*v/2+v^2/4 < ((S()-xm)/2)^2", 1) ; <(
-          dW(1) ; QE,
-          dI(1)
+  "Step":
+    unfold;
+    doall(
+      dC("xm<=x2", 1); <(
+        "Use":
+          dC("5/4*(x2-(xm+S())/2)^2+(x2-(xm+S())/2)*v/2+v^2/4 < ((S()-xm)/2)^2", 1); <(
+            "Use":
+              dW(1);
+              QE,
+            "Show":
+              dI(1)
           ),
-        dI(1)
-        )
+        "Show":
+          dI(1)
       )
     )
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "STTT Tutorial: Example 10"
+ArchiveEntry "Benchmarks/Basic/STTT Tutorial: Example 10"
 
 Description "A car with steering. The requirement to prove is that the car always stays inside the lane boundaries.".
 Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and André Platzer. How to model and prove hybrid systems with KeYmaera: A tutorial on safety. STTT, 18(1), pp. 67-91, 2016.".
@@ -1518,11 +1739,13 @@ Problem
         c := 0;
         {
         { x' = v*dx, y' = v*dy, v' = a, dx' = -dy*w, dy' = dx*w, w'=a/r, c' = 1 & v >= 0 & c <= ep }
-        @invariant(c>=0, dx^2+dy^2=1,
-          (v'=a -> v=old(v)+a*c),
-          (v'=a -> -c*(v-a/2*c) <= y - old(y) & y - old(y) <= c*(v-a/2*c)),
+        @invariant(
+          c>=0,
+          dx^2+dy^2=1,
           (v'=0 -> v=old(v)),
-          (v'=0 -> -c*v <= y - old(y) & y - old(y) <= c*v)
+          (v'=0 -> -c*v <= y - old(y) & y - old(y) <= c*v),
+          (v'=a -> v=old(v)+a*c),
+          (v'=a -> -c*(v-a/2*c) <= y - old(y) & y - old(y) <= c*(v-a/2*c))
         )
         }
       }*@invariant(v >= 0 & dx^2+dy^2 = 1 & r != 0 & abs(y-ly) + v^2/(2*b) < lw)
@@ -1530,199 +1753,119 @@ Problem
 End.
 
 Tactic "Scripted proof"
-implyR(1) ; loop("v>=0&dx^2+dy^2=1&r!=0&abs(y-ly())+v^2/(2*b()) < lw()", 1) ; <(
-  prop,
-  QE,
-  composeb(1) ; composeb(1.1) ; boxAnd(1.1.1) ; DW(1.1.1.0) ; simplify(1) ; GV(1.1.1.0) ; trueAnd(1.1.1) ; dC("c>=0", 1.1.1) ; <(
-    dC("dx^2+dy^2=1", 1.1.1) ; <(
-      boxAnd(1.1.1) ; DW(1.1.1.0) ; simplify(1) ; GV(1.1.1.0) ; trueAnd(1.1.1) ; boxAnd(1.1.1) ; GV(1.1.1.0) ; dC("v=old(v)+a*c", 1.1.1.1) ; <(
-        dC("-c*(v-a/2*c)<=y-old(y)&y-old(y)<=c*(v-a/2*c)", 1.1.1.1.0.1) ; <(
-          unfold ; <(
-            hideL(-17=="abs(y-ly())+v^2/(2*b()) < lw()") ; hideL(-16=="r_0!=0") ; hideL(-15=="dx^2+dy^2=1") ; hideL(-10=="w*r=v") ; hideL(-9=="r!=0") ; dWplus(1) ; unfold ; hideL(-14=="dx^2+dy^2=1") ; cut("abs(y_0-ly())+v_0^2/(2*b())+(A()/b()+1)*(A()/2*c^2+c*v_0) < lw()") ; <(
-              hideL(-16=="c<=ep()") ; hideL(-7=="-B()<=a") ; hideL(-6=="abs(y_0-ly())+v_0^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v_0) < lw()") ; hideL(-4=="ep()>0") ; hideL(-2=="B()>=b()") ; hideL(-5=="c_0=0") ; edit("expand(abs(y-ly()))+v^2/(2*b()) < lw()", 1) ; edit("expand(abs(y_0-ly()))+v_0^2/(2*b())+(A()/b()+1)*(A()/2*c^2+c*v_0) < lw()", -11) ; orL(-12) ; <(
-                orL(-13) ; <(
-                  QE,
-                  QE
-                  ),
-                orL(-13) ; <(
-                  QE,
-                  QE
-                  )
-                ),
-              hideR(1=="abs(y-ly())+v^2/(2*b()) < lw()") ; edit("abbrv(abs(y_0-ly()))+v_0^2/(2*b())+(A()/b()+1)*(A()/2*c^2+c*v_0) < lw()", 1) ; hideL(-17=="abbrv=abs(y_0-ly())") ; QE
-              ),
-            dWplus(1) ; unfold ; hideL(-19=="c<=ep()") ; hideL(-16=="dx^2+dy^2=1") ; hideL(-11=="r!=0") ; hideL(-10=="dx_0^2+dy_0^2=1") ; hideL(-8=="c_0=0") ; hideL(-7=="w_0=0") ; hideL(-7=="v_0>=0") ; hideL(-4=="ep()>0") ; hideL(-2=="B()>=b()") ; hideL(-1=="A()>0") ; QE,
-            dWplus(1) ; unfold ; hideL(-19=="c<=ep()") ; hideL(-16=="dx^2+dy^2=1") ; hideL(-11=="r!=0") ; hideL(-10=="dx_0^2+dy_0^2=1") ; hideL(-8=="c_0=0") ; hideL(-6=="-B()<=a") ; hideL(-4=="ep()>0") ; hideL(-2=="B()>=b()") ; QE
-            ),
-          unfold ; <(
-            hideL(-6=="abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw()") ; hideL(-16=="abs(y-ly())+v^2/(2*b()) < lw()") ; dI(1),
-            dI(1),
-            dI(1)
-            )
-          ),
-        unfold ; <(
-          hideL(-6=="abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw()") ; hideL(-15=="abs(y-ly())+v^2/(2*b()) < lw()") ; dI(1),
-          dI(1),
-          dI(1)
-          )
-        ),
-      unfold ; <(
-        hideL(-6=="abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw()") ; hideL(-14=="abs(y-ly())+v^2/(2*b()) < lw()") ; dI(1),
-        dI(1),
-        dI(1)
-        )
-      ),
-    unfold ; <(
-      hideL(-6=="abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw()") ; hideL(-14=="abs(y-ly())+v^2/(2*b()) < lw()") ; dI(1),
-      dI(1),
-      dI(1)
-      )
-    )
-  )
-End.
-
-Tactic "Scripted proof (2)"
-  implyR(1) ; loop("v>=0&dx^2+dy^2=1&r!=0&abs(y-ly())+v^2/(2*b()) < lw()", 1) ; <(
-    prop,
-    QE,
-    unfold ; <(
-      boxAnd(1) ; andR(1) ; <(
-        dW(1) ; prop,
-        dC("c>=0", 1) ; <(
-          dC("dx^2+dy^2=1", 1) ; <(
-            boxAnd(1) ; andR(1) ; <(
-              dW(1) ; prop,
-              boxAnd(1) ; andR(1) ; <(
-                GV(1) ; id,
-                dC("v=old(v)+a*c", 1) ; <(
-                  dC("-c*(v-a/2*c)<=y-old(y)&y-old(y)<=c*(v-a/2*c)", 1) ; <(
-                    dWplus(1) ; unfold ; hideL(-19=="dx^2+dy^2=1") ; hideL(-14=="r_0!=0") ; hideL(-13=="dx_0^2+dy_0^2=1") ; hideL(-11=="c_0=0") ; hideL(-10=="w_0*r=v_0") ; hideL(-9=="r!=0") ; hideL(-7=="-B()<=a") ; hideL(-9=="abs(y_0-ly())+v_0^2/(2*b()) < lw()") ; cut("abs(y_0-ly())+v_0^2/(2*b())+(A()/b()+1)*(A()/2*c^2+c*v_0) < lw()") ; <(
-                      hideL(-14=="c<=ep()") ; hideL(-6=="abs(y_0-ly())+v_0^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v_0) < lw()") ; hideL(-4=="ep()>0") ; QE,
-                      hideR(1=="abs(y-ly())+v^2/(2*b()) < lw()") ; hideL(-9=="-c*(v-a/2*c)<=y-y_0") ; hideL(-9=="y-y_0<=c*(v-a/2*c)") ; edit("abbrv(abs(y_0-ly()))+v_0^2/(2*b())+(A()/b()+1)*(A()/2*c^2+c*v_0) < lw()", 1) ; hideL(-13=="abbrv=abs(y_0-ly())") ; QE
+unfold;
+loop("v>=0&dx^2+dy^2=1&r!=0&abs(y-ly())+v^2/(2*b()) < lw()", 'R=="[{{?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;++?v=0;a:=0;w:=0;++a:=*;?-B()<=a&a<=-b();}c:=0;{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&v>=0&c<=ep()}}*]abs(y-ly()) < lw()"); <(
+  "Init":
+    propClose,
+  "Post":
+    unfold;
+    QE using "b()>0 :: lw()>0 :: abs(y-ly())+v^2/(2*b()) < lw() :: abs(y-ly()) < lw() :: nil",
+  "Step":
+    composeb('R=="[{?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;++?v=0;a:=0;w:=0;++a:=*;?-B()<=a&a<=-b();}c:=0;{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&v>=0&c<=ep()}](v>=0&dx^2+dy^2=1&r!=0&abs(y-ly())+v^2/(2*b()) < lw())");
+    composeb('R=="[?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;++?v=0;a:=0;w:=0;++a:=*;?-B()<=a&a<=-b();]#[c:=0;{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&v>=0&c<=ep()}](v>=0&dx^2+dy^2=1&r!=0&abs(y-ly())+v^2/(2*b()) < lw())#");
+    boxAnd('R=="[?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;++?v=0;a:=0;w:=0;++a:=*;?-B()<=a&a<=-b();][c:=0;]#[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&v>=0&c<=ep()}](v>=0&dx^2+dy^2=1&r!=0&abs(y-ly())+v^2/(2*b()) < lw())#");
+    useAt("DW differential weakening", "0", 'R=="[?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;++?v=0;a:=0;w:=0;++a:=*;?-B()<=a&a<=-b();][c:=0;](#[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&v>=0&c<=ep()}]v>=0#&[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&v>=0&c<=ep()}](dx^2+dy^2=1&r!=0&abs(y-ly())+v^2/(2*b()) < lw()))");
+    simplify('R=="[?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;++?v=0;a:=0;w:=0;++a:=*;?-B()<=a&a<=-b();][c:=0;]([{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&v>=0&c<=ep()}]#(v>=0&c<=ep()->v>=0)#&[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&v>=0&c<=ep()}](dx^2+dy^2=1&r!=0&abs(y-ly())+v^2/(2*b()) < lw()))");
+    GV('R=="[?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;++?v=0;a:=0;w:=0;++a:=*;?-B()<=a&a<=-b();][c:=0;](#[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&v>=0&c<=ep()}]true#&[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&v>=0&c<=ep()}](dx^2+dy^2=1&r!=0&abs(y-ly())+v^2/(2*b()) < lw()))");
+    trueAnd('R=="[?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;++?v=0;a:=0;w:=0;++a:=*;?-B()<=a&a<=-b();][c:=0;]#true&[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&v>=0&c<=ep()}](dx^2+dy^2=1&r!=0&abs(y-ly())+v^2/(2*b()) < lw())#");
+    dC("c>=0", 'R=="[?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;++?v=0;a:=0;w:=0;++a:=*;?-B()<=a&a<=-b();][c:=0;]#[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&v>=0&c<=ep()}](dx^2+dy^2=1&r!=0&abs(y-ly())+v^2/(2*b()) < lw())#"); <(
+      "Use":
+        dC("dx^2+dy^2=1", 'R=="[?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;++?v=0;a:=0;w:=0;++a:=*;?-B()<=a&a<=-b();][c:=0;]#[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&(v>=0&c<=ep())&c>=0}](dx^2+dy^2=1&r!=0&abs(y-ly())+v^2/(2*b()) < lw())#"); <(
+          "Use":
+            boxAnd('R=="[?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;++?v=0;a:=0;w:=0;++a:=*;?-B()<=a&a<=-b();][c:=0;]#[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1}](dx^2+dy^2=1&r!=0&abs(y-ly())+v^2/(2*b()) < lw())#");
+            useAt("DW differential weakening", "0", 'R=="[?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;++?v=0;a:=0;w:=0;++a:=*;?-B()<=a&a<=-b();][c:=0;](#[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1}]dx^2+dy^2=1#&[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1}](r!=0&abs(y-ly())+v^2/(2*b()) < lw()))");
+            simplify('R=="[?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;++?v=0;a:=0;w:=0;++a:=*;?-B()<=a&a<=-b();][c:=0;]([{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1}]#(((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1->dx^2+dy^2=1)#&[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1}](r!=0&abs(y-ly())+v^2/(2*b()) < lw()))");
+            GV('R=="[?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;++?v=0;a:=0;w:=0;++a:=*;?-B()<=a&a<=-b();][c:=0;](#[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1}]true#&[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1}](r!=0&abs(y-ly())+v^2/(2*b()) < lw()))");
+            trueAnd('R=="[?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;++?v=0;a:=0;w:=0;++a:=*;?-B()<=a&a<=-b();][c:=0;]#true&[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1}](r!=0&abs(y-ly())+v^2/(2*b()) < lw())#");
+            dC("v=old(v)+a*c", 'R=="[?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;++?v=0;a:=0;w:=0;++a:=*;?-B()<=a&a<=-b();][c:=0;]#[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1}](r!=0&abs(y-ly())+v^2/(2*b()) < lw())#"); <(
+              "Use":
+                dC("-c*(v-a/2*c)<=y-old(y)&y-old(y)<=c*(v-a/2*c)", 'R=="[?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;++?v=0;a:=0;w:=0;++a:=*;?-B()<=a&a<=-b();][c:=0;]\forall v_0 (v_0=v->#[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&(((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1)&v=v_0+a*c}](r!=0&abs(y-ly())+v^2/(2*b()) < lw())#)"); <(
+                  "Use":
+                    unfold; <(
+                      "[?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;][c:=0;]\forall v_0 (v_0=v->\forall y_0 (y_0=y->[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&((((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1)&v=v_0+a*c)&-c*(v-a/2*c)<=y-y_0&y-y_0<=c*(v-a/2*c)}](r!=0&abs(y-ly())+v^2/(2*b()) < lw())))":
+                        dWplus('R=="[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&((((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1)&v=v_0+a*c)&-c*(v-a/2*c)<=y-y_0&y-y_0<=c*(v-a/2*c)}](r!=0&abs(y-ly())+v^2/(2*b()) < lw())");
+                        simplify(1) using "r!=0 :: r!=0&abs(y-ly())+v^2/(2*b()) < lw() :: nil";
+                        unfold;
+                        hideL('L=="r!=0");
+                        hideL('L=="w_0*r=v_0");
+                        hideL('L=="dx_0^2+dy_0^2=1");
+                        hideL('L=="r_0!=0");
+                        hideL('L=="abs(y_0-ly())+v_0^2/(2*b()) < lw()");
+                        hideL('L=="dx^2+dy^2=1");
+                        edit("abs(y_0-ly())+v_0^2/(2*b())+(A()/b()+1)*(A()/2*c^2+c*v_0) < lw()", -6) using "A()>0 :: b()>0 :: ep()>0 :: abs(y_0-ly())+v_0^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v_0) < lw() :: v_0>=0 :: c>=0 :: c<=ep() :: nil";
+                        QE using "A()>0 :: b()>0 :: abs(y_0-ly())+v_0^2/(2*b())+(A()/b()+1)*(A()/2*c^2+c*v_0) < lw() :: v_0>=0 :: a<=A() :: v=v_0+a*c :: -c*(v-a/2*c)<=y-y_0 :: y-y_0<=c*(v-a/2*c) :: c>=0 :: v>=0 :: abs(y-ly())+v^2/(2*b()) < lw() :: nil",
+                      "[?v=0;a:=0;w:=0;][c:=0;]\forall v_0 (v_0=v->\forall y_0 (y_0=y->[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&((((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1)&v=v_0+a*c)&-c*(v-a/2*c)<=y-y_0&y-y_0<=c*(v-a/2*c)}](r!=0&abs(y-ly())+v^2/(2*b()) < lw())))":
+                        dWplus('R=="[{x'=v*dx,y'=v*dy,v'=0,dx'=-dy*w,dy'=dx*w,w'=0/r,c'=1&((((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1)&v=v_0+0*c)&-c*(v-0/2*c)<=y-y_0&y-y_0<=c*(v-0/2*c)}](r!=0&abs(y-ly())+v^2/(2*b()) < lw())");
+                        simplify(1) using "r!=0 :: r!=0&abs(y-ly())+v^2/(2*b()) < lw() :: nil";
+                        unfold;
+                        allL2R('L=="v_0=0");
+                        simplify('L=="v=#0+0*c#");
+                        allL2R('L=="v=0");
+                        cut("y=y_0"); <(
+                          "Use":
+                            allL2R('L=="y=y_0");
+                            id,
+                          "Show":
+                            QE using "-c*(0-0/2*c)<=y-y_0 :: y-y_0<=c*(0-0/2*c) :: y=y_0 :: nil"
+                        ),
+                      "[a:=*;?-B()<=a&a<=-b();][c:=0;]\forall v_0 (v_0=v->\forall y_0 (y_0=y->[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&((((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1)&v=v_0+a*c)&-c*(v-a/2*c)<=y-y_0&y-y_0<=c*(v-a/2*c)}](r!=0&abs(y-ly())+v^2/(2*b()) < lw())))":
+                        dWplus('R=="[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&((((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1)&v=v_0+a*c)&-c*(v-a/2*c)<=y-y_0&y-y_0<=c*(v-a/2*c)}](r!=0&abs(y-ly())+v^2/(2*b()) < lw())");
+                        simplify(1) using "r!=0 :: r!=0&abs(y-ly())+v^2/(2*b()) < lw() :: nil";
+                        unfold;
+                        QE using "b()>0 :: lw()>0 :: v_0>=0 :: a<=-b() :: abs(y_0-ly())+v_0^2/(2*b()) < lw() :: v=v_0+a*c :: -c*(v-a/2*c)<=y-y_0 :: y-y_0<=c*(v-a/2*c) :: c>=0 :: v>=0 :: abs(y-ly())+v^2/(2*b()) < lw() :: nil"
                     ),
-                    hideL(-6=="abs(y_0-ly())+v_0^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v_0) < lw()") ; hideL(-14=="abs(y_0-ly())+v_0^2/(2*b()) < lw()") ; dI(1)
-                  ),
-                  dI(1)
+                  "Show":
+                    unfold; <(
+                      "[?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;][c:=0;]\forall v_0 (v_0=v->\forall y_0 (y_0=y->[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&(((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1)&v=v_0+a*c}](-c*(v-a/2*c)<=y-y_0&y-y_0<=c*(v-a/2*c))))":
+                        dIClose(1) using "v_0=v :: y_0=y :: [{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&(((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1)&v=v_0+a*c}](-c*(v-a/2*c)<=y-y_0&y-y_0<=c*(v-a/2*c)) :: nil",
+                      "[?v=0;a:=0;w:=0;][c:=0;]\forall v_0 (v_0=v->\forall y_0 (y_0=y->[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&(((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1)&v=v_0+a*c}](-c*(v-a/2*c)<=y-y_0&y-y_0<=c*(v-a/2*c))))":
+                        dIClose(1) using "v_0=v :: y_0=y :: [{x'=v*dx,y'=v*dy,v'=0,dx'=-dy*w,dy'=dx*w,w'=0/r,c'=1&(((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1)&v=v_0+0*c}](-c*(v-0/2*c)<=y-y_0&y-y_0<=c*(v-0/2*c)) :: nil",
+                      "[a:=*;?-B()<=a&a<=-b();][c:=0;]\forall v_0 (v_0=v->\forall y_0 (y_0=y->[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&(((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1)&v=v_0+a*c}](-c*(v-a/2*c)<=y-y_0&y-y_0<=c*(v-a/2*c))))":
+                        dIClose(1) using "v_0=v :: y_0=y :: v>=0 :: [{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&(((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1)&v=v_0+a*c}](-c*(v-a/2*c)<=y-y_0&y-y_0<=c*(v-a/2*c)) :: nil"
+                    )
+                ),
+              "Show":
+                unfold; <(
+                  "[?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;][c:=0;]\forall v_0 (v_0=v->[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1}]v=v_0+a*c)":
+                    dIClose(1) using "c=0 :: v_0=v :: [{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1}]v=v_0+a*c :: nil",
+                  "[?v=0;a:=0;w:=0;][c:=0;]\forall v_0 (v_0=v->[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1}]v=v_0+a*c)":
+                    dIClose(1) using "v_0=v :: [{x'=v*dx,y'=v*dy,v'=0,dx'=-dy*w,dy'=dx*w,w'=0/r,c'=1&((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1}]v=v_0+0*c :: nil",
+                  "[a:=*;?-B()<=a&a<=-b();][c:=0;]\forall v_0 (v_0=v->[{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1}]v=v_0+a*c)":
+                    dIClose(1) using "c=0 :: v_0=v :: [{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&((v>=0&c<=ep())&c>=0)&dx^2+dy^2=1}]v=v_0+a*c :: nil"
                 )
-              )
             ),
-            dI(1)
-          ),
-          dI(1)
+          "Show":
+            unfold; <(
+              "[?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;][c:=0;][{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&(v>=0&c<=ep())&c>=0}]dx^2+dy^2=1":
+                dIClose(1) using "dx^2+dy^2=1 :: [{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&(v>=0&c<=ep())&c>=0}]dx^2+dy^2=1 :: nil",
+              "[?v=0;a:=0;w:=0;][c:=0;][{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&(v>=0&c<=ep())&c>=0}]dx^2+dy^2=1":
+                dIClose(1) using "dx^2+dy^2=1 :: [{x'=v*dx,y'=v*dy,v'=0,dx'=-dy*w,dy'=dx*w,w'=0/r,c'=1&(v>=0&c<=ep())&c>=0}]dx^2+dy^2=1 :: nil",
+              "[a:=*;?-B()<=a&a<=-b();][c:=0;][{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&(v>=0&c<=ep())&c>=0}]dx^2+dy^2=1":
+                dIClose(1) using "dx^2+dy^2=1 :: [{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&(v>=0&c<=ep())&c>=0}]dx^2+dy^2=1 :: nil"
+            )
+        ),
+      "Show":
+        unfold; <(
+          "[?abs(y-ly())+v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v) < lw();a:=*;?-B()<=a&a<=A();w:=*;r:=*;?r!=0&w*r=v;][c:=0;][{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&v>=0&c<=ep()}]c>=0":
+            dIClose(1) using "c=0 :: [{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&v>=0&c<=ep()}]c>=0 :: nil",
+          "[?v=0;a:=0;w:=0;][c:=0;][{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&v>=0&c<=ep()}]c>=0":
+            dIClose(1) using "c=0 :: [{x'=v*dx,y'=v*dy,v'=0,dx'=-dy*w,dy'=dx*w,w'=0/r,c'=1&v>=0&c<=ep()}]c>=0 :: nil",
+          "[a:=*;?-B()<=a&a<=-b();][c:=0;][{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&v>=0&c<=ep()}]c>=0":
+            dIClose(1) using "c=0 :: [{x'=v*dx,y'=v*dy,v'=a,dx'=-dy*w,dy'=dx*w,w'=a/r,c'=1&v>=0&c<=ep()}]c>=0 :: nil"
         )
-      ),
-      boxAnd(1) ; andR(1) ; <(
-        dW(1) ; prop,
-        dC("c>=0", 1) ; <(
-          dC("dx^2+dy^2=1", 1) ; <(
-            boxAnd(1) ; andR(1) ; <(
-              dW(1) ; prop,
-              boxAnd(1) ; andR(1) ; <(
-                GV(1) ; id,
-                dC("v=old(v)", 1) ; <(
-                  dC("-c*v<=y-old(y)&y-old(y)<=c*v", 1) ; <(
-                    dWplus(1) ; unfold ; hideL(-19=="c<=ep()") ; hideL(-16=="dx^2+dy^2=1") ; hideL(-11=="r!=0") ; hideL(-10=="dx_0^2+dy_0^2=1") ; hideL(-8=="c_0=0") ; hideL(-7=="w_0=0") ; hideL(-4=="ep()>0") ; hideL(-2=="B()>=b()") ; hideL(-1=="A()>0") ; QE,
-                    dI(1)
-                  ),
-                  dI(1)
-                )
-              )
-            ),
-            dI(1)
-          ),
-          dI(1)
-        )
-      ),
-      boxAnd(1) ; andR(1) ; <(
-        dW(1) ; prop,
-        dC("c>=0", 1) ; <(
-          dC("dx^2+dy^2=1", 1) ; <(
-            boxAnd(1) ; andR(1) ; <(
-              dW(1) ; prop,
-              boxAnd(1) ; andR(1) ; <(
-                GV(1) ; id,
-                dC("v=old(v)+a*c", 1) ; <(
-                  dC("-c*(v-a/2*c)<=y-old(y)&y-old(y)<=c*(v-a/2*c)", 1) ; <(
-                    dWplus(1) ; unfold ; hideL(-16=="dx^2+dy^2=1") ; hideL(-11=="r!=0") ; hideL(-10=="dx_0^2+dy_0^2=1") ; hideL(-8=="c_0=0") ; hideL(-6=="-B()<=a") ; hideL(-14=="c<=ep()") ; hideL(-4=="ep()>0") ; hideL(-2=="B()>=b()") ; QE,
-                    dI(1)
-                  ),
-                  dI(1)
-                )
-              )
-            ),
-            dI(1)
-          ),
-          dI(1)
-        )
-      )
     )
-  )
-End.
-
-Tactic "Scripted proof (3)"
-implyR(1) ; loop("v >= 0 & dx^2+dy^2 = 1 & r != 0 & abs(y-ly) + v^2/(2*b) < lw", 1) ; <(
-  prop,
-  QE,
-  unfold ; <(
-    dC("c>=0", 1) ; <(
-      dC("dx^2+dy^2=1", 1) ; <(
-        dC("v=old(v)+a*c", 1) ; <(
-          dC("-c*(v-a/2*c)<=y-old(y)&y-old(y)<=c*(v-a/2*c)", 1) ; <(
-            dWplus(1) ; unfold ; simplify(1) ;
-            hideL(-7=="-B()<=a") ; hideL(-8=="r!=0") ; hideL(-9=="r_0!=0") ; hideL(-13=="dx^2+dy^2=1") ;
-            hideL(-9=="abs(y_0-ly())+v_0^2/(2*b()) < lw()") ;
-            edit("expand(abs(y_0-ly()))+v_0^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v_0) < lw()", -6) ;
-            edit("abs_0+v_0^2/(2*b())+(A()/b()+1)*(A()/2*c^2+c*v_0) < lw()", -6) ;
-            hideL(-14=="c<=ep()") ; hideL(-4=="ep()>0") ;
-            edit("expand(abs(y-ly()))+v^2/(2*b()) < lw()", 1) ;
-            QE,
-            dI(1)
-            ),
-          dI(1)
-          ),
-        dI(1)
-        ),
-      dI(1)
-      ),
-    dC("c>=0", 1) ; <(
-      dC("dx^2+dy^2=1", 1) ; <(
-        dC("v=old(v)", 1) ; <(
-          dC("-c*v<=y-old(y)&y-old(y)<=c*v", 1) ; <(
-            dW(1) ; unfold ; simplify(1) ; QE,
-            dI(1)
-            ),
-          dI(1)
-          ),
-        dI(1)
-        ),
-      dI(1)
-      ),
-    dC("c>=0", 1) ; <(
-      dC("dx^2+dy^2=1", 1) ; <(
-        dC("v=old(v)+a*c", 1) ; <(
-          dC("-c*(v-a/2*c)<=y-old(y)&y-old(y)<=c*(v-a/2*c)", 1) ; <(
-            dW(1) ; unfold ; simplify(1) ; hideL(-14=="dx^2+dy^2=1") ; hideL(-9=="r!=0") ; hideL(-4=="ep()>0") ; hideL(-14=="c<=ep()") ; QE,
-            dI(1)
-            ),
-          dI(1)
-          ),
-        dI(1)
-        ),
-      dI(1)
-      )
-    )
-  )
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "LICS: Example 1 Continuous car accelerates forward"
+ArchiveEntry "Benchmarks/Basic/LICS: Example 1 Continuous car accelerates forward"
 
-Citation "André Platzer. Logics of dynamical systems. ACM/IEEE Symposium on Logic in Computer Science, LICS 2012, June 25–28, 2012, Dubrovnik, Croatia, pp. 13-24. IEEE 2012.".
+Citation "André Platzer. Logics of dynamical systems. ACM/IEEE Symposium on Logic in Computer Science, LICS 2012, June 25-28, 2012, Dubrovnik, Croatia, pp. 13-24. IEEE 2012.".
 Link "http://symbolaris.com/pub/lds-lics.pdf#page=4".
 
 ProgramVariables /* program variables may change their value over time */
@@ -1739,18 +1882,22 @@ Problem          /* differential dynamic logic formula */
 End.
 
 Tactic "Scripted proof"
-  DW(1.1) ; simplify(1) ; GV(1.1) ; implyTrue(1) ; closeT
+DW('R=="v>=0&a>=0->#[{x'=v,v'=a&v>=0}]v>=0#");
+simplify('R=="v>=0&a>=0->[{x'=v,v'=a&v>=0}](v>=0->v>=0)");
+GV('R=="v>=0&a>=0->#[{x'=v,v'=a&v>=0}]true#");
+implyTrue('R=="v>=0&a>=0->true");
+closeT
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "LICS: Example 2 Single car drives forward"
+ArchiveEntry "Benchmarks/Basic/LICS: Example 2 Single car drives forward"
 
-Citation "André Platzer. Logics of dynamical systems. ACM/IEEE Symposium on Logic in Computer Science, LICS 2012, June 25–28, 2012, Dubrovnik, Croatia, pp. 13-24. IEEE 2012.".
+Citation "André Platzer. Logics of dynamical systems. ACM/IEEE Symposium on Logic in Computer Science, LICS 2012, June 25-28, 2012, Dubrovnik, Croatia, pp. 13-24. IEEE 2012.".
 Link "http://symbolaris.com/pub/lds-lics.pdf#page=5".
 
 Definitions        /* function symbols cannot change their value */
@@ -1775,22 +1922,31 @@ Problem          /* differential dynamic logic formula */
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; loop("v>=0", 1) ; <(
+implyR('R=="v>=0&A()>=0&b()>0->[{{a:=A();++a:=-b();}{x'=v,v'=a&v>=0}}*]v>=0");
+loop("v>=0", 'R=="[{{a:=A();++a:=-b();}{x'=v,v'=a&v>=0}}*]v>=0"); <(
+  "Init":
     id,
+  "Post":
     id,
-    composeb(1) ; DW(1.1) ; simplify(1) ; GV(1.1) ; GV(1) ; closeT
-  )
+  "Step":
+    composeb('R=="[{a:=A();++a:=-b();}{x'=v,v'=a&v>=0}]v>=0");
+    DW('R=="[a:=A();++a:=-b();]#[{x'=v,v'=a&v>=0}]v>=0#");
+    simplify('R=="[a:=A();++a:=-b();][{x'=v,v'=a&v>=0}](v>=0->v>=0)");
+    GV('R=="[a:=A();++a:=-b();]#[{x'=v,v'=a&v>=0}]true#");
+    GV('R=="[a:=A();++a:=-b();]true");
+    closeT
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "LICS: Example 3a event-triggered car drives forward"
+ArchiveEntry "Benchmarks/Basic/LICS: Example 3a event-triggered car drives forward"
 
-Citation "André Platzer. Logics of dynamical systems. ACM/IEEE Symposium on Logic in Computer Science, LICS 2012, June 25–28, 2012, Dubrovnik, Croatia, pp. 13-24. IEEE 2012.".
+Citation "André Platzer. Logics of dynamical systems. ACM/IEEE Symposium on Logic in Computer Science, LICS 2012, June 25-28, 2012, Dubrovnik, Croatia, pp. 13-24. IEEE 2012.".
 Link "http://symbolaris.com/pub/lds-lics.pdf#page=7".
 
 ProgramVariables
@@ -1818,20 +1974,29 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; loop("v>=0", 1) ; <(
+implyR('R=="v>=0&A>=0&b>0->[{{?m-x>=2;a:=A;++a:=-b;}{x'=v,v'=a&v>=0}}*]v>=0");
+loop("v>=0", 'R=="[{{?m-x>=2;a:=A;++a:=-b;}{x'=v,v'=a&v>=0}}*]v>=0"); <(
+  "Init":
     id,
+  "Post":
     id,
-    composeb(1) ; DW(1.1) ; simplify(1) ; GV(1.1) ; GV(1) ; closeT
-  )
+  "Step":
+    composeb('R=="[{?m-x>=2;a:=A;++a:=-b;}{x'=v,v'=a&v>=0}]v>=0");
+    DW('R=="[?m-x>=2;a:=A;++a:=-b;]#[{x'=v,v'=a&v>=0}]v>=0#");
+    simplify('R=="[?m-x>=2;a:=A;++a:=-b;][{x'=v,v'=a&v>=0}](v>=0->v>=0)");
+    GV('R=="[?m-x>=2;a:=A;++a:=-b;]#[{x'=v,v'=a&v>=0}]true#");
+    GV('R=="[?m-x>=2;a:=A;++a:=-b;]true");
+    closeT
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "LICS: Example 4a safe stopping of time-triggered car"
+ArchiveEntry "Benchmarks/Basic/LICS: Example 4a safe stopping of time-triggered car"
 
 Definitions        /* function symbols cannot change their value */
   Real b();          /* braking capabilities */
@@ -1867,12 +2032,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "LICS: Example 4b progress of time-triggered car"
+ArchiveEntry "Benchmarks/Basic/LICS: Example 4b progress of time-triggered car"
 
 Definitions      /* function symbols cannot change their value */
   Real b();          /* braking capabilities */
@@ -1902,7 +2067,7 @@ End.
 
 End.
 
-ArchiveEntry "LICS: Example 4c relative safety of time-triggered car"
+ArchiveEntry "Benchmarks/Basic/LICS: Example 4c relative safety of time-triggered car"
 
 Definitions      /* function symbols cannot change their value */
   Real b();          /* braking capabilities */
@@ -1936,20 +2101,33 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; loop("v^2<=2*b()*(m()-x)", 1) ; <(
-    solve(-1) ; QE,
+implyR('R=="[{x'=v,v'=-b()}]x<=m()&v>=0&A()>=0&b()>0->[{{?2*b()*(m()-x)>=v^2+(A()+b())*(A()*ep()^2+2*ep()*v);a:=A();++a:=-b();}t:=0;{x'=v,v'=a,t'=1&v>=0&t<=ep()}}*]x<=m()");
+loop("v^2<=2*b()*(m()-x)", 'R=="[{{?2*b()*(m()-x)>=v^2+(A()+b())*(A()*ep()^2+2*ep()*v);a:=A();++a:=-b();}t:=0;{x'=v,v'=a,t'=1&v>=0&t<=ep()}}*]x<=m()"); <(
+  "Init":
+    solve('L=="[{x'=v,v'=-b()}]x<=m()");
     QE,
-    composeb(1) ; composeb(1.1) ; solve(1.1.1) ; unfold ; doall(QE)
-  )
+  "Post":
+    QE,
+  "Step":
+    composeb('R=="[{?2*b()*(m()-x)>=v^2+(A()+b())*(A()*ep()^2+2*ep()*v);a:=A();++a:=-b();}t:=0;{x'=v,v'=a,t'=1&v>=0&t<=ep()}]v^2<=2*b()*(m()-x)");
+    composeb('R=="[?2*b()*(m()-x)>=v^2+(A()+b())*(A()*ep()^2+2*ep()*v);a:=A();++a:=-b();]#[t:=0;{x'=v,v'=a,t'=1&v>=0&t<=ep()}]v^2<=2*b()*(m()-x)#");
+    solve('R=="[?2*b()*(m()-x)>=v^2+(A()+b())*(A()*ep()^2+2*ep()*v);a:=A();++a:=-b();][t:=0;]#[{x'=v,v'=a,t'=1&v>=0&t<=ep()}]v^2<=2*b()*(m()-x)#");
+    unfold; <(
+      "[?2*b()*(m()-x)>=v^2+(A()+b())*(A()*ep()^2+2*ep()*v);a:=A();][t:=0;]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a*s_+v>=0&s_+t<=ep())->(a*t_+v)^2<=2*b()*(m()-(a*(t_^2/2)+v*t_+x)))":
+        QE,
+      "[a:=-b();][t:=0;]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a*s_+v>=0&s_+t<=ep())->(a*t_+v)^2<=2*b()*(m()-(a*(t_^2/2)+v*t_+x)))":
+        QE
+    )
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "LICS: Example 5 Controllability Equivalence"
+ArchiveEntry "Benchmarks/Basic/LICS: Example 5 Controllability Equivalence"
 
 Definitions
   Real b;
@@ -1966,19 +2144,24 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; equivR(1) ; <(
-    solve(1) ; QE,
-    solve(-2) ; QE
-  )
+implyR('R=="v>=0&b()>0->(v^2<=2*b()*(m()-x)<->[{x'=v,v'=-b()}]x<=m())");
+equivR('R=="v^2<=2*b()*(m()-x)<->[{x'=v,v'=-b()}]x<=m()"); <(
+  "v^2<=2*b()*(m()-x)&[{x'=v,v'=-b()}]x<=m()":
+    solve('R=="[{x'=v,v'=-b()}]x<=m()");
+    QE,
+  "!v^2<=2*b()*(m()-x)&![{x'=v,v'=-b()}]x<=m()":
+    solve('L=="[{x'=v,v'=-b()}]x<=m()");
+    QE
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "LICS: Example 6 MPC Acceleration Equivalence"
+ArchiveEntry "Benchmarks/Basic/LICS: Example 6 MPC Acceleration Equivalence"
 
 Definitions
   Real b;
@@ -2002,29 +2185,60 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; equivR(1) ; <(
-    composeb(-2) ; solve(-2.1.1) ; solve(-2.1) ; assignb(-2) ; QE,
-    composeb(1) ; assignb(1) ; solve(1.1) ; solve(1) ; allR(1) ; implyR(1) ; implyR(1) ; allR(1) ; implyR(1) ; allR(1) ; implyR(1) ; allL("t__0", -5) ; implyL(-5) ; <(
-      hideR(1=="(-b())*(t_^2/2)+(A()*kyxtime+v)*t_+(A()*(kyxtime^2/2)+v*kyxtime+x)<=m()") ; QE,
-      QE
+implyR('R=="v>=0&b()>0&A()>=0&ep()>=0->([t:=0;{x'=v,v'=A(),t'=1&t<=ep()}][{x'=v,v'=-b()}]x<=m()<->2*b()*(m()-x)>=v^2+(A()+b())*(A()*ep()^2+2*ep()*v))");
+equivR('R=="[t:=0;{x'=v,v'=A(),t'=1&t<=ep()}][{x'=v,v'=-b()}]x<=m()<->2*b()*(m()-x)>=v^2+(A()+b())*(A()*ep()^2+2*ep()*v)"); <(
+  "[t:=0;{x'=v,v'=A(),t'=1&t<=ep()}][{x'=v,v'=-b()}]x<=m()&2*b()*(m()-x)>=v^2+(A()+b())*(A()*ep()^2+2*ep()*v)":
+    composeb('L=="[t:=0;{x'=v,v'=A(),t'=1&t<=ep()}][{x'=v,v'=-b()}]x<=m()");
+    solve('L=="[t:=0;][{x'=v,v'=A(),t'=1&t<=ep()}]#[{x'=v,v'=-b()}]x<=m()#");
+    solve('L=="[t:=0;]#[{x'=v,v'=A(),t'=1&t<=ep()}]\forall t_ (t_>=0->(-b())*(t_^2/2)+v*t_+x<=m())#");
+    assignb('L=="[t:=0;]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->s_+t<=ep())->\exists kyxtime (kyxtime=t_&kyxtime+t<=ep()&\forall t_ (t_>=0->(-b())*(t_^2/2)+(A()*kyxtime+v)*t_+(A()*(kyxtime^2/2)+v*kyxtime+x)<=m())))");
+    QE,
+  "![t:=0;{x'=v,v'=A(),t'=1&t<=ep()}][{x'=v,v'=-b()}]x<=m()&!2*b()*(m()-x)>=v^2+(A()+b())*(A()*ep()^2+2*ep()*v)":
+    composeb('R=="[t:=0;{x'=v,v'=A(),t'=1&t<=ep()}][{x'=v,v'=-b()}]x<=m()");
+    assignb('R=="[t:=0;][{x'=v,v'=A(),t'=1&t<=ep()}][{x'=v,v'=-b()}]x<=m()");
+    solve('R=="[{x'=v,v'=A(),t'=1&t<=ep()}]#[{x'=v,v'=-b()}]x<=m()#");
+    solve('R=="[{x'=v,v'=A(),t'=1&t<=ep()}]\forall t_ (t_>=0->(-b())*(t_^2/2)+v*t_+x<=m())");
+    allR('R=="\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->s_+t<=ep())->\forall kyxtime (kyxtime=t_->\forall t_ (t_>=0->(-b())*(t_^2/2)+(A()*kyxtime+v)*t_+(A()*(kyxtime^2/2)+v*kyxtime+x)<=m())))");
+    implyR('R=="t_>=0->\forall s_ (0<=s_&s_<=t_->s_+t<=ep())->\forall kyxtime (kyxtime=t_->\forall t_ (t_>=0->(-b())*(t_^2/2)+(A()*kyxtime+v)*t_+(A()*(kyxtime^2/2)+v*kyxtime+x)<=m()))");
+    implyR('R=="\forall s_ (0<=s_&s_<=t_->s_+t<=ep())->\forall kyxtime (kyxtime=t_->\forall t_ (t_>=0->(-b())*(t_^2/2)+(A()*kyxtime+v)*t_+(A()*(kyxtime^2/2)+v*kyxtime+x)<=m()))");
+    allR('R=="\forall kyxtime (kyxtime=t_->\forall t_ (t_>=0->(-b())*(t_^2/2)+(A()*kyxtime+v)*t_+(A()*(kyxtime^2/2)+v*kyxtime+x)<=m()))");
+    implyR('R=="kyxtime=t_->\forall t_ (t_>=0->(-b())*(t_^2/2)+(A()*kyxtime+v)*t_+(A()*(kyxtime^2/2)+v*kyxtime+x)<=m())");
+    allR('R=="\forall t_ (t_>=0->(-b())*(t_^2/2)+(A()*kyxtime+v)*t_+(A()*(kyxtime^2/2)+v*kyxtime+x)<=m())");
+    implyR('R=="t_>=0->(-b())*(t_^2/2)+(A()*kyxtime+v)*t_+(A()*(kyxtime^2/2)+v*kyxtime+x)<=m()");
+    allL("t__0", 'L=="\forall s_ (0<=s_&s_<=t__0->s_+t<=ep())");
+    implyL('L=="0<=t__0&t__0<=t__0->t__0+t<=ep()"); <(
+      "0<=t__0&t__0<=t__0":
+        hideR('R=="(-b())*(t_^2/2)+(A()*kyxtime+v)*t_+(A()*(kyxtime^2/2)+v*kyxtime+x)<=m()");
+        QE,
+      "t__0+t<=ep()":
+        QE
     )
-  )
+)
 End.
 
 Tactic "Scripted proof (2)"
-  implyR(1); equivR(1); <(
-    chaseAt(-2); solve(-2.0.1); solve(-2.0.1.0.1.1.1.0.1.0.1); QE,
-    unfold; solve(1); solve(1.0.1.1.0.1.0.1); QE
-  )
+implyR('R=="v>=0&b()>0&A()>=0&ep()>=0->([t:=0;{x'=v,v'=A(),t'=1&t<=ep()}][{x'=v,v'=-b()}]x<=m()<->2*b()*(m()-x)>=v^2+(A()+b())*(A()*ep()^2+2*ep()*v))");
+equivR('R=="[t:=0;{x'=v,v'=A(),t'=1&t<=ep()}][{x'=v,v'=-b()}]x<=m()<->2*b()*(m()-x)>=v^2+(A()+b())*(A()*ep()^2+2*ep()*v)"); <(
+  "[t:=0;{x'=v,v'=A(),t'=1&t<=ep()}][{x'=v,v'=-b()}]x<=m()&2*b()*(m()-x)>=v^2+(A()+b())*(A()*ep()^2+2*ep()*v)":
+    chaseAt('L=="[t:=0;{x'=v,v'=A(),t'=1&t<=ep()}][{x'=v,v'=-b()}]x<=m()");
+    solve('L=="\forall t (t=0->#[{x'=v,v'=A(),t'=1&t<=ep()}][{x'=v,v'=-b()}]x<=m()#)");
+    solve('L=="\forall t (t=0->\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->s_+t<=ep())->t_+t<=ep()&\exists v (v=A()*t_+v_1&\exists x (x=A()*(t_^2/2)+v_1*t_+x_1&#[{x'=v,v'=-b()}]x<=m()#))))");
+    QE,
+  "![t:=0;{x'=v,v'=A(),t'=1&t<=ep()}][{x'=v,v'=-b()}]x<=m()&!2*b()*(m()-x)>=v^2+(A()+b())*(A()*ep()^2+2*ep()*v)":
+    unfold;
+    solve('R=="[{x'=v,v'=A(),t'=1&t<=ep()}][{x'=v,v'=-b()}]x<=m()");
+    solve('R=="\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->s_+t<=ep())->\forall v (v=A()*t_+v_1->\forall x (x=A()*(t_^2/2)+v_1*t_+x_1->#[{x'=v,v'=-b()}]x<=m()#)))");
+    QE
+)
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "LICS: Example 7 Model-Predictive Control Design Car"
+ArchiveEntry "Benchmarks/Basic/LICS: Example 7 Model-Predictive Control Design Car"
 
 Definitions      /* function symbols cannot change their value */
   Real b();          /* braking capabilities */
@@ -2055,6 +2269,10 @@ Problem          /* differential dynamic logic formula */
       {x'=v, v'=a, t'=1 & v>=0 & t<=ep}
     }*@invariant([{x'=v, v'=-b}](x<=m))
   ] (x <= m)
+End.
+
+Tactic "Automated proof"
+  auto
 End.
 
 End.

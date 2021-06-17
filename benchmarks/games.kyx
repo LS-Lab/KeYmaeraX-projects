@@ -1,4 +1,4 @@
-ArchiveEntry "Dual Filibuster Game"
+ArchiveEntry "Benchmarks/Games/Dual Filibuster Game"
 
 ProgramVariables
   Real x;
@@ -17,12 +17,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Push-around cart"
+ArchiveEntry "Benchmarks/Games/Push-around cart"
 
 ProgramVariables
   Real x;     /* cart position */
@@ -61,12 +61,12 @@ Tactic "Scripted proof"
 End.
 
 Tactic "Automated proof"
-  master
+  auto
 End.
 
 End.
 
-ArchiveEntry "Goalie in robot soccer"
+ArchiveEntry "Benchmarks/Games/Goalie in robot soccer"
 
 ProgramVariables
   Real x, y;   /* x/y-coordinate of ball */
