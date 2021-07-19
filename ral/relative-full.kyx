@@ -94,7 +94,7 @@ SharedDefinitions
 
 End.
 
-Lemma "Robot preserves loop invariant"
+Lemma "RAL19/Robot preserves loop invariant"
 
 ProgramVariables
   Real xg,yg; /* goal position: (dm,dm) */
@@ -294,7 +294,7 @@ End.
 
 End.
 
-Lemma "Robot reaches waypoint"
+Lemma "RAL19/Robot reaches waypoint"
 
 ProgramVariables
   Real xg,yg; /* goal position: (dm,dm) */
@@ -371,7 +371,7 @@ End.
 
 End.
 
-Lemma "Robot reaches waypoint with desired speed"
+Lemma "RAL19/Robot reaches waypoint with desired speed"
 
 ProgramVariables
   Real xg,yg; /* goal position: (dm,dm) */
@@ -477,14 +477,14 @@ unfold ; cut("v < vl|vl<=v&v<=vh|vh < v") ; <(
     ))
           ),
         GV(1) ; hideL(-9=="v<=vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)") ; hideL(-8=="abs(k)*eps()<=100*1") ; hideL(-8=="vl<=v|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10)") ; hideL(-10=="A()*T()<=10*(vh-vl)") ; hideL(-10=="B()*T()<=10*(vh-vl)") ; hideL(-10=="(k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10") ; hideL(-10=="k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10)") ; hideL(-8=="0<=vl") ; hideL(-5=="v>0") ; hideL(-6=="v>=0") ; hideL(-7=="v < vl") ; unfold ; cut("vl<=v&v<=vh&v>0") ; <(
-          useLemma("Robot reaches waypoint", "prop"),
+          useLemma("RAL19/Robot reaches waypoint", "prop"),
           hideR(1=="<{{{a:=*;?(-B()<=a&a<=A())&10*v+a*T()>=0&(v<=vh&10*v+a*T()<=10*vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(yg-10*eps())*(100*100)*(10*10))&(vl<=v&10*v+a*T()>=10*vl|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(yg-10*eps())*(100*100)*(10*10));}t:=0;}{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=a,t'=10&v>=0}}*>(xg*xg+yg*yg<=10*eps()*(10*eps())&vl<=v&v<=vh)") ; QE
           )
         ),
       hideR(1=="<{{{a:=*;?(-B()<=a&a<=A())&10*v+a*T()>=0&(v<=vh&10*v+a*T()<=10*vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(yg-10*eps())*(100*100)*(10*10))&(vl<=v&10*v+a*T()>=10*vl|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(yg-10*eps())*(100*100)*(10*10));}t:=0;}{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=a,t'=10&v>=0}}*>(xg*xg+yg*yg<=10*eps()*(10*eps())&vl<=v&v<=vh)") ; QE
       ),
     orL(-17) ; <(
-      useLemma("Robot reaches waypoint", "prop"),
+      useLemma("RAL19/Robot reaches waypoint", "prop"),
       hideL(-10=="vl<=v|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10)") ; fullSimplify ; iterated(1) ; orR(1) ; hideR(1=="xg*xg+yg*yg<=10*eps()*(10*eps())&vl<=v&v<=vh") ; MR("((k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&v=vh&yg>0", 1) ; <(
         unfold ; existsR("-B()", 1) ; unfold ; <(
           QE,
@@ -540,7 +540,7 @@ unfold ; cut("v < vl|vl<=v&v<=vh|vh < v") ; <(
             )
           ),
         hideL(-8=="(10000+2*eps()*abs(k)*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(yg-10*eps())*10000*100|(10000+2*eps()*abs(k)*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(abs(xg)-10*eps())*10000*100") ; hideL(-7=="abs(k)*eps()<=100") ; hideL(-5=="v>0") ; hideL(-5=="yg>0") ; hideL(-7=="A()*T()<=10*(vh-vl)") ; hideL(-7=="B()*T()<=10*(vh-vl)") ; hideL(-7=="(k*(eps()*eps())-200*eps())*100 < k*(xg*xg+yg*yg)-2*xg*100*10") ; hideL(-7=="k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+200*eps())*100") ; hideL(-7=="vh < v") ; GV(1) ; unfold ; cut("vl<=v&v<=vh&v>0") ; <(
-          useLemma("Robot reaches waypoint", "prop"),
+          useLemma("RAL19/Robot reaches waypoint", "prop"),
           hideR(1=="<{{{a:=*;?(-B()<=a&a<=A())&10*v+a*T()>=0&(v<=vh&10*v+a*T()<=10*vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(B()*(2*v*T()*10+a*(T()*T()))+((v*10+a*T())*(v*10+a*T())-10*vh*(10*vh)))<=2*B()*(yg-10*eps())*(100*100)*(10*10))&(vl<=v&10*v+a*T()>=10*vl|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(A()*(2*v*T()*10+a*(T()*T()))+(vl*10*(vl*10)-(v*10+a*T())*(v*10+a*T())))<=2*A()*(yg-10*eps())*(100*100)*(10*10));}t:=0;}{xg'=-v*k*yg/(100*10),yg'=v*(k*xg/(100*10)-1),v'=a,t'=10&v>=0}}*>(xg*xg+yg*yg<=10*eps()*(10*eps())&vl<=v&v<=vh)") ; QE
           )
         )
@@ -552,7 +552,7 @@ End.
 
 End.
 
-Theorem "Theorem 1: Safety"
+Theorem "RAL19/Theorem 1: Safety"
 
 ProgramVariables
   Real xg,yg; /* goal position: (dm,dm) */
@@ -607,7 +607,7 @@ End.
 
 Tactic "Proof Theorem 1: Safety"
 implyR(1) ; MR("v>=0&abs(k)*eps()<=100*1&((k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&(0<=vl&vl < vh&A()*T()<=10*(vh-vl)&B()*T()<=10*(vh-vl))&(v<=vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10))&(vl<=v|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10))", 1) ; <(
-  useLemma("Robot preserves loop invariant","prop"),
+  useLemma("RAL19/Robot preserves loop invariant","prop"),
   unfold ; orL(-9) ; <(
     orL(-8) ; <(
       prop,
@@ -626,7 +626,7 @@ End.
 
 End.
 
-Theorem "Theorem 2: Liveness"
+Theorem "RAL19/Theorem 2: Liveness"
 
 ProgramVariables
   Real xg,yg; /* goal position: (dm,dm) */
@@ -705,8 +705,8 @@ End.
 
 Tactic "Proof Theorem 2: Liveness"
 implyR(1) ; MR("v>=0&abs(k)*eps()<=100*1&((k*(eps()*eps())-2*100*eps())*(10*10) < k*(xg*xg+yg*yg)-2*xg*100*10&k*(xg*xg+yg*yg)-2*xg*100*10 < (k*(eps()*eps())+2*100*eps())*(10*10))&(0<=vl&vl < vh&A()*T()<=10*(vh-vl)&B()*T()<=10*(vh-vl))&(v<=vh|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(v*10*(v*10)-vh*10*(vh*10))<=2*B()*(abs(xg)-10*eps())*(100*100)*(10*10))&(vl<=v|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(yg-10*eps())*(100*100)*(10*10)|(1*100*(1*100)+2*eps()*abs(k)*1*100+eps()*eps()*(k*k))*(vl*10*(vl*10)-v*10*(v*10))<=2*A()*(abs(xg)-10*eps())*(100*100)*(10*10))", 1) ; <(
-  useLemma("Robot preserves loop invariant","prop"),
-  useLemma("Robot reaches waypoint with desired speed","prop")
+  useLemma("RAL19/Robot preserves loop invariant","prop"),
+  useLemma("RAL19/Robot reaches waypoint with desired speed","prop")
   )
 End.
 
