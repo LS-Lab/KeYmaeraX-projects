@@ -1,33 +1,35 @@
-SharedDefinitions.
-  R ep. /* Control cycle duration upper bound */
-  R b.  /* Braking force */
-  R A.  /* Maximum acceleration */
+SharedDefinitions
+  Real ep; /* Control cycle duration upper bound */
+  Real b;  /* Braking force */
+  Real A;  /* Maximum acceleration */
 
-  B Assumptions(R v, R d) <-> ( v>=0 & d>=0 & b>0 ).                                               /* Assumptions A */
+  Bool Assumptions(Real v, Real d) <-> v>=0 & d>=0 & b>0;                                            /* Assumptions A */
 
-  B Controllable(R m, R z, R v, R d) <-> (                                            /* Controllability constraint C */
+  Bool Controllable(Real m, Real z, Real v, Real d) <-> (                             /* Controllability constraint C */
     v^2-d^2 <= 2*b*(m-z) & Assumptions(v,d)
-  ).
+  );
 
-  B M(R d, R do, R m, R mo) <-> (
+  Bool M(Real d, Real do, Real m, Real mo) <-> (
     do^2 - d^2 <= 2*b*(m-mo) & do >= 0 & d >= 0
-  ).
+  );
+
+  Real stopDist(Real v) = v^2/(2*b);                   /* Train stopping distance from speed (.) with braking force b */
 
   /* Initial states */
-  B initial(R m, R z, R v) <-> (
+  Bool initial(Real m, Real z, Real v) <-> (
     v >= 0 &
     m-z >= stopDist(v) &         /* train has sufficient distance to the end of the movement authority to stop safely */
-    b>0 &                                                                                     /* brakes are working */
-    A>=0 &                                                                                     /* engine is working */
+    b>0 &                                                                                       /* brakes are working */
+    A>=0 &                                                                                       /* engine is working */
     ep>=0
-  ).
+  );
 
-  B safe(R m, R z, R v, R d) <-> (
+  Bool safe(Real m, Real z, Real v, Real d) <-> (
     z >= m -> v <= d      /* train 'z' drives past end of movement authority 'm' only with appropriate speed 'v'<='d' */
-  ).
+  );
 
-  R emOn  = (1).
-  R emOff = (0).
+  Real emOn  = 1;
+  Real emOff = 0;
 
   /* Program Definitions, Fig. 3 in
    * @see "Andre Platzer and Jan-David Quesel. European Train Control System: A case study in formal verification.
@@ -38,53 +40,52 @@ SharedDefinitions.
   HP spd ::= {
         ?v <= vdes; a:=*; ?-b<=a&a<=A;
      ++ ?v >= vdes; a:=*; ?-b<=a&a<=0;
-  }.
+  };
 
   HP atp ::= {
     if (m-z <= sb | em = emOn) { a := -b; }
-  }.
+  };
 
   HP drive ::= {
     t := 0;                                                  /* reset control cycle timer */
-    {z'=v, v'=a, t'=1  & v >= 0 & t <= ep}                 /* drive (not backwards v>=0)
+    {z'=v, v'=a, t'=1  & v >= 0 & t <= ep}                   /* drive (not backwards v>=0)
                                                                 for at most ep time (t<=ep) until next controller run */
-  }.
+  };
 
   HP rbc ::= {
        em := emOn;
     ++ m :=*; d :=*; ?d > 0;
-  }.
+  };
 End.
 
-ArchiveEntry "ETCS Essentials".
+ArchiveEntry "ICFEM09/ETCS Essentials"
 
 /**
  * Essentials of European Train Control System (ETCS)
  * @see "Andre Platzer. Differential dynamic logic for hybrid systems. Journal of Automated Reasoning,
  *                      41(2), pages 143-189, 2008."
  */
-Definitions.
-  R m.  /* End of movement authority (train must not drive past m) */
+Definitions
+  Real m;  /* End of movement authority (train must not drive past m) */
 
-  R stopDist(R v) = (v^2/(2*b)).                     /* Train stopping distance from speed (.) with braking force b */
-  R accCompensation(R v) = (((A/b) + 1)*((A/2)*ep^2 + ep*v)).     /* Distance to compensate speed increase. */
-  R SB(R v)       = (stopDist(v) + accCompensation(v)).      /* Distance needed to stop safely when accelerating once */
+  Real accCompensation(Real v) = (((A/b) + 1)*((A/2)*ep^2 + ep*v));         /* Distance to compensate speed increase. */
+  Real SB(Real v) = stopDist(v) + accCompensation(v);        /* Distance needed to stop safely when accelerating once */
 
   /* loop invariant: always maintain sufficient stopping distance */
-  B loopInv(R m, R z, R v) <-> (v >= 0 & m-z >= stopDist(v)).
+  Bool loopInv(Real m, Real z, Real v) <-> v >= 0 & m-z >= stopDist(v);
 
   /* train controller */
   HP ctrl ::= {
         ?m - z <= SB(v); a := -b;    /* train protection: emergency brake when close to end of movement authority */
      ++ ?m - z >= SB(v); a :=  A;    /* free driving: accelerate when sufficient distance */
-  }.
+  };
 End.
 
-ProgramVariables.
-  R a.  /* Actual acceleration -b <= a <= A */
-  R v.  /* Current velocity */
-  R z.  /* Train position */
-  R t.  /* Actual control cycle duration t <= ep */
+ProgramVariables
+  Real a;  /* Actual acceleration -b <= a <= A */
+  Real v;  /* Current velocity */
+  Real z;  /* Train position */
+  Real t;  /* Actual control cycle duration t <= ep */
 End.
 
 /* Safety specification of the form: initial -> [{ctrl;plant}*]safe
@@ -92,7 +93,7 @@ End.
  * any number of repetitions of running a controller 'ctrl' and then driving according to 'plant'
  * keeps the system safe (end up only in states where 'safe' is true).
  */
-Problem.
+Problem
 initial(m,z,v)  ->
     [
       {
@@ -102,68 +103,72 @@ initial(m,z,v)  ->
     ] (z <= m)                        /* safety property: train 'z' never drives past end of movement authority 'm' */
 End.
 
-Tactic "ETCS Essentials Automated Proof".
-  master
+Tactic "ETCS Essentials Automated Proof"
+  auto
 End.
 
-Tactic "ETCS Essentials Proof with Solution".
+Tactic "ETCS Essentials Proof with Solution"
 implyR('R);
 (andL('L)*);
-loopAuto('R) ; <(                                        /* prove loop by induction with invariant annotated in model */
-  prop,                                                  /* induction initial case */
-  QE,                                                    /* induction use case */
-  unfold; doall(solveEnd('R); QE; done)                  /* induction step: symbolically execute programs, solve ODE */
+loop("loopInv(m,z,v)", 'R) ; <(                          /* prove loop by induction */
+  "Init": prop,                                          /* induction initial case */
+  "Post": QE,                                            /* induction use case */
+  "Step": unfold; doall(solveEnd('R); QE; done)          /* induction step: symbolically execute programs, solve ODE */
 )
 End.
 
-Tactic "ETCS Essentials Proof with Differential Invariants".
+Tactic "ETCS Essentials Proof with Differential Invariants"
 implyR('R);
 (andL('L)*);
-loopAuto('R) ; <(                                             /* prove loop by induction with invariant annotated in model */
-  prop,                                                       /* induction initial case */
-  QE,                                                         /* induction use case */
-  unfold ; <(                                                 /* induction step, symbolically execute program until ODE */
+loop("loopInv(m,z,v)", 'R) ; <(                             /* prove loop by induction */
+  "Init": prop,                                             /* induction initial case */
+  "Post": QE,                                               /* induction use case */
+  "Step": unfold ; <(                                       /* induction step, symbolically execute program until ODE */
     /* prove ODE in train protection branch (a=-b) */
-    diffInvariant("t>=old(t)", 'R);                         /* intuition: time progresses */
-    diffInvariant("v=old(v)-b*t", 'R);                 /* intuition: new speed is old speed - decrease by braking */
-    diffInvariant("z=old(z)+old(v)*t-b/2*t^2", 'R)     /* intuition: new position is old position + distance
+    diffInvariant("t>=old(t)", 'R);                        /* intuition: time progresses */
+    diffInvariant("v=old(v)-b*t", 'R);                     /* intuition: new speed is old speed - decrease by braking */
+    diffInvariant("z=old(z)+old(v)*t-b/2*t^2", 'R);        /* intuition: new position is old position + distance
                                                                          travelled with mean speed */
+    dW('R);
+    QE
     ,
     /* prove ODE in free driving branch (a=A) */
     diffInvariant("t>=old(t)", 'R);
     diffInvariant("v=old(v)+A*t", 'R);
-    diffInvariant("z=old(z)+old(v)*t+A/2*t^2", 'R)
-  ) ; doall(dW('R) ; QE)                                   /* prove safety from just the differential invariants */
+    diffInvariant("z=old(z)+old(v)*t+A/2*t^2", 'R);
+    dW('R);
+    QE
+  )
 )
 End.
 
 End.
 
-ArchiveEntry "ETCS Essentials with Unconditional Train Protection".
+ArchiveEntry "ICFEM09/ETCS Essentials with Unconditional Train Protection"
 
 /**
  * Essentials of European Train Control System (ETCS)
  * @see "Andre Platzer. Differential dynamic logic for hybrid systems. Journal of Automated Reasoning,
  *                      41(2), pages 143-189, 2008."
  */
-Definitions.
-  R m.  /* End of movement authority (train must not drive past m) */
+Definitions
+  Real m;  /* End of movement authority (train must not drive past m) */
 
   /* loop invariant: always maintain sufficient stopping distance */
-  B loopInv(R m, R z, R v) <-> (v >= 0 & 2*b*(m-z) >= v*v).
+  Bool loopInv(Real m, Real z, Real v) <-> (v >= 0 & 2*b*(m-z) >= v*v);
 
   /* train controller */
   HP ctrl ::= {
         a := -b;                       /* train protection: emergency brake when close to end of movement authority */
      ++ ?2*b*(m - z) >= v*v + (A+b)*(A*ep*ep + 2*ep*v); a :=  A;    /* free driving: accelerate when sufficient distance */
-  }.
+  };
 End.
 
-ProgramVariables.
-  R a.  /* Actual acceleration -b <= a <= A */
-  R v.  /* Current velocity */
-  R z.  /* Train position */
-  R t.  /* Actual control cycle duration t <= ep */
+ProgramVariables
+  Real a;  /* Actual acceleration -b <= a <= A */
+  Real v;  /* Current velocity */
+  Real z;  /* Train position */
+  Real t;  /* Actual control cycle duration t <= ep */
 End.
 
 /* Safety specification of the form: initial -> [{ctrl;plant}*]safe
@@ -171,7 +176,7 @@ End.
  * any number of repetitions of running a controller 'ctrl' and then driving according to 'plant'
  * keeps the system safe (end up only in states where 'safe' is true).
  */
-Problem.
+Problem
     v >= 0 &
     2*b*(m-z) >= v*v &
     b>0 &
@@ -186,30 +191,34 @@ Problem.
     ] (z <= m)                        /* safety property: train 'z' never drives past end of movement authority 'm' */
 End.
 
-Tactic "ETCS Essentials Proof with Differential Invariants".
+Tactic "ICFEM09/ETCS Essentials Proof with Differential Invariants"
 implyR('R);
 (andL('L)*);
-loop("loopInv(m,z,v)",1) ; <(                             /* prove loop by induction with invariant loopInv */
-  prop,                                                       /* induction initial case */
-  QE,                                                         /* induction use case */
-  unfold ; <(                                                 /* induction step, symbolically execute program until ODE */
+loop("loopInv(m,z,v)",1) ; <(                              /* prove loop by induction with invariant loopInv */
+  "Init": prop,                                            /* induction initial case */
+  "Post": QE,                                              /* induction use case */
+  "Step": unfold ; <(                                      /* induction step, symbolically execute program until ODE */
     /* prove ODE in train protection branch (a=-b) */
-    diffInvariant("t>=old(t)", 'R);                         /* intuition: time progresses */
-    diffInvariant("v=old(v)-b*t", 'R);                 /* intuition: new speed is old speed - decrease by braking */
-    diffInvariant("2*z=2*old(z)+2*old(v)*t-b*t*t", 'R)     /* intuition: new position is old position + distance
+    diffInvariant("t>=old(t)", 'R);                        /* intuition: time progresses */
+    diffInvariant("v=old(v)-b*t", 'R);                     /* intuition: new speed is old speed - decrease by braking */
+    diffInvariant("2*z=2*old(z)+2*old(v)*t-b*t*t", 'R);    /* intuition: new position is old position + distance
                                                                          travelled with mean speed */
+    dW('R);
+    QE
     ,
     /* prove ODE in free driving branch (a=A) */
     diffInvariant("t>=old(t)", 'R);
     diffInvariant("v=old(v)+A*t", 'R);
-    diffInvariant("2*z=2*old(z)+2*old(v)*t+A*t*t", 'R)
-  ) ; doall(dW('R) ; QE)                                   /* prove safety from just the differential invariants */
+    diffInvariant("2*z=2*old(z)+2*old(v)*t+A*t*t", 'R);
+    dW('R);
+    QE
+  )
 )
 End.
 
 End.
 
-Lemma "Proposition 1: Controllability".
+Lemma "Proposition 1: Controllability"
 
 /**
  * Proposition 1: Controllability.
@@ -217,14 +226,14 @@ Lemma "Proposition 1: Controllability".
  *       In Karin Breitman and Ana Cavalcanti, editors, 11th International Conference on Formal Engineering Methods,
  *       ICFEM, Rio de Janeiro, Brasil, Proceedings, volume 5885 of LNCS, pages 246-265. Springer, 2009."
  */
-ProgramVariables.
-  R m.
-  R z.
-  R v.
-  R d.
+ProgramVariables
+  Real m;
+  Real z;
+  Real v;
+  Real d;
 End.
 
-Problem.
+Problem
   Assumptions(v,d) & z<=m
   ->
   ( [ {z'=v, v'=-b & v>=0 } ](z>=m -> v<=d)
@@ -233,13 +242,13 @@ Problem.
   )
 End.
 
-Tactic "Controllability Automated Proof".
-  master
+Tactic "Controllability Automated Proof"
+  auto
 End.
 
 End.
 
-Lemma "Proposition 2 (1): RBC Preserves Train Controllability".
+Lemma "ICFEM09/Proposition 2 (1): RBC Preserves Train Controllability"
 
 /**
  * Proposition 2: RBC preserves train controllability, formula (1).
@@ -248,32 +257,34 @@ Lemma "Proposition 2 (1): RBC Preserves Train Controllability".
  *       In Karin Breitman and Ana Cavalcanti, editors, 11th International Conference on Formal Engineering Methods,
  *       ICFEM, Rio de Janeiro, Brasil, Proceedings, volume 5885 of LNCS, pages 246-265. Springer, 2009."
  */
-ProgramVariables.
-  R mo.
-  R t.
-  R a.
-  R v.
-  R z.
-  R m.
-  R d.
-  R do.
-  R em.
-  R vdes.
-  R sb.
+ProgramVariables
+  Real mo;
+  Real t;
+  Real a;
+  Real v;
+  Real z;
+  Real m;
+  Real d;
+  Real do;
+  Real em;
+  Real vdes;
+  Real sb;
 End.
 
-Problem.
+Problem
   \forall z \forall v (Controllable(m,z,v,d) -> [mo:=m;do:=d;rbc;](M(d,do,m,mo)-> Controllable(m,z,v,d)))
 End.
 
 Tactic "Proposition 2: RBC Preserves Train Controllability (Automated Proof)".
-  chase(1.0.0.1); /* symbolically execute [mo:=m;do:=d;rbc] */
-  master
+  expand "rbc";
+  /* symbolically execute [mo:=m;do:=d;rbc] */
+  chaseAt('R=="\forall z \forall v (Controllable(m,z,v,d)->#[mo:=m;do:=d;{em:=emOn();++m:=*;d:=*;?d>0;}](M(d,do,m,mo)->Controllable(m,z,v,d))#)");
+  auto
 End.
 
 End.
 
-Lemma "Proposition 2 (2): RBC Preserves Train Controllability".
+Lemma "ICFEM09/Proposition 2 (2): RBC Preserves Train Controllability"
 
 /**
  * Proposition 2: RBC preserves train controllability, formula (2).
@@ -282,21 +293,21 @@ Lemma "Proposition 2 (2): RBC Preserves Train Controllability".
  *       In Karin Breitman and Ana Cavalcanti, editors, 11th International Conference on Formal Engineering Methods,
  *       ICFEM, Rio de Janeiro, Brasil, Proceedings, volume 5885 of LNCS, pages 246-265. Springer, 2009."
  */
-ProgramVariables.
-  R vdes.
-  R mo.
-  R t.
-  R a.
-  R v.
-  R z.
-  R m.
-  R d.
-  R do.
-  R em.
-  R sb.
+ProgramVariables
+  Real vdes;
+  Real mo;
+  Real t;
+  Real a;
+  Real v;
+  Real z;
+  Real m;
+  Real d;
+  Real do;
+  Real em;
+  Real sb;
 End.
 
-Problem.
+Problem
   em = emOff
 & d >= 0
 & b > 0 ->
@@ -309,14 +320,16 @@ Problem.
     )
 End.
 
-Tactic "Proposition 2: RBC Preserves Train Controllability (Automated Proof)".
-  chase(1.1.1.1.0.0.0); /* symbolically execute <m:=mo;d:=do;> */
-  master
+Tactic "Proposition 2: RBC Preserves Train Controllability (Automated Proof)"
+  /* symbolically execute <m:=mo;d:=do;> */
+  chaseAt('R=="em=emOff()&d>=0&b()>0->[do:=d;mo:=m;rbc{|^@|};](M(d,do,m,mo)<->\forall z \forall v (#<m:=mo;d:=do;>Controllable(m,z,v,d)#->Controllable(m,z,v,d)))");
+  expandAllDefs;
+  auto
 End.
 
 End.
 
-ArchiveEntry "Proposition 3".
+ArchiveEntry "ICFEM09/Proposition 3"
 
 /**
  * Proposition 3
@@ -325,31 +338,42 @@ ArchiveEntry "Proposition 3".
  *       In Karin Breitman and Ana Cavalcanti, editors, 11th International Conference on Formal Engineering Methods,
  *       ICFEM, Rio de Janeiro, Brasil, Proceedings, volume 5885 of LNCS, pages 246-265. Springer, 2009."
  */
-ProgramVariables.
-  R vdes.
-  R mo.
-  R t.
-  R a.
-  R v.
-  R z.
-  R m.
-  R d.
-  R do.
-  R em.
-  R sb.
+ProgramVariables
+  Real vdes;
+  Real mo;
+  Real t;
+  Real a;
+  Real v;
+  Real z;
+  Real m;
+  Real d;
+  Real do;
+  Real em;
+  Real sb;
 End.
 
-Problem.
+Problem
   /* discover unknown "start braking constraint" sb */
   Controllable(m,z,v,d) -> [mo:=m; do:=d; rbc;](M(d,do,m,mo) -> [spd;]<sb:=*;>[atp;drive;]safe(m,z,v,d))
 End.
 
-Tactic "Proposition 3 Analysis".
-  composeb(1.1.1.1.1.1);                                /* split [atp;drive;] into [atp;][drive;] */
-  chase(1.1.1.1.1.1.1); solve(1.1.1.1.1.1.1.0.1);       /* symbolically execute and solve drive */
-  chase(1.1.1.1.1);          /* symbolically execute <sb:=*;> */
-  chase(1.1.1.1);            /* symbolically execute [spd;] */
-  chase(1.1);                /* symbolically execute [mo:=m; do:=d; rbc;] */
+Tactic "Proposition 3 Analysis"
+  /* split [atp;drive;] into [atp;][drive;] */
+  composeb('R=="Controllable(m,z,v,d)->[mo:=m;do:=d;rbc{|^@|};](M(d,do,m,mo)->[spd{|^@|};]<sb:=*;>#[atp{|^@|};drive{|^@|};]safe(m,z,v,d)#)");
+  /* symbolically execute and solve drive */
+  expand "drive";
+  chaseAt('R=="Controllable(m,z,v,d)->[mo:=m;do:=d;rbc{|^@|};](M(d,do,m,mo)->[spd{|^@|};]<sb:=*;>[atp{|^@|};]#[t:=0;{z'=v,v'=a,t'=1&v>=0&t<=ep()}]safe(m,z,v,d)#)");
+  solve('R=="Controllable(m,z,v,d)->[mo:=m;do:=d;rbc{|^@|};](M(d,do,m,mo)->[spd{|^@|};]<sb:=*;>[atp{|^@|};]\forall t (t=0->#[{z'=v,v'=a,t'=1&v>=0&t<=ep()}]safe(m,z,v,d)#))");
+  /* symbolically execute <sb:=*;> */
+  randomd('R=="Controllable(m,z,v,d)->[mo:=m;do:=d;rbc{|^@|};](M(d,do,m,mo)->[spd{|^@|};]#<sb:=*;>[atp{|^@|};]\forall t (t=0->\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a*s_+v>=0&s_+t<=ep())->safe(m,a*(t_^2/2)+v*t_+z,a*t_+v,d)))#)");
+  /* symbolically execute [atp;] and [spd;] */
+  expand "atp";
+  chaseAt('R=="Controllable(m,z,v,d)->[mo:=m;do:=d;rbc{|^@|};](M(d,do,m,mo)->[spd{|^@|};]\exists sb #[?m-z<=sb|em=emOn();a:=-b();++?!(m-z<=sb|em=emOn());?true;]\forall t (t=0->\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a*s_+v>=0&s_+t<=ep())->safe(m,a*(t_^2/2)+v*t_+z,a*t_+v,d)))#)");
+  expand "spd";
+  chaseAt('R=="Controllable(m,z,v,d)->[mo:=m;do:=d;rbc{|^@|};](M(d,do,m,mo)->#[?v<=vdes;a:=*;?-b()<=a&a<=A();++?v>=vdes;a:=*;?-b()<=a&a<=0;]\exists sb ((m-z<=sb|em=emOn()->\forall t (t=0->\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->(-b())*s_+v>=0&s_+t<=ep())->safe(m,(-b())*(t_^2/2)+v*t_+z,(-b())*t_+v,d))))&(!(m-z<=sb|em=emOn())->\forall t (t=0->\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a*s_+v>=0&s_+t<=ep())->safe(m,a*(t_^2/2)+v*t_+z,a*t_+v,d)))))#)");
+  /* symbolically execute [mo:=m; do:=d; rbc;] */
+  expand "rbc";
+  chaseAt('R=="Controllable(m,z,v,d)->#[mo:=m;do:=d;{em:=emOn();++m:=*;d:=*;?d>0;}](M(d,do,m,mo)->(v<=vdes->\forall a (-b()<=a&a<=A()->\exists sb ((m-z<=sb|em=emOn()->\forall t (t=0->\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->(-b())*s_+v>=0&s_+t<=ep())->safe(m,(-b())*(t_^2/2)+v*t_+z,(-b())*t_+v,d))))&(!(m-z<=sb|em=emOn())->\forall t (t=0->\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a*s_+v>=0&s_+t<=ep())->safe(m,a*(t_^2/2)+v*t_+z,a*t_+v,d)))))))&(v>=vdes->\forall a (-b()<=a&a<=0->\exists sb ((m-z<=sb|em=emOn()->\forall t (t=0->\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->(-b())*s_+v>=0&s_+t<=ep())->safe(m,(-b())*(t_^2/2)+v*t_+z,(-b())*t_+v,d))))&(!(m-z<=sb|em=emOn())->\forall t (t=0->\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a*s_+v>=0&s_+t<=ep())->safe(m,a*(t_^2/2)+v*t_+z,a*t_+v,d))))))))#");
   print("Symbolic Execution Result")
   /* no proof expected, simplify sb */
   partial
@@ -357,7 +381,7 @@ End.
 
 End.
 
-ArchiveEntry "Proposition 4: Reactivity Constraint".
+ArchiveEntry "ICFEM09/Proposition 4: Reactivity Constraint"
 
 /**
  * Proposition 4: Reactivity constraint
@@ -365,21 +389,21 @@ ArchiveEntry "Proposition 4: Reactivity Constraint".
  *       In Karin Breitman and Ana Cavalcanti, editors, 11th International Conference on Formal Engineering Methods,
  *       ICFEM, Rio de Janeiro, Brasil, Proceedings, volume 5885 of LNCS, pages 246-265. Springer, 2009."
 */
-ProgramVariables.
-  R vdes.
-  R sb.
-  R mo.
-  R t.
-  R a.
-  R v.
-  R z.
-  R m.
-  R d.
-  R do.
-  R em.
+ProgramVariables
+  Real vdes;
+  Real sb;
+  Real mo;
+  Real t;
+  Real a;
+  Real v;
+  Real z;
+  Real m;
+  Real d;
+  Real do;
+  Real em;
 End.
 
-Problem.
+Problem
 em = 0 & d >= 0 & b > 0 & ep > 0 & A > 0 & v>=0
   -> ((\forall m \forall z (m-z>= sb & Controllable(m,z,v,d) -> [ a:=A; drive; ]Controllable(m,z,v,d)) )
       <->
@@ -387,17 +411,28 @@ em = 0 & d >= 0 & b > 0 & ep > 0 & A > 0 & v>=0
      )
 End.
 
-Tactic "Proof Proposition 4: Reactivity Constraint".
-  /* requires QE("Mathematica") */
-  implyR(1); equivR(1); <(
-    composeb(-2.0.0.1); composeb(-2.0.0.1.1); solve(-2.0.0.1.1.1); assignb(-2.0.0.1.1); assignb(-2.0.0.1); master,
-    composeb(1.0.0.1); composeb(1.0.0.1.1); solve(1.0.0.1.1.1); master
+Tactic "Proof Proposition 4: Reactivity Constraint"
+  useSolver("Mathematica");
+  implyR('R=="em=0&d>=0&b()>0&ep()>0&A()>0&v>=0->(\forall m \forall z (m-z>=sb&v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0->[a:=A();t:=0;{z'=v,v'=a,t'=1&v>=0&t<=ep()}](v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0))<->sb>=(v^2-d^2)/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v))");
+  equivR('R=="\forall m \forall z (m-z>=sb&v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0->[a:=A();t:=0;{z'=v,v'=a,t'=1&v>=0&t<=ep()}](v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0))<->sb>=(v^2-d^2)/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v)"); <(
+    "\forall m \forall z (m-z>=sb&v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0->[a:=A();t:=0;{z'=v,v'=a,t'=1&v>=0&t<=ep()}](v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0))&sb>=(v^2-d^2)/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v)":
+      composeb('L=="\forall m \forall z (m-z>=sb&v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0->#[a:=A();t:=0;{z'=v,v'=a,t'=1&v>=0&t<=ep()}](v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0)#)");
+      composeb('L=="\forall m \forall z (m-z>=sb&v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0->[a:=A();]#[t:=0;{z'=v,v'=a,t'=1&v>=0&t<=ep()}](v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0)#)");
+      solve('L=="\forall m \forall z (m-z>=sb&v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0->[a:=A();][t:=0;]#[{z'=v,v'=a,t'=1&v>=0&t<=ep()}](v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0)#)");
+      assignb('L=="\forall m \forall z (m-z>=sb&v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0->[a:=A();]#[t:=0;]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a*s_+v>=0&s_+t<=ep())->(a*t_+v>=0&t_+t<=ep())&(a*t_+v)^2-d^2<=2*b()*(m-(a*(t_^2/2)+v*t_+z))&a*t_+v>=0&d>=0&b()>0)#)");
+      assignb('L=="\forall m \forall z (m-z>=sb&v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0->#[a:=A();]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a*s_+v>=0&s_+0<=ep())->(a*t_+v>=0&t_+0<=ep())&(a*t_+v)^2-d^2<=2*b()*(m-(a*(t_^2/2)+v*t_+z))&a*t_+v>=0&d>=0&b()>0)#)");
+      auto,
+    "!\forall m \forall z (m-z>=sb&v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0->[a:=A();t:=0;{z'=v,v'=a,t'=1&v>=0&t<=ep()}](v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0))&!sb>=(v^2-d^2)/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v)":
+      composeb('R=="\forall m \forall z (m-z>=sb&v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0->#[a:=A();t:=0;{z'=v,v'=a,t'=1&v>=0&t<=ep()}](v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0)#)");
+      composeb('R=="\forall m \forall z (m-z>=sb&v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0->[a:=A();]#[t:=0;{z'=v,v'=a,t'=1&v>=0&t<=ep()}](v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0)#)");
+      solve('R=="\forall m \forall z (m-z>=sb&v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0->[a:=A();][t:=0;]#[{z'=v,v'=a,t'=1&v>=0&t<=ep()}](v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0)#)");
+      auto
   )
 End.
 
 End.
 
-Theorem "Proposition 5: Safety".
+Theorem "ICFEM09/Proposition 5: Safety"
 
 /**
  * Proposition 5: Safety
@@ -407,39 +442,39 @@ Theorem "Proposition 5: Safety".
  *
  * The following refinement is provable, too: SB := (v^2 - d^2)/(2*b) + (a/b+1)*(A/2*ep^2+ep*v);
  */
-Definitions.
-  R brakeDist(R v, R d) = ((v^2-d^2)/(2*b)).         /* Train stopping distance from speed (.) with braking force b */
-  R accCompensation(R v) = (((A/b) + 1)*((A/2)*ep^2 + ep*v)).     /* Distance to compensate speed increase. */
-  R SB(R v, R d) = (brakeDist(v,d) + accCompensation(v)).   /* Distance needed to brake safely when accelerating once */
+Definitions
+  Real brakeDist(Real v, Real d) = ((v^2-d^2)/(2*b));         /* Train stopping distance from speed v with braking force b */
+  Real accCompensation(Real v) = (((A/b) + 1)*((A/2)*ep^2 + ep*v));     /* Distance to compensate speed increase. */
+  Real SB(Real v, Real d) = (brakeDist(v,d) + accCompensation(v));   /* Distance needed to brake safely when accelerating once */
 
-  B loopInv(R m, R z, R v, R d) <-> (m-z >= brakeDist(v,d) & d>=0).  /* loop invariant: maintain sufficient braking distance */
+  Bool loopInv(Real m, Real z, Real v, Real d) <-> (m-z >= brakeDist(v,d) & d>=0);  /* loop invariant: maintain sufficient braking distance */
 
   HP atpr ::= {
     sb := SB(v, d);
     atp;
-  }.
+  };
 
   HP rbcr ::= {
        em := emOn;
     ++ mo := m; m := *; vdes := *; ?vdes >= 0; do := d; d :=*; ?M(d,do,m,mo);
-  }.
+  };
 End.
 
-ProgramVariables.
-	R vdes.
-	R sb.
-	R mo.
-	R t.
-	R a.
-	R v.
-	R z.
-	R m.
-	R d.
-	R do.
-	R em.
+ProgramVariables
+	Real vdes;
+	Real sb;
+	Real mo;
+	Real t;
+	Real a;
+	Real v;
+	Real z;
+	Real m;
+	Real d;
+	Real do;
+	Real em;
 End.
 
-Problem.
+Problem
 Controllable(m,z,v,d) & em = emOff & A>=0 & ep>=0
   ->
   [{
@@ -449,8 +484,8 @@ Controllable(m,z,v,d) & em = emOff & A>=0 & ep>=0
   ]safe(m,z,v,d)
 End.
 
-Tactic "Proof Proposition 5: Safety".
-  master
+Tactic "Proof Proposition 5: Safety"
+  auto
 End.
 
 End.
