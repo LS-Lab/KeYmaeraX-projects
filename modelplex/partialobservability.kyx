@@ -1,0 +1,2538 @@
+Lemma "ModelPlex/Partial Observability/Curved Ground Robot Motion is Safe"
+
+Definitions
+  HP ctrl ::= {
+       ?(xr+w/-1-xo)^2+(yr-v/-1-yo)^2!=v^2+w^2; a := -1;
+    ++ ?(xr+w-xo)^2+(yr-v-yo)^2!=v^2+w^2; a := 1;
+  };
+
+  HP plant ::= { { xr'=v, yr'=w, v'=a*w, w'=-a*v & true } };
+End.
+
+ProgramVariables
+  Real xr;
+  Real yr;
+  Real xo;
+  Real yo;
+  Real w;
+  Real v;
+  Real a;
+End.
+
+Problem
+  xr != xo | yr != yo -> [
+   {ctrl;
+    plant;
+   }*
+  ]!(xr=xo & yr=yo)
+End.
+
+Tactic "Proof Curved Ground Robot Motion is Safe"
+expandAllDefs;
+implyR('R=="xr!=xo|yr!=yo->[{{?(xr+w/(-1)-xo)^2+(yr-v/(-1)-yo)^2!=v^2+w^2;a:=(-1);++?(xr+w-xo)^2+(yr-v-yo)^2!=v^2+w^2;a:=1;}{xr'=v,yr'=w,v'=a*w,w'=-a*v}}*](!(xr=xo&yr=yo))");
+loop("!(xr=xo&yr=yo)", 'R=="[{{?(xr+w/(-1)-xo)^2+(yr-v/(-1)-yo)^2!=v^2+w^2;a:=(-1);++?(xr+w-xo)^2+(yr-v-yo)^2!=v^2+w^2;a:=1;}{xr'=v,yr'=w,v'=a*w,w'=-a*v}}*](!(xr=xo&yr=yo))"); <(
+  "Init":
+    QE,
+  "Post":
+    id,
+  "Step":
+    composeb('R=="[{?(xr+w/(-1)-xo)^2+(yr-v/(-1)-yo)^2!=v^2+w^2;a:=(-1);++?(xr+w-xo)^2+(yr-v-yo)^2!=v^2+w^2;a:=1;}{xr'=v,yr'=w,v'=a*w,w'=-a*v}](!(xr=xo&yr=yo))");
+    choiceb('R=="[?(xr+w/(-1)-xo)^2+(yr-v/(-1)-yo)^2!=v^2+w^2;a:=(-1);++?(xr+w-xo)^2+(yr-v-yo)^2!=v^2+w^2;a:=1;][{xr'=v,yr'=w,v'=a*w,w'=-a*v}](!(xr=xo&yr=yo))");
+    andR('R=="[?(xr+w/(-1)-xo)^2+(yr-v/(-1)-yo)^2!=v^2+w^2;a:=(-1);][{xr'=v,yr'=w,v'=a*w,w'=-a*v}](!(xr=xo&yr=yo))&[?(xr+w-xo)^2+(yr-v-yo)^2!=v^2+w^2;a:=1;][{xr'=v,yr'=w,v'=a*w,w'=-a*v}](!(xr=xo&yr=yo))"); <(
+      "[?(xr+w/(-1)-xo)^2+(yr-v/(-1)-yo)^2!=v^2+w^2;a:=(-1);][{xr'=v,yr'=w,v'=a*w,w'=-a*v}](!(xr=xo&yr=yo))":
+        composeb('R=="[?(xr+w/(-1)-xo)^2+(yr-v/(-1)-yo)^2!=v^2+w^2;a:=(-1);][{xr'=v,yr'=w,v'=a*w,w'=-a*v}](!(xr=xo&yr=yo))");
+        testb('R=="[?(xr+w/(-1)-xo)^2+(yr-v/(-1)-yo)^2!=v^2+w^2;][a:=(-1);][{xr'=v,yr'=w,v'=a*w,w'=-a*v}](!(xr=xo&yr=yo))");
+        implyR('R=="(xr+w/(-1)-xo)^2+(yr-v/(-1)-yo)^2!=v^2+w^2->[a:=(-1);][{xr'=v,yr'=w,v'=a*w,w'=-a*v}](!(xr=xo&yr=yo))");
+        assignEquality('R=="[a:=(-1);][{xr'=v,yr'=w,v'=a*w,w'=-a*v}](!(xr=xo&yr=yo))");
+        diffInvariant("(xr+w/a-xo)^2+(yr-v/a-yo)^2!=v^2+w^2", 'R=="[{xr'=v,yr'=w,v'=a*w,w'=-a*v}](!(xr=xo&yr=yo))");
+        dW('R=="[{xr'=v,yr'=w,v'=a*w,w'=-a*v&true&(xr+w/a-xo)^2+(yr-v/a-yo)^2!=v^2+w^2}](!(xr=xo&yr=yo))");
+        QE,
+      "[?(xr+w-xo)^2+(yr-v-yo)^2!=v^2+w^2;a:=1;][{xr'=v,yr'=w,v'=a*w,w'=-a*v}](!(xr=xo&yr=yo))":
+        composeb('R=="[?(xr+w-xo)^2+(yr-v-yo)^2!=v^2+w^2;a:=1;][{xr'=v,yr'=w,v'=a*w,w'=-a*v}](!(xr=xo&yr=yo))");
+        testb('R=="[?(xr+w-xo)^2+(yr-v-yo)^2!=v^2+w^2;][a:=1;][{xr'=v,yr'=w,v'=a*w,w'=-a*v}](!(xr=xo&yr=yo))");
+        implyR('R=="(xr+w-xo)^2+(yr-v-yo)^2!=v^2+w^2->[a:=1;][{xr'=v,yr'=w,v'=a*w,w'=-a*v}](!(xr=xo&yr=yo))");
+        assignEquality('R=="[a:=1;][{xr'=v,yr'=w,v'=a*w,w'=-a*v}](!(xr=xo&yr=yo))");
+        diffInvariant("(xr+w/a-xo)^2+(yr-v/a-yo)^2!=v^2+w^2", 'R=="[{xr'=v,yr'=w,v'=a*w,w'=-a*v}](!(xr=xo&yr=yo))");
+        dW('R=="[{xr'=v,yr'=w,v'=a*w,w'=-a*v&true&(xr+w/a-xo)^2+(yr-v/a-yo)^2!=v^2+w^2}](!(xr=xo&yr=yo))");
+        QE
+    )
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Curved Ground Robot Motion with Curve Disturbance is Safe"
+
+Definitions
+  Real Da();
+
+  HP ctrl ::= {
+    {
+       ?\forall acc (0<acc&acc<=Da()->(xr+w/(-1*acc)-xo)^2+(yr-v/(-1*acc)-yo)^2!=(v^2+w^2)/acc^2); a := -1;
+    ++ ?\forall acc (0<acc&acc<=Da()->(xr+w/acc-xo)^2+(yr-v/acc-yo)^2!=(v^2+w^2)/acc^2); a := 1;
+    }
+    acc:=*; ?0<acc & acc<=Da(); /* first pick disturbance */
+    acc:=a*acc;                  /* then sign */
+  };
+
+  HP plant ::= { { xr'=v, yr'=w, v'=acc*w, w'=-acc*v & true } };
+End.
+
+ProgramVariables
+  Real xr;
+  Real yr;
+  Real xo;
+  Real yo;
+  Real w;
+  Real v;
+  Real a;
+  Real acc;
+End.
+
+Problem
+  (xr != xo | yr != yo) & 0<Da()&Da()<=1 -> [
+   {ctrl;
+    plant;
+   }*
+  ]!(xr=xo & yr=yo)
+End.
+
+Tactic "Proof Curved Ground Robot Motion with Curve Disturbance is Safe"
+implyR('R=="(xr!=xo|yr!=yo)&0 < Da()&Da()<=1->[{{{?\forall acc (0 < acc&acc<=Da()->(xr+w/((-1)*acc)-xo)^2+(yr-v/((-1)*acc)-yo)^2!=(v^2+w^2)/acc^2);a:=(-1);++?\forall acc (0 < acc&acc<=Da()->(xr+w/acc-xo)^2+(yr-v/acc-yo)^2!=(v^2+w^2)/acc^2);a:=1;}acc:=*;?0 < acc&acc<=Da();acc:=a*acc;}{xr'=v,yr'=w,v'=acc*w,w'=-acc*v}}*](!(xr=xo&yr=yo))");
+loop("!(xr=xo&yr=yo)", 'R=="[{{{?\forall acc (0 < acc&acc<=Da()->(xr+w/((-1)*acc)-xo)^2+(yr-v/((-1)*acc)-yo)^2!=(v^2+w^2)/acc^2);a:=(-1);++?\forall acc (0 < acc&acc<=Da()->(xr+w/acc-xo)^2+(yr-v/acc-yo)^2!=(v^2+w^2)/acc^2);a:=1;}acc:=*;?0 < acc&acc<=Da();acc:=a*acc;}{xr'=v,yr'=w,v'=acc*w,w'=-acc*v}}*](!(xr=xo&yr=yo))"); <(
+  "Init":
+    QE,
+  "Post":
+    id,
+  "Step":
+    composeb('R=="[{{?\forall acc (0 < acc&acc<=Da()->(xr+w/((-1)*acc)-xo)^2+(yr-v/((-1)*acc)-yo)^2!=(v^2+w^2)/acc^2);a:=(-1);++?\forall acc (0 < acc&acc<=Da()->(xr+w/acc-xo)^2+(yr-v/acc-yo)^2!=(v^2+w^2)/acc^2);a:=1;}acc:=*;?0 < acc&acc<=Da();acc:=a*acc;}{xr'=v,yr'=w,v'=acc*w,w'=-acc*v}](!(xr=xo&yr=yo))");
+    composeb('R=="[{?\forall acc (0 < acc&acc<=Da()->(xr+w/((-1)*acc)-xo)^2+(yr-v/((-1)*acc)-yo)^2!=(v^2+w^2)/acc^2);a:=(-1);++?\forall acc (0 < acc&acc<=Da()->(xr+w/acc-xo)^2+(yr-v/acc-yo)^2!=(v^2+w^2)/acc^2);a:=1;}acc:=*;?0 < acc&acc<=Da();acc:=a*acc;][{xr'=v,yr'=w,v'=acc*w,w'=-acc*v}](!(xr=xo&yr=yo))");
+    chaseAt('R=="[?\forall acc (0 < acc&acc<=Da()->(xr+w/((-1)*acc)-xo)^2+(yr-v/((-1)*acc)-yo)^2!=(v^2+w^2)/acc^2);a:=(-1);++?\forall acc (0 < acc&acc<=Da()->(xr+w/acc-xo)^2+(yr-v/acc-yo)^2!=(v^2+w^2)/acc^2);a:=1;]#[acc:=*;?0 < acc&acc<=Da();acc:=a*acc;][{xr'=v,yr'=w,v'=acc*w,w'=-acc*v}](!(xr=xo&yr=yo))#");
+    choiceb('R=="[?\forall acc (0 < acc&acc<=Da()->(xr+w/((-1)*acc)-xo)^2+(yr-v/((-1)*acc)-yo)^2!=(v^2+w^2)/acc^2);a:=(-1);++?\forall acc (0 < acc&acc<=Da()->(xr+w/acc-xo)^2+(yr-v/acc-yo)^2!=(v^2+w^2)/acc^2);a:=1;]\forall acc (0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo)))");
+    andR('R=="[?\forall acc (0 < acc&acc<=Da()->(xr+w/((-1)*acc)-xo)^2+(yr-v/((-1)*acc)-yo)^2!=(v^2+w^2)/acc^2);a:=(-1);]\forall acc (0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo)))&[?\forall acc (0 < acc&acc<=Da()->(xr+w/acc-xo)^2+(yr-v/acc-yo)^2!=(v^2+w^2)/acc^2);a:=1;]\forall acc (0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo)))"); <(
+      "[?\forall acc (0 < acc&acc<=Da()->(xr+w/((-1)*acc)-xo)^2+(yr-v/((-1)*acc)-yo)^2!=(v^2+w^2)/acc^2);a:=(-1);]\forall acc (0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo)))":
+        composeb('R=="[?\forall acc (0 < acc&acc<=Da()->(xr+w/((-1)*acc)-xo)^2+(yr-v/((-1)*acc)-yo)^2!=(v^2+w^2)/acc^2);a:=(-1);]\forall acc (0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo)))");
+        testb('R=="[?\forall acc (0 < acc&acc<=Da()->(xr+w/((-1)*acc)-xo)^2+(yr-v/((-1)*acc)-yo)^2!=(v^2+w^2)/acc^2);][a:=(-1);]\forall acc (0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo)))");
+        implyR('R=="\forall acc (0 < acc&acc<=Da()->(xr+w/((-1)*acc)-xo)^2+(yr-v/((-1)*acc)-yo)^2!=(v^2+w^2)/acc^2)->[a:=(-1);]\forall acc (0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo)))");
+        assignbeq('R=="[a:=(-1);]\forall acc (0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo)))");
+        allR('R=="\forall a (a=(-1)->\forall acc (0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo))))");
+        implyR('R=="a=(-1)->\forall acc (0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo)))");
+        allR('R=="\forall acc (0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo)))");
+        implyR('R=="0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo))");
+        allL("acc", 'L=="\forall acc (0 < acc&acc<=Da()->(xr+w/((-1)*acc)-xo)^2+(yr-v/((-1)*acc)-yo)^2!=(v^2+w^2)/acc^2)");
+        diffInvariant("(xr+w/(a*acc)-xo)^2+(yr-v/(a*acc)-yo)^2!=(v^2+w^2)/acc^2", 'R=="[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo))");
+        dW('R=="[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v&true&(xr+w/(a*acc)-xo)^2+(yr-v/(a*acc)-yo)^2!=(v^2+w^2)/acc^2}](!(xr=xo&yr=yo))");
+        QE,
+      "[?\forall acc (0 < acc&acc<=Da()->(xr+w/acc-xo)^2+(yr-v/acc-yo)^2!=(v^2+w^2)/acc^2);a:=1;]\forall acc (0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo)))":
+        composeb('R=="[?\forall acc (0 < acc&acc<=Da()->(xr+w/acc-xo)^2+(yr-v/acc-yo)^2!=(v^2+w^2)/acc^2);a:=1;]\forall acc (0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo)))");
+        testb('R=="[?\forall acc (0 < acc&acc<=Da()->(xr+w/acc-xo)^2+(yr-v/acc-yo)^2!=(v^2+w^2)/acc^2);][a:=1;]\forall acc (0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo)))");
+        implyR('R=="\forall acc (0 < acc&acc<=Da()->(xr+w/acc-xo)^2+(yr-v/acc-yo)^2!=(v^2+w^2)/acc^2)->[a:=1;]\forall acc (0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo)))");
+        assignbeq('R=="[a:=1;]\forall acc (0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo)))");
+        allR('R=="\forall a (a=1->\forall acc (0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo))))");
+        implyR('R=="a=1->\forall acc (0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo)))");
+        allR('R=="\forall acc (0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo)))");
+        implyR('R=="0 < acc&acc<=Da()->[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo))");
+        allL("acc", 'L=="\forall acc (0 < acc&acc<=Da()->(xr+w/acc-xo)^2+(yr-v/acc-yo)^2!=(v^2+w^2)/acc^2)");
+        diffInvariant("(xr+w/(a*acc)-xo)^2+(yr-v/(a*acc)-yo)^2!=(v^2+w^2)/acc^2", 'R=="[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v}](!(xr=xo&yr=yo))");
+        dW('R=="[{xr'=v,yr'=w,v'=a*acc*w,w'=-a*acc*v&true&(xr+w/(a*acc)-xo)^2+(yr-v/(a*acc)-yo)^2!=(v^2+w^2)/acc^2}](!(xr=xo&yr=yo))");
+        QE
+    )
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Water tank is safe"
+
+Definitions
+  Real m();
+  Real ep();
+
+  HP watertankctrl ::= {
+    f :=*;
+    ?-1 <= f & f <= (m()-l)/ep();
+    c := 0;
+  };
+
+  HP watertankplant ::= {
+    { l' = f, c' = 1 & 0 <= l & c <= ep() }
+  };
+End.
+
+ProgramVariables
+  Real f;
+  Real l;
+  Real c;
+End.
+
+Problem.
+     (0 <= l & l <= m() & 0 < ep())
+  -> [
+      { watertankctrl;
+        watertankplant;
+      }*@invariant(0<=l & l<=m)
+     ](0 <= l & l <= m())
+End.
+
+Tactic "Automated Proof Water tank is safe"
+  auto
+End.
+
+
+Tactic "Proof Water tank is safe"
+implyR('R=="0<=l&l<=m()&0 < ep()->[{{f:=*;?(-1)<=f&f<=(m()-l)/ep();c:=0;}{l'=f,c'=1&0<=l&c<=ep()}}*](0<=l&l<=m())");
+loop("0<=l&l<=m()", 'R=="[{{f:=*;?(-1)<=f&f<=(m()-l)/ep();c:=0;}{l'=f,c'=1&0<=l&c<=ep()}}*](0<=l&l<=m())"); <(
+  "Init":
+    QE,
+  "Post":
+    QE,
+  "Step":
+    chase('R=="[{f:=*;?(-1)<=f&f<=(m()-l)/ep();c:=0;}{l'=f,c'=1&0<=l&c<=ep()}](0<=l&l<=m())");
+    allR('R=="\forall f ((-1)<=f&f<=(m()-l)/ep()->\forall c (c=0->[{l'=f,c'=1&0<=l&c<=ep()}](0<=l&l<=m())))");
+    implyR('R=="(-1)<=f&f<=(m()-l)/ep()->\forall c (c=0->[{l'=f,c'=1&0<=l&c<=ep()}](0<=l&l<=m()))");
+    allR('R=="\forall c (c=0->[{l'=f,c'=1&0<=l&c<=ep()}](0<=l&l<=m()))");
+    implyR('R=="c=0->[{l'=f,c'=1&0<=l&c<=ep()}](0<=l&l<=m())");
+    diffInvariant("c>=0", 'R=="[{l'=f,c'=1&0<=l&c<=ep()}](0<=l&l<=m())");
+    diffInvariant("l=old(l)+f*c", 'R=="[{l'=f,c'=1&(0<=l&c<=ep())&c>=0}](0<=l&l<=m())");
+    dW('R=="[{l'=f,c'=1&((0<=l&c<=ep())&c>=0)&l=l_0+f*c}](0<=l&l<=m())");
+    QE
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Water tank with flow disturbance is safe"
+
+Definitions
+  Real m();
+  Real ep();
+  Real D();
+
+  HP watertankctrl ::= {
+    f :=*;
+    ?-1 <= f & f <= (m()-l)/ep() - D();
+    c := 0;
+  };
+
+  HP watertankact ::= { fd:=*; ?f-D()<=fd&fd<=f+D(); };
+
+  HP watertankplant ::= {
+    { l' = fd, c' = 1 & 0 <= l & c <= ep() }
+  };
+End.
+
+ProgramVariables
+  Real f;
+  Real l;
+  Real c;
+  Real fd;
+End.
+
+Problem
+     (0 <= l & l <= m() & 0 < ep() & 0<=D()&D()<=1/10)
+  -> [
+      { watertankctrl;
+        watertankact;
+        watertankplant;
+      }*
+     ](0 <= l & l <= m())
+End.
+
+Tactic "Proof Water tank with flow disturbance is safe"
+implyR('R=="0<=l&l<=m()&0 < ep()&0<=D()&D()<=1/10->[{{f:=*;?(-1)<=f&f<=(m()-l)/ep()-D();c:=0;}{fd:=*;?f-D()<=fd&fd<=f+D();}{l'=fd,c'=1&0<=l&c<=ep()}}*](0<=l&l<=m())");
+loop("0<=l&l<=m()", 'R=="[{{f:=*;?(-1)<=f&f<=(m()-l)/ep()-D();c:=0;}{fd:=*;?f-D()<=fd&fd<=f+D();}{l'=fd,c'=1&0<=l&c<=ep()}}*](0<=l&l<=m())"); <(
+  "Init":
+    QE,
+  "Post":
+    QE,
+  "Step":
+    chase('R=="[{f:=*;?(-1)<=f&f<=(m()-l)/ep()-D();c:=0;}{fd:=*;?f-D()<=fd&fd<=f+D();}{l'=fd,c'=1&0<=l&c<=ep()}](0<=l&l<=m())");
+    allR('R=="\forall f ((-1)<=f&f<=(m()-l)/ep()-D()->\forall c (c=0->\forall fd (f-D()<=fd&fd<=f+D()->[{l'=fd,c'=1&0<=l&c<=ep()}](0<=l&l<=m()))))");
+    implyR('R=="(-1)<=f&f<=(m()-l)/ep()-D()->\forall c (c=0->\forall fd (f-D()<=fd&fd<=f+D()->[{l'=fd,c'=1&0<=l&c<=ep()}](0<=l&l<=m())))");
+    allR('R=="\forall c (c=0->\forall fd (f-D()<=fd&fd<=f+D()->[{l'=fd,c'=1&0<=l&c<=ep()}](0<=l&l<=m())))");
+    implyR('R=="c=0->\forall fd (f-D()<=fd&fd<=f+D()->[{l'=fd,c'=1&0<=l&c<=ep()}](0<=l&l<=m()))");
+    allR('R=="\forall fd (f-D()<=fd&fd<=f+D()->[{l'=fd,c'=1&0<=l&c<=ep()}](0<=l&l<=m()))");
+    implyR('R=="f-D()<=fd&fd<=f+D()->[{l'=fd,c'=1&0<=l&c<=ep()}](0<=l&l<=m())");
+    diffInvariant("c>=0", 'R=="[{l'=fd,c'=1&0<=l&c<=ep()}](0<=l&l<=m())");
+    diffInvariant("l=old(l)+fd*c", 'R=="[{l'=fd,c'=1&(0<=l&c<=ep())&c>=0}](0<=l&l<=m())");
+    dW('R=="[{l'=fd,c'=1&((0<=l&c<=ep())&c>=0)&l=l_0+fd*c}](0<=l&l<=m())");
+    QE
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Water tank with load measurement uncertainty is safe"
+
+Definitions.
+  Real m();
+  Real ep();
+  Real U();
+
+  HP watertankmeasure ::= { lu:=*; ?l-U()<=lu&lu<=l+U(); };
+
+  HP watertankctrl ::= {
+    f :=*;
+    ?-1 <= f & f <= (m()-(lu+U()))/ep();
+    c := 0;
+  };
+
+  HP watertankplant ::= {
+    { l' = f, c' = 1 & 0 <= l & c <= ep() }
+  };
+End.
+
+ProgramVariables
+  Real f;
+  Real l;
+  Real lu;
+  Real c;
+End.
+
+Problem
+     (0 <= l & l <= m() &l-U()<=lu&lu<=l+U() & 0 < ep() & 0<=U())
+  -> [
+      { watertankctrl;
+        watertankplant;
+        watertankmeasure;
+      }*
+     ](0 <= l & l <= m())
+End.
+
+Tactic "Proof Water tank with load measurement uncertainty is safe"
+implyR('R=="0<=l&l<=m()&l-U()<=lu&lu<=l+U()&0 < ep()&0<=U()->[{{f:=*;?(-1)<=f&f<=(m()-(lu+U()))/ep();c:=0;}{l'=f,c'=1&0<=l&c<=ep()}lu:=*;?l-U()<=lu&lu<=l+U();}*](0<=l&l<=m())");
+loop("0<=l&l<=m()&l-U()<=lu&lu<=l+U()", 'R=="[{{f:=*;?(-1)<=f&f<=(m()-(lu+U()))/ep();c:=0;}{l'=f,c'=1&0<=l&c<=ep()}lu:=*;?l-U()<=lu&lu<=l+U();}*](0<=l&l<=m())"); <(
+  "Init":
+    QE,
+  "Post":
+    QE,
+  "Step":
+    chase('R=="[{f:=*;?(-1)<=f&f<=(m()-(lu+U()))/ep();c:=0;}{l'=f,c'=1&0<=l&c<=ep()}lu:=*;?l-U()<=lu&lu<=l+U();](0<=l&l<=m()&l-U()<=lu&lu<=l+U())");
+    allR('R=="\forall f ((-1)<=f&f<=(m()-(lu+U()))/ep()->\forall c (c=0->[{l'=f,c'=1&0<=l&c<=ep()}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U())))");
+    implyR('R=="(-1)<=f&f<=(m()-(lu+U()))/ep()->\forall c (c=0->[{l'=f,c'=1&0<=l&c<=ep()}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U()))");
+    allR('R=="\forall c (c=0->[{l'=f,c'=1&0<=l&c<=ep()}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U()))");
+    implyR('R=="c=0->[{l'=f,c'=1&0<=l&c<=ep()}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U())");
+    diffInvariant("c>=0", 'R=="[{l'=f,c'=1&0<=l&c<=ep()}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U())");
+    diffInvariant("l=old(l)+f*c", 'R=="[{l'=f,c'=1&(0<=l&c<=ep())&c>=0}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U())");
+    dW('R=="[{l'=f,c'=1&((0<=l&c<=ep())&c>=0)&l=l_0+f*c}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U())");
+    QE
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Water tank sensor safety margin"
+
+Definitions
+  Real U();
+  Real m();
+End.
+
+ProgramVariables
+  Real l;
+  Real lu;
+End.
+
+Problem
+  0<=U() & U()<=lu&lu<=m()-U() -> \forall l (lu-U()<=l&l<=lu+U() -> 0<=l&l<=m())
+End.
+
+Tactic "Proof Water tank sensor safety margin"
+  auto
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Planar Flight Motion Safety".
+
+Definitions.
+  HP flightDynamics ::= {
+    { x' = v2*dx - v1 + w1*y, y' = v2*dy - w1*x,
+      dx' = -(w2-w1)*dy, dy' = (w2-w1)*dx & true }
+  };
+
+  Real I1(Real v1, Real v2, Real dx, Real dy, Real x, Real y) = (v2*dy*x - (v2*dx-v1)*y).
+  Real I2(Real v1, Real v2, Real w1, Real w2, Real dx, Real dy, Real x, Real y) = (-w1*w2*(x^2+y^2) + 2*v2*w1*dy*x + 2*(v1*w2-v2*w1*dx)*y + 2*v1*v2*dx);
+End.
+
+ProgramVariables
+  /* Relative coordinates in reference frame centered on ownship */
+  Real x;  /* x position of intruder */
+  Real y;  /* y position of intruder */
+  Real dx; /* cos theta of intruder */
+  Real dy; /* sin theta of intruder */
+
+  Real v1; /* Ownship linear velocity */
+  Real v2; /* Intruder angular velocity */
+  Real w1; /* Ownship angular velocity */
+  Real w2; /* Intruder angular velocity */
+
+  Real p;  /* safety margin */
+  Real r;
+End.
+
+Problem
+  v1=1 & v2=1 & x^2+y^2>p^2 & p>0 & dx^2+dy^2=1
+  ->
+     [ {
+         w1:=*;
+         w2:=*;
+         if (w1=0 & w2=0) {
+           ?I1(v1, v2, dx, dy, x, y) > (v1+v2)*p;
+         } else {
+           ?w1=1;
+           ?w2=1;
+           ?I2(v1, v2, w1, w2, dx, dy, x, y) > 2*v1*v2 + 2*p*(v2*abs(w1)+v1*abs(w2)) + p^2*abs(w1*w2);
+         };
+         flightDynamics;
+       }*@invariant(dx^2+dy^2=1 & x^2+y^2>p^2)
+     ]x^2+y^2>p^2
+End.
+
+Tactic "Proof Planar Flight Motion Safety"
+implyR('R=="v1=1&v2=1&x^2+y^2>p^2&p>0&dx^2+dy^2=1->[{{w1:=*;w2:=*;}{?w1=0&w2=0;?I1(v1,v2,dx,dy,x,y)>(v1+v2)*p;++?!(w1=0&w2=0);?w1=1;?w2=1;?I2(v1,v2,w1,w2,dx,dy,x,y)>2*v1*v2+2*p*(v2*abs(w1)+v1*abs(w2))+p^2*abs(w1*w2);}flightDynamics{|^@|};}*]x^2+y^2>p^2");
+loop("dx^2+dy^2=1&x^2+y^2>p^2", 'R=="[{{w1:=*;w2:=*;}{?w1=0&w2=0;?I1(v1,v2,dx,dy,x,y)>(v1+v2)*p;++?!(w1=0&w2=0);?w1=1;?w2=1;?I2(v1,v2,w1,w2,dx,dy,x,y)>2*v1*v2+2*p*(v2*abs(w1)+v1*abs(w2))+p^2*abs(w1*w2);}flightDynamics{|^@|};}*]x^2+y^2>p^2"); <(
+  "Init":
+    propClose,
+  "Post":
+    propClose,
+  "Step":
+    chase('R=="[{w1:=*;w2:=*;}{?w1=0&w2=0;?v2*dy*x-(v2*dx-v1)*y>(v1+v2)*p;++?!(w1=0&w2=0);?w1=1;?w2=1;?-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*p*(v2*abs(w1)+v1*abs(w2))+p^2*abs(w1*w2);}{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}](dx^2+dy^2=1&x^2+y^2>p^2)");
+    allR('R=="\forall w1 \forall w2 ((w1=0&w2=0->v2*dy*x-(v2*dx-v1)*y>(v1+v2)*p->[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}](dx^2+dy^2=1&x^2+y^2>p^2))&(!(w1=0&w2=0)->w1=1->w2=1->-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*p*(v2*abs(w1)+v1*abs(w2))+p^2*abs(w1*w2)->[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}](dx^2+dy^2=1&x^2+y^2>p^2)))");
+    allR('R=="\forall w2 ((w1=0&w2=0->v2*dy*x-(v2*dx-v1)*y>(v1+v2)*p->[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}](dx^2+dy^2=1&x^2+y^2>p^2))&(!(w1=0&w2=0)->w1=1->w2=1->-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*p*(v2*abs(w1)+v1*abs(w2))+p^2*abs(w1*w2)->[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}](dx^2+dy^2=1&x^2+y^2>p^2)))");
+    andR('R=="(w1=0&w2=0->v2*dy*x-(v2*dx-v1)*y>(v1+v2)*p->[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}](dx^2+dy^2=1&x^2+y^2>p^2))&(!(w1=0&w2=0)->w1=1->w2=1->-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*p*(v2*abs(w1)+v1*abs(w2))+p^2*abs(w1*w2)->[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}](dx^2+dy^2=1&x^2+y^2>p^2))"); <(
+      "w1=0&w2=0->v2*dy*x-(v2*dx-v1)*y>(v1+v2)*p->[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}](dx^2+dy^2=1&x^2+y^2>p^2)":
+        unfold;
+        diffInvariant("dx=old(dx)&dy=old(dy)", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}](dx^2+dy^2=1&x^2+y^2>p^2)");
+        dC("I1(v1,v2,dx,dy,x,y)=old(I1(v1,v2,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx=dx_0&dy=dy_0}](dx^2+dy^2=1&x^2+y^2>p^2)"); <(
+          "Use":
+            dWplus('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&(true&dx=dx_0&dy=dy_0)&I1(v1,v2,dx,dy,x,y)=old}](dx^2+dy^2=1&x^2+y^2>p^2)");
+            expand "I1";
+            andL('L)*;
+            andR('R=="dx^2+dy^2=1&x^2+y^2>p^2"); <(
+              "dx^2+dy^2=1":
+                allL2R('L=="dx=dx_0");
+                allL2R('L=="dy=dy_0");
+                id,
+              "x^2+y^2>p^2":
+                allL2R('L=="dy=dy_0");
+                allL2R('L=="dx=dx_0");
+                allL2R('L=="old=v2*dy_0*x_0-(v2*dx_0-v1)*y_0");
+                allL2R('L=="w2=0");
+                allL2R('L=="w1=0");
+                allL2R('L=="v2=1");
+                allL2R('L=="v1=1");
+                allR2L('L=="1*dy_0*x-(1*dx_0-1)*y=1*dy_0*x_0-(1*dx_0-1)*y_0");
+                fullSimplify;
+                QE using "p>0 :: dy_0*x-(dx_0-1)*y>2*p :: dx_0^2+dy_0^2=1 :: x^2+y^2>p^2 :: nil"
+            ),
+          "Show":
+            expand "I1";
+            dIClose('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx=dx_0&dy=dy_0}]v2*dy*x-(v2*dx-v1)*y=old")
+        ),
+      "!(w1=0&w2=0)->w1=1->w2=1->-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*p*(v2*abs(w1)+v1*abs(w2))+p^2*abs(w1*w2)->[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}](dx^2+dy^2=1&x^2+y^2>p^2)":
+        unfold;
+        diffInvariant("dx^2+dy^2=1", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}](dx^2+dy^2=1&x^2+y^2>p^2)");
+        dC("I2(v1,v2,w1,w2,dx,dy,x,y)=old(I2(v1,v2,w1,w2,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx^2+dy^2=1}](dx^2+dy^2=1&x^2+y^2>p^2)"); <(
+          "Use":
+            dWplus('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&(true&dx^2+dy^2=1)&I2(v1,v2,w1,w2,dx,dy,x,y)=old}](dx^2+dy^2=1&x^2+y^2>p^2)");
+            andL('L)*;
+            simplify('R=="dx^2+dy^2=1&x^2+y^2>p^2") using "dx^2+dy^2=1";
+            expand "I2";
+            edit("-w1*w2*(x_0^2+y_0^2)+2*v2*w1*dy_0*x_0+2*(v1*w2-v2*w1*dx_0)*y_0+2*v1*v2*dx_0>2*v1*v2+2*p*(v2*w1+v1*w2)+p^2*(w1*w2)", 'L=="-w1*w2*(x_0^2+y_0^2)+2*v2*w1*dy_0*x_0+2*(v1*w2-v2*w1*dx_0)*y_0+2*v1*v2*dx_0>2*v1*v2+2*p*(v2*abs(w1)+v1*abs(w2))+p^2*abs(w1*w2)") using "w1=1 :: w2=1 :: nil";
+            QE,
+          "Show":
+            expand "I2";
+            dIClose('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx^2+dy^2=1}]-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx=old")
+        )
+    )
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Planar Flight Motion Safety 2"
+
+Definitions
+  HP flightDynamics ::= {
+    { x' = v2*dx - v1 + w1*y, y' = v2*dy - w1*x,
+      dx' = -(w2-w1)*dy, dy' = (w2-w1)*dx & true }
+  };
+
+  Real I1(Real v1, Real v2, Real dx, Real dy, Real x, Real y) = (v2*dy*x - (v2*dx-v1)*y);
+  Real I2(Real v1, Real v2, Real w1, Real w2, Real dx, Real dy, Real x, Real y) = (-w1*w2*(x^2+y^2) + 2*v2*w1*dy*x + 2*(v1*w2-v2*w1*dx)*y + 2*v1*v2*dx);
+End.
+
+ProgramVariables
+  /* Relative coordinates in reference frame centered on ownship */
+  Real x;  /* x position of intruder */
+  Real y;  /* y position of intruder */
+  Real dx; /* cos theta of intruder */
+  Real dy; /* sin theta of intruder */
+
+  Real v1; /* Ownship linear velocity */
+  Real v2; /* Intruder angular velocity */
+  Real w1; /* Ownship angular velocity */
+  Real w2; /* Intruder angular velocity */
+
+  Real p;  /* safety margin */
+  Real r;
+End.
+
+Problem
+  v1>0 & v2>0 & x^2+y^2>0 & dx^2+dy^2=1
+  ->
+     [ {
+         w1:=*;
+         w2:=*;
+         if (w1=0 & w2=0) {
+           ?I1(v1, v2, dx, dy, x, y) > v1+v2;
+         } else {
+           ?w1>0;
+           ?w2>0;
+           ?I2(v1, v2, w1, w2, dx, dy, x, y) > 2*v1*v2 + 2*(v2*abs(w1)+v1*abs(w2)) + abs(w1*w2);
+         };
+         flightDynamics;
+       }*@invariant(dx^2+dy^2=1 & x^2+y^2>0)
+     ]x^2+y^2>0
+End.
+
+Tactic "Proof Planar Flight Motion Safety"
+implyR('R=="v1>0&v2>0&x^2+y^2>0&dx^2+dy^2=1->[{{w1:=*;w2:=*;}{?w1=0&w2=0;?I1(v1,v2,dx,dy,x,y)>v1+v2;++?!(w1=0&w2=0);?w1>0;?w2>0;?I2(v1,v2,w1,w2,dx,dy,x,y)>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2))+abs(w1*w2);}flightDynamics{|^@|};}*]x^2+y^2>0");
+loop("dx^2+dy^2=1&x^2+y^2>0", 'R=="[{{w1:=*;w2:=*;}{?w1=0&w2=0;?I1(v1,v2,dx,dy,x,y)>v1+v2;++?!(w1=0&w2=0);?w1>0;?w2>0;?I2(v1,v2,w1,w2,dx,dy,x,y)>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2))+abs(w1*w2);}flightDynamics{|^@|};}*]x^2+y^2>0"); <(
+  "Init":
+    propClose,
+  "Post":
+    propClose,
+  "Step":
+    chase('R=="[{w1:=*;w2:=*;}{?w1=0&w2=0;?v2*dy*x-(v2*dx-v1)*y>v1+v2;++?!(w1=0&w2=0);?w1>0;?w2>0;?-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2))+abs(w1*w2);}{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)");
+    unfold; <(
+      "w1=0&w2=0->v2*dy*x-(v2*dx-v1)*y>v1+v2->[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)":
+        diffInvariant("dx=old(dx)&dy=old(dy)", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)");
+        dC("I1(v1,v2,dx,dy,x,y)=old(I1(v1,v2,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx=dx_0&dy=dy_0}](dx^2+dy^2=1&x^2+y^2>0)"); <(
+          "Use":
+            dWplus('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&(true&dx=dx_0&dy=dy_0)&I1(v1,v2,dx,dy,x,y)=old}](dx^2+dy^2=1&x^2+y^2>0)");
+            expand "I1";
+            andL('L)*;
+            allL2R('L=="dx=dx_0");
+            allL2R('L=="dy=dy_0");
+            simplify('R=="dx_0^2+dy_0^2=1&x^2+y^2>0") using "dx_0^2+dy_0^2=1";
+            allL2R('L=="old=v2*dy_0*x_0-(v2*dx_0-v1)*y_0");
+            allR2L('L=="v2*dy_0*x-(v2*dx_0-v1)*y=v2*dy_0*x_0-(v2*dx_0-v1)*y_0");
+            QE using "v1>0 :: v2>0 :: v2*dy_0*x-(v2*dx_0-v1)*y>v1+v2 :: dx_0^2+dy_0^2=1 :: x^2+y^2>0 :: nil",
+          "Show":
+            expand "I1";
+            dIClose('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx=dx_0&dy=dy_0}]v2*dy*x-(v2*dx-v1)*y=old")
+        ),
+      "!(w1=0&w2=0)->w1>0->w2>0->-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2))+abs(w1*w2)->[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)":
+        diffInvariant("dx^2+dy^2=1", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)");
+        dC("I2(v1,v2,w1,w2,dx,dy,x,y)=old(I2(v1,v2,w1,w2,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx^2+dy^2=1}](dx^2+dy^2=1&x^2+y^2>0)"); <(
+          "Use":
+            dWplus('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&(true&dx^2+dy^2=1)&I2(v1,v2,w1,w2,dx,dy,x,y)=old}](dx^2+dy^2=1&x^2+y^2>0)");
+            expand "I2";
+            andL('L)*;
+            simplify('R=="dx^2+dy^2=1&x^2+y^2>0") using "dx^2+dy^2=1";
+            edit("-w1*w2*(x_0^2+y_0^2)+2*v2*w1*dy_0*x_0+2*(v1*w2-v2*w1*dx_0)*y_0+2*v1*v2*dx_0>2*v1*v2+2*(v2*w1+v1*w2)+w1*w2", 'L=="-w1*w2*(x_0^2+y_0^2)+2*v2*w1*dy_0*x_0+2*(v1*w2-v2*w1*dx_0)*y_0+2*v1*v2*dx_0>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2))+abs(w1*w2)") using "w1>0 :: w2>0 :: nil";
+            allR2L('L=="old=-w1*w2*(x_0^2+y_0^2)+2*v2*w1*dy_0*x_0+2*(v1*w2-v2*w1*dx_0)*y_0+2*v1*v2*dx_0");
+            QE using "v1>0 :: v2>0 :: w1>0 :: w2>0 :: old>2*v1*v2+2*(v2*w1+v1*w2)+w1*w2 :: -w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx=old :: dx^2+dy^2=1 :: x^2+y^2>0 :: nil",
+          "Show":
+            expand "I2";
+            dIClose('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx^2+dy^2=1}]-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx=old")
+        )
+    )
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Planar Flight Motion Safety 2 Simple"
+
+Definitions
+  HP flightDynamics ::= {
+    { x' = v2*dx - v1 + w1*y, y' = v2*dy - w1*x,
+      dx' = -(w2-w1)*dy, dy' = (w2-w1)*dx & true }
+  };
+
+  Real I1(Real v1, Real v2, Real dx, Real dy, Real x, Real y) = (v2*dy*x - (v2*dx-v1)*y);
+  Real I2(Real v1, Real v2, Real w1, Real w2, Real dx, Real dy, Real x, Real y) = (-w1*w2*(x^2+y^2) + 2*v2*w1*dy*x + 2*(v1*w2-v2*w1*dx)*y + 2*v1*v2*dx);
+End.
+
+ProgramVariables
+  /* Relative coordinates in reference frame centered on ownship */
+  Real x;  /* x position of intruder */
+  Real y;  /* y position of intruder */
+  Real dx; /* cos theta of intruder */
+  Real dy; /* sin theta of intruder */
+
+  Real v1; /* Ownship linear velocity */
+  Real v2; /* Intruder angular velocity */
+  Real w1; /* Ownship angular velocity */
+  Real w2; /* Intruder angular velocity */
+
+  Real p;  /* safety margin */
+  Real r;
+End.
+
+Problem
+  v1=1 & v2=1 & x^2+y^2>0 & dx^2+dy^2=1
+  ->
+     [ {
+         /* ctrl */
+         {
+         w1:=1; /* ownship evasion maneuver */
+         w2:=0; /* intruder straight path */
+         ?I2(v1, v2, w1, w2, dx, dy, x, y) > 2*v1*v2 + 2*(v2*w1+v1*w2) + w1*w2;
+         }
+         flightDynamics;
+       }*@invariant(dx^2+dy^2=1 & x^2+y^2>0)
+     ]x^2+y^2>0
+End.
+
+Tactic "Proof Planar Flight Motion Safety 2 Simple"
+implyR('R=="v1=1&v2=1&x^2+y^2>0&dx^2+dy^2=1->[{{w1:=1;w2:=0;?I2(v1,v2,w1,w2,dx,dy,x,y)>2*v1*v2+2*(v2*w1+v1*w2)+w1*w2;}flightDynamics{|^@|};}*]x^2+y^2>0");
+loop("dx^2+dy^2=1&x^2+y^2>0", 'R=="[{{w1:=1;w2:=0;?I2(v1,v2,w1,w2,dx,dy,x,y)>2*v1*v2+2*(v2*w1+v1*w2)+w1*w2;}flightDynamics{|^@|};}*]x^2+y^2>0"); <(
+  "Init":
+    propClose,
+  "Post":
+    propClose,
+  "Step":
+    chase('R=="[{w1:=1;w2:=0;?-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*w1+v1*w2)+w1*w2;}{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)");
+    unfold;
+    diffInvariant("dx^2+dy^2=1", 'R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx}](dx^2+dy^2=1&x^2+y^2>0)");
+    dC("I2(1,1,1,0,dx,dy,x,y)=old(I2(1,1,1,0,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx&true&dx^2+dy^2=1}](dx^2+dy^2=1&x^2+y^2>0)"); <(
+      "Use":
+        dWplus('R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx&(true&dx^2+dy^2=1)&I2(1,1,1,0,dx,dy,x,y)=old}](dx^2+dy^2=1&x^2+y^2>0)");
+        expand "I2";
+        andL('L)*;
+        simplify('R=="dx^2+dy^2=1&x^2+y^2>0") using "dx^2+dy^2=1";
+        QE,
+      "Show":
+        expand "I2";
+        dIClose('R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx&true&dx^2+dy^2=1}]-(1*0*(x^2+y^2))+2*1*1*dy*x+2*(1*0-1*1*dx)*y+2*1*1*dx=old")
+    )
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Planar Flight Motion Safety 3 Simple"
+
+Definitions
+  HP flightDynamics ::= {
+    { x' = v2*dx - v1 + w1*y, y' = v2*dy - w1*x,
+      dx' = -(w2-w1)*dy, dy' = (w2-w1)*dx & true }
+  };
+
+  Real I1(Real v1, Real v2, Real dx, Real dy, Real x, Real y) = (v2*dy*x - (v2*dx-v1)*y);
+  Real I2(Real v1, Real v2, Real w1, Real w2, Real dx, Real dy, Real x, Real y) = (-w1*w2*(x^2+y^2) + 2*v2*w1*dy*x + 2*(v1*w2-v2*w1*dx)*y + 2*v1*v2*dx);
+End.
+
+ProgramVariables
+  /* Relative coordinates in reference frame centered on ownship */
+  Real x;  /* x position of intruder */
+  Real y;  /* y position of intruder */
+  Real dx; /* cos theta of intruder */
+  Real dy; /* sin theta of intruder */
+
+  Real v1; /* Ownship linear velocity */
+  Real v2; /* Intruder angular velocity */
+  Real w1; /* Ownship angular velocity */
+  Real w2; /* Intruder angular velocity */
+End.
+
+Problem
+  v1=1 & v2=1 & x^2+y^2>0 & dx^2+dy^2=1
+  ->
+     [ {
+         /* ctrl */
+         {
+         w2:=0; /* intruder straight path */
+         {
+              w1:=0; ?I1(v1, v2, dx, dy, x, y) > v1+v2;
+           ++ w1:=1; ?I2(v1, v2, w1, w2, dx, dy, x, y) > 2*v1*v2 + 2*(v2*w1+v1*w2) + w1*w2;
+         }
+         }
+         flightDynamics;
+       }*@invariant(dx^2+dy^2=1 & x^2+y^2>0)
+     ]x^2+y^2>0
+End.
+
+Tactic "Proof Planar Flight Motion Safety 3 Simple"
+implyR('R=="v1=1&v2=1&x^2+y^2>0&dx^2+dy^2=1->[{{w2:=0;{w1:=0;?I1(v1,v2,dx,dy,x,y)>v1+v2;++w1:=1;?I2(v1,v2,w1,w2,dx,dy,x,y)>2*v1*v2+2*(v2*w1+v1*w2)+w1*w2;}}flightDynamics{|^@|};}*]x^2+y^2>0");
+loop("dx^2+dy^2=1&x^2+y^2>0", 'R=="[{{w2:=0;{w1:=0;?I1(v1,v2,dx,dy,x,y)>v1+v2;++w1:=1;?I2(v1,v2,w1,w2,dx,dy,x,y)>2*v1*v2+2*(v2*w1+v1*w2)+w1*w2;}}flightDynamics{|^@|};}*]x^2+y^2>0"); <(
+  "Init":
+    propClose,
+  "Post":
+    propClose,
+  "Step":
+    unfold; <(
+      "[w1:=0;?v2*dy*x-(v2*dx-v1)*y>v1+v2;][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)":
+        diffInvariant("dx=old(dx)&dy=old(dy)", 'R=="[{x'=v2*dx-v1+0*y,y'=v2*dy-0*x,dx'=-((0-0)*dy),dy'=(0-0)*dx}](dx^2+dy^2=1&x^2+y^2>0)");
+        dC("I1(1,1,dx,dy,x,y)=old(I1(1,1,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+0*y,y'=v2*dy-0*x,dx'=-((0-0)*dy),dy'=(0-0)*dx&true&dx=dx_0&dy=dy_0}](dx^2+dy^2=1&x^2+y^2>0)"); <(
+          "Use":
+            dWplus('R=="[{x'=v2*dx-v1+0*y,y'=v2*dy-0*x,dx'=-((0-0)*dy),dy'=(0-0)*dx&(true&dx=dx_0&dy=dy_0)&I1(1,1,dx,dy,x,y)=old}](dx^2+dy^2=1&x^2+y^2>0)");
+            expand "I1";
+            andL('L)*;
+            allL2R('L=="dx=dx_0");
+            allL2R('L=="dy=dy_0");
+            simplify('R=="dx_0^2+dy_0^2=1&x^2+y^2>0") using "dx_0^2+dy_0^2=1";
+            allL2R('L=="v1=1");
+            allL2R('L=="v2=1");
+            allR2L('L=="old=1*dy_0*x_0-(1*dx_0-1)*y_0");
+            QE using "old>1+1 :: dx_0^2+dy_0^2=1 :: 1*dy_0*x-(1*dx_0-1)*y=old :: x^2+y^2>0 :: nil",
+          "Show":
+            expand "I1";
+            dIClose('R=="[{x'=v2*dx-v1+0*y,y'=v2*dy-0*x,dx'=-((0-0)*dy),dy'=(0-0)*dx&true&dx=dx_0&dy=dy_0}]1*dy*x-(1*dx-1)*y=old")
+        ),
+      "[w1:=1;?-w1*0*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*0-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*w1+v1*0)+w1*0;][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)":
+        diffInvariant("dx^2+dy^2=1", 'R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx}](dx^2+dy^2=1&x^2+y^2>0)");
+        dC("I2(1,1,1,0,dx,dy,x,y)=old(I2(1,1,1,0,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx&true&dx^2+dy^2=1}](dx^2+dy^2=1&x^2+y^2>0)"); <(
+          "Use":
+            dWplus('R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx&(true&dx^2+dy^2=1)&I2(1,1,1,0,dx,dy,x,y)=old}](dx^2+dy^2=1&x^2+y^2>0)");
+            andL('L)*;
+            simplify('R=="dx^2+dy^2=1&x^2+y^2>0") using "dx^2+dy^2=1";
+            expand "I2";
+            allL2R('L=="v1=1");
+            allL2R('L=="v2=1");
+            allR2L('L=="old=-(1*0*(x_0^2+y_0^2))+2*1*1*dy_0*x_0+2*(1*0-1*1*dx_0)*y_0+2*1*1*dx_0");
+            QE using "old>2*1*1+2*(1*1+1*0)+1*0 :: -(1*0*(x^2+y^2))+2*1*1*dy*x+2*(1*0-1*1*dx)*y+2*1*1*dx=old :: dx^2+dy^2=1 :: x^2+y^2>0 :: nil",
+          "Show":
+            expand "I2";
+            dIClose('R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx&true&dx^2+dy^2=1}]-(1*0*(x^2+y^2))+2*1*1*dy*x+2*(1*0-1*1*dx)*y+2*1*1*dx=old")
+        )
+    )
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Planar Flight Motion Safety 3 Simple with Ownship Actuator Disturbance"
+
+Definitions.
+  HP ctrl ::= {
+    w2:=0; /* intruder straight path */
+    {
+         w1p:=0; ?I1(v1, v2, dx, dy, x, y) > v1+v2;
+      ++ w1p:=1; ?\forall pw1 (0<=pw1&pw1<=w1p*wD() -> I2(v1, v2, pw1, w2, dx, dy, x, y) > 2*v1*v2 + 2*(v2*pw1+v1*w2) + pw1*w2);
+    }
+  };
+
+  HP act ::= {
+    w1:=*; ?0<=w1&w1<=w1p*wD();
+  };
+
+  HP flightDynamics ::= {
+    { x' = v2*dx - v1 + w1*y, y' = v2*dy - w1*x,
+      dx' = -(w2-w1)*dy, dy' = (w2-w1)*dx & true }
+  };
+
+  Real I1(Real v1, Real v2, Real dx, Real dy, Real x, Real y) = (v2*dy*x - (v2*dx-v1)*y);
+  Real I2(Real v1, Real v2, Real w1, Real w2, Real dx, Real dy, Real x, Real y) = (-w1*w2*(x^2+y^2) + 2*v2*w1*dy*x + 2*(v1*w2-v2*w1*dx)*y + 2*v1*v2*dx);
+
+  Real wD();
+End.
+
+ProgramVariables
+  /* Relative coordinates in reference frame centered on ownship */
+  Real x;  /* x position of intruder */
+  Real y;  /* y position of intruder */
+  Real dx; /* cos theta of intruder */
+  Real dy; /* sin theta of intruder */
+
+  Real v1; /* Ownship linear velocity */
+  Real v2; /* Intruder angular velocity */
+  Real w1; /* Ownship angular velocity */
+  Real w2; /* Intruder angular velocity */
+
+  Real w1p;
+End.
+
+Problem
+  v1=1 & v2=1 & x^2+y^2>0 & dx^2+dy^2=1 & 0<=wD()
+  ->
+     [ {
+         ctrl;
+         act;
+         flightDynamics;
+       }*@invariant(dx^2+dy^2=1 & x^2+y^2>0)
+     ]x^2+y^2>0
+End.
+
+Tactic "Proof Planar Flight Motion Safety 3 Simple with Ownship Actuator Disturbance"
+implyR('R=="v1=1&v2=1&x^2+y^2>0&dx^2+dy^2=1&0<=wD()->[{{w2:=0;{w1p:=0;?I1(v1,v2,dx,dy,x,y)>v1+v2;++w1p:=1;?\forall pw1 (0<=pw1&pw1<=w1p*wD()->I2(v1,v2,pw1,w2,dx,dy,x,y)>2*v1*v2+2*(v2*pw1+v1*w2)+pw1*w2);}}{w1:=*;?0<=w1&w1<=w1p*wD();}flightDynamics{|^@|};}*]x^2+y^2>0");
+loop("dx^2+dy^2=1&x^2+y^2>0", 'R=="[{{w2:=0;{w1p:=0;?I1(v1,v2,dx,dy,x,y)>v1+v2;++w1p:=1;?\forall pw1 (0<=pw1&pw1<=w1p*wD()->I2(v1,v2,pw1,w2,dx,dy,x,y)>2*v1*v2+2*(v2*pw1+v1*w2)+pw1*w2);}}{w1:=*;?0<=w1&w1<=w1p*wD();}flightDynamics{|^@|};}*]x^2+y^2>0"); <(
+  "Init":
+    propClose,
+  "Post":
+    propClose,
+  "Step":
+    unfold; <(
+      "[w1p:=0;?v2*dy*x-(v2*dx-v1)*y>v1+v2;][{w1:=*;?0<=w1&w1<=w1p*wD();}{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)":
+        diffInvariant("dx=old(dx)&dy=old(dy)", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)");
+        dC("I1(1,1,dx,dy,x,y)=old(I1(1,1,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx&true&dx=dx_0&dy=dy_0}](dx^2+dy^2=1&x^2+y^2>0)"); <(
+          "Use":
+            dWplus('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx&(true&dx=dx_0&dy=dy_0)&I1(1,1,dx,dy,x,y)=old}](dx^2+dy^2=1&x^2+y^2>0)");
+            andL('L)*;
+            allL2R('L=="dx=dx_0");
+            allL2R('L=="dy=dy_0");
+            simplify('R=="dx_0^2+dy_0^2=1&x^2+y^2>0") using "dx_0^2+dy_0^2=1";
+            expand "I1";
+            allL2R('L=="v1=1");
+            allL2R('L=="v2=1");
+            allR2L('L=="old=1*dy_0*x_0-(1*dx_0-1)*y_0");
+            QE using "old>1+1 :: dx_0^2+dy_0^2=1 :: 1*dy_0*x-(1*dx_0-1)*y=old :: x^2+y^2>0 :: nil",
+          "Show":
+            expand "I1";
+            dIClose('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx&true&dx=dx_0&dy=dy_0}]1*dy*x-(1*dx-1)*y=old")
+        ),
+      "[w1p:=1;?\forall pw1 (0<=pw1&pw1<=w1p*wD()->-pw1*0*(x^2+y^2)+2*v2*pw1*dy*x+2*(v1*0-v2*pw1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*pw1+v1*0)+pw1*0);][{w1:=*;?0<=w1&w1<=w1p*wD();}{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)":
+        diffInvariant("dx^2+dy^2=1", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)");
+        dC("I2(1,1,w1,0,dx,dy,x,y)=old(I2(1,1,w1,0,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx&true&dx^2+dy^2=1}](dx^2+dy^2=1&x^2+y^2>0)"); <(
+          "Use":
+            dWplus('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx&(true&dx^2+dy^2=1)&I2(1,1,w1,0,dx,dy,x,y)=old}](dx^2+dy^2=1&x^2+y^2>0)");
+            andL('L)*;
+            simplify('R=="dx^2+dy^2=1&x^2+y^2>0") using "dx^2+dy^2=1";
+            expand "I2";
+            allL("w1", 'L=="\forall pw1 (0<=pw1&pw1<=1*wD()->-pw1*0*(x_0^2+y_0^2)+2*v2*pw1*dy_0*x_0+2*(v1*0-v2*pw1*dx_0)*y_0+2*v1*v2*dx_0>2*v1*v2+2*(v2*pw1+v1*0)+pw1*0)");
+            simplify('L=="w1<=1*wD()");
+            simplify('L=="0<=w1&w1<=1*wD()->-w1*0*(x_0^2+y_0^2)+2*v2*w1*dy_0*x_0+2*(v1*0-v2*w1*dx_0)*y_0+2*v1*v2*dx_0>2*v1*v2+2*(v2*w1+v1*0)+w1*0");
+            edit("old>2*v1*v2+2*(v2*w1+v1*0)+w1*0", 'L=="2*v2*w1*dy_0*x_0+2*(-v2*w1*dx_0)*y_0+2*v1*v2*dx_0>2*v1*v2+2*(v2*w1)");
+            QE using "v1=1 :: v2=1 :: 0<=wD() :: old>2*v1*v2+2*(v2*w1+v1*0)+w1*0 :: 0<=w1 :: w1<=wD() :: -w1*0*(x^2+y^2)+2*1*w1*dy*x+2*(1*0-1*w1*dx)*y+2*1*1*dx=old :: dx^2+dy^2=1 :: x^2+y^2>0 :: nil",
+          "Show":
+            expand "I2";
+            dIClose('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx&true&dx^2+dy^2=1}]-w1*0*(x^2+y^2)+2*1*w1*dy*x+2*(1*0-1*w1*dx)*y+2*1*1*dx=old")
+        )
+    )
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Planar Flight Motion Safety 3 Simple with Intruder Linear Velocity Uncertainty"
+
+Definitions.
+  HP flightDynamics ::= {
+    { x' = v2*dx - v1 + w1*y, y' = v2*dy - w1*x,
+      dx' = -(w2-w1)*dy, dy' = (w2-w1)*dx & true }
+  };
+
+  Real I1(Real v1, Real v2, Real dx, Real dy, Real x, Real y) = (v2*dy*x - (v2*dx-v1)*y);
+  Real I2(Real v1, Real v2, Real w1, Real w2, Real dx, Real dy, Real x, Real y) = (-w1*w2*(x^2+y^2) + 2*v2*w1*dy*x + 2*(v1*w2-v2*w1*dx)*y + 2*v1*v2*dx);
+
+  Real v2U();
+End.
+
+ProgramVariables
+  /* Relative coordinates in reference frame centered on ownship */
+  Real x;  /* x position of intruder */
+  Real y;  /* y position of intruder */
+  Real dx; /* cos theta of intruder */
+  Real dy; /* sin theta of intruder */
+
+  Real v1; /* Ownship linear velocity */
+  Real v2; /* Intruder angular velocity */
+  Real w1; /* Ownship angular velocity */
+  Real w2; /* Intruder angular velocity */
+
+  Real v2m;
+End.
+
+Problem
+  v1=1 & v2=1 & x^2+y^2>0 & dx^2+dy^2=1 & v2-v2U()<=v2m&v2m<=v2+v2U() & 0<=v2U()&v2U()<=1
+  ->
+     [ {
+         /* ctrl */
+         {
+         w2:=0; /* intruder straight path */
+         {
+              w1:=0; ?\forall v2p (v2m-v2U()<=v2p&v2p<=v2m+v2U() ->
+                         I1(v1, v2p, dx, dy, x, y) > v1+v2p);
+           ++ w1:=1; ?\forall v2p (v2m-v2U()<=v2p&v2p<=v2m+v2U() ->
+                         I2(v1, v2p, w1, w2, dx, dy, x, y) > 2*v1*v2p + 2*(v2p*w1+v1*w2) + w1*w2);
+         }
+         }
+         flightDynamics;
+         /* measure */
+         {
+           v2m:=*; ?v2-v2U()<=v2m&v2m<=v2+v2U();
+         }
+    }*@invariant(dx^2+dy^2=1 & x^2+y^2>0 & v2-v2U()<=v2m&v2m<=v2+v2U())
+     ]x^2+y^2>0
+End.
+
+Tactic "Proof Planar Flight Motion Safety 3 Simple with Intruder Linear Velocity Uncertainty"
+implyR('R=="v1=1&v2=1&x^2+y^2>0&dx^2+dy^2=1&v2-v2U()<=v2m&v2m<=v2+v2U()&0<=v2U()&v2U()<=1->[{{w2:=0;{w1:=0;?\forall v2p (v2m-v2U()<=v2p&v2p<=v2m+v2U()->I1(v1,v2p,dx,dy,x,y)>v1+v2p);++w1:=1;?\forall v2p (v2m-v2U()<=v2p&v2p<=v2m+v2U()->I2(v1,v2p,w1,w2,dx,dy,x,y)>2*v1*v2p+2*(v2p*w1+v1*w2)+w1*w2);}}flightDynamics{|^@|};v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();}*]x^2+y^2>0");
+loop("dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U()", 'R=="[{{w2:=0;{w1:=0;?\forall v2p (v2m-v2U()<=v2p&v2p<=v2m+v2U()->I1(v1,v2p,dx,dy,x,y)>v1+v2p);++w1:=1;?\forall v2p (v2m-v2U()<=v2p&v2p<=v2m+v2U()->I2(v1,v2p,w1,w2,dx,dy,x,y)>2*v1*v2p+2*(v2p*w1+v1*w2)+w1*w2);}}flightDynamics{|^@|};v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();}*]x^2+y^2>0"); <(
+  "Init":
+    propClose,
+  "Post":
+    propClose,
+  "Step":
+    unfold; <(
+      "[w1:=0;?\forall v2p (v2m-v2U()<=v2p&v2p<=v2m+v2U()->v2p*dy*x-(v2p*dx-v1)*y>v1+v2p);][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())":
+        allL("v2", 'L=="\forall v2p (v2m-v2U()<=v2p&v2p<=v2m+v2U()->v2p*dy*x-(v2p*dx-v1)*y>v1+v2p)");
+        implyL('L=="v2m-v2U()<=v2&v2<=v2m+v2U()->v2*dy*x-(v2*dx-v1)*y>v1+v2"); <(
+          "v2m-v2U()<=v2&v2<=v2m+v2U()":
+            QE using "v1=1 :: v2=1 :: 0<=v2U() :: v2U()<=1 :: dx^2+dy^2=1 :: x^2+y^2>0 :: v2-v2U()<=v2m :: v2m<=v2+v2U() :: v2m-v2U()<=v2&v2<=v2m+v2U() :: nil",
+          "v2*dy*x-(v2*dx-v1)*y>v1+v2":
+            diffInvariant("dx=old(dx)&dy=old(dy)", 'R=="[{x'=v2*dx-v1+0*y,y'=v2*dy-0*x,dx'=-((0-0)*dy),dy'=(0-0)*dx}][v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())");
+            dC("I1(1,1,dx,dy,x,y)=old(I1(1,1,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+0*y,y'=v2*dy-0*x,dx'=-((0-0)*dy),dy'=(0-0)*dx&true&dx=dx_0&dy=dy_0}][v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())"); <(
+              "Use":
+                dWplus('R=="[{x'=v2*dx-v1+0*y,y'=v2*dy-0*x,dx'=-((0-0)*dy),dy'=(0-0)*dx&(true&dx=dx_0&dy=dy_0)&I1(1,1,dx,dy,x,y)=old}][v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())");
+                unfold;
+                allL2R('L=="dx=dx_0");
+                allL2R('L=="dy=dy_0");
+                simplify('R=="dx_0^2+dy_0^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U()") using "dx_0^2+dy_0^2=1 :: v2-v2U()<=v2m :: v2m<=v2+v2U() :: nil";
+                expand "I1";
+                allL2R('L=="v1=1");
+                allL2R('L=="v2=1");
+                allR2L('L=="old=1*dy_0*x_0-(1*dx_0-1)*y_0");
+                QE using "old>1+1 :: dx_0^2+dy_0^2=1 :: 1*dy_0*x-(1*dx_0-1)*y=old :: x^2+y^2>0 :: nil",
+              "Show":
+                expand "I1";
+                dIClose('R=="[{x'=v2*dx-v1+0*y,y'=v2*dy-0*x,dx'=-((0-0)*dy),dy'=(0-0)*dx&true&dx=dx_0&dy=dy_0}]1*dy*x-(1*dx-1)*y=old")
+            )
+        ),
+      "[w1:=1;?\forall v2p (v2m-v2U()<=v2p&v2p<=v2m+v2U()->-w1*0*(x^2+y^2)+2*v2p*w1*dy*x+2*(v1*0-v2p*w1*dx)*y+2*v1*v2p*dx>2*v1*v2p+2*(v2p*w1+v1*0)+w1*0);][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())":
+        diffInvariant("dx^2+dy^2=1", 'R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx}][v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())");
+        dC("I2(1,1,1,0,dx,dy,x,y)=old(I2(1,1,1,0,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx&true&dx^2+dy^2=1}][v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())"); <(
+          "Use":
+            dWplus('R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx&(true&dx^2+dy^2=1)&I2(1,1,1,0,dx,dy,x,y)=old}][v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())");
+            unfold;
+            simplify('R=="dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U()") using "v2-v2U()<=v2m :: v2m<=v2+v2U() :: dx^2+dy^2=1 :: nil";
+            allL("v2", 'L=="\forall v2p (v2m_0-v2U()<=v2p&v2p<=v2m_0+v2U()->-(1*0*(x_0^2+y_0^2))+2*v2p*1*dy_0*x_0+2*(v1*0-v2p*1*dx_0)*y_0+2*v1*v2p*dx_0>2*v1*v2p+2*(v2p*1+v1*0)+1*0)");
+            implyL('L=="v2m_0-v2U()<=v2&v2<=v2m_0+v2U()->-(1*0*(x_0^2+y_0^2))+2*v2*1*dy_0*x_0+2*(v1*0-v2*1*dx_0)*y_0+2*v1*v2*dx_0>2*v1*v2+2*(v2*1+v1*0)+1*0"); <(
+              "v2m_0-v2U()<=v2&v2<=v2m_0+v2U()":
+                QE using "0<=v2U() :: v2U()<=1 :: v2-v2U()<=v2m_0 :: v2m_0<=v2+v2U() :: v2-v2U()<=v2m :: v2m<=v2+v2U() :: v2m_0-v2U()<=v2&v2<=v2m_0+v2U() :: nil",
+              "-(1*0*(x_0^2+y_0^2))+2*v2*1*dy_0*x_0+2*(v1*0-v2*1*dx_0)*y_0+2*v1*v2*dx_0>2*v1*v2+2*(v2*1+v1*0)+1*0":
+                expand "I2";
+                allL2R('L=="v1=1");
+                allL2R('L=="v2=1");
+                allR2L('L=="old=-(1*0*(x_0^2+y_0^2))+2*1*1*dy_0*x_0+2*(1*0-1*1*dx_0)*y_0+2*1*1*dx_0");
+                QE using "old>2*1*1+2*(1*1+1*0)+1*0 :: -(1*0*(x^2+y^2))+2*1*1*dy*x+2*(1*0-1*1*dx)*y+2*1*1*dx=old :: dx^2+dy^2=1 :: x^2+y^2>0 :: nil"
+            ),
+          "Show":
+            expand "I2";
+            dIClose('R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx&true&dx^2+dy^2=1}]-(1*0*(x^2+y^2))+2*1*1*dy*x+2*(1*0-1*1*dx)*y+2*1*1*dx=old")
+        )
+    )
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Planar Flight Motion Safety 2 Simple with Position Uncertainty"
+
+Definitions
+  HP flightDynamics ::= {
+    { x' = v2*dx - v1 + w1*y, y' = v2*dy - w1*x,
+      dx' = -(w2-w1)*dy, dy' = (w2-w1)*dx & true }
+  };
+
+  Real I1(Real v1, Real v2, Real dx, Real dy, Real x, Real y) = (v2*dy*x - (v2*dx-v1)*y);
+  Real I2(Real v1, Real v2, Real w1, Real w2, Real dx, Real dy, Real x, Real y) = (-w1*w2*(x^2+y^2) + 2*v2*w1*dy*x + 2*(v1*w2-v2*w1*dx)*y + 2*v1*v2*dx);
+
+  Real pU(); /* position uncertainty */
+End.
+
+ProgramVariables.
+  /* Relative coordinates in reference frame centered on ownship */
+  Real x;  /* x position of intruder */
+  Real y;  /* y position of intruder */
+  Real dx; /* cos theta of intruder */
+  Real dy; /* sin theta of intruder */
+
+  Real v1; /* Ownship linear velocity */
+  Real v2; /* Intruder angular velocity */
+  Real w1; /* Ownship angular velocity */
+  Real w2; /* Intruder angular velocity */
+
+  Real mx;
+  Real my;
+End.
+
+Problem
+  v1=1 & v2=1 & x^2+y^2>0 & dx^2+dy^2=1 & (mx-x)^2+(my-y)^2<=pU()^2 & pU()>=0
+  ->
+     [ {
+         /* ctrl */
+         {
+         w1:=1; /* ownship evasion maneuver */
+         w2:=0; /* intruder straight path */
+         ?\forall px \forall py ((mx-px)^2+(my-py)^2<=pU()^2 -> I2(v1, v2, w1, w2, dx, dy, px, py) > 2*v1*v2 + 2*pU()*(v2*w1+v1*w2) + pU()^2*w1*w2);
+         }
+         flightDynamics;
+         /* measure */
+         {
+           mx:=*; my:=*; ?(mx-x)^2+(my-y)^2<=pU()^2;
+         }
+       }*@invariant(dx^2+dy^2=1 & x^2+y^2>0 & (mx-x)^2+(my-y)^2<=pU()^2)
+     ]x^2+y^2>0
+End.
+
+Tactic "Proof Planar Flight Motion Safety 2 Simple with Position Uncertainty"
+implyR('R=="v1=1&v2=1&x^2+y^2>0&dx^2+dy^2=1&(mx-x)^2+(my-y)^2<=pU()^2&pU()>=0->[{{w1:=1;w2:=0;?\forall px \forall py ((mx-px)^2+(my-py)^2<=pU()^2->I2(v1,v2,w1,w2,dx,dy,px,py)>2*v1*v2+2*pU()*(v2*w1+v1*w2)+pU()^2*w1*w2);}flightDynamics{|^@|};mx:=*;my:=*;?(mx-x)^2+(my-y)^2<=pU()^2;}*]x^2+y^2>0");
+loop("dx^2+dy^2=1&x^2+y^2>0&(mx-x)^2+(my-y)^2<=pU()^2", 'R=="[{{w1:=1;w2:=0;?\forall px \forall py ((mx-px)^2+(my-py)^2<=pU()^2->I2(v1,v2,w1,w2,dx,dy,px,py)>2*v1*v2+2*pU()*(v2*w1+v1*w2)+pU()^2*w1*w2);}flightDynamics{|^@|};mx:=*;my:=*;?(mx-x)^2+(my-y)^2<=pU()^2;}*]x^2+y^2>0"); <(
+  "Init":
+    propClose,
+  "Post":
+    propClose,
+  "Step":
+    unfold;
+    allL("x", 'L=="\forall px \forall py ((mx-px)^2+(my-py)^2<=pU()^2->-(1*0*(px^2+py^2))+2*v2*1*dy*px+2*(v1*0-v2*1*dx)*py+2*v1*v2*dx>2*v1*v2+2*pU()*(v2*1+v1*0)+pU()^2*1*0)");
+    allL("y", 'L=="\forall py ((mx-x)^2+(my-py)^2<=pU()^2->-(1*0*(x^2+py^2))+2*v2*1*dy*x+2*(v1*0-v2*1*dx)*py+2*v1*v2*dx>2*v1*v2+2*pU()*(v2*1+v1*0)+pU()^2*1*0)");
+    simplify('L=="(mx-x)^2+(my-y)^2<=pU()^2->-(1*0*(x^2+y^2))+2*v2*1*dy*x+2*(v1*0-v2*1*dx)*y+2*v1*v2*dx>2*v1*v2+2*pU()*(v2*1+v1*0)+pU()^2*1*0");
+    diffInvariant("dx^2+dy^2=1", 'R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx}][mx:=*;my:=*;?(mx-x)^2+(my-y)^2<=pU()^2;](dx^2+dy^2=1&x^2+y^2>0&(mx-x)^2+(my-y)^2<=pU()^2)");
+    dC("I2(1,1,1,0,dx,dy,x,y)=old(I2(1,1,1,0,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx&true&dx^2+dy^2=1}][mx:=*;my:=*;?(mx-x)^2+(my-y)^2<=pU()^2;](dx^2+dy^2=1&x^2+y^2>0&(mx-x)^2+(my-y)^2<=pU()^2)"); <(
+      "Use":
+        dWplus('R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx&(true&dx^2+dy^2=1)&I2(1,1,1,0,dx,dy,x,y)=old}][mx:=*;my:=*;?(mx-x)^2+(my-y)^2<=pU()^2;](dx^2+dy^2=1&x^2+y^2>0&(mx-x)^2+(my-y)^2<=pU()^2)");
+        unfold;
+        expand "I2";
+        allL2R('L=="v1=1");
+        allL2R('L=="v2=1");
+        edit("old>2*v1*v2+2*pU()*(v2*1+v1*0)+pU()^2*1*0", 'L=="2*1*dy_0*x_0+2*(-(1*dx_0))*y_0+2*1*1*dx_0>2*1*1+2*pU()*1");
+        simplify('R=="dx^2+dy^2=1&x^2+y^2>0&(mx-x)^2+(my-y)^2<=pU()^2") using "(mx-x)^2+(my-y)^2<=pU()^2 :: dx^2+dy^2=1 :: nil";
+        QE using "v1=1 :: v2=1 :: pU()>=0 :: old>2*v1*v2+2*pU()*(v2*1+v1*0)+pU()^2*1*0 :: -(1*0*(x^2+y^2))+2*1*1*dy*x+2*(1*0-1*1*dx)*y+2*1*1*dx=old :: dx^2+dy^2=1 :: x^2+y^2>0 :: nil",
+      "Show":
+        expand "I2";
+        dIClose('R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx&true&dx^2+dy^2=1}]-(1*0*(x^2+y^2))+2*1*1*dy*x+2*(1*0-1*1*dx)*y+2*1*1*dx=old")
+    )
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Planar Flight Motion Safety 2 Simple with Intruder Linear Velocity Uncertainty"
+
+Definitions
+  HP flightDynamics ::= {
+    { x' = v2*dx - v1 + w1*y, y' = v2*dy - w1*x,
+      dx' = -(w2-w1)*dy, dy' = (w2-w1)*dx & true }
+  };
+
+  Real I1(Real v1, Real v2, Real dx, Real dy, Real x, Real y) = (v2*dy*x - (v2*dx-v1)*y);
+  Real I2(Real v1, Real v2, Real w1, Real w2, Real dx, Real dy, Real x, Real y) = (-w1*w2*(x^2+y^2) + 2*v2*w1*dy*x + 2*(v1*w2-v2*w1*dx)*y + 2*v1*v2*dx);
+
+  Real v2U();
+End.
+
+ProgramVariables
+  /* Relative coordinates in reference frame centered on ownship */
+  Real x;  /* x position of intruder */
+  Real y;  /* y position of intruder */
+  Real dx; /* cos theta of intruder */
+  Real dy; /* sin theta of intruder */
+
+  Real v1; /* Ownship linear velocity */
+  Real v2; /* Intruder angular velocity */
+  Real w1; /* Ownship angular velocity */
+  Real w2; /* Intruder angular velocity */
+
+  Real v2m;
+End.
+
+Problem
+  v1=1 & v2=1 & x^2+y^2>0 & dx^2+dy^2=1 & v2-v2U()<=v2m&v2m<=v2+v2U() & 0<=v2U()&v2U()<=1
+  ->
+     [ {
+         /* ctrl */
+         {
+         w1:=1; /* ownship evasion maneuver */
+         w2:=0; /* intruder straight path */
+         ?\forall v2p (v2m-v2U()<=v2p&v2p<=v2m+v2U() -> I2(v1, v2p, w1, w2, dx, dy, x, y) > 2*v1*v2p + 2*(v2p*w1+v1*w2) + w1*w2);
+         }
+         flightDynamics;
+         /* measure */
+         {
+           v2m:=*; ?v2-v2U()<=v2m&v2m<=v2+v2U();
+         }
+       }*@invariant(dx^2+dy^2=1 & x^2+y^2>0 & v2-v2U()<=v2m&v2m<=v2+v2U())
+     ]x^2+y^2>0
+End.
+
+Tactic "Proof Planar Flight Motion Safety 2 Simple with Intruder Linear Velocity Uncertainty"
+implyR('R=="v1=1&v2=1&x^2+y^2>0&dx^2+dy^2=1&v2-v2U()<=v2m&v2m<=v2+v2U()&0<=v2U()&v2U()<=1->[{{w1:=1;w2:=0;?\forall v2p (v2m-v2U()<=v2p&v2p<=v2m+v2U()->I2(v1,v2p,w1,w2,dx,dy,x,y)>2*v1*v2p+2*(v2p*w1+v1*w2)+w1*w2);}flightDynamics{|^@|};v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();}*]x^2+y^2>0");
+loop("dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U()", 'R=="[{{w1:=1;w2:=0;?\forall v2p (v2m-v2U()<=v2p&v2p<=v2m+v2U()->I2(v1,v2p,w1,w2,dx,dy,x,y)>2*v1*v2p+2*(v2p*w1+v1*w2)+w1*w2);}flightDynamics{|^@|};v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();}*]x^2+y^2>0"); <(
+  "Init":
+    propClose,
+  "Post":
+    propClose,
+  "Step":
+    unfold;
+    allL("v2", 'L=="\forall v2p (v2m-v2U()<=v2p&v2p<=v2m+v2U()->-(1*0*(x^2+y^2))+2*v2p*1*dy*x+2*(v1*0-v2p*1*dx)*y+2*v1*v2p*dx>2*v1*v2p+2*(v2p*1+v1*0)+1*0)");
+    diffInvariant("dx^2+dy^2=1", 'R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx}][v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())");
+    dC("I2(1,1,1,0,dx,dy,x,y)=old(I2(1,1,1,0,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx&true&dx^2+dy^2=1}][v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())"); <(
+      "Use":
+        dWplus('R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx&(true&dx^2+dy^2=1)&I2(1,1,1,0,dx,dy,x,y)=old}][v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())");
+        unfold;
+        simplify('R=="dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U()") using "v2-v2U()<=v2m :: v2m<=v2+v2U() :: dx^2+dy^2=1 :: nil";
+        implyL('L=="v2m_0-v2U()<=v2&v2<=v2m_0+v2U()->-(1*0*(x_0^2+y_0^2))+2*v2*1*dy_0*x_0+2*(v1*0-v2*1*dx_0)*y_0+2*v1*v2*dx_0>2*v1*v2+2*(v2*1+v1*0)+1*0"); <(
+          "v2m_0-v2U()<=v2&v2<=v2m_0+v2U()":
+            QE using "0<=v2U() :: v2U()<=1 :: v2-v2U()<=v2m_0 :: v2m_0<=v2+v2U() :: v2-v2U()<=v2m :: v2m<=v2+v2U() :: v2m_0-v2U()<=v2&v2<=v2m_0+v2U() :: nil",
+          "-(1*0*(x_0^2+y_0^2))+2*v2*1*dy_0*x_0+2*(v1*0-v2*1*dx_0)*y_0+2*v1*v2*dx_0>2*v1*v2+2*(v2*1+v1*0)+1*0":
+            expand "I2";
+            allL2R('L=="v1=1");
+            allL2R('L=="v2=1");
+            allR2L('L=="old=-(1*0*(x_0^2+y_0^2))+2*1*1*dy_0*x_0+2*(1*0-1*1*dx_0)*y_0+2*1*1*dx_0");
+            QE using "old>2*1*1+2*(1*1+1*0)+1*0 :: -(1*0*(x^2+y^2))+2*1*1*dy*x+2*(1*0-1*1*dx)*y+2*1*1*dx=old :: dx^2+dy^2=1 :: x^2+y^2>0 :: nil"
+        ),
+      "Show":
+        expand "I2";
+        dIClose('R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx&true&dx^2+dy^2=1}]-(1*0*(x^2+y^2))+2*1*1*dy*x+2*(1*0-1*1*dx)*y+2*1*1*dx=old")
+    )
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Planar Flight Motion Safety 2 Simple with Ownship Actuator Disturbance"
+
+Definitions
+  HP flightDynamics ::= {
+    { x' = v2*dx - v1 + w1*y, y' = v2*dy - w1*x,
+      dx' = -(w2-w1)*dy, dy' = (w2-w1)*dx & true }
+  };
+
+  Real I1(Real v1, Real v2, Real dx, Real dy, Real x, Real y) = (v2*dy*x - (v2*dx-v1)*y);
+  Real I2(Real v1, Real v2, Real w1, Real w2, Real dx, Real dy, Real x, Real y) = (-w1*w2*(x^2+y^2) + 2*v2*w1*dy*x + 2*(v1*w2-v2*w1*dx)*y + 2*v1*v2*dx);
+
+  Real wD(); /* actuator disturbance */
+End.
+
+ProgramVariables
+  /* Relative coordinates in reference frame centered on ownship */
+  Real x;  /* x position of intruder */
+  Real y;  /* y position of intruder */
+  Real dx; /* cos theta of intruder */
+  Real dy; /* sin theta of intruder */
+
+  Real v1; /* Ownship linear velocity */
+  Real v2; /* Intruder angular velocity */
+  Real w1; /* Ownship angular velocity */
+  Real w2; /* Intruder angular velocity */
+
+  Real w1p; /* Ownship pilot decision angular velocity */
+End.
+
+Problem
+  v1=1 & v2=1 & x^2+y^2>0 & dx^2+dy^2=1 & 0<=wD()&wD()<=1
+  ->
+     [ {
+         /* ctrl */
+         {
+         w1p:=1; /* ownship evasion maneuver */
+         w2:=0; /* intruder straight path */
+         ?\forall pw1 (w1p-wD()<=pw1&pw1<=w1p+wD() -> I2(v1, v2, pw1, w2, dx, dy, x, y) > 2*v1*v2 + 2*(v2*pw1+v1*w2) + pw1*w2);
+         }
+         /* act */
+         {
+           w1:=*; ?w1p-wD()<=w1&w1<=w1p+wD();
+         }
+         flightDynamics;
+       }*@invariant(dx^2+dy^2=1 & x^2+y^2>0)
+     ]x^2+y^2>0
+End.
+
+Tactic "Proof Planar Flight Motion Safety 2 Simple with Ownship Actuator Disturbance"
+implyR('R=="v1=1&v2=1&x^2+y^2>0&dx^2+dy^2=1&0<=wD()&wD()<=1->[{{w1p:=1;w2:=0;?\forall pw1 (w1p-wD()<=pw1&pw1<=w1p+wD()->I2(v1,v2,pw1,w2,dx,dy,x,y)>2*v1*v2+2*(v2*pw1+v1*w2)+pw1*w2);}{w1:=*;?w1p-wD()<=w1&w1<=w1p+wD();}flightDynamics{|^@|};}*]x^2+y^2>0");
+loop("dx^2+dy^2=1&x^2+y^2>0", 'R=="[{{w1p:=1;w2:=0;?\forall pw1 (w1p-wD()<=pw1&pw1<=w1p+wD()->I2(v1,v2,pw1,w2,dx,dy,x,y)>2*v1*v2+2*(v2*pw1+v1*w2)+pw1*w2);}{w1:=*;?w1p-wD()<=w1&w1<=w1p+wD();}flightDynamics{|^@|};}*]x^2+y^2>0"); <(
+  "Init":
+    propClose,
+  "Post":
+    propClose,
+  "Step":
+    unfold;
+    diffInvariant("dx^2+dy^2=1", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)");
+    dC("I2(1,1,w1,0,dx,dy,x,y)=old(I2(1,1,w1,0,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx&true&dx^2+dy^2=1}](dx^2+dy^2=1&x^2+y^2>0)"); <(
+      "Use":
+        dWplus('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx&(true&dx^2+dy^2=1)&I2(1,1,w1,0,dx,dy,x,y)=old}](dx^2+dy^2=1&x^2+y^2>0)");
+        allL("w1", 'L=="\forall pw1 (1-wD()<=pw1&pw1<=1+wD()->-pw1*0*(x_0^2+y_0^2)+2*v2*pw1*dy_0*x_0+2*(v1*0-v2*pw1*dx_0)*y_0+2*v1*v2*dx_0>2*v1*v2+2*(v2*pw1+v1*0)+pw1*0)");
+        simplify('L=="1-wD()<=w1&w1<=1+wD()->-w1*0*(x_0^2+y_0^2)+2*v2*w1*dy_0*x_0+2*(v1*0-v2*w1*dx_0)*y_0+2*v1*v2*dx_0>2*v1*v2+2*(v2*w1+v1*0)+w1*0");
+        unfold;
+        simplify('R=="dx^2+dy^2=1&x^2+y^2>0") using "dx^2+dy^2=1";
+        allL2R('L=="v1=1");
+        allL2R('L=="v2=1");
+        expand "I2";
+        edit("old>2*v1*v2+2*(v2*w1+v1*0)+w1*0", 'L=="2*1*w1*dy_0*x_0+2*(-(1*w1*dx_0))*y_0+2*1*1*dx_0>2*1*1+2*(1*w1)");
+        QE using "v1=1 :: v2=1 :: 0<=wD() :: wD()<=1 :: old>2*v1*v2+2*(v2*w1+v1*0)+w1*0 :: 1-wD()<=w1 :: w1<=1+wD() :: -w1*0*(x^2+y^2)+2*1*w1*dy*x+2*(1*0-1*w1*dx)*y+2*1*1*dx=old :: dx^2+dy^2=1 :: x^2+y^2>0 :: nil",
+      "Show":
+        expand "I2";
+        dIClose('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx&true&dx^2+dy^2=1}]-w1*0*(x^2+y^2)+2*1*w1*dy*x+2*(1*0-1*w1*dx)*y+2*1*1*dx=old")
+    )
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Planar Flight Motion Safety with Ownship Angular Velocity Disturbance"
+/* Modification of Lemma 2 */
+Definitions
+  HP flightDynamics ::= {
+    { x' = v2*dx - v1 + w1*y, y' = v2*dy - w1*x,
+      dx' = -(w2-w1)*dy, dy' = (w2-w1)*dx & true }
+  };
+
+  Real I1(Real v1, Real v2, Real dx, Real dy, Real x, Real y) = (v2*dy*x - (v2*dx-v1)*y);
+  Real I2(Real v1, Real v2, Real w1, Real w2, Real dx, Real dy, Real x, Real y) = (-w1*w2*(x^2+y^2) + 2*v2*w1*dy*x + 2*(v1*w2-v2*w1*dx)*y + 2*v1*v2*dx);
+
+  Real wD();
+End.
+
+ProgramVariables
+  /* Relative coordinates in reference frame centered on ownship */
+  Real x;  /* x position of intruder */
+  Real y;  /* y position of intruder */
+  Real dx; /* cos theta of intruder */
+  Real dy; /* sin theta of intruder */
+
+  Real v1; /* Ownship linear velocity */
+  Real v2; /* Intruder angular velocity */
+  Real w1; /* Ownship angular velocity */
+  Real w2; /* Intruder angular velocity */
+
+  Real w1p;/* Ownship pilot decision angular velocity */
+End.
+
+Problem
+  v1>0 & v2>0 & x^2+y^2>0 & dx^2+dy^2=1 & wD()>=0
+  ->
+     [ {
+         /* ctrl */
+         {
+         w1p:=*; ?w1p>0; /* (auto)pilot input, evade intruder with counterclockwise maneuver */
+         w2:=*;          /* intruder */
+         ?\forall w1pd (w1p<=w1pd&w1pd<=w1p+wD() -> I2(v1, v2, w1pd, w2, dx, dy, x, y) > 2*v1*v2 + 2*(v2*abs(w1pd)+v1*abs(w2)) + abs(w1pd*w2));
+         ?w2>0; /* TODO simplifying assumption for QE, lift once you find out w2<0 arithmetic simplifications */
+         }
+         /* act */
+         {w1:=*; ?w1p<=w1&w1<=w1p+wD();}
+         flightDynamics;
+       }*@invariant(dx^2+dy^2=1 & x^2+y^2>0)
+     ]x^2+y^2>0
+End.
+
+Tactic "Proof Planar Flight Motion Safety with Ownship Angular Velocity Disturbance"
+implyR('R=="v1>0&v2>0&x^2+y^2>0&dx^2+dy^2=1&wD()>=0->[{{w1p:=*;?w1p>0;w2:=*;?\forall w1pd (w1p<=w1pd&w1pd<=w1p+wD()->I2(v1,v2,w1pd,w2,dx,dy,x,y)>2*v1*v2+2*(v2*abs(w1pd)+v1*abs(w2))+abs(w1pd*w2));?w2>0;}{w1:=*;?w1p<=w1&w1<=w1p+wD();}flightDynamics{|^@|};}*]x^2+y^2>0");
+loop("dx^2+dy^2=1&x^2+y^2>0", 'R=="[{{w1p:=*;?w1p>0;w2:=*;?\forall w1pd (w1p<=w1pd&w1pd<=w1p+wD()->I2(v1,v2,w1pd,w2,dx,dy,x,y)>2*v1*v2+2*(v2*abs(w1pd)+v1*abs(w2))+abs(w1pd*w2));?w2>0;}{w1:=*;?w1p<=w1&w1<=w1p+wD();}flightDynamics{|^@|};}*]x^2+y^2>0"); <(
+  "Init":
+    propClose,
+  "Post":
+    propClose,
+  "Step":
+    unfold;
+    expand "flightDynamics";
+    diffInvariant("dx^2+dy^2=1", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)");
+    dC("I2(v1,v2,w1,w2,dx,dy,x,y)=old(I2(v1,v2,w1,w2,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx^2+dy^2=1}](dx^2+dy^2=1&x^2+y^2>0)"); <(
+      "Use":
+        dWplus('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&(true&dx^2+dy^2=1)&I2(v1,v2,w1,w2,dx,dy,x,y)=old}](dx^2+dy^2=1&x^2+y^2>0)");
+        andL('L)*;
+        simplify('R=="dx^2+dy^2=1&x^2+y^2>0") using "dx^2+dy^2=1";
+        edit("w1>0", 'L=="w1p>0") using "wD()>=0 :: w1p<=w1 :: w1<=w1p+wD() :: nil";
+        expand "I2";
+        allL("w1", 'L=="\forall w1pd (w1p<=w1pd&w1pd<=w1p+wD()->-w1pd*w2*(x_0^2+y_0^2)+2*v2*w1pd*dy_0*x_0+2*(v1*w2-v2*w1pd*dx_0)*y_0+2*v1*v2*dx_0>2*v1*v2+2*(v2*abs(w1pd)+v1*abs(w2))+abs(w1pd*w2))");
+        simplify('L=="w1p<=w1&w1<=w1p+wD()->-w1*w2*(x_0^2+y_0^2)+2*v2*w1*dy_0*x_0+2*(v1*w2-v2*w1*dx_0)*y_0+2*v1*v2*dx_0>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2))+abs(w1*w2)");
+        allR2L('L=="old=-w1*w2*(x_0^2+y_0^2)+2*v2*w1*dy_0*x_0+2*(v1*w2-v2*w1*dx_0)*y_0+2*v1*v2*dx_0");
+        edit("old>2*v1*v2+2*(v2*w1+v1*w2)+w1*w2", 'L=="old>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2))+abs(w1*w2)") using "w1>0 :: w2>0 :: nil";
+        QE using "v1>0 :: v2>0 :: w1>0 :: old>2*v1*v2+2*(v2*w1+v1*w2)+w1*w2 :: w2>0 :: -w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx=old :: dx^2+dy^2=1 :: x^2+y^2>0 :: nil",
+      "Show":
+        expand "I2";
+        dIClose('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx^2+dy^2=1}]-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx=old")
+    )
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Planar Flight Motion Safety with Intruder Linear Speed Uncertainty"
+/* Modification of Lemma 2 */
+Definitions
+  HP flightDynamics ::= {
+    { x' = v2*dx - v1 + w1*y, y' = v2*dy - w1*x,
+      dx' = -(w2-w1)*dy, dy' = (w2-w1)*dx & true }
+  };
+
+  Real I1(Real v1, Real v2, Real dx, Real dy, Real x, Real y) = (v2*dy*x - (v2*dx-v1)*y);
+  Real I2(Real v1, Real v2, Real w1, Real w2, Real dx, Real dy, Real x, Real y) = (-w1*w2*(x^2+y^2) + 2*v2*w1*dy*x + 2*(v1*w2-v2*w1*dx)*y + 2*v1*v2*dx);
+
+  Real vU();
+End.
+
+ProgramVariables
+  /* Relative coordinates in reference frame centered on ownship */
+  Real x;  /* x position of intruder */
+  Real y;  /* y position of intruder */
+  Real dx; /* cos theta of intruder */
+  Real dy; /* sin theta of intruder */
+
+  Real v1; /* Ownship linear velocity */
+  Real v2; /* Intruder angular velocity */
+  Real w1; /* Ownship angular velocity */
+  Real w2; /* Intruder angular velocity */
+
+  Real v2m; /* Intruder linear velocity as measured by ownship */
+End.
+
+Problem
+  v1>0 & v2>0 & x^2+y^2>0 & dx^2+dy^2=1 & 0<v2m & v2-vU()<=v2m&v2m<=v2+vU() & vU()>=0
+  ->
+     [ {
+         w1:=*;
+         w2:=*;
+         if (w1=0 & w2=0) {
+           ?\forall v2p (v2m-vU()<=v2p&v2p<=v2m+vU()-> I1(v1, v2p, dx, dy, x, y) > v1+v2p);
+         } else {
+           ?w1>0;
+           ?w2>0;
+           ?\forall v2p (v2m-vU()<=v2p&v2p<=v2m+vU()-> I2(v1, v2p, w1, w2, dx, dy, x, y) > 2*v1*v2p + 2*(v2p*abs(w1)+v1*abs(w2)) + abs(w1*w2));
+         };
+         flightDynamics;
+         v2m:=*; ?0<v2m & v2-vU()<=v2m&v2m<=v2+vU();
+       }*@invariant(dx^2+dy^2=1 & x^2+y^2>0 & 0<v2m & v2-vU()<=v2m&v2m<=v2+vU())
+     ]x^2+y^2>0
+End.
+
+Tactic "Planar Flight Motion Safety with Intruder Linear Speed Uncertainty"
+implyR('R=="v1>0&v2>0&x^2+y^2>0&dx^2+dy^2=1&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&vU()>=0->[{{w1:=*;w2:=*;}{?w1=0&w2=0;?\forall v2p (v2m-vU()<=v2p&v2p<=v2m+vU()->I1(v1,v2p,dx,dy,x,y)>v1+v2p);++?!(w1=0&w2=0);?w1>0;?w2>0;?\forall v2p (v2m-vU()<=v2p&v2p<=v2m+vU()->I2(v1,v2p,w1,w2,dx,dy,x,y)>2*v1*v2p+2*(v2p*abs(w1)+v1*abs(w2))+abs(w1*w2));}flightDynamics{|^@|};v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();}*]x^2+y^2>0");
+loop("dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()", 'R=="[{{w1:=*;w2:=*;}{?w1=0&w2=0;?\forall v2p (v2m-vU()<=v2p&v2p<=v2m+vU()->I1(v1,v2p,dx,dy,x,y)>v1+v2p);++?!(w1=0&w2=0);?w1>0;?w2>0;?\forall v2p (v2m-vU()<=v2p&v2p<=v2m+vU()->I2(v1,v2p,w1,w2,dx,dy,x,y)>2*v1*v2p+2*(v2p*abs(w1)+v1*abs(w2))+abs(w1*w2));}flightDynamics{|^@|};v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();}*]x^2+y^2>0"); <(
+  "Init":
+    propClose,
+  "Post":
+    propClose,
+  "Step":
+    unfold; <(
+      "[?w1=0&w2=0;?\forall v2p (v2m-vU()<=v2p&v2p<=v2m+vU()->v2p*dy*x-(v2p*dx-v1)*y>v1+v2p);][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU())":
+        chaseAt('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}]#[v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU())#");
+        diffInvariant("dx=old(dx)&dy=old(dy)", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}]\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU())");
+        dC("I1(v1,v2,dx,dy,x,y)=old(I1(v1,v2,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx=dx_0&dy=dy_0}]\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU())"); <(
+          "Use":
+            dWplus('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&(true&dx=dx_0&dy=dy_0)&I1(v1,v2,dx,dy,x,y)=old}]\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU())");
+            unfold;
+            expand "I1";
+            allL("v2", 'L=="\forall v2p (v2m_0-vU()<=v2p&v2p<=v2m_0+vU()->v2p*dy_0*x_0-(v2p*dx_0-v1)*y_0>v1+v2p)");
+            edit("v2*dy_0*x_0-(v2*dx_0-v1)*y_0>v1+v2", 'L=="v2m_0-vU()<=v2&v2<=v2m_0+vU()->v2*dy_0*x_0-(v2*dx_0-v1)*y_0>v1+v2") using "v2-vU()<=v2m_0 :: v2m_0<=v2+vU() :: nil";
+            allL2R('L=="dx=dx_0");
+            allL2R('L=="dy=dy_0");
+            simplify('R=="dx_0^2+dy_0^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()") using "dx_0^2+dy_0^2=1 :: 0 < v2m :: v2-vU()<=v2m :: v2m<=v2+vU() :: nil";
+            allR2L('L=="old=v2*dy_0*x_0-(v2*dx_0-v1)*y_0");
+            QE using "v1>0 :: v2>0 :: old>v1+v2 :: dx_0^2+dy_0^2=1 :: v2*dy_0*x-(v2*dx_0-v1)*y=old :: x^2+y^2>0 :: nil",
+          "Show":
+            expand "I1";
+            dIClose('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx=dx_0&dy=dy_0}]v2*dy*x-(v2*dx-v1)*y=old")
+        ),
+      "[?!(w1=0&w2=0);?w1>0;?w2>0;?\forall v2p (v2m-vU()<=v2p&v2p<=v2m+vU()->-w1*w2*(x^2+y^2)+2*v2p*w1*dy*x+2*(v1*w2-v2p*w1*dx)*y+2*v1*v2p*dx>2*v1*v2p+2*(v2p*abs(w1)+v1*abs(w2))+abs(w1*w2));][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU())":
+        chaseAt('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}]#[v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU())#");
+        allL("v2", 'L=="\forall v2p (v2m-vU()<=v2p&v2p<=v2m+vU()->-w1*w2*(x^2+y^2)+2*v2p*w1*dy*x+2*(v1*w2-v2p*w1*dx)*y+2*v1*v2p*dx>2*v1*v2p+2*(v2p*abs(w1)+v1*abs(w2))+abs(w1*w2))");
+        edit("-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2))+abs(w1*w2)", 'L=="v2m-vU()<=v2&v2<=v2m+vU()->-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2))+abs(w1*w2)") using "v2-vU()<=v2m :: v2m<=v2+vU() :: nil";
+        diffInvariant("dx^2+dy^2=1", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}]\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU())");
+        dC("I2(v1,v2,w1,w2,dx,dy,x,y)=old(I2(v1,v2,w1,w2,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx^2+dy^2=1}]\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU())"); <(
+          "Use":
+            dWplus('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&(true&dx^2+dy^2=1)&I2(v1,v2,w1,w2,dx,dy,x,y)=old}]\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU())");
+            unfold;
+            simplify('R=="dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()") using "0 < v2m :: dx^2+dy^2=1 :: v2-vU()<=v2m :: v2m<=v2+vU() :: nil";
+            expand "I2";
+            allR2L('L=="old=-w1*w2*(x_0^2+y_0^2)+2*v2*w1*dy_0*x_0+2*(v1*w2-v2*w1*dx_0)*y_0+2*v1*v2*dx_0");
+            edit("old>2*v1*v2+2*(v2*w1+v1*w2)+w1*w2", 'L=="old>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2))+abs(w1*w2)") using "w1>0 :: w2>0 :: nil";
+            QE using "v1>0 :: v2>0 :: w1>0 :: w2>0 :: old>2*v1*v2+2*(v2*w1+v1*w2)+w1*w2 :: -w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx=old :: dx^2+dy^2=1 :: x^2+y^2>0 :: nil",
+          "Show":
+            expand "I2";
+            dIClose('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx^2+dy^2=1}]-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx=old")
+        )
+    )
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Planar Flight Motion Safety with Intruder Velocity Uncertainty"
+/* Modification of Lemma 2 */
+Definitions
+  HP flightDynamics ::= {
+    { x' = v2*dx - v1 + w1*y, y' = v2*dy - w1*x,
+      dx' = -(w2-w1)*dy, dy' = (w2-w1)*dx & true }
+  };
+
+  Real I1(Real v1, Real v2, Real dx, Real dy, Real x, Real y) = (v2*dy*x - (v2*dx-v1)*y);
+  Real I2(Real v1, Real v2, Real w1, Real w2, Real dx, Real dy, Real x, Real y) = (-w1*w2*(x^2+y^2) + 2*v2*w1*dy*x + 2*(v1*w2-v2*w1*dx)*y + 2*v1*v2*dx);
+
+  Real vU();
+  Real wU();
+End.
+
+ProgramVariables
+  /* Relative coordinates in reference frame centered on ownship */
+  Real x;  /* x position of intruder */
+  Real y;  /* y position of intruder */
+  Real dx; /* cos theta of intruder */
+  Real dy; /* sin theta of intruder */
+
+  Real v1; /* Ownship linear velocity */
+  Real v2; /* Intruder angular velocity */
+  Real w1; /* Ownship angular velocity */
+  Real w2; /* Intruder angular velocity */
+
+  Real v2m; /* Intruder linear velocity as measured by ownship */
+  Real w2m; /* Intruder angular velocity as measured by ownship */
+End.
+
+Problem
+  v1>0 & v2>0 & x^2+y^2>0 & dx^2+dy^2=1 & 0<v2m & v2-vU()<=v2m&v2m<=v2+vU() & 0<w2m&w2-wU()<=w2m&w2m<=w2+wU() & vU()>=0 & wU()>=0
+  ->
+     [ {
+         /* ctrl */
+         {
+         w1:=*;
+         if (w1=0 & w2=0) {
+           ?\forall v2p \forall w2p (v2m-vU()<=v2p&v2p<=v2m+vU() & w2m-wU()<=w2p&w2p<=w2m+wU() ->
+                 I1(v1, v2p, dx, dy, x, y) > v1+v2p);
+         } else {
+           ?w1>0;
+           ?w2>0;
+           ?\forall v2p \forall w2p (v2m-vU()<=v2p&v2p<=v2m+vU() & w2m-wU()<=w2p&w2p<=w2m+wU() ->
+                 I2(v1, v2p, w1, w2p, dx, dy, x, y) > 2*v1*v2p + 2*(v2p*abs(w1)+v1*abs(w2p)) + abs(w1*w2p));
+         }
+         };
+         flightDynamics;
+         /* measure */
+         {
+         w2:=*; w2m:=*; ?0<w2m&w2-wU()<=w2m&w2m<=w2+wU();
+         v2m:=*; ?0<v2m & v2-vU()<=v2m&v2m<=v2+vU();
+         }
+       }*@invariant(dx^2+dy^2=1 & x^2+y^2>0 & 0<v2m & v2-vU()<=v2m&v2m<=v2+vU() & 0<w2m&w2-wU()<=w2m&w2m<=w2+wU())
+     ]x^2+y^2>0
+End.
+
+Tactic "Planar Flight Motion Safety with Intruder Velocity Uncertainty"
+implyR('R=="v1>0&v2>0&x^2+y^2>0&dx^2+dy^2=1&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()&vU()>=0&wU()>=0->[{{w1:=*;{?w1=0&w2=0;?\forall v2p \forall w2p (v2m-vU()<=v2p&v2p<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->I1(v1,v2p,dx,dy,x,y)>v1+v2p);++?!(w1=0&w2=0);?w1>0;?w2>0;?\forall v2p \forall w2p (v2m-vU()<=v2p&v2p<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->I2(v1,v2p,w1,w2p,dx,dy,x,y)>2*v1*v2p+2*(v2p*abs(w1)+v1*abs(w2p))+abs(w1*w2p));}}flightDynamics{|^@|};w2:=*;w2m:=*;?0 < w2m&w2-wU()<=w2m&w2m<=w2+wU();v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();}*]x^2+y^2>0");
+loop("dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()", 'R=="[{{w1:=*;{?w1=0&w2=0;?\forall v2p \forall w2p (v2m-vU()<=v2p&v2p<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->I1(v1,v2p,dx,dy,x,y)>v1+v2p);++?!(w1=0&w2=0);?w1>0;?w2>0;?\forall v2p \forall w2p (v2m-vU()<=v2p&v2p<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->I2(v1,v2p,w1,w2p,dx,dy,x,y)>2*v1*v2p+2*(v2p*abs(w1)+v1*abs(w2p))+abs(w1*w2p));}}flightDynamics{|^@|};w2:=*;w2m:=*;?0 < w2m&w2-wU()<=w2m&w2m<=w2+wU();v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();}*]x^2+y^2>0"); <(
+  "Init":
+    propClose,
+  "Post":
+    propClose,
+  "Step":
+    unfold; <(
+      "[?w1=0&w2=0;?\forall v2p \forall w2p (v2m-vU()<=v2p&v2p<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->v2p*dy*x-(v2p*dx-v1)*y>v1+v2p);][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}w2:=*;w2m:=*;?0 < w2m&w2-wU()<=w2m&w2m<=w2+wU();v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU())":
+        chaseAt('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}]#[w2:=*;w2m:=*;?0 < w2m&w2-wU()<=w2m&w2m<=w2+wU();v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU())#");
+        allL("v2", 'L=="\forall v2p \forall w2p (v2m-vU()<=v2p&v2p<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->v2p*dy*x-(v2p*dx-v1)*y>v1+v2p)");
+        allL("w2", 'L=="\forall w2p (v2m-vU()<=v2&v2<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->v2*dy*x-(v2*dx-v1)*y>v1+v2)");
+        edit("v2*dy*x-(v2*dx-v1)*y>v1+v2", 'L=="v2m-vU()<=v2&v2<=v2m+vU()&w2m-wU()<=w2&w2<=w2m+wU()->v2*dy*x-(v2*dx-v1)*y>v1+v2") using "v2-vU()<=v2m :: v2m<=v2+vU() :: w2-wU()<=w2m :: w2m<=w2+wU() :: nil";
+        diffInvariant("dx=old(dx)&dy=old(dy)", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}]\forall w2 \forall w2m (0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()->\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()))");
+        dC("I1(v1,v2,dx,dy,x,y)=old(I1(v1,v2,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx=dx_0&dy=dy_0}]\forall w2 \forall w2m (0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()->\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()))"); <(
+          "Use":
+            dWplus('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&(true&dx=dx_0&dy=dy_0)&I1(v1,v2,dx,dy,x,y)=old}]\forall w2 \forall w2m (0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()->\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()))");
+            unfold;
+            expand "I1";
+            allL2R('L=="dx=dx_0");
+            allL2R('L=="dy=dy_0");
+            simplify('R=="dx_0^2+dy_0^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()") using "dx_0^2+dy_0^2=1 :: 0 < w2m :: 0 < v2m :: w2-wU()<=w2m :: w2m<=w2+wU() :: v2-vU()<=v2m :: v2m<=v2+vU() :: nil";
+            allR2L('L=="old=v2*dy_0*x_0-(v2*dx_0-v1)*y_0");
+            QE using "v1>0 :: v2>0 :: old>v1+v2 :: dx_0^2+dy_0^2=1 :: v2*dy_0*x-(v2*dx_0-v1)*y=old :: x^2+y^2>0 :: nil",
+          "Show":
+            expand "I1";
+            dIClose('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx=dx_0&dy=dy_0}]v2*dy*x-(v2*dx-v1)*y=old")
+        ),
+      "[?!(w1=0&w2=0);?w1>0;?w2>0;?\forall v2p \forall w2p (v2m-vU()<=v2p&v2p<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->-w1*w2p*(x^2+y^2)+2*v2p*w1*dy*x+2*(v1*w2p-v2p*w1*dx)*y+2*v1*v2p*dx>2*v1*v2p+2*(v2p*abs(w1)+v1*abs(w2p))+abs(w1*w2p));][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}w2:=*;w2m:=*;?0 < w2m&w2-wU()<=w2m&w2m<=w2+wU();v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU())":
+        allL("v2", 'L=="\forall v2p \forall w2p (v2m-vU()<=v2p&v2p<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->-w1*w2p*(x^2+y^2)+2*v2p*w1*dy*x+2*(v1*w2p-v2p*w1*dx)*y+2*v1*v2p*dx>2*v1*v2p+2*(v2p*abs(w1)+v1*abs(w2p))+abs(w1*w2p))");
+        allL("w2", 'L=="\forall w2p (v2m-vU()<=v2&v2<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->-w1*w2p*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2p-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2p))+abs(w1*w2p))");
+        edit("-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2))+abs(w1*w2)", 'L=="v2m-vU()<=v2&v2<=v2m+vU()&w2m-wU()<=w2&w2<=w2m+wU()->-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2))+abs(w1*w2)") using "v2-vU()<=v2m :: v2m<=v2+vU() :: w2-wU()<=w2m :: w2m<=w2+wU() :: nil";
+        chaseAt('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}]#[w2:=*;w2m:=*;?0 < w2m&w2-wU()<=w2m&w2m<=w2+wU();v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU())#");
+        diffInvariant("dx^2+dy^2=1", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}]\forall w2 \forall w2m (0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()->\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()))");
+        dC("I2(v1,v2,w1,w2,dx,dy,x,y)=old(I2(v1,v2,w1,w2,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx^2+dy^2=1}]\forall w2 \forall w2m (0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()->\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()))"); <(
+          "Use":
+            dWplus('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&(true&dx^2+dy^2=1)&I2(v1,v2,w1,w2,dx,dy,x,y)=old}]\forall w2 \forall w2m (0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()->\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()))");
+            unfold;
+            expand "I2";
+            edit("-w1*w2_0*(x_0^2+y_0^2)+2*v2*w1*dy_0*x_0+2*(v1*w2_0-v2*w1*dx_0)*y_0+2*v1*v2*dx_0>2*v1*v2+2*(v2*w1+v1*w2_0)+w1*w2_0", 'L=="-w1*w2_0*(x_0^2+y_0^2)+2*v2*w1*dy_0*x_0+2*(v1*w2_0-v2*w1*dx_0)*y_0+2*v1*v2*dx_0>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2_0))+abs(w1*w2_0)") using "w1>0 :: w2_0>0 :: nil";
+            allR2L('L=="old=-w1*w2_0*(x_0^2+y_0^2)+2*v2*w1*dy_0*x_0+2*(v1*w2_0-v2*w1*dx_0)*y_0+2*v1*v2*dx_0");
+            simplify('R=="dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()") using "0 < w2m :: 0 < v2m :: dx^2+dy^2=1 :: w2-wU()<=w2m :: w2m<=w2+wU() :: v2-vU()<=v2m :: v2m<=v2+vU() :: nil";
+            QE using "v1>0 :: v2>0 :: w1>0 :: w2_0>0 :: old>2*v1*v2+2*(v2*w1+v1*w2_0)+w1*w2_0 :: -w1*w2_0*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2_0-v2*w1*dx)*y+2*v1*v2*dx=old :: dx^2+dy^2=1 :: x^2+y^2>0 :: nil",
+          "Show":
+            expand "I2";
+            dIClose('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx^2+dy^2=1}]-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx=old")
+        )
+    )
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Planar Flight Motion Safety with Ownship Angular Velocity Disturbance and Intruder Velocity Uncertainty"
+/* Modification of Lemma 2 */
+Definitions
+  HP flightDynamics ::= {
+    { x' = v2*dx - v1 + w1*y, y' = v2*dy - w1*x,
+      dx' = -(w2-w1)*dy, dy' = (w2-w1)*dx & true }
+  };
+
+  Real I1(Real v1, Real v2, Real dx, Real dy, Real x, Real y) = (v2*dy*x - (v2*dx-v1)*y);
+  Real I2(Real v1, Real v2, Real w1, Real w2, Real dx, Real dy, Real x, Real y) = (-w1*w2*(x^2+y^2) + 2*v2*w1*dy*x + 2*(v1*w2-v2*w1*dx)*y + 2*v1*v2*dx);
+
+  Real wD();
+  Real vU();
+  Real wU();
+End.
+
+ProgramVariables
+  /* Relative coordinates in reference frame centered on ownship */
+  Real x;  /* x position of intruder */
+  Real y;  /* y position of intruder */
+  Real dx; /* cos theta of intruder */
+  Real dy; /* sin theta of intruder */
+
+  Real v1; /* Ownship linear velocity */
+  Real v2; /* Intruder angular velocity */
+  Real w1; /* Ownship angular velocity */
+  Real w2; /* Intruder angular velocity */
+
+  Real w1p;/* Ownship pilot decision angular velocity */
+  Real v2m; /* Intruder linear velocity as measured by ownship */
+  Real w2m; /* Intruder angular velocity as measured by ownship */
+End.
+
+Problem
+  v1>0 & v2>0 & x^2+y^2>0 & dx^2+dy^2=1
+  & wD()>=0 & vU()>=0 & wU()>=0
+  & 0<v2m & v2-vU()<=v2m&v2m<=v2+vU() & 0<w2&0<w2m&w2-wU()<=w2m&w2m<=w2+wU()
+  ->
+     [ {
+         /* ctrl */
+         {
+         w1p:=*; ?w1p>0; /* (auto)pilot input, evade intruder with counterclockwise maneuver */
+         ?\forall w1pd \forall v2p \forall w2p (
+           w1p<=w1pd&w1pd<=w1p+wD() &
+           v2m-vU()<=v2p&v2p<=v2m+vU() &
+           w2m-wU()<=w2p&w2p<=w2m+wU() ->
+               I2(v1, v2p, w1pd, w2p, dx, dy, x, y) > 2*v1*v2p + 2*(v2p*w1pd+v1*w2p) + w1pd*w2p);
+         }
+         /* act */
+         {w1:=*; ?w1p<=w1&w1<=w1p+wD();}
+         flightDynamics;
+         /* measure */
+         {
+         w2:=*; w2m:=*; ?0<w2&0<w2m&w2-wU()<=w2m&w2m<=w2+wU();
+         v2m:=*; ?0<v2m & v2-vU()<=v2m&v2m<=v2+vU();
+         }
+       }*@invariant(dx^2+dy^2=1 & x^2+y^2>0 & 0<v2m & v2-vU()<=v2m&v2m<=v2+vU() & 0<w2&0<w2m&w2-wU()<=w2m&w2m<=w2+wU())
+     ]x^2+y^2>0
+End.
+
+Tactic "Proof Planar Flight Motion Safety with Ownship Angular Velocity Disturbance and Intruder Velocity Uncertainty"
+implyR('R=="v1>0&v2>0&x^2+y^2>0&dx^2+dy^2=1&wD()>=0&vU()>=0&wU()>=0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()->[{{w1p:=*;?w1p>0;?\forall w1pd \forall v2p \forall w2p (w1p<=w1pd&w1pd<=w1p+wD()&v2m-vU()<=v2p&v2p<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->I2(v1,v2p,w1pd,w2p,dx,dy,x,y)>2*v1*v2p+2*(v2p*w1pd+v1*w2p)+w1pd*w2p);}{w1:=*;?w1p<=w1&w1<=w1p+wD();}flightDynamics{|^@|};w2:=*;w2m:=*;?0 < w2&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU();v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();}*]x^2+y^2>0");
+loop("dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()", 'R=="[{{w1p:=*;?w1p>0;?\forall w1pd \forall v2p \forall w2p (w1p<=w1pd&w1pd<=w1p+wD()&v2m-vU()<=v2p&v2p<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->I2(v1,v2p,w1pd,w2p,dx,dy,x,y)>2*v1*v2p+2*(v2p*w1pd+v1*w2p)+w1pd*w2p);}{w1:=*;?w1p<=w1&w1<=w1p+wD();}flightDynamics{|^@|};w2:=*;w2m:=*;?0 < w2&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU();v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();}*]x^2+y^2>0"); <(
+  "Init":
+    propClose,
+  "Post":
+    propClose,
+  "Step":
+    unfold;
+    allL("w1", 'L=="\forall w1pd \forall v2p \forall w2p (w1p<=w1pd&w1pd<=w1p+wD()&v2m-vU()<=v2p&v2p<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->-w1pd*w2p*(x^2+y^2)+2*v2p*w1pd*dy*x+2*(v1*w2p-v2p*w1pd*dx)*y+2*v1*v2p*dx>2*v1*v2p+2*(v2p*w1pd+v1*w2p)+w1pd*w2p)");
+    allL("v2", 'L=="\forall v2p \forall w2p (w1p<=w1&w1<=w1p+wD()&v2m-vU()<=v2p&v2p<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->-w1*w2p*(x^2+y^2)+2*v2p*w1*dy*x+2*(v1*w2p-v2p*w1*dx)*y+2*v1*v2p*dx>2*v1*v2p+2*(v2p*w1+v1*w2p)+w1*w2p)");
+    allL("w2", 'L=="\forall w2p (w1p<=w1&w1<=w1p+wD()&v2m-vU()<=v2&v2<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->-w1*w2p*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2p-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*w1+v1*w2p)+w1*w2p)");
+    chaseAt('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}]#[w2:=*;w2m:=*;?0 < w2&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU();v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU())#");
+    edit("-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*w1+v1*w2)+w1*w2", 'L=="w1p<=w1&w1<=w1p+wD()&v2m-vU()<=v2&v2<=v2m+vU()&w2m-wU()<=w2&w2<=w2m+wU()->-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*w1+v1*w2)+w1*w2") using "w1p<=w1 :: w1<=w1p+wD() :: v2-vU()<=v2m :: v2m<=v2+vU() :: w2-wU()<=w2m :: w2m<=w2+wU() :: nil";
+    diffInvariant("dx^2+dy^2=1", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}]\forall w2 \forall w2m (0 < w2&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()->\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()))");
+    dC("I2(v1,v2,w1,w2,dx,dy,x,y)=old(I2(v1,v2,w1,w2,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx^2+dy^2=1}]\forall w2 \forall w2m (0 < w2&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()->\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()))"); <(
+      "Use":
+        dWplus('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&(true&dx^2+dy^2=1)&I2(v1,v2,w1,w2,dx,dy,x,y)=old}]\forall w2 \forall w2m (0 < w2&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()->\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()))");
+        unfold;
+        expand "I2";
+        simplify('R=="dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()") using "0 < w2 :: 0 < v2m :: dx^2+dy^2=1 :: 0 < w2m :: v2-vU()<=v2m :: v2m<=v2+vU() :: w2-wU()<=w2m :: w2m<=w2+wU() :: nil";
+        allR2L('L=="old=-w1*w2_0*(x_0^2+y_0^2)+2*v2*w1*dy_0*x_0+2*(v1*w2_0-v2*w1*dx_0)*y_0+2*v1*v2*dx_0");
+        edit("w1>0", 'L=="w1p>0") using "w1p<=w1";
+        QE using "v1>0 :: v2>0 :: w1>0 :: old>2*v1*v2+2*(v2*w1+v1*w2_0)+w1*w2_0 :: 0 < w2_0 :: -w1*w2_0*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2_0-v2*w1*dx)*y+2*v1*v2*dx=old :: dx^2+dy^2=1 :: x^2+y^2>0 :: nil",
+      "Show":
+        expand "I2";
+        dIClose('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx^2+dy^2=1}]-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx=old")
+    )
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Curved Ground Robot Motion with Piecewise Constant Actuator Disturbance is Safe"
+/* TODO: does not work yet (accelerate/brake along circle) */
+Definitions
+  Real D();
+  HP disturbedctrl ::= {
+       ?\forall d (-1-D()<=d&d<=-1+D() -> (xr+w/d-xo)^2+(yr-v/d-yo)^2!=v^2+w^2); a := -1;
+    ++ ?\forall d (1-D()<=d&d<=1+D() -> (xr+w/d-xo)^2+(yr-v/d-yo)^2!=v^2+w^2); a := 1;
+  };
+  HP disturbedplant ::= { { xr'=s*v, yr'=s*w, s'=ad, v'=ad*w, w'=-ad*v & true } };
+  HP act ::= { ad := *; ?a-D()<=ad&ad<=a+D(); };
+End.
+
+ProgramVariables
+  Real xr;
+  Real yr;
+  Real xo;
+  Real yo;
+  Real w;
+  Real v;
+  Real a;
+  Real s;
+  Real ad;
+End.
+
+Problem
+  (xr != xo | yr != yo) & -1<D()&D()<1 -> [
+   {disturbedctrl;
+    act;
+    disturbedplant;
+   }*
+  ]!(xr=xo & yr=yo)
+End.
+
+Tactic "Proof Curved Ground Robot Motion with Piecewise Constant Actuator Disturbance is Safe"
+implyR(1); loop("!(xr=xo & yr=yo)", 1); <(
+  QE,
+  id,
+  composeb(1); choiceb(1); andR(1); doall(
+    composeb(1); testb(1); implyR(1); assignb(1);
+    composeb(1); composeb(1); randomb(1); allR(1);
+    testb(1); implyR(1); allL("ad",'L);
+    diffInvariant("v=ad*(yr-(old(yr)-old(v))/ad)&w=-ad*(xr-(old(xr)+old(w))/ad)", 1);
+    diffInvariant("(xr+w/ad-xo)^2+(yr-v/ad-yo)^2!=v^2+w^2", 1);
+    dW(1); QE
+  )
+)
+End.
+
+End.
+
+Theorem "ModelPlex/Partial Observability/Approximated Curved Ground Robot Motion is Safe"
+
+Definitions
+  HP ctrl ::= {
+       ?(xr+w/-1-xo)^2+(yr-v/-1-yo)^2!=v^2+w^2; a := -1;
+    ++ ?(xr+w-xo)^2+(yr-v-yo)^2!=v^2+w^2; a := 1;
+  };
+  HP ghosts ::= { v_0:=v; w_0:=w; xr_0:=xr; yr_0:=yr; };
+  HP approxPlant ::= { v:=*; w:=*; xr:=*; yr:=*; };
+  HP evolDomTest ::= { ?(xr+w/a-xo)^2+(yr-v/a-yo)^2!=v^2+w^2; };
+End.
+
+ProgramVariables
+  Real xr;
+  Real yr;
+  Real xo;
+  Real yo;
+  Real w;
+  Real v;
+  Real a;
+  Real v_0;
+  Real w_0;
+  Real xr_0;
+  Real yr_0;
+End.
+
+Problem
+  xr != xo | yr != yo -> [
+   {ctrl;
+    ghosts;
+    approxPlant;
+    evolDomTest;
+   }*
+  ]!(xr=xo & yr=yo)
+End.
+
+End.
+
+Theorem "ModelPlex/Partial Observability/Approximated Robix Static Safety"
+
+Definitions
+  Real ep();      /* time limit for control decisions */
+  Real b();       /* minimum braking capability of the robot */
+  Real A();       /* maximum acceleration -b <= a <= A */
+  Real W();       /* maximum steering */
+
+  HP robotctrl ::= {
+    {  a:=-b();
+    ++ ?v=0;a:=0;w:=0;
+    ++ a:=A(); w:=*; ?-W()<=w&w<=W();
+       r:=*; xo:=*; yo:=*;
+       ?r!=0&r*w=v;
+       ?abs(x-xo)>v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v)
+       |abs(y-yo)>v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v);
+    }
+    t:=0;
+  };
+
+  Bool diffinvs(Real a, Real dx, Real dy, Real r, Real t, Real t_0, Real v, Real v_0, Real w_0, Real x, Real x_0, Real y, Real y_0) <-> ( (t<=ep()&v>=0)
+  & (v_0>=0&-W()<=w_0&w_0<=W()&r*w_0=v_0&t_0=0&a=A()->
+      t>=0&dx^2+dy^2=1&v=v_0+A()*t&-t*(v_0+A()/2*t)<=x-x_0&x-x_0<=t*(v_0+A()/2*t)&-t*(v_0+A()/2*t)<=y-y_0&y-y_0<=t*(v_0+A()/2*t))
+  & (v_0>=0&t_0=0&a=-b()->
+      t>=0&dx^2+dy^2=1&v=v_0-b()*t&-t*(v_0-b()/2*t)<=x-x_0&x-x_0<=t*(v_0-b()/2*t)&-t*(v_0-b()/2*t)<=y-y_0&y-y_0<=t*(v_0-b()/2*t))
+ & (v_0>=0&v_0=0&w_0=0&t_0=0&a=0->
+      t>=0&dx^2+dy^2=1&v=v_0&x=x_0&y=y_0)
+  );
+End.
+
+ProgramVariables
+  Real x;    /* robot position: x */
+  Real y;    /* robot position: y */
+  Real v;    /* robot translational velocity */
+  Real a;    /* robot translational acceleration */
+  Real dx;   /* robot orientation: x */
+  Real dy;   /* robot orientation: y */
+  Real w;    /* robot rotational velocity */
+  Real r;    /* robot curve radius */
+  Real xo;   /* position of closest obstacle on curve */
+  Real yo;
+  Real t;    /* time */
+
+  Real dx_0;
+  Real dy_0;
+  Real t_0;
+  Real v_0;
+  Real w_0;
+  Real x_0;
+  Real y_0;
+End.
+
+Problem
+(A()>=0&b()>0&ep()>0)&v=0&(x-xo)^2+(y-yo)^2>0&dx^2+dy^2=1 -> [
+  { robotctrl;
+    {dx_0:=dx;dy_0:=dy;t_0:=t;v_0:=v;w_0:=w;x_0:=x;y_0:=y;}
+    ?t<=ep()&v>=0;
+    {dx:=*;dy:=*;t:=*;v:=*;w:=*;x:=*;y:=*;}
+    ?diffinvs(a, dx, dy, r, t, t_0, v, v_0, w_0, x, x_0, y, y_0);
+  }*
+  ](x-xo)^2+(y-yo)^2>0
+End.
+
+End.
+
+Theorem "ModelPlex/Partial Observability/Theorem 6: Passive safety despite location uncertainty"
+/* @note measurement at end of loop */
+Definitions
+  Real ep;      /* time limit for control decisions */
+  Real b;       /* minimum braking capability of the robot */
+  Real A;       /* maximum acceleration -b <= a <= A */
+  Real W;       /* maximum steering */
+  Real V;       /* maximum obstacle velocity */
+  Real Dp;      /* maximum location uncertainty */
+
+  Real stopDist(Real v) = v^2 / (2*b) + V*v/b;
+  Real accelComp(Real v) = ((A/b + 1) * (A/2 * ep^2 + ep*(v+V)) + Dp);
+  Real admissibleSeparation(Real v) = stopDist(v) + accelComp(v);
+
+  Bool isWellformedDir(Real dx, Real dy) <-> dx^2 + dy^2 = 1;       /* The orientation of the robot is a unit vector. */
+
+  Bool bounds() <-> (                                                                     /* Bounds for global constants */
+      A >= 0                                                                                      /* Working engine */
+    & b > 0                                                                                       /* Working brakes */
+    & ep > 0                                                                            /* Controller reaction time */
+    & V >= 0
+    & Dp >= 0
+  );
+  /* Stopped somewhere safe initially */
+  Bool initialState(Real x, Real y, Real v, Real mx, Real my, Real dx, Real dy, Real xo, Real yo) <-> (
+    v = 0
+    & (x-xo)^2 + (y-yo)^2 > 0
+    & (mx-x)^2+(my-y)^2 <= Dp^2
+    & isWellformedDir(dx, dy)
+  );
+  /* Under these assumptions we guarantee safety */
+  Bool assumptions(Real x, Real y, Real v, Real mx, Real my, Real dx, Real dy, Real xo, Real yo) <-> (bounds() & initialState(x, y, v, mx, my, dx, dy, xo, yo));
+
+  /* Conditions that are true on each loop iteration */
+  Bool loopinv(Real x, Real y, Real v, Real mx, Real my, Real dx, Real dy, Real xo, Real yo) <-> (
+    v >= 0
+    & (mx-x)^2+(my-y)^2 <= Dp^2
+    & isWellformedDir(dx, dy)
+    & (v>0 -> abs(x-xo) > stopDist(v) | abs(y-yo) > stopDist(v))
+  );
+
+  HP obstacle ::= {
+    vxo := *; vyo := *;
+    ?vxo^2+vyo^2<=V^2;
+  };
+
+  HP robot ::= {
+    /* brake on current curve or remain stopped */
+    { a := -b; }
+    ++
+    { ?v = 0; a := 0; w := 0; }
+    ++
+    /* or choose a new safe curve */
+    { a := A;
+      w := *; ?-W<=w & w<=W;       /* choose steering */
+      r := *;
+      xo := *; yo := *;            /* measure closest obstacle on the curve */
+
+      /* admissible curve */
+      ?r!=0 & r*w = v;
+
+      /* use that curve, if it is a safe one (admissible velocities) */
+      ? abs(mx-xo) > admissibleSeparation(v)
+      | abs(my-yo) > admissibleSeparation(v);
+    }
+  };
+
+  HP locate ::= {
+    mx := *; my := *;
+    ?(mx-x)^2+(my-y)^2 <= Dp^2;
+  };
+End.
+
+ProgramVariables
+  Real x;    /* robot position: x */
+  Real y;    /* robot position: y */
+  Real mx;   /* robot measured position: x */
+  Real my;   /* robot measured position: y */
+  Real v;    /* robot translational velocity */
+  Real a;    /* robot translational acceleration */
+  Real dx;   /* robot orientation: x */
+  Real dy;   /* robot orientation: y */
+  Real w;    /* robot rotational velocity */
+  Real r;    /* robot curve radius */
+  Real xo;   /* position of closest obstacle on curve */
+  Real yo;
+  Real vxo;  /* velocity vector of obstacle */
+  Real vyo;
+  Real t;    /* time */
+End.
+
+Problem
+assumptions(x, y, v, mx, my, dx, dy, xo, yo) ->
+  [
+    {
+      {
+        obstacle;
+        robot;
+    	  t := 0;
+      }
+      /* dynamics */
+      { x' = v * dx, y' = v * dy, v' = a,        /* accelerate/decelerate and move */
+        dx' = -w * dy, dy' = w * dx, w' = a/r,   /* follow curve */
+        xo' = vxo, yo' = vyo,                    /* obstacle moves */
+        t' = 1 & t <= ep & v >= 0
+      }
+      locate;
+    }*@invariant(loopinv(x, y, v, mx, my, dx, dy, xo, yo))
+  ](v>0 -> (x - xo)^2 + (y - yo)^2 > 0)
+End.
+
+Tactic "Proof Theorem 6: Passive safety despite location uncertainty"
+  tactic diall as (
+    diffInvariant("t>=0", 1);
+    diffInvariant("isWellformedDir(dx, dy)", 1);
+    diffInvariant("-t*V() <= xo - old(xo) & xo - old(xo) <= t*V()", 1);
+    diffInvariant("-t*V() <= yo - old(yo) & yo - old(yo) <= t*V()", 1)
+  );
+
+  tactic dib as (
+    diall;
+    diffInvariant("v = old(v) - b()*t", 1);
+    diffInvariant("-t * (v + b()/2*t) <= x - old(x) & x - old(x) <= t * (v + b()/2*t)", 1);
+    diffInvariant("-t * (v + b()/2*t) <= y - old(y) & y - old(y) <= t * (v + b()/2*t)", 1)
+  );
+
+  tactic di0 as (
+    diall;
+    diffInvariant("v = old(v)", 1);
+    diffInvariant("x = old(x)", 1);
+    diffInvariant("y = old(y)", 1)
+  );
+
+  tactic dia as (
+    diall;
+    diffInvariant("v = old(v) + A()*t", 1);
+    diffInvariant("-t * (v - A()/2*t) <= x - old(x) & x - old(x) <= t * (v - A()/2*t)", 1);
+    diffInvariant("-t * (v - A()/2*t) <= y - old(y) & y - old(y) <= t * (v - A()/2*t)", 1)
+  );
+
+  tactic dw as (andL('L)*; dW(1));
+
+  tactic xAccArith as (
+    andL('L)*;
+    print("Transforming...");
+    transform("abs(mx_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()+(A()/b()+1)*(A()/2*t^2+t*(v_0+V()))+Dp()", 'L=="abs(mx_0-xo_0)>admissibleSeparation(v_0)");
+    hideR('R=="abs(y-yo)>stopDist(v)");
+    hideL('L=="(mx-x)^2+(my-y)^2<=Dp()^2");
+    smartQE;
+    print("Proved acc arithmetic")
+  );
+
+  tactic yAccArith as (
+    andL('L)*;
+    print("Transforming...");
+    transform("abs(my_0-yo_0)>v_0^2/(2*b())+V()*v_0/b()+(A()/b()+1)*(A()/2*t^2+t*(v_0+V()))+Dp()", 'L=="abs(my_0-yo_0)>admissibleSeparation(v_0)");
+    hideR('R=="abs(x-xo)>stopDist(v)");
+    hideL('L=="(mx-x)^2+(my-y)^2<=Dp()^2");
+    smartQE;
+    print("Proved acc arithmetic")
+  );
+
+  implyR(1); andL('L)*; loop("loopinv(x, y, v, mx, my, dx, dy, xo, yo)", 1); <(
+    print("Base case..."); smartQE; print("Base case done")
+    ,
+    print("Use case..."); smartQE; print("Use case done")
+    ,
+    print("Induction step"); unfold; <(
+      print("Braking branch"); dib; dw; chase(1); allR(1)*2; prop; doall(smartQE); print("Braking branch done")
+      ,
+      print("Stopped branch"); di0; dw; chase(1); allR(1)*2; prop; doall(smartQE); print("Stopped branch done")
+      ,
+      print("Acceleration branch");
+      hideL('L == "v>0 -> abs(x-xo_0)>stopDist(v) | abs(y-yo_0)>stopDist(v)");
+      dia; dw; chase(1); allR(1)*2;
+      prop; <(
+        xAccArith,
+        yAccArith
+      );
+      print("Acceleration branch done")
+    );
+    print("Induction step done")
+  );
+  done;
+  print("Proof done")
+
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Local lane control safety"
+
+Definitions
+  Real ep();
+  Real B();
+  Real A();
+End.
+
+ProgramVariables
+  Real xl;
+  Real vl;
+  Real al;
+  Real xf;
+  Real vf;
+  Real af;
+  Real t;
+End.
+
+Problem
+    xf <  xl
+  & xf + vf^2/(2*B()) < xl + vl^2/(2*B())
+  & B() > 0
+  & vf >= 0
+  & vl >= 0
+  & A() >= 0
+  & ep() >  0
+-> [
+     { {
+       al :=*; ?-B() <= al & al <= A();
+       {
+          ?xf + vf^2/(2*B()) + (A()/B() + 1)*(A()/2 * ep()^2 + ep()*vf) < xl + vl^2/(2*B());
+          af :=*;
+          ?-B() <= af & af <= A();
+       ++ ?vf = 0; af := 0;
+       ++ af := -B();
+       };
+       t := 0;
+       }
+       {xf' = vf, vf' = af, xl' = vl, vl' = al, t' = 1 & vf >= 0 & vl >= 0 & t <= ep()}
+     }*@invariant(vf>=0 & vl>=0 & xf<xl & xf + vf^2/(2*B()) < xl + vl^2/(2*B()))
+   ] xf <  xl
+End.
+
+Tactic "Proof Local lane control safety"
+implyR('R=="xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B())&B()>0&vf>=0&vl>=0&A()>=0&ep()>0->[{{al:=*;?-B()<=al&al<=A();{?xf+vf^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*vf) < xl+vl^2/(2*B());af:=*;?-B()<=af&af<=A();++?vf=0;af:=0;++af:=-B();}t:=0;}{xf'=vf,vf'=af,xl'=vl,vl'=al,t'=1&vf>=0&vl>=0&t<=ep()}}*]xf < xl");
+andL('L)*;
+loop("vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B())", 'R=="[{{al:=*;?-B()<=al&al<=A();{?xf+vf^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*vf) < xl+vl^2/(2*B());af:=*;?-B()<=af&af<=A();++?vf=0;af:=0;++af:=-B();}t:=0;}{xf'=vf,vf'=af,xl'=vl,vl'=al,t'=1&vf>=0&vl>=0&t<=ep()}}*]xf < xl"); <(
+  "Init":
+    propClose,
+  "Post":
+    QE using "vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()) :: B()>0 :: xf < xl :: nil",
+  "Step":
+    unfold; <(
+      "[?xf+vf^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*vf) < xl+vl^2/(2*B());af:=*;?-B()<=af&af<=A();][t:=0;][{xf'=vf,vf'=af,xl'=vl,vl'=al,t'=1&vf>=0&vl>=0&t<=ep()}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))":
+        diffInvariant("t>=0", 'R=="[{xf'=vf,vf'=af,xl'=vl,vl'=al,t'=1&vf>=0&vl>=0&t<=ep()}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))") using "t=0";
+        diffInvariant("vl=old(vl)+al*t", 'R=="[{xf'=vf,vf'=af,xl'=vl,vl'=al,t'=1&(vf>=0&vl>=0&t<=ep())&t>=0}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))") using "t=0";
+        diffInvariant("xl=old(xl)+old(vl)*t+al*t^2/2", 'R=="[{xf'=vf,vf'=af,xl'=vl,vl'=al,t'=1&((vf>=0&vl>=0&t<=ep())&t>=0)&vl=vl_0+al*t}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))") using "t=0";
+        diffInvariant("vf=old(vf)+af*t", 'R=="[{xf'=vf,vf'=af,xl'=vl,vl'=al,t'=1&(((vf>=0&vl>=0&t<=ep())&t>=0)&vl=vl_0+al*t)&xl=xl_0+vl_1*t+al*t^2/2}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))") using "t=0";
+        diffInvariant("xf=old(xf)+old(vf)*t+af*t^2/2", 'R=="[{xf'=vf,vf'=af,xl'=vl,vl'=al,t'=1&((((vf>=0&vl>=0&t<=ep())&t>=0)&vl=vl_0+al*t)&xl=xl_0+vl_1*t+al*t^2/2)&vf=vf_0+af*t}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))") using "t=0";
+        dW('R=="[{xf'=vf,vf'=af,xl'=vl,vl'=al,t'=1&(((((vf>=0&vl>=0&t<=ep())&t>=0)&vl=vl_0+al*t)&xl=xl_0+vl_1*t+al*t^2/2)&vf=vf_0+af*t)&xf=xf_0+vf_1*t+af*t^2/2}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))");
+        andL('L)*;
+        simplify('R=="vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B())") using "vf>=0 :: vl>=0 :: nil";
+        edit("xf_0+vf_0^2/(2*B())+(A()/B()+1)*(A()/2*t^2+t*vf_0) < xl_0+vl_0^2/(2*B())", 'L=="xf_0+vf_0^2/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*vf_0) < xl_0+vl_0^2/(2*B())") using "B()>0 :: A()>=0 :: ep()>0 :: t>=0 :: vf_0>=0 :: t<=ep() :: vl_0>=0 :: xf_0 < xl_0 :: nil";
+        edit("vf<=vf_0+A()*t", 'L=="vf=vf_0+af*t") using "A()>=0 :: t>=0 :: vf_0>=0 :: vf>=0 :: af<=A() :: nil";
+        edit("xf<=xf_0+vf_1*t+A()*t^2/2", 'L=="xf=xf_0+vf_1*t+af*t^2/2") using "A()>=0 :: t>=0 :: vf_0>=0 :: af<=A() :: vf_0=vf_1 :: nil";
+        andR('R=="xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B())"); <(
+          "xf < xl":
+            QE using "xf<=xf_0+vf_1*t+A()*t^2/2 :: B()>0 :: vf<=vf_0+A()*t :: A()>=0 :: xl=xl_0+vl_1*t+al*t^2/2 :: vl=vl_0+al*t :: xf_0+vf_0^2/(2*B())+(A()/B()+1)*(A()/2*t^2+t*vf_0) < xl_0+vl_0^2/(2*B()) :: t>=0 :: vf_0>=0 :: vf>=0 :: -B()<=al :: vl>=0 :: vl_0>=0 :: xf_0 < xl_0 :: vl_0=vl_1 :: vf_0=vf_1 :: xf < xl :: nil",
+          "xf+vf^2/(2*B()) < xl+vl^2/(2*B())":
+            cut("xf_0+vf_0^2/(2*B())+(A()/B()+1)*(A()/2*t^2+t*vf_0) < xl+vl^2/(2*B())"); <(
+              "Use":
+                abbrv("xl+vl^2/(2*B())", "lstop");
+                QE using "xf<=xf_0+vf_1*t+A()*t^2/2 :: B()>0 :: vf<=vf_0+A()*t :: A()>=0 :: t>=0 :: vf_0>=0 :: vf>=0 :: vf_0=vf_1 :: xf_0+vf_0^2/(2*B())+(A()/B()+1)*(A()/2*t^2+t*vf_0) < lstop :: xf+vf^2/(2*B()) < lstop :: nil",
+              "Show":
+                abbrv("xf_0+vf_0^2/(2*B())+(A()/B()+1)*(A()/2*t^2+t*vf_0)", "fstop");
+                QE using "B()>0 :: A()>=0 :: xl=xl_0+vl_1*t+al*t^2/2 :: vl=vl_0+al*t :: fstop < xl_0+vl_0^2/(2*B()) :: t>=0 :: -B()<=al :: vl>=0 :: vl_0>=0 :: vl_0=vl_1 :: fstop < xl+vl^2/(2*B()) :: nil"
+            )
+        ),
+      "[?vf=0;af:=0;][t:=0;][{xf'=vf,vf'=af,xl'=vl,vl'=al,t'=1&vf>=0&vl>=0&t<=ep()}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))":
+        diffInvariant("t>=0", 'R=="[{xf'=vf,vf'=0,xl'=vl,vl'=al,t'=1&vf>=0&vl>=0&t<=ep()}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))") using "t=0";
+        diffInvariant("vl=old(vl)+al*t", 'R=="[{xf'=vf,vf'=0,xl'=vl,vl'=al,t'=1&(vf>=0&vl>=0&t<=ep())&t>=0}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))") using "t=0";
+        diffInvariant("xl=old(xl)+old(vl)*t+al*t^2/2", 'R=="[{xf'=vf,vf'=0,xl'=vl,vl'=al,t'=1&((vf>=0&vl>=0&t<=ep())&t>=0)&vl=vl_0+al*t}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))") using "t=0";
+        diffInvariant("vf=old(vf)", 'R=="[{xf'=vf,vf'=0,xl'=vl,vl'=al,t'=1&(((vf>=0&vl>=0&t<=ep())&t>=0)&vl=vl_0+al*t)&xl=xl_0+vl_1*t+al*t^2/2}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))") using "nil";
+        diffInvariant("xf=old(xf)+old(vf)*t", 'R=="[{xf'=vf,vf'=0,xl'=vl,vl'=al,t'=1&((((vf>=0&vl>=0&t<=ep())&t>=0)&vl=vl_0+al*t)&xl=xl_0+vl_1*t+al*t^2/2)&vf=vf_0}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))") using "t=0";
+        dW('R=="[{xf'=vf,vf'=0,xl'=vl,vl'=al,t'=1&(((((vf>=0&vl>=0&t<=ep())&t>=0)&vl=vl_0+al*t)&xl=xl_0+vl_1*t+al*t^2/2)&vf=vf_0)&xf=xf_0+vf_1*t}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))");
+        andL('L)*;
+        simplify('R=="vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B())") using "vf>=0 :: vl>=0 :: nil";
+        andR('R=="xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B())"); <(
+          "xf < xl":
+            QE using "xf=xf_0+vf_1*t :: B()>0 :: vf=vf_0 :: xl=xl_0+vl_1*t+al*t^2/2 :: vl=vl_0+al*t :: vf_0=0 :: t>=0 :: vf_0>=0 :: vf>=0 :: -B()<=al :: vl>=0 :: vl_0>=0 :: xf_0 < xl_0 :: xf_0+vf_0^2/(2*B()) < xl_0+vl_0^2/(2*B()) :: vl_0=vl_1 :: vf_0=vf_1 :: xf < xl :: nil",
+          "xf+vf^2/(2*B()) < xl+vl^2/(2*B())":
+            QE using "xf=xf_0+vf_1*t :: B()>0 :: vf=vf_0 :: xl=xl_0+vl_1*t+al*t^2/2 :: vl=vl_0+al*t :: vf_0=0 :: t>=0 :: vf_0>=0 :: vf>=0 :: -B()<=al :: vl>=0 :: vl_0>=0 :: xf_0 < xl_0 :: xf_0+vf_0^2/(2*B()) < xl_0+vl_0^2/(2*B()) :: vl_0=vl_1 :: vf_0=vf_1 :: xf+vf^2/(2*B()) < xl+vl^2/(2*B()) :: nil"
+        ),
+      "[af:=-B();][t:=0;][{xf'=vf,vf'=af,xl'=vl,vl'=al,t'=1&vf>=0&vl>=0&t<=ep()}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))":
+        diffInvariant("t>=0", 'R=="[{xf'=vf,vf'=-B(),xl'=vl,vl'=al,t'=1&vf>=0&vl>=0&t<=ep()}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))") using "t=0";
+        diffInvariant("vl=old(vl)+al*t", 'R=="[{xf'=vf,vf'=-B(),xl'=vl,vl'=al,t'=1&(vf>=0&vl>=0&t<=ep())&t>=0}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))") using "t=0";
+        diffInvariant("xl=old(xl)+old(vl)*t+al*t^2/2", 'R=="[{xf'=vf,vf'=-B(),xl'=vl,vl'=al,t'=1&((vf>=0&vl>=0&t<=ep())&t>=0)&vl=vl_0+al*t}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))") using "t=0";
+        diffInvariant("vf=old(vf)-B()*t", 'R=="[{xf'=vf,vf'=-B(),xl'=vl,vl'=al,t'=1&(((vf>=0&vl>=0&t<=ep())&t>=0)&vl=vl_0+al*t)&xl=xl_0+vl_1*t+al*t^2/2}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))") using "t=0";
+        diffInvariant("xf=old(xf)+old(vf)*t-B()*t^2/2", 'R=="[{xf'=vf,vf'=-B(),xl'=vl,vl'=al,t'=1&((((vf>=0&vl>=0&t<=ep())&t>=0)&vl=vl_0+al*t)&xl=xl_0+vl_1*t+al*t^2/2)&vf=vf_0-B()*t}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))") using "t=0";
+        dW('R=="[{xf'=vf,vf'=-B(),xl'=vl,vl'=al,t'=1&(((((vf>=0&vl>=0&t<=ep())&t>=0)&vl=vl_0+al*t)&xl=xl_0+vl_1*t+al*t^2/2)&vf=vf_0-B()*t)&xf=xf_0+vf_1*t-B()*t^2/2}](vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B()))");
+        andL('L)*;
+        simplify('R=="vf>=0&vl>=0&xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B())") using "vf>=0 :: vl>=0 :: nil";
+        andR('R=="xf < xl&xf+vf^2/(2*B()) < xl+vl^2/(2*B())"); <(
+          "xf < xl":
+            QE using "xf=xf_0+vf_1*t-B()*t^2/2 :: B()>0 :: vf=vf_0-B()*t :: xl=xl_0+vl_1*t+al*t^2/2 :: vl=vl_0+al*t :: vf_0>=0 :: t>=0 :: -B()<=al :: vf>=0 :: vl>=0 :: vl_0>=0 :: xf_0 < xl_0 :: xf_0+vf_0^2/(2*B()) < xl_0+vl_0^2/(2*B()) :: vl_0=vl_1 :: vf_0=vf_1 :: xf < xl :: nil",
+          "xf+vf^2/(2*B()) < xl+vl^2/(2*B())":
+            QE using "xf=xf_0+vf_1*t-B()*t^2/2 :: B()>0 :: vf=vf_0-B()*t :: xl=xl_0+vl_1*t+al*t^2/2 :: vl=vl_0+al*t :: vf_0>=0 :: t>=0 :: -B()<=al :: vf>=0 :: vl>=0 :: vl_0>=0 :: xf_0 < xl_0 :: xf_0+vf_0^2/(2*B()) < xl_0+vl_0^2/(2*B()) :: vl_0=vl_1 :: vf_0=vf_1 :: xf+vf^2/(2*B()) < xl+vl^2/(2*B()) :: nil"
+        )
+    )
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Local lane control safety with follower actuator disturbance"
+
+Definitions
+  Real ep();
+  Real b();
+  Real B();
+  Real A();
+
+  Real aD();
+End.
+
+ProgramVariables
+  Real xl;
+  Real vl;
+  Real al;
+  Real xf;
+  Real vf;
+  Real af;
+  Real afc;
+  Real t;
+End.
+
+Problem
+    xf <  xl
+  & xl > xf + vf^2/(2*b()) - vl^2/(2*B())
+  & B() >= b()
+  & b() >  0
+  & vf >= 0
+  & vl >= 0
+  & A() >= 0
+  & ep() >  0
+-> [
+     { /* ctrl */
+       {
+       al :=*; ?-B() <= al & al <= A();
+       {
+          ?xf + vf^2/(2*b()) + (A()/b() + 1)*(A()/2 * ep()^2 + ep()*vf) < xl + vl^2/(2*B());
+          afc :=*;
+          ?-B() <= afc & afc <= A();
+       ++ ?vf = 0; afc := 0;
+       ++ afc := -B();
+       };
+       t := 0;
+       }
+       /* act */
+       {
+         af:=*; ?afc<=-b() -> -B()<=af&af<=-b();
+       }
+       {xf' = vf, vf' = af, xl' = vl, vl' = al, t' = 1 & vf >= 0 & vl >= 0 & t <= ep()}
+     }*@invariant(vf>=0 & vl>=0 & xf<xl & xl > xf + vf^2/(2*b()) - vl^2/(2*B()))
+   ] xf <  xl
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/ETCS Essentials with train position uncertainty"
+
+/**
+ * Essentials of European Train Control System (ETCS)
+ * @see "Andre Platzer. Differential dynamic logic for hybrid systems. Journal of Automated Reasoning,
+ *                      41(2), pages 143-189, 2008."
+ */
+Definitions
+  Real b;
+  Real A;
+  Real ep;
+  Real m;  /* End of movement authority (train must not drive past m) */
+  Real zU;
+
+  Real stopDist(Real v) = v^2/(2*b);                     /* Train stopping distance from speed (.) with braking force b */
+  Real accCompensation(Real v) = (((A/b) + 1)*((A/2)*ep^2 + ep*v));     /* Distance to compensate speed increase. */
+  Real SB(Real v)       = stopDist(v) + accCompensation(v);      /* Distance needed to stop safely when accelerating once */
+
+  /* Initial states */
+  Bool initial(Real m, Real z, Real zm, Real v) <-> (
+    m-z >= stopDist(v) &         /* train has sufficient distance to the end of the movement authority to stop safely */
+    z-zU<=zm&zm<=z+zU &                                                                /* measured train position */
+    b>0 &                                                                                     /* brakes are working */
+    A>=0 &                                                                                     /* engine is working */
+    zU>=0
+  );
+
+  /* loop invariant: always maintain sufficient stopping distance */
+  Bool loopInv(Real m, Real z, Real zm, Real v) <-> m-z >= stopDist(v) & z-zU<=zm&zm<=z+zU;
+
+  /* train controller */
+  HP trainCtrl ::= {
+    {
+       ?m - (zm+zU) <= SB(v); a := -b;    /* train protection: emergency brake when close to end of movement authority */
+    ++ ?m - (zm+zU) >= SB(v); a :=  A;    /* free driving: accelerate when sufficient distance */
+    }
+    t := 0;                                                  /* reset control cycle timer */
+  };
+
+  HP drive ::= {
+    {z'=v, v'=a, t'=1  & v >= 0 & t <= ep}                 /* drive (not backwards v>=0)
+                                                                for at most ep time (t<=ep) until next controller run */
+  };
+
+  HP measure ::= {
+    zm:=*; ?z-zU<=zm&zm<=z+zU;
+  };
+End.
+
+ProgramVariables
+  Real a;  /* Actual acceleration -b <= a <= A */
+  Real v;  /* Current velocity */
+  Real z;  /* True train position */
+  Real zm; /* Measured train position */
+  Real t;  /* Actual control cycle duration t <= ep */
+End.
+
+/* Safety specification of the form: initial -> [{ctrl;plant}*]safe
+ * Starting in any state where initial is true,
+ * any number of repetitions of running a controller 'ctrl' and then driving according to 'plant'
+ * keeps the system safe (end up only in states where 'safe' is true).
+ */
+Problem
+initial(m,z,zm,v)  ->
+    [
+      {
+        trainCtrl;
+        drive;
+        measure;
+      }*@invariant(loopInv(m,z,zm,v))                      /* repeat, loop invariant documents system design property */
+    ] (z <= m)                          /* safety property: train 'z' never drives past end of movement authority 'm' */
+End.
+
+Tactic "Proof ETCS Essentials with train position uncertainty"
+implyR('R=="initial(m(),z,zm,v)->[{trainCtrl{|^@|};drive{|^@|};measure{|^@|};}*]z<=m()");
+loop("loopInv(m(),z,zm,v)", 'R=="[{trainCtrl{|^@|};drive{|^@|};measure{|^@|};}*]z<=m()"); <(
+  "Init":
+    propClose,
+  "Post":
+    QE,
+  "Step":
+    expand "trainCtrl";
+    expand "drive";
+    expand "measure";
+    unfold; <(
+      "[?m()-(zm+zU())<=v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v);a:=-b();][t:=0;][{z'=v,v'=a,t'=1&v>=0&t<=ep()}zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())":
+        diffInvariant("t>=old(t)", 'R=="[{z'=v,v'=-b(),t'=1&v>=0&t<=ep()}][zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())");
+        diffInvariant("v=old(v)-b()*t", 'R=="[{z'=v,v'=-b(),t'=1&(v>=0&t<=ep())&t>=t_0}][zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())");
+        diffInvariant("z=old(z)+old(v)*t-b()/2*t^2", 'R=="[{z'=v,v'=-b(),t'=1&((v>=0&t<=ep())&t>=t_0)&v=v_0-b()*t}][zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())");
+        dW('R=="[{z'=v,v'=-b(),t'=1&(((v>=0&t<=ep())&t>=t_0)&v=v_0-b()*t)&z=z_0+v_0*t-b()/2*t^2}][zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())");
+        unfold;
+        QE,
+      "[?m()-(zm+zU())>=v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v);a:=A();][t:=0;][{z'=v,v'=a,t'=1&v>=0&t<=ep()}zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())":
+        diffInvariant("t>=old(t)", 'R=="[{z'=v,v'=A(),t'=1&v>=0&t<=ep()}][zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())");
+        diffInvariant("v=old(v)+A()*t", 'R=="[{z'=v,v'=A(),t'=1&(v>=0&t<=ep())&t>=t_0}][zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())");
+        diffInvariant("z=old(z)+old(v)*t+A()/2*t^2", 'R=="[{z'=v,v'=A(),t'=1&((v>=0&t<=ep())&t>=t_0)&v=v_0+A()*t}][zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())");
+        dW('R=="[{z'=v,v'=A(),t'=1&(((v>=0&t<=ep())&t>=t_0)&v=v_0+A()*t)&z=z_0+v_0*t+A()/2*t^2}][zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())");
+        unfold;
+        QE
+    )
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/ETCS Essentials with train acceleration disturbance"
+
+/**
+ * Essentials of European Train Control System (ETCS)
+ * @see "Andre Platzer. Differential dynamic logic for hybrid systems. Journal of Automated Reasoning,
+ *                      41(2), pages 143-189, 2008."
+ */
+Definitions
+  Real b;
+  Real A;
+  Real ep;
+  Real m;  /* End of movement authority (train must not drive past m) */
+  Real aD;
+
+  Real stopDist(Real v) = v^2/(2*(b-aD));                /* Train stopping distance from speed v with braking force b */
+  Real accCompensation(Real v) = ((((A+aD)/(b-aD)) + 1)*(((A+aD)/2)*ep^2 + ep*v)); /* Distance to compensate speed increase. */
+  Real SB(Real v)       = stopDist(v) + accCompensation(v);  /* Distance needed to stop safely when accelerating once */
+
+  /* Initial states */
+  Bool initial(Real m, Real z, Real v) <-> (
+    m-z >= stopDist(v) &         /* train has sufficient distance to the end of the movement authority to stop safely */
+    b>0 &                                                                                     /* brakes are working */
+    A>=0 &                                                                                     /* engine is working */
+    0<=aD & aD<b
+  );
+
+  Bool loopInv(Real m, Real z, Real v) <-> m-z >= stopDist(v);              /* loop invariant: always maintain
+                                                                                 sufficient stopping distance */
+
+  /* train controller */
+  HP trainCtrl ::= {
+    {
+       ?m() - z <= SB(v); acc := -b;    /* train protection: emergency brake when close to end of movement authority */
+    ++ ?m() - z >= SB(v); acc :=  A;    /* free driving: accelerate when sufficient distance */
+    }
+    t := 0;                                                  /* reset control cycle timer */
+  };
+
+  HP drive ::= {
+    {z'=v, v'=a, t'=1  & v >= 0 & t <= ep}                 /* drive (not backwards v>=0)
+                                                              for at most ep time (t<=ep) until next controller run */
+  };
+
+  HP act ::= {
+    a:=*; ?acc-aD<=a&a<=acc+aD;
+  };
+End.
+
+ProgramVariables
+  Real acc; /* Acceleration control -b <= a <= A */
+  Real a;   /* True acceleration acc */
+  Real v;   /* Current velocity */
+  Real z;   /* True train position */
+  Real t;   /* Actual control cycle duration t <= ep */
+End.
+
+/* Safety specification of the form: initial -> [{ctrl;plant}*]safe
+ * Starting in any state where initial is true,
+ * any number of repetitions of running a controller 'ctrl' and then driving according to 'plant'
+ * keeps the system safe (end up only in states where 'safe' is true).
+ */
+Problem
+initial(m,z,v)  ->
+    [
+      {
+        trainCtrl;
+        act;
+        drive;
+      }*@invariant(loopInv(m,z,v))                       /* repeat, loop invariant documents system design property */
+    ] (z <= m)                        /* safety property: train 'z' never drives past end of movement authority 'm' */
+End.
+
+Tactic "Proof ETCS Essentials with train position uncertainty"
+implyR('R=="initial(m(),z,v)->[{trainCtrl{|^@|};act{|^@|};drive{|^@|};}*]z<=m()");
+loop("loopInv(m(),z,v)", 'R=="[{trainCtrl{|^@|};act{|^@|};drive{|^@|};}*]z<=m()"); <(
+  "Init":
+    propClose,
+  "Post":
+    QE,
+  "Step":
+    expand "trainCtrl";
+    expand "act";
+    expand "drive";
+    unfold; <(
+      "[?m()-z<=v^2/(2*(b()-aD()))+((A()+aD())/(b()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v);acc:=-b();][t:=0;][{a:=*;?acc-aD()<=a&a<=acc+aD();}{z'=v,v'=a,t'=1&v>=0&t<=ep()}]m()-z>=v^2/(2*(b()-aD()))":
+        diffInvariant("t>=old(t)", 'R=="[{z'=v,v'=a,t'=1&v>=0&t<=ep()}]m()-z>=v^2/(2*(b()-aD()))");
+        diffInvariant("a>-b()+aD()|v<=old(v)-(b()-aD())*t", 'R=="[{z'=v,v'=a,t'=1&(v>=0&t<=ep())&t>=t_0}]m()-z>=v^2/(2*(b()-aD()))");
+        diffInvariant("a>-b()+aD()|z<=old(z)+old(v)*t-(b()-aD())/2*t^2", 'R=="[{z'=v,v'=a,t'=1&((v>=0&t<=ep())&t>=t_0)&(a>-b()+aD()|v<=v_0-(b()-aD())*t)}]m()-z>=v^2/(2*(b()-aD()))");
+        dW('R=="[{z'=v,v'=a,t'=1&(((v>=0&t<=ep())&t>=t_0)&(a>-b()+aD()|v<=v_0-(b()-aD())*t))&(a>-b()+aD()|z<=z_0+v_0*t-(b()-aD())/2*t^2)}]m()-z>=v^2/(2*(b()-aD()))");
+        QE,
+      "[?m()-z>=v^2/(2*(b()-aD()))+((A()+aD())/(b()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v);acc:=A();][t:=0;][{a:=*;?acc-aD()<=a&a<=acc+aD();}{z'=v,v'=a,t'=1&v>=0&t<=ep()}]m()-z>=v^2/(2*(b()-aD()))":
+        diffInvariant("t>=old(t)", 'R=="[{z'=v,v'=a,t'=1&v>=0&t<=ep()}]m()-z>=v^2/(2*(b()-aD()))");
+        diffInvariant("a>A()+aD()|v<=old(v)+(A()+aD())*t", 'R=="[{z'=v,v'=a,t'=1&(v>=0&t<=ep())&t>=t_0}]m()-z>=v^2/(2*(b()-aD()))");
+        diffInvariant("a>A()+aD()|z<=old(z)+old(v)*t+(A()+aD())/2*t^2", 'R=="[{z'=v,v'=a,t'=1&((v>=0&t<=ep())&t>=t_0)&(a>A()+aD()|v<=v_0+(A()+aD())*t)}]m()-z>=v^2/(2*(b()-aD()))");
+        dW('R=="[{z'=v,v'=a,t'=1&(((v>=0&t<=ep())&t>=t_0)&(a>A()+aD()|v<=v_0+(A()+aD())*t))&(a>A()+aD()|z<=z_0+v_0*t+(A()+aD())/2*t^2)}]m()-z>=v^2/(2*(b()-aD()))");
+        QE
+    )
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Variable Speed Limit is Safe"
+
+Definitions
+  Real B;
+  Real A;
+  Real ep;
+
+  Real accCompensation(Real x1, Real v1, Real vsl) = x1 + (v1^2 - vsl^2) / (2*B) + (A/B + 1) * (A/2 * ep^2 + ep*v1);
+
+  HP ctrlCar ::= {
+    /* braking is always allowed */
+       {a1 := -B;}
+    /* outside the speed limit do whatever you want, as long as you can still brake to meet the speed limit */
+    ++ {?xsl >= accCompensation(x1, v1, vsl);
+        a1 :=*;  ?-B <= a1 & a1 <= A;}
+    /* comply with the speed limit by not accelerating too much */
+    ++ {?x1 >= xsl; a1 :=*; ?-B <= a1 & a1 <= A & a1 <= (v1 - vsl)/ep;}
+  };
+
+  HP ctrlCenter ::= {
+    /* traffic center, keep previous or set a new speed limit */
+       {xsl := xsl; vsl := vsl;}
+    /* if we set a speed limit, the car must be able to comply with it, no matter how hard it currently accelerates */
+    ++ {xsl :=*; vsl :=*; ?vsl >= 0 & xsl >= accCompensation(x1, v1, vsl);}
+  };
+End.
+
+ProgramVariables
+  Real x1;
+  Real v1;
+  Real a1;
+  Real t;
+  Real vsl;
+  Real xsl;
+End.
+
+Problem
+	    v1 >= 0
+		& vsl >= 0
+		& x1 <= xsl
+		& 2*B*(xsl - x1) >= v1^2 - vsl^2
+		& A >= 0
+		& B > 0
+		& ep > 0
+ -> [{
+          {
+            ctrlCar;
+            ctrlCenter;
+            t:=0;
+          }
+          {x1' = v1, v1' = a1, t' = 1 & v1 >= 0 & t <= ep}
+     }*@invariant(v1 >= 0 & vsl >= 0 & (v1 <= vsl | xsl >= x1 + (v1^2 - vsl^2) / (2*B)))
+    ] (x1 >= xsl -> v1 <= vsl)
+End.
+
+Tactic "Automated proof Variable Speed Limit is Safe"
+  auto
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Variable Speed Limit is Safe with Car Actuator Disturbance"
+
+Definitions
+  Real B;
+  Real A;
+  Real ep;
+  Real aD;
+
+  Real accCompensation(Real x1, Real v1, Real vsl) = x1 + (v1^2 - vsl^2) / (2*(B-aD)) + ((A+aD)/(B-aD) + 1) * ((A+aD)/2 * ep^2 + ep*v1);
+
+  HP ctrlCar ::= {
+    /* braking is always allowed */
+       {acc1 := -B;}
+    /* outside the speed limit do whatever you want, as long as you can still brake to meet the speed limit */
+    ++ {?xsl >= accCompensation(x1, v1, vsl);
+        acc1 :=*;  ?-B <= acc1 & acc1 <= A;}
+    /* comply with the speed limit by not accelerating too much */
+    ++ {?x1 >= xsl; acc1 :=*; ?-B <= acc1 & acc1 <= A & acc1 <= (v1 - vsl)/ep - aD;}
+  };
+
+  HP ctrlCenter ::= {
+    /* traffic center, keep previous or set a new speed limit */
+       {xsl := xsl; vsl := vsl;}
+    /* if we set a speed limit, the car must be able to comply with it, no matter how hard it currently accelerates */
+    ++ {xsl :=*; vsl :=*; ?vsl >= 0 & xsl >= accCompensation(x1, v1, vsl);}
+  };
+End.
+
+ProgramVariables
+  Real x1;
+  Real v1;
+  Real a1;
+  Real acc1;
+  Real t;
+  Real vsl;
+  Real xsl;
+End.
+
+Problem
+	    v1 >= 0
+		& vsl >= 0
+		& x1 <= xsl
+		& 2*(B-aD)*(xsl - x1) >= v1^2 - vsl^2
+		& A >= 0
+		& B > 0
+		& ep > 0
+    & 0<=aD&aD<B
+ -> [{
+          {
+            ctrlCar;
+            ctrlCenter;
+            t:=0;
+          }
+          {
+            a1:=*; ?acc1-aD<=a1&a1<=acc1+aD;
+          }
+          {x1' = v1, v1' = a1, t' = 1 & v1 >= 0 & t <= ep}
+     }*@invariant(v1 >= 0 & vsl >= 0 & (v1 <= vsl | xsl >= x1 + (v1^2 - vsl^2) / (2*(B-aD))))
+    ] (x1 >= xsl -> v1 <= vsl)
+End.
+
+Tactic "Proof Variable Speed Limit is Safe with Car Actuator Disturbance"
+implyR('R=="v1>=0&vsl>=0&x1<=xsl&2*(B()-aD())*(xsl-x1)>=v1^2-vsl^2&A()>=0&B()>0&ep()>0&0<=aD()&aD() < B()->[{{ctrlCar{|^@|};ctrlCenter{|^@|};t:=0;}{a1:=*;?acc1-aD()<=a1&a1<=acc1+aD();}{x1'=v1,v1'=a1,t'=1&v1>=0&t<=ep()}}*](x1>=xsl->v1<=vsl)");
+loop("v1>=0&vsl>=0&(v1<=vsl|xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD())))", 'R=="[{{ctrlCar{|^@|};ctrlCenter{|^@|};t:=0;}{a1:=*;?acc1-aD()<=a1&a1<=acc1+aD();}{x1'=v1,v1'=a1,t'=1&v1>=0&t<=ep()}}*](x1>=xsl->v1<=vsl)"); <(
+  "Init":
+    QE,
+  "Post":
+    QE,
+  "Step":
+    composeb('R=="[{{acc1:=-B();++?xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1);acc1:=*;?-B()<=acc1&acc1<=A();++?x1>=xsl;acc1:=*;?-B()<=acc1&acc1<=A()&acc1<=(v1-vsl)/ep()-aD();}{xsl:=xsl;vsl:=vsl;++xsl:=*;vsl:=*;?vsl>=0&xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1);}t:=0;}{a1:=*;?acc1-aD()<=a1&a1<=acc1+aD();}{x1'=v1,v1'=a1,t'=1&v1>=0&t<=ep()}](v1>=0&vsl>=0&(v1<=vsl|xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))))");
+    composeb('R=="[{acc1:=-B();++?xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1);acc1:=*;?-B()<=acc1&acc1<=A();++?x1>=xsl;acc1:=*;?-B()<=acc1&acc1<=A()&acc1<=(v1-vsl)/ep()-aD();}{xsl:=xsl;vsl:=vsl;++xsl:=*;vsl:=*;?vsl>=0&xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1);}t:=0;]#[{a1:=*;?acc1-aD()<=a1&a1<=acc1+aD();}{x1'=v1,v1'=a1,t'=1&v1>=0&t<=ep()}](v1>=0&vsl>=0&(v1<=vsl|xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))))#");
+    solve('R=="[{acc1:=-B();++?xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1);acc1:=*;?-B()<=acc1&acc1<=A();++?x1>=xsl;acc1:=*;?-B()<=acc1&acc1<=A()&acc1<=(v1-vsl)/ep()-aD();}{xsl:=xsl;vsl:=vsl;++xsl:=*;vsl:=*;?vsl>=0&xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1);}t:=0;][a1:=*;?acc1-aD()<=a1&a1<=acc1+aD();]#[{x1'=v1,v1'=a1,t'=1&v1>=0&t<=ep()}](v1>=0&vsl>=0&(v1<=vsl|xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))))#");
+    unfold; <(
+      "[acc1:=-B();][{xsl:=xsl;vsl:=vsl;++xsl:=*;vsl:=*;?vsl>=0&xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1);}t:=0;][a1:=*;?acc1-aD()<=a1&a1<=acc1+aD();]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD()))))//[xsl:=xsl;vsl:=vsl;][t:=0;][a1:=*;?-B()-aD()<=a1&a1<=-B()+aD();]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD()))))":
+        allL("t_", 'L=="\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+0<=ep())");
+        edit("a1*t_+v1>=0&t_+0<=ep()", 'L=="0<=t_&t_<=t_->a1*t_+v1>=0&t_+0<=ep()") using "t_>=0";
+        andL('L=="a1*t_+v1>=0&t_+0<=ep()");
+        simplify('R=="a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD())))") using "vsl>=0 :: a1*t_+v1>=0 :: nil";
+        QE,
+      "[?xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1);acc1:=*;?-B()<=acc1&acc1<=A();][{xsl:=xsl;vsl:=vsl;++xsl:=*;vsl:=*;?vsl>=0&xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1);}t:=0;][a1:=*;?acc1-aD()<=a1&a1<=acc1+aD();]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD()))))//[xsl:=xsl;vsl:=vsl;][t:=0;][a1:=*;?acc1-aD()<=a1&a1<=acc1+aD();]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD()))))":
+        allL("t_", 'L=="\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+0<=ep())");
+        edit("a1*t_+v1>=0&t_+0<=ep()", 'L=="0<=t_&t_<=t_->a1*t_+v1>=0&t_+0<=ep()") using "t_>=0";
+        andL('L=="a1*t_+v1>=0&t_+0<=ep()");
+        simplify('R=="a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD())))") using "vsl>=0 :: a1*t_+v1>=0 :: nil";
+        QE using "A()>=0 :: B()>0 :: ep()>0 :: 0<=aD() :: aD() < B() :: xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1) :: t_>=0 :: v1>=0 :: -B()<=acc1 :: acc1<=A() :: acc1-aD()<=a1 :: a1<=acc1+aD() :: vsl>=0 :: a1*t_+v1>=0 :: t_+0<=ep() :: a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD())) :: nil",
+      "[?x1>=xsl;acc1:=*;?-B()<=acc1&acc1<=A()&acc1<=(v1-vsl)/ep()-aD();][{xsl:=xsl;vsl:=vsl;++xsl:=*;vsl:=*;?vsl>=0&xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1);}t:=0;][a1:=*;?acc1-aD()<=a1&a1<=acc1+aD();]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD()))))//[xsl:=xsl;vsl:=vsl;][t:=0;][a1:=*;?acc1-aD()<=a1&a1<=acc1+aD();]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD()))))":
+        allL("t_", 'L=="\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+0<=ep())");
+        edit("a1*t_+v1>=0&t_+0<=ep()", 'L=="0<=t_&t_<=t_->a1*t_+v1>=0&t_+0<=ep()") using "t_>=0";
+        andL('L=="a1*t_+v1>=0&t_+0<=ep()");
+        simplify('R=="a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD())))") using "vsl>=0 :: a1*t_+v1>=0 :: nil";
+        QE,
+      "[acc1:=-B();][{xsl:=xsl;vsl:=vsl;++xsl:=*;vsl:=*;?vsl>=0&xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1);}t:=0;][a1:=*;?acc1-aD()<=a1&a1<=acc1+aD();]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD()))))//[xsl:=*;vsl:=*;?vsl>=0&xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1);][t:=0;][a1:=*;?-B()-aD()<=a1&a1<=-B()+aD();]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD()))))":
+        allL("t_", 'L=="\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+0<=ep())");
+        edit("a1*t_+v1>=0&t_+0<=ep()", 'L=="0<=t_&t_<=t_->a1*t_+v1>=0&t_+0<=ep()") using "t_>=0";
+        andL('L=="a1*t_+v1>=0&t_+0<=ep()");
+        simplify('R=="a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD())))") using "vsl>=0 :: a1*t_+v1>=0 :: nil";
+        edit("xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*t_^2+t_*v1)", 'L=="xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1)") using "A()>=0 :: B()>0 :: ep()>0 :: 0<=aD() :: aD() < B() :: t_>=0 :: v1>=0 :: vsl>=0 :: t_+0<=ep() :: nil";
+        QE using "A()>=0 :: B()>0 :: 0<=aD() :: aD() < B() :: t_>=0 :: v1>=0 :: vsl>=0 :: xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*t_^2+t_*v1) :: -B()-aD()<=a1 :: a1<=-B()+aD() :: a1*t_+v1>=0 :: a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD())) :: nil",
+      "[?x1>=xsl;acc1:=*;?-B()<=acc1&acc1<=A()&acc1<=(v1-vsl)/ep()-aD();][{xsl:=xsl;vsl:=vsl;++xsl:=*;vsl:=*;?vsl>=0&xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1);}t:=0;][a1:=*;?acc1-aD()<=a1&a1<=acc1+aD();]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD()))))//[xsl:=*;vsl:=*;?vsl>=0&xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1);][t:=0;][a1:=*;?acc1-aD()<=a1&a1<=acc1+aD();]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD()))))":
+        allL("t_", 'L=="\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+0<=ep())");
+        edit("a1*t_+v1>=0&t_+0<=ep()", 'L=="0<=t_&t_<=t_->a1*t_+v1>=0&t_+0<=ep()") using "t_>=0";
+        andL('L=="a1*t_+v1>=0&t_+0<=ep()");
+        simplify('R=="a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD())))") using "vsl>=0 :: a1*t_+v1>=0 :: nil";
+        QE using "A()>=0 :: B()>0 :: ep()>0 :: 0<=aD() :: aD() < B() :: t_>=0 :: v1>=0 :: -B()<=acc1 :: acc1<=A() :: vsl>=0 :: xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1) :: acc1-aD()<=a1 :: a1<=acc1+aD() :: a1*t_+v1>=0 :: t_+0<=ep() :: a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD())) :: nil",
+      "[?xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1);acc1:=*;?-B()<=acc1&acc1<=A();][{xsl:=xsl;vsl:=vsl;++xsl:=*;vsl:=*;?vsl>=0&xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1);}t:=0;][a1:=*;?acc1-aD()<=a1&a1<=acc1+aD();]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD()))))//[xsl:=*;vsl:=*;?vsl>=0&xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1);][t:=0;][a1:=*;?acc1-aD()<=a1&a1<=acc1+aD();]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD()))))":
+        allL("t_", 'L=="\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+0<=ep())");
+        edit("a1*t_+v1>=0&t_+0<=ep()", 'L=="0<=t_&t_<=t_->a1*t_+v1>=0&t_+0<=ep()") using "t_>=0";
+        andL('L=="a1*t_+v1>=0&t_+0<=ep()");
+        simplify('R=="a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD())))") using "vsl>=0 :: a1*t_+v1>=0 :: nil";
+        QE using "A()>=0 :: B()>0 :: ep()>0 :: 0<=aD() :: aD() < B() :: t_>=0 :: v1>=0 :: -B()<=acc1 :: vsl>=0 :: xsl>=x1+(v1^2-vsl^2)/(2*(B()-aD()))+((A()+aD())/(B()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v1) :: acc1-aD()<=a1 :: a1<=acc1+aD() :: acc1<=A() :: acc1<=(v1-vsl_0)/ep()-aD() :: a1*t_+v1>=0 :: t_+0<=ep() :: a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*(B()-aD())) :: nil"
+    )
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Variable Speed Limit is Safe with Car Position Uncertainty"
+
+Definitions
+  Real B;
+  Real A;
+  Real ep;
+  Real xU;
+
+  Real accCompensation(Real x1m, Real v1, Real vsl) = x1m + xU + (v1^2 - vsl^2) / (2*B) + (A/B + 1) * (A/2 * ep^2 + ep*v1);
+
+  HP ctrlCar ::= {
+    /* braking is always allowed */
+       {a1 := -B;}
+    /* outside the speed limit do whatever you want, as long as you can still brake to meet the speed limit */
+    ++ {?xsl >= accCompensation(x1m, v1, vsl);
+        a1 :=*;  ?-B <= a1 & a1 <= A;}
+    /* comply with the speed limit by not accelerating too much */
+    ++ {?x1 >= xsl; a1 :=*; ?-B <= a1 & a1 <= A & a1 <= (v1 - vsl)/ep;}
+  };
+
+  HP ctrlCenter ::= {
+    /* traffic center, keep previous or set a new speed limit */
+       {xsl := xsl; vsl := vsl;}
+    /* if we set a speed limit, the car must be able to comply with it, no matter how hard it currently accelerates */
+    ++ {xsl :=*; vsl :=*; ?vsl >= 0 & xsl >= accCompensation(x1m, v1, vsl);}
+  };
+End.
+
+ProgramVariables
+  Real x1;
+  Real x1m;
+  Real v1;
+  Real a1;
+  Real t;
+  Real vsl;
+  Real xsl;
+End.
+
+Problem
+	    v1 >= 0
+		& vsl >= 0
+		& x1 <= xsl
+		& 2*B*(xsl - x1) >= v1^2 - vsl^2
+		& A >= 0
+		& B > 0
+		& ep > 0
+    & xU >= 0
+    & x1-xU<=x1m&x1m<=x1+xU
+ -> [{
+          {
+            ctrlCar;
+            ctrlCenter;
+            t:=0;
+          }
+          {x1' = v1, v1' = a1, t' = 1 & v1 >= 0 & t <= ep}
+          /* measure */
+          {
+            x1m := *; ?x1-xU<=x1m&x1m<=x1+xU;
+          }
+     }*@invariant(v1 >= 0 & vsl >= 0 & (v1 <= vsl | xsl >= x1 + (v1^2 - vsl^2) / (2*B)) & x1-xU<=x1m&x1m<=x1+xU)
+    ] (x1 >= xsl -> v1 <= vsl)
+End.
+
+Tactic "Proof Variable Speed Limit is Safe with Car Position Uncertainty"
+implyR('R=="v1>=0&vsl>=0&x1<=xsl&2*B()*(xsl-x1)>=v1^2-vsl^2&A()>=0&B()>0&ep()>0&xU()>=0&x1-xU()<=x1m&x1m<=x1+xU()->[{{ctrlCar{|^@|};ctrlCenter{|^@|};t:=0;}{x1'=v1,v1'=a1,t'=1&v1>=0&t<=ep()}x1m:=*;?x1-xU()<=x1m&x1m<=x1+xU();}*](x1>=xsl->v1<=vsl)");
+loop("v1>=0&vsl>=0&(v1<=vsl|xsl>=x1+(v1^2-vsl^2)/(2*B()))&x1-xU()<=x1m&x1m<=x1+xU()", 'R=="[{{ctrlCar{|^@|};ctrlCenter{|^@|};t:=0;}{x1'=v1,v1'=a1,t'=1&v1>=0&t<=ep()}x1m:=*;?x1-xU()<=x1m&x1m<=x1+xU();}*](x1>=xsl->v1<=vsl)"); <(
+  "Init":
+    QE,
+  "Post":
+    QE,
+  "Step":
+    composeb('R=="[{{a1:=-B();++?xsl>=x1m+xU()+(v1^2-vsl^2)/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v1);a1:=*;?-B()<=a1&a1<=A();++?x1>=xsl;a1:=*;?-B()<=a1&a1<=A()&a1<=(v1-vsl)/ep();}{xsl:=xsl;vsl:=vsl;++xsl:=*;vsl:=*;?vsl>=0&xsl>=x1m+xU()+(v1^2-vsl^2)/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v1);}t:=0;}{x1'=v1,v1'=a1,t'=1&v1>=0&t<=ep()}x1m:=*;?x1-xU()<=x1m&x1m<=x1+xU();](v1>=0&vsl>=0&(v1<=vsl|xsl>=x1+(v1^2-vsl^2)/(2*B()))&x1-xU()<=x1m&x1m<=x1+xU())");
+    composeb('R=="[{a1:=-B();++?xsl>=x1m+xU()+(v1^2-vsl^2)/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v1);a1:=*;?-B()<=a1&a1<=A();++?x1>=xsl;a1:=*;?-B()<=a1&a1<=A()&a1<=(v1-vsl)/ep();}{xsl:=xsl;vsl:=vsl;++xsl:=*;vsl:=*;?vsl>=0&xsl>=x1m+xU()+(v1^2-vsl^2)/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v1);}t:=0;]#[{x1'=v1,v1'=a1,t'=1&v1>=0&t<=ep()}x1m:=*;?x1-xU()<=x1m&x1m<=x1+xU();](v1>=0&vsl>=0&(v1<=vsl|xsl>=x1+(v1^2-vsl^2)/(2*B()))&x1-xU()<=x1m&x1m<=x1+xU())#");
+    solve('R=="[{a1:=-B();++?xsl>=x1m+xU()+(v1^2-vsl^2)/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v1);a1:=*;?-B()<=a1&a1<=A();++?x1>=xsl;a1:=*;?-B()<=a1&a1<=A()&a1<=(v1-vsl)/ep();}{xsl:=xsl;vsl:=vsl;++xsl:=*;vsl:=*;?vsl>=0&xsl>=x1m+xU()+(v1^2-vsl^2)/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v1);}t:=0;]#[{x1'=v1,v1'=a1,t'=1&v1>=0&t<=ep()}][x1m:=*;?x1-xU()<=x1m&x1m<=x1+xU();](v1>=0&vsl>=0&(v1<=vsl|xsl>=x1+(v1^2-vsl^2)/(2*B()))&x1-xU()<=x1m&x1m<=x1+xU())#");
+    unfold; <(
+      "[a1:=-B();][{xsl:=xsl;vsl:=vsl;++xsl:=*;vsl:=*;?vsl>=0&xsl>=x1m+xU()+(v1^2-vsl^2)/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v1);}t:=0;]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->[x1m:=*;?a1*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1-xU()<=x1m&x1m<=a1*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1+xU();](a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*B()))&a1*(t_^2/2)+v1*t_+x1-xU()<=x1m&x1m<=a1*(t_^2/2)+v1*t_+x1+xU()))//[xsl:=xsl;vsl:=vsl;][t:=0;]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->(-B())*s_+v1>=0&s_+t<=ep())->[x1m:=*;?(-B())*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1-xU()<=x1m&x1m<=(-B())*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1+xU();]((-B())*t_+v1>=0&vsl>=0&((-B())*t_+v1<=vsl|xsl>=(-B())*(t_^2/2)+v1*t_+x1+(((-B())*t_+v1)^2-vsl^2)/(2*B()))&(-B())*(t_^2/2)+v1*t_+x1-xU()<=x1m&x1m<=(-B())*(t_^2/2)+v1*t_+x1+xU()))":
+        QE,
+      "[?xsl>=x1m+xU()+(v1^2-vsl^2)/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v1);a1:=*;?-B()<=a1&a1<=A();][{xsl:=xsl;vsl:=vsl;++xsl:=*;vsl:=*;?vsl>=0&xsl>=x1m+xU()+(v1^2-vsl^2)/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v1);}t:=0;]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->[x1m:=*;?a1*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1-xU()<=x1m&x1m<=a1*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1+xU();](a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*B()))&a1*(t_^2/2)+v1*t_+x1-xU()<=x1m&x1m<=a1*(t_^2/2)+v1*t_+x1+xU()))//[xsl:=xsl;vsl:=vsl;][t:=0;]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->[x1m:=*;?a1*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1-xU()<=x1m&x1m<=a1*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1+xU();](a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*B()))&a1*(t_^2/2)+v1*t_+x1-xU()<=x1m&x1m<=a1*(t_^2/2)+v1*t_+x1+xU()))":
+        QE,
+      "[?x1>=xsl;a1:=*;?-B()<=a1&a1<=A()&a1<=(v1-vsl)/ep();][{xsl:=xsl;vsl:=vsl;++xsl:=*;vsl:=*;?vsl>=0&xsl>=x1m+xU()+(v1^2-vsl^2)/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v1);}t:=0;]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->[x1m:=*;?a1*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1-xU()<=x1m&x1m<=a1*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1+xU();](a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*B()))&a1*(t_^2/2)+v1*t_+x1-xU()<=x1m&x1m<=a1*(t_^2/2)+v1*t_+x1+xU()))//[xsl:=xsl;vsl:=vsl;][t:=0;]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->[x1m:=*;?a1*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1-xU()<=x1m&x1m<=a1*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1+xU();](a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*B()))&a1*(t_^2/2)+v1*t_+x1-xU()<=x1m&x1m<=a1*(t_^2/2)+v1*t_+x1+xU()))":
+        QE,
+      "[a1:=-B();][{xsl:=xsl;vsl:=vsl;++xsl:=*;vsl:=*;?vsl>=0&xsl>=x1m+xU()+(v1^2-vsl^2)/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v1);}t:=0;]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->[x1m:=*;?a1*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1-xU()<=x1m&x1m<=a1*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1+xU();](a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*B()))&a1*(t_^2/2)+v1*t_+x1-xU()<=x1m&x1m<=a1*(t_^2/2)+v1*t_+x1+xU()))//[xsl:=*;vsl:=*;?vsl>=0&xsl>=x1m+xU()+(v1^2-vsl^2)/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v1);][t:=0;]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->(-B())*s_+v1>=0&s_+t<=ep())->[x1m:=*;?(-B())*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1-xU()<=x1m&x1m<=(-B())*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1+xU();]((-B())*t_+v1>=0&vsl>=0&((-B())*t_+v1<=vsl|xsl>=(-B())*(t_^2/2)+v1*t_+x1+(((-B())*t_+v1)^2-vsl^2)/(2*B()))&(-B())*(t_^2/2)+v1*t_+x1-xU()<=x1m&x1m<=(-B())*(t_^2/2)+v1*t_+x1+xU()))":
+        QE,
+      "[?x1>=xsl;a1:=*;?-B()<=a1&a1<=A()&a1<=(v1-vsl)/ep();][{xsl:=xsl;vsl:=vsl;++xsl:=*;vsl:=*;?vsl>=0&xsl>=x1m+xU()+(v1^2-vsl^2)/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v1);}t:=0;]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->[x1m:=*;?a1*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1-xU()<=x1m&x1m<=a1*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1+xU();](a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*B()))&a1*(t_^2/2)+v1*t_+x1-xU()<=x1m&x1m<=a1*(t_^2/2)+v1*t_+x1+xU()))//[xsl:=*;vsl:=*;?vsl>=0&xsl>=x1m+xU()+(v1^2-vsl^2)/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v1);][t:=0;]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->[x1m:=*;?a1*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1-xU()<=x1m&x1m<=a1*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1+xU();](a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*B()))&a1*(t_^2/2)+v1*t_+x1-xU()<=x1m&x1m<=a1*(t_^2/2)+v1*t_+x1+xU()))":
+        QE,
+      "[?xsl>=x1m+xU()+(v1^2-vsl^2)/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v1);a1:=*;?-B()<=a1&a1<=A();][{xsl:=xsl;vsl:=vsl;++xsl:=*;vsl:=*;?vsl>=0&xsl>=x1m+xU()+(v1^2-vsl^2)/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v1);}t:=0;]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->[x1m:=*;?a1*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1-xU()<=x1m&x1m<=a1*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1+xU();](a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*B()))&a1*(t_^2/2)+v1*t_+x1-xU()<=x1m&x1m<=a1*(t_^2/2)+v1*t_+x1+xU()))//[xsl:=*;vsl:=*;?vsl>=0&xsl>=x1m+xU()+(v1^2-vsl^2)/(2*B())+(A()/B()+1)*(A()/2*ep()^2+ep()*v1);][t:=0;]\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a1*s_+v1>=0&s_+t<=ep())->[x1m:=*;?a1*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1-xU()<=x1m&x1m<=a1*((0+1*t_-0)^2/2)+v1*(0+1*t_-0)+x1+xU();](a1*t_+v1>=0&vsl>=0&(a1*t_+v1<=vsl|xsl>=a1*(t_^2/2)+v1*t_+x1+((a1*t_+v1)^2-vsl^2)/(2*B()))&a1*(t_^2/2)+v1*t_+x1-xU()<=x1m&x1m<=a1*(t_^2/2)+v1*t_+x1+xU()))":
+        QE
+    )
+)
+End.
+
+End.
