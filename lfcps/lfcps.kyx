@@ -116,7 +116,7 @@ Tactic "07: Bouncing Ball: top-level: positional"
   implyR(1) ; loop("2*g*x=2*g*H-v^2&x>=0", 1) ; <(
   "Init": QE, 
   "Post": QE, 
-  "Init": composeb(1) ; solve(1) ; allR(1) ; implyR(1) ; implyR(1) ; allL("t_", -6) ; allR(1) ; implyR(1) ; choiceb(1) ; andR(1) ; <(
+  "Step": composeb(1) ; solve(1) ; allR(1) ; implyR(1) ; implyR(1) ; allL("t_", -6) ; allR(1) ; implyR(1) ; choiceb(1) ; andR(1) ; <(
     composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE, 
     testb(1) ; implyR(1) ; QE
 )
