@@ -273,7 +273,7 @@ Definitions.
 
   HP watertankctrl ::= {
     f :=*;
-    ?-1 <= f & f <= (m()-(lu+U()))/ep();
+    ?-1 <= f & f <= (m()-(lu+U()))/ep(); /* does not guarantee existence of control choice! */
     c := 0;
   };
 
@@ -312,6 +312,63 @@ loop("0<=l&l<=m()&l-U()<=lu&lu<=l+U()", 'R=="[{{f:=*;?(-1)<=f&f<=(m()-(lu+U()))/
     implyR('R=="(-1)<=f&f<=(m()-(lu+U()))/ep()->\forall c (c=0->[{l'=f,c'=1&0<=l&c<=ep()}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U()))");
     allR('R=="\forall c (c=0->[{l'=f,c'=1&0<=l&c<=ep()}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U()))");
     implyR('R=="c=0->[{l'=f,c'=1&0<=l&c<=ep()}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U())");
+    diffInvariant("c>=0", 'R=="[{l'=f,c'=1&0<=l&c<=ep()}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U())");
+    diffInvariant("l=old(l)+f*c", 'R=="[{l'=f,c'=1&(0<=l&c<=ep())&c>=0}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U())");
+    dW('R=="[{l'=f,c'=1&((0<=l&c<=ep())&c>=0)&l=l_0+f*c}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U())");
+    QE
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Water tank with load measurement uncertainty is safe (control choice exists)"
+
+Definitions.
+  Real m();
+  Real ep();
+  Real U();
+
+  HP watertankmeasure ::= { lu:=*; ?l-U()<=lu&lu<=l+U(); };
+
+  HP watertankctrl ::= {
+    f :=*;
+    ?-1 <= f & f <= max(0, (m()-(lu+U()))/ep());
+    c := 0;
+  };
+
+  HP watertankplant ::= {
+    { l' = f, c' = 1 & 0 <= l & c <= ep() }
+  };
+End.
+
+ProgramVariables
+  Real f;
+  Real l;
+  Real lu;
+  Real c;
+End.
+
+Problem
+     (0 <= l & l <= m() &l-U()<=lu&lu<=l+U() & 0 < ep() & 0<=U())
+  -> [
+      { watertankctrl;
+        watertankplant;
+        watertankmeasure;
+      }*
+     ](0 <= l & l <= m())
+End.
+
+Tactic "Proof Water tank with load measurement uncertainty is safe"
+implyR('R=="0<=l&l<=m()&l-U()<=lu&lu<=l+U()&0 < ep()&0<=U()->[{watertankctrl{|^@|};watertankplant{|^@|};watertankmeasure{|^@|};}*](0<=l&l<=m())");
+loop("0<=l&l<=m()&l-U()<=lu&lu<=l+U()", 'R=="[{watertankctrl{|^@|};watertankplant{|^@|};watertankmeasure{|^@|};}*](0<=l&l<=m())"); <(
+  "Init":
+    QE,
+  "Post":
+    QE,
+  "Step":
+    expandAllDefs;
+    unfold;
+    chaseAt('R=="[{l'=f,c'=1&0<=l&c<=ep()}]#[lu:=*;?l-U()<=lu&lu<=l+U();](0<=l&l<=m()&l-U()<=lu&lu<=l+U())#");
     diffInvariant("c>=0", 'R=="[{l'=f,c'=1&0<=l&c<=ep()}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U())");
     diffInvariant("l=old(l)+f*c", 'R=="[{l'=f,c'=1&(0<=l&c<=ep())&c>=0}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U())");
     dW('R=="[{l'=f,c'=1&((0<=l&c<=ep())&c>=0)&l=l_0+f*c}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U())");
