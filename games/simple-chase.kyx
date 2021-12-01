@@ -1,0 +1,30 @@
+﻿ArchiveEntry "Simple chase game"
+
+Definitions
+  Real a;      /* signed speed of first robot */
+  Real g;      /* signed speed of second robot */
+End.
+
+
+ProgramVariables
+  Real x, v;   /* 1D position and velocity of first robot  */
+  Real y, w;   /* 1D position and velocity of second robot */
+End.
+
+Problem
+(x-y)^2>=1 & b^2>=a^2 ->
+  [  
+      {  
+        {v:=a; ++ v:=-a; ++ v:=0;};  
+        {w:=b; -- w:=-b; -- w:=0;};  
+        {x'=v,y'=w}  
+      }* @invariant((x-y)^2>=1 & b^2>=a^2)  
+    ] (x-y)^2>=1
+End.
+
+Tactic "Simple chase game: Automatic Proof"
+  auto
+End.
+
+End.
+       
