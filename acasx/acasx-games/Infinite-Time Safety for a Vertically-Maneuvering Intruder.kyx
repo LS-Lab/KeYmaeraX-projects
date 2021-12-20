@@ -161,7 +161,7 @@ loop("loopInv(r,h,v,w,vlo,rv)", 'R=="[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Li
                             )
                         ),
                       "Show":
-                        expand "maxI" using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: w*v>=w*vlo|w*ao>=alo()+c() :: t_>=0 :: w*((ao-ai)*t_+v)>=w*vlo|w*ao>=alo()+c() :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: 0<=t&t < max(0,w*(vlo-((ao-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((ao-ai)*t_+v)*t|t>=max(0,w*(vlo-((ao-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((ao-ai)*t_+v)))^2/(2*alo()) :: 0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()|t+t_>=maxI(v,w,vlo)/alo() :: nil";
+                        expand "maxI";
                         orR('R=="0<=t+t_&t+t_ < max(0,w*(vlo-v))/alo()|t+t_>=max(0,w*(vlo-v))/alo()");
                         orL('L=="0<=t&t < max(0,w*(vlo-((ao-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((ao-ai)*t_+v)*t|t>=max(0,w*(vlo-((ao-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((ao-ai)*t_+v)))^2/(2*alo())"); <(
                           "0<=t&t < max(0,w*(vlo-((ao-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((ao-ai)*t_+v)*t":
