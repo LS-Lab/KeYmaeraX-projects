@@ -1,12 +1,10 @@
-﻿/* Exported from KeYmaera X v4.9.7 */
-
-Theorem "ACAS X Hybrid Games/Theorem 4.1: Correctness of implicit safe regions"
+﻿Theorem "ACAS X Hybrid Games/Theorem 4.1: Correctness of implicit safe regions"
 
 Definitions
   Real hp;   /* puck height */
   Real rp;   /* puck radius */
   Real alo;  /* minimal vertical acceleration. Typically g/4 */
-  Real amax; /* maximal vertical acceleration */
+  Real amax; /* maximal aircraft capability: vertical acceleration. */
 
   /* velocity bound 1 = lower, -1 = upper */
   Real wUp = -1;
@@ -64,21 +62,21 @@ Problem
         ?Limpl(r,h,v,w,vlo,rv);
        }
      }
-     { ao := *; ?(-amax<=ao & ao<=amax); ?(w*v>=w*vlo|w*ao>=alo+c); }^@
+     { ao := *; ?(-amax<=ao & ao<=amax); }^@
      { ai := * ; ?(-c<ai & ai<c); motion; }*@invariant(loopInv(r,h,v,w,vlo,rv))
    }*@invariant(loopInv(r,h,v,w,vlo,rv))
   ]( abs(r)>rp | abs(h)>hp )
 End.
 
 Tactic "ACAS X Hybrid Games/Theorem 4.1 Proof"
-implyR('R=="init(rv)&(w=wUp()|w=wLo())&Limpl(r,h,v,w,vlo,rv)->[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();?w*v>=w*vlo|w*ao>=alo()+c();}^@{ai:=*;?-c() < ai&ai < c();motion{|^@|};}*}*](abs(r)>rp()|abs(h)>hp())");
-loop("loopInv(r,h,v,w,vlo,rv)", 'R=="[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();?w*v>=w*vlo|w*ao>=alo()+c();}^@{ai:=*;?-c() < ai&ai < c();motion{|^@|};}*}*](abs(r)>rp()|abs(h)>hp())"); <(
+implyR('R=="init(rv)&(w=wUp()|w=wLo())&Limpl(r,h,v,w,vlo,rv)->[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{ai:=*;?-c() < ai&ai < c();motion{|^@|};}*}*](abs(r)>rp()|abs(h)>hp())");
+loop("loopInv(r,h,v,w,vlo,rv)", 'R=="[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{ai:=*;?-c() < ai&ai < c();motion{|^@|};}*}*](abs(r)>rp()|abs(h)>hp())"); <(
   "Init":
     expand "loopInv";
     propClose,
   "Step":
-    composeb('R=="[{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();?w*v>=w*vlo|w*ao>=alo()+c();}^@{ai:=*;?-c() < ai&ai < c();motion{|^@|};}*]loopInv(r,h,v,w,vlo,rv)");
-    MR("loopInv(r,h,v,w,vlo,rv)", 'R=="[?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();?w*v>=w*vlo|w*ao>=alo()+c();}^@{ai:=*;?-c() < ai&ai < c();motion{|^@|};}*]loopInv(r,h,v,w,vlo,rv)"); <(
+    composeb('R=="[{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{ai:=*;?-c() < ai&ai < c();motion{|^@|};}*]loopInv(r,h,v,w,vlo,rv)");
+    MR("loopInv(r,h,v,w,vlo,rv)", 'R=="[?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{ai:=*;?-c() < ai&ai < c();motion{|^@|};}*]loopInv(r,h,v,w,vlo,rv)"); <(
       "Use Q->P":
         chaseAt('R=="[?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);]loopInv(r,h,v,w,vlo,rv)");
         simplify('R=="(true->loopInv(r,h,v,w,vlo,rv))&\forall vlo (Limpl(r,h,v,wUp(),vlo,rv)->loopInv(r,h,v,wUp(),vlo,rv))&\forall vlo (Limpl(r,h,v,wLo(),vlo,rv)->loopInv(r,h,v,wLo(),vlo,rv))");
@@ -99,133 +97,123 @@ loop("loopInv(r,h,v,w,vlo,rv)", 'R=="[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Li
             closeT
         ),
       "Show [a]Q":
-        chaseAt('R=="[{ao:=*;?-amax()<=ao&ao<=amax();?w*v>=w*vlo|w*ao>=alo()+c();}^@{ai:=*;?-c() < ai&ai < c();motion{|^@|};}*]loopInv(r,h,v,w,vlo,rv)");
+        composeb('R=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@{ai:=*;?-c() < ai&ai < c();motion{|^@|};}*]loopInv(r,h,v,w,vlo,rv)");
+        chaseAt('R=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@][{ai:=*;?-c() < ai&ai < c();motion{|^@|};}*]loopInv(r,h,v,w,vlo,rv)");
         cut("w*v>=w*vlo|w*v < w*vlo"); <(
           "Use":
             orL('L=="w*v>=w*vlo|w*v < w*vlo"); <(
               "w*v>=w*vlo":
                 expand "motion";
-                existsR("(alo()+c())/w", 'R=="\exists ao ((-amax()<=ao&ao<=amax())&(w*v>=w*vlo|w*ao>=alo()+c())&[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=ao-ai}}*]loopInv(r,h,v,w,vlo,rv))");
-                andR('R=="(-amax()<=(alo()+c())/w&(alo()+c())/w<=amax())&(w*v>=w*vlo|w*((alo()+c())/w)>=alo()+c())&[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]loopInv(r,h,v,w,vlo,rv)"); <(
-                  "-amax()<=(alo()+c())/w&(alo()+c())/w<=amax()":
-                    expandAllDefs;
+                existsR("w*c()", 'R=="\exists ao ((-amax()<=ao&ao<=amax())&[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=ao-ai}}*]loopInv(r,h,v,w,vlo,rv))");
+                andR('R=="(-amax()<=w*c()&w*c()<=amax())&[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=w*c()-ai}}*]loopInv(r,h,v,w,vlo,rv)"); <(
+                  "-amax()<=w*c()&w*c()<=amax()":
+                    expand "loopInv";
+                    expand "init";
                     andL('L)*;
-                    QE using "w*v>=w*vlo :: w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: -amax()<=(alo()+c())/w&(alo()+c())/w<=amax() :: nil",
-                  "(w*v>=w*vlo|w*((alo()+c())/w)>=alo()+c())&[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]loopInv(r,h,v,w,vlo,rv)":
-                    andR('R=="(w*v>=w*vlo|w*((alo()+c())/w)>=alo()+c())&[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]loopInv(r,h,v,w,vlo,rv)"); <(
-                      "w*v>=w*vlo|w*((alo()+c())/w)>=alo()+c()":
-                        QE using "w*v>=w*vlo|w*((alo()+c())/w)>=alo()+c()",
-                      "[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]loopInv(r,h,v,w,vlo,rv)":
-                        expand "loopInv";
-                        boxAnd('R=="[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]((w=wUp()|w=wLo())&init(rv)&Limpl(r,h,v,w,vlo,rv))");
-                        andR('R=="[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*](w=wUp()|w=wLo())&[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*](init(rv)&Limpl(r,h,v,w,vlo,rv))"); <(
-                          "[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*](w=wUp()|w=wLo())":
-                            GV('R=="[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*](w=wUp()|w=wLo())");
+                    QE using "w=wUp()|w=wLo() :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: -amax()<=w*c()&w*c()<=amax() :: nil",
+                  "[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=w*c()-ai}}*]loopInv(r,h,v,w,vlo,rv)":
+                    loop("(w=wUp()|w=wLo())&init(rv)&Limpl(r,h,v,w,vlo,rv)&w*v>=w*vlo", 'R=="[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=w*c()-ai}}*]loopInv(r,h,v,w,vlo,rv)"); <(
+                      "Init":
+                        propClose,
+                      "Post":
+                        propClose,
+                      "Step":
+                        boxAnd('R=="[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=w*c()-ai}]((w=(-1)|w=1)&(rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())&w*v>=w*vlo)");
+                        andR('R=="[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=w*c()-ai}](w=(-1)|w=1)&[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=w*c()-ai}]((rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())&w*v>=w*vlo)"); <(
+                          "[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=w*c()-ai}](w=(-1)|w=1)":
+                            GV('R=="[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=w*c()-ai}](w=(-1)|w=1)");
                             propClose,
-                          "[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*](init(rv)&Limpl(r,h,v,w,vlo,rv))":
-                            boxAnd('R=="[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*](init(rv)&Limpl(r,h,v,w,vlo,rv))");
-                            andR('R=="[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]init(rv)&[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]Limpl(r,h,v,w,vlo,rv)"); <(
-                              "[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]init(rv)":
-                                GV('R=="[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]init(rv)");
+                          "[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=w*c()-ai}]((rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())&w*v>=w*vlo)":
+                            boxAnd('R=="[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=w*c()-ai}]((rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())&w*v>=w*vlo)");
+                            andR('R=="[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=w*c()-ai}](rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=w*c()-ai}](\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())&w*v>=w*vlo)"); <(
+                              "[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=w*c()-ai}](rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())":
+                                GV('R=="[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=w*c()-ai}](rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())");
                                 propClose,
-                              "[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]Limpl(r,h,v,w,vlo,rv)":
-                                loop("(w=(-1)|w=1)&(rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())", 'R=="[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]Limpl(r,h,v,w,vlo,rv)"); <(
-                                  "Init":
-                                    propClose,
-                                  "Post":
-                                    propClose,
-                                  "Step":
-                                    chaseAt('R=="[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}]((w=(-1)|w=1)&(rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp()))");
-                                    allR('R=="\forall ai (-c() < ai&ai < c()->[{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}]((w=(-1)|w=1)&(rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())))");
-                                    implyR('R=="-c() < ai&ai < c()->[{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}]((w=(-1)|w=1)&(rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp()))");
-                                    boxAnd('R=="[{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}]((w=(-1)|w=1)&(rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp()))");
-                                    andR('R=="[{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}](w=(-1)|w=1)&[{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}]((rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp()))"); <(
-                                      "[{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}](w=(-1)|w=1)":
-                                        GV('R=="[{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}](w=(-1)|w=1)");
-                                        propClose,
-                                      "[{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}]((rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp()))":
-                                        boxAnd('R=="[{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}]((rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp()))");
-                                        andR('R=="[{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}](rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&[{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}]\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())"); <(
-                                          "[{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}](rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())":
-                                            GV('R=="[{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}](rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())");
-                                            propClose,
-                                          "[{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}]\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())":
-                                            solve('R=="[{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}]\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())");
-                                            unfold;
-                                            allL("t+t_", 'L=="\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())");
-                                            allL("rv*(t+t_)", 'L=="\forall ro \forall ho (0<=t+t_&t+t_ < max(0,w*(vlo-v))/alo()&ro=rv*(t+t_)&ho=w*alo()/2*(t+t_)^2+v*(t+t_)|t+t_>=max(0,w*(vlo-v))/alo()&ro=rv*(t+t_)&ho=vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())");
-                                            cut("0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()|t+t_>=maxI(v,w,vlo)/alo()"); <(
-                                              "Use":
-                                                orL('L=="0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()|t+t_>=maxI(v,w,vlo)/alo()"); <(
-                                                  "0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()":
-                                                    andL('L=="0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()");
-                                                    expand "maxI";
-                                                    simplify('L=="\forall ho (0<=t+t_&t+t_ < max(0,w*(vlo-v))/alo()&rv*(t+t_)=rv*(t+t_)&ho=w*alo()/2*(t+t_)^2+v*(t+t_)|t+t_>=max(0,w*(vlo-v))/alo()&rv*(t+t_)=rv*(t+t_)&ho=vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-rv*(t+t_))>rp()|w*h < w*ho-hp())") using "0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: nil";
-                                                    allL("w*alo()/2*(t+t_)^2+v*(t+t_)", 'L=="\forall ho (ho=w*alo()/2*(t+t_)^2+v*(t+t_)->abs(r-rv*(t+t_))>rp()|w*h < w*ho-hp())");
-                                                    simplify('L=="w*alo()/2*(t+t_)^2+v*(t+t_)=w*alo()/2*(t+t_)^2+v*(t+t_)->abs(r-rv*(t+t_))>rp()|w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp()") using "nil";
-                                                    orL('L=="abs(r-rv*(t+t_))>rp()|w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp()"); <(
-                                                      "abs(r-rv*(t+t_))>rp()":
-                                                        orL('L=="0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t|t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo())"); <(
-                                                          "0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t":
-                                                            QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: abs(r-rv*(t+t_))>rp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: abs((-rv)*t_+r-ro)>rp() :: nil",
-                                                          "t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo())":
-                                                            QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: abs(r-rv*(t+t_))>rp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: abs((-rv)*t_+r-ro)>rp() :: nil"
-                                                        ),
-                                                      "w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp()":
-                                                        orL('L=="0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t|t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo())"); <(
-                                                          "0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t":
-                                                            orL('L=="w=(-1)|w=1"); <(
-                                                              "w=(-1)":
-                                                                QE using "w=(-1) :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: w*(-(((alo()+c())/w-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil",
-                                                              "w=1":
-                                                                QE using "w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: w*(-(((alo()+c())/w-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil"
-                                                            ),
-                                                          "t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo())":
-                                                            orL('L=="w=(-1)|w=1"); <(
-                                                              "w=(-1)":
-                                                                QE using "w=(-1) :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: w*(-(((alo()+c())/w-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil",
-                                                              "w=1":
-                                                                QE using "w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: w*(-(((alo()+c())/w-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil"
-                                                            )
-                                                        )
-                                                    ),
-                                                  "t+t_>=maxI(v,w,vlo)/alo()":
-                                                    expand "maxI";
-                                                    simplify('L=="\forall ho (0<=t+t_&t+t_ < max(0,w*(vlo-v))/alo()&rv*(t+t_)=rv*(t+t_)&ho=w*alo()/2*(t+t_)^2+v*(t+t_)|t+t_>=max(0,w*(vlo-v))/alo()&rv*(t+t_)=rv*(t+t_)&ho=vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-rv*(t+t_))>rp()|w*h < w*ho-hp())") using "t+t_>=max(0,w*(vlo-v))/alo()";
-                                                    allL("vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())", 'L=="\forall ho (ho=vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-rv*(t+t_))>rp()|w*h < w*ho-hp())");
-                                                    simplify('L=="vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())=vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-rv*(t+t_))>rp()|w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp()") using "nil";
-                                                    orL('L=="abs(r-rv*(t+t_))>rp()|w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp()"); <(
-                                                      "abs(r-rv*(t+t_))>rp()":
-                                                        orL('L=="0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t|t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo())"); <(
-                                                          "0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t":
-                                                            QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: abs(r-rv*(t+t_))>rp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: abs((-rv)*t_+r-ro)>rp() :: nil",
-                                                          "t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo())":
-                                                            QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: abs(r-rv*(t+t_))>rp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: abs((-rv)*t_+r-ro)>rp() :: nil"
-                                                        ),
-                                                      "w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp()":
-                                                        orL('L=="0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t|t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo())"); <(
-                                                          "0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t":
-                                                            orL('L=="w=(-1)|w=1"); <(
-                                                              "w=(-1)":
-                                                                QE using "w=(-1) :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: w*(-(((alo()+c())/w-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil",
-                                                              "w=1":
-                                                                QE using "w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: w*(-(((alo()+c())/w-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil"
-                                                            ),
-                                                          "t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo())":
-                                                            orL('L=="w=(-1)|w=1"); <(
-                                                              "w=(-1)":
-                                                                QE using "w=(-1) :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: w*(-(((alo()+c())/w-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil",
-                                                              "w=1":
-                                                                QE using "w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: w*(-(((alo()+c())/w-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil"
-                                                            )
-                                                        )
-                                                    )
+                              "[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=w*c()-ai}](\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())&w*v>=w*vlo)":
+                                chaseAt('R=="[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=w*c()-ai}](\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())&w*v>=w*vlo)");
+                                allR('R=="\forall ai (-c() < ai&ai < c()->[{r'=-rv,h'=-v,v'=w*c()-ai}](\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())&w*v>=w*vlo))");
+                                implyR('R=="-c() < ai&ai < c()->[{r'=-rv,h'=-v,v'=w*c()-ai}](\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())&w*v>=w*vlo)");
+                                solve('R=="[{r'=-rv,h'=-v,v'=w*c()-ai}](\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())&w*v>=w*vlo)");
+                                allR('R=="\forall t_ (t_>=0->\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*c()-ai)*t_+v)*t|t>=max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*c()-ai)*t_+v)))^2/(2*alo())->abs((-rv)*t_+r-ro)>rp()|w*(-((w*c()-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp())&w*((w*c()-ai)*t_+v)>=w*vlo)");
+                                implyR('R=="t_>=0->\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*c()-ai)*t_+v)*t|t>=max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*c()-ai)*t_+v)))^2/(2*alo())->abs((-rv)*t_+r-ro)>rp()|w*(-((w*c()-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp())&w*((w*c()-ai)*t_+v)>=w*vlo");
+                                andR('R=="\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*c()-ai)*t_+v)*t|t>=max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*c()-ai)*t_+v)))^2/(2*alo())->abs((-rv)*t_+r-ro)>rp()|w*(-((w*c()-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp())&w*((w*c()-ai)*t_+v)>=w*vlo"); <(
+                                  "\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*c()-ai)*t_+v)*t|t>=max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*c()-ai)*t_+v)))^2/(2*alo())->abs((-rv)*t_+r-ro)>rp()|w*(-((w*c()-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp())":
+                                    unfold;
+                                    allL("t+t_", 'L=="\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())");
+                                    allL("rv*(t+t_)", 'L=="\forall ro \forall ho (0<=t+t_&t+t_ < max(0,w*(vlo-v))/alo()&ro=rv*(t+t_)&ho=w*alo()/2*(t+t_)^2+v*(t+t_)|t+t_>=max(0,w*(vlo-v))/alo()&ro=rv*(t+t_)&ho=vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())");
+                                    cut("0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()|t+t_>=maxI(v,w,vlo)/alo()"); <(
+                                      "Use":
+                                        orL('L=="0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()|t+t_>=maxI(v,w,vlo)/alo()"); <(
+                                          "0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()":
+                                            andL('L=="0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()");
+                                            expand "maxI";
+                                            simplify('L=="\forall ho (0<=t+t_&t+t_ < max(0,w*(vlo-v))/alo()&rv*(t+t_)=rv*(t+t_)&ho=w*alo()/2*(t+t_)^2+v*(t+t_)|t+t_>=max(0,w*(vlo-v))/alo()&rv*(t+t_)=rv*(t+t_)&ho=vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-rv*(t+t_))>rp()|w*h < w*ho-hp())") using "0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: nil";
+                                            allL("w*alo()/2*(t+t_)^2+v*(t+t_)", 'L=="\forall ho (ho=w*alo()/2*(t+t_)^2+v*(t+t_)->abs(r-rv*(t+t_))>rp()|w*h < w*ho-hp())");
+                                            simplify('L=="w*alo()/2*(t+t_)^2+v*(t+t_)=w*alo()/2*(t+t_)^2+v*(t+t_)->abs(r-rv*(t+t_))>rp()|w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp()") using "nil";
+                                            orL('L=="abs(r-rv*(t+t_))>rp()|w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp()"); <(
+                                              "abs(r-rv*(t+t_))>rp()":
+                                                orL('L=="0<=t&t < max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*c()-ai)*t_+v)*t|t>=max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*c()-ai)*t_+v)))^2/(2*alo())"); <(
+                                                  "0<=t&t < max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*c()-ai)*t_+v)*t":
+                                                    QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*c()-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: rp()>=0 :: abs(r-rv*(t+t_))>rp() :: w*v>=w*vlo :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: abs((-rv)*t_+r-ro)>rp() :: nil",
+                                                  "t>=max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*c()-ai)*t_+v)))^2/(2*alo())":
+                                                    QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*c()-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: rp()>=0 :: abs(r-rv*(t+t_))>rp() :: w*v>=w*vlo :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: abs((-rv)*t_+r-ro)>rp() :: nil"
                                                 ),
-                                              "Show":
-                                                QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t|t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()|t+t_>=maxI(v,w,vlo)/alo() :: nil"
+                                              "w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp()":
+                                                orL('L=="0<=t&t < max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*c()-ai)*t_+v)*t|t>=max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*c()-ai)*t_+v)))^2/(2*alo())"); <(
+                                                  "0<=t&t < max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*c()-ai)*t_+v)*t":
+                                                    orL('L=="w=(-1)|w=1"); <(
+                                                      "w=(-1)":
+                                                        QE using "w=(-1) :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*c()-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: rp()>=0 :: w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp() :: w*v>=w*vlo :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: w*(-((w*c()-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil",
+                                                      "w=1":
+                                                        QE using "w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*c()-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: rp()>=0 :: w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp() :: w*v>=w*vlo :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: w*(-((w*c()-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil"
+                                                    ),
+                                                  "t>=max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*c()-ai)*t_+v)))^2/(2*alo())":
+                                                    orL('L=="w=(-1)|w=1"); <(
+                                                      "w=(-1)":
+                                                        QE using "w=(-1) :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*c()-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: rp()>=0 :: w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp() :: w*v>=w*vlo :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: w*(-((w*c()-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil",
+                                                      "w=1":
+                                                        QE using "w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*c()-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: rp()>=0 :: w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp() :: w*v>=w*vlo :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: w*(-((w*c()-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil"
+                                                    )
+                                                )
+                                            ),
+                                          "t+t_>=maxI(v,w,vlo)/alo()":
+                                            expand "maxI";
+                                            simplify('L=="\forall ho (0<=t+t_&t+t_ < max(0,w*(vlo-v))/alo()&rv*(t+t_)=rv*(t+t_)&ho=w*alo()/2*(t+t_)^2+v*(t+t_)|t+t_>=max(0,w*(vlo-v))/alo()&rv*(t+t_)=rv*(t+t_)&ho=vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-rv*(t+t_))>rp()|w*h < w*ho-hp())") using "t+t_>=max(0,w*(vlo-v))/alo()";
+                                            allL("vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())", 'L=="\forall ho (ho=vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-rv*(t+t_))>rp()|w*h < w*ho-hp())");
+                                            simplify('L=="vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())=vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-rv*(t+t_))>rp()|w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp()") using "nil";
+                                            orL('L=="abs(r-rv*(t+t_))>rp()|w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp()"); <(
+                                              "abs(r-rv*(t+t_))>rp()":
+                                                orL('L=="0<=t&t < max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*c()-ai)*t_+v)*t|t>=max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*c()-ai)*t_+v)))^2/(2*alo())"); <(
+                                                  "0<=t&t < max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*c()-ai)*t_+v)*t":
+                                                    QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*c()-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: rp()>=0 :: abs(r-rv*(t+t_))>rp() :: w*v>=w*vlo :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: abs((-rv)*t_+r-ro)>rp() :: nil",
+                                                  "t>=max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*c()-ai)*t_+v)))^2/(2*alo())":
+                                                    QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*c()-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: rp()>=0 :: abs(r-rv*(t+t_))>rp() :: w*v>=w*vlo :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: abs((-rv)*t_+r-ro)>rp() :: nil"
+                                                ),
+                                              "w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp()":
+                                                orL('L=="0<=t&t < max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*c()-ai)*t_+v)*t|t>=max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*c()-ai)*t_+v)))^2/(2*alo())"); <(
+                                                  "0<=t&t < max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*c()-ai)*t_+v)*t":
+                                                    orL('L=="w=(-1)|w=1"); <(
+                                                      "w=(-1)":
+                                                        QE using "w=(-1) :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*c()-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: rp()>=0 :: w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp() :: w*v>=w*vlo :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: w*(-((w*c()-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil",
+                                                      "w=1":
+                                                        QE using "w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*c()-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: rp()>=0 :: w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp() :: w*v>=w*vlo :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: w*(-((w*c()-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil"
+                                                    ),
+                                                  "t>=max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*c()-ai)*t_+v)))^2/(2*alo())":
+                                                    orL('L=="w=(-1)|w=1"); <(
+                                                      "w=(-1)":
+                                                        QE using "w=(-1) :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*c()-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: rp()>=0 :: w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp() :: w*v>=w*vlo :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: w*(-((w*c()-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil",
+                                                      "w=1":
+                                                        QE using "w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*c()-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: rp()>=0 :: w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp() :: w*v>=w*vlo :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: w*(-((w*c()-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil"
+                                                    )
+                                                )
                                             )
-                                        )
-                                    )
+                                        ),
+                                      "Show":
+                                        QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*c()-ai)*t_+v)*t|t>=max(0,w*(vlo-((w*c()-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*c()-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: rp()>=0 :: w*v>=w*vlo :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()|t+t_>=maxI(v,w,vlo)/alo() :: nil"
+                                    ),
+                                  "w*((w*c()-ai)*t_+v)>=w*vlo":
+                                    andL('L)*;
+                                    QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: rp()>=0 :: w*v>=w*vlo :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: w*((w*c()-ai)*t_+v)>=w*vlo :: nil"
                                 )
                             )
                         )
@@ -233,122 +221,102 @@ loop("loopInv(r,h,v,w,vlo,rv)", 'R=="[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Li
                 ),
               "w*v < w*vlo":
                 expand "motion";
-                existsR("(alo()+c())/w", 'R=="\exists ao ((-amax()<=ao&ao<=amax())&(w*v>=w*vlo|w*ao>=alo()+c())&[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=ao-ai}}*]loopInv(r,h,v,w,vlo,rv))");
-                andR('R=="(-amax()<=(alo()+c())/w&(alo()+c())/w<=amax())&(w*v>=w*vlo|w*((alo()+c())/w)>=alo()+c())&[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]loopInv(r,h,v,w,vlo,rv)"); <(
-                  "-amax()<=(alo()+c())/w&(alo()+c())/w<=amax()":
-                    expandAllDefs;
+                existsR("w*(alo()+c())", 'R=="\exists ao ((-amax()<=ao&ao<=amax())&[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=ao-ai}}*]loopInv(r,h,v,w,vlo,rv))");
+                andR('R=="(-amax()<=w*(alo()+c())&w*(alo()+c())<=amax())&[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=w*(alo()+c())-ai}}*]loopInv(r,h,v,w,vlo,rv)"); <(
+                  "-amax()<=w*(alo()+c())&w*(alo()+c())<=amax()":
+                    expand "loopInv";
                     andL('L)*;
-                    QE using "w=(-1)|w=1 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: -amax()<=(alo()+c())/w&(alo()+c())/w<=amax() :: nil",
-                  "(w*v>=w*vlo|w*((alo()+c())/w)>=alo()+c())&[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]loopInv(r,h,v,w,vlo,rv)":
-                    andR('R=="(w*v>=w*vlo|w*((alo()+c())/w)>=alo()+c())&[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]loopInv(r,h,v,w,vlo,rv)"); <(
-                      "w*v>=w*vlo|w*((alo()+c())/w)>=alo()+c()":
-                        QE,
-                      "[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]loopInv(r,h,v,w,vlo,rv)":
-                        expand "loopInv";
-                        boxAnd('R=="[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]((w=wUp()|w=wLo())&init(rv)&Limpl(r,h,v,w,vlo,rv))");
-                        andR('R=="[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*](w=wUp()|w=wLo())&[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*](init(rv)&Limpl(r,h,v,w,vlo,rv))"); <(
-                          "[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*](w=wUp()|w=wLo())":
-                            GV('R=="[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*](w=wUp()|w=wLo())");
+                    QE using "w*v < w*vlo :: w=wUp()|w=wLo() :: init(rv) :: -amax()<=w*(alo()+c())&w*(alo()+c())<=amax() :: nil",
+                  "[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=w*(alo()+c())-ai}}*]loopInv(r,h,v,w,vlo,rv)":
+                    loop("(w=wUp()|w=wLo())&init(rv)&Limpl(r,h,v,w,vlo,rv)", 'R=="[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=w*(alo()+c())-ai}}*]loopInv(r,h,v,w,vlo,rv)"); <(
+                      "Init":
+                        propClose,
+                      "Post":
+                        propClose,
+                      "Step":
+                        chaseAt('R=="[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=w*(alo()+c())-ai}]((w=(-1)|w=1)&(rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp()))");
+                        allR('R=="\forall ai (-c() < ai&ai < c()->[{r'=-rv,h'=-v,v'=w*(alo()+c())-ai}]((w=(-1)|w=1)&(rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())))");
+                        implyR('R=="-c() < ai&ai < c()->[{r'=-rv,h'=-v,v'=w*(alo()+c())-ai}]((w=(-1)|w=1)&(rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp()))");
+                        boxAnd('R=="[{r'=-rv,h'=-v,v'=w*(alo()+c())-ai}]((w=(-1)|w=1)&(rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp()))");
+                        andR('R=="[{r'=-rv,h'=-v,v'=w*(alo()+c())-ai}](w=(-1)|w=1)&[{r'=-rv,h'=-v,v'=w*(alo()+c())-ai}]((rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp()))"); <(
+                          "[{r'=-rv,h'=-v,v'=w*(alo()+c())-ai}](w=(-1)|w=1)":
+                            GV('R=="[{r'=-rv,h'=-v,v'=w*(alo()+c())-ai}](w=(-1)|w=1)");
                             propClose,
-                          "[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*](init(rv)&Limpl(r,h,v,w,vlo,rv))":
-                            boxAnd('R=="[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*](init(rv)&Limpl(r,h,v,w,vlo,rv))");
-                            andR('R=="[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]init(rv)&[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]Limpl(r,h,v,w,vlo,rv)"); <(
-                              "[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]init(rv)":
-                                GV('R=="[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]init(rv)");
+                          "[{r'=-rv,h'=-v,v'=w*(alo()+c())-ai}]((rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp()))":
+                            boxAnd('R=="[{r'=-rv,h'=-v,v'=w*(alo()+c())-ai}]((rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp()))");
+                            andR('R=="[{r'=-rv,h'=-v,v'=w*(alo()+c())-ai}](rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&[{r'=-rv,h'=-v,v'=w*(alo()+c())-ai}]\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())"); <(
+                              "[{r'=-rv,h'=-v,v'=w*(alo()+c())-ai}](rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())":
+                                GV('R=="[{r'=-rv,h'=-v,v'=w*(alo()+c())-ai}](rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())");
                                 propClose,
-                              "[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]Limpl(r,h,v,w,vlo,rv)":
-                                loop("(w=(-1)|w=1)&(rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())", 'R=="[{ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}}*]Limpl(r,h,v,w,vlo,rv)"); <(
-                                  "Init":
-                                    propClose,
-                                  "Post":
-                                    propClose,
-                                  "Step":
-                                    boxAnd('R=="[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}]((w=(-1)|w=1)&(rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp()))");
-                                    andR('R=="[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}](w=(-1)|w=1)&[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}]((rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp()))"); <(
-                                      "[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}](w=(-1)|w=1)":
-                                        GV('R=="[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}](w=(-1)|w=1)");
-                                        propClose,
-                                      "[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}]((rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp()))":
-                                        boxAnd('R=="[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}]((rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp()))");
-                                        andR('R=="[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}](rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())&[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}]\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())"); <(
-                                          "[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}](rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())":
-                                            GV('R=="[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}](rp()>=0&hp()>0&rv>=0&alo()>0&c()>0&amax()>=alo()+c())");
-                                            propClose,
-                                          "[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}]\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())":
-                                            chaseAt('R=="[ai:=*;?-c() < ai&ai < c();{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}]\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())");
-                                            allR('R=="\forall ai (-c() < ai&ai < c()->[{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}]\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp()))");
-                                            implyR('R=="-c() < ai&ai < c()->[{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}]\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())");
-                                            solve('R=="[{r'=-rv,h'=-v,v'=(alo()+c())/w-ai}]\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())");
-                                            unfold;
-                                            allL("t+t_", 'L=="\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())");
-                                            allL("rv*(t+t_)", 'L=="\forall ro \forall ho (0<=t+t_&t+t_ < max(0,w*(vlo-v))/alo()&ro=rv*(t+t_)&ho=w*alo()/2*(t+t_)^2+v*(t+t_)|t+t_>=max(0,w*(vlo-v))/alo()&ro=rv*(t+t_)&ho=vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())");
-                                            cut("0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()|t+t_>=maxI(v,w,vlo)/alo()"); <(
-                                              "Use":
-                                                orL('L=="0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()|t+t_>=maxI(v,w,vlo)/alo()"); <(
-                                                  "0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()":
-                                                    andL('L=="0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()");
-                                                    expand "maxI";
-                                                    simplify('L=="\forall ho (0<=t+t_&t+t_ < max(0,w*(vlo-v))/alo()&rv*(t+t_)=rv*(t+t_)&ho=w*alo()/2*(t+t_)^2+v*(t+t_)|t+t_>=max(0,w*(vlo-v))/alo()&rv*(t+t_)=rv*(t+t_)&ho=vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-rv*(t+t_))>rp()|w*h < w*ho-hp())") using "0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: nil";
-                                                    allL("w*alo()/2*(t+t_)^2+v*(t+t_)", 'L=="\forall ho (ho=w*alo()/2*(t+t_)^2+v*(t+t_)->abs(r-rv*(t+t_))>rp()|w*h < w*ho-hp())");
-                                                    simplify('L=="w*alo()/2*(t+t_)^2+v*(t+t_)=w*alo()/2*(t+t_)^2+v*(t+t_)->abs(r-rv*(t+t_))>rp()|w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp()") using "nil";
-                                                    orL('L=="abs(r-rv*(t+t_))>rp()|w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp()"); <(
-                                                      "abs(r-rv*(t+t_))>rp()":
-                                                        orL('L=="0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t|t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo())"); <(
-                                                          "0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t":
-                                                            QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: abs(r-rv*(t+t_))>rp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: abs((-rv)*t_+r-ro)>rp() :: nil",
-                                                          "t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo())":
-                                                            QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: abs(r-rv*(t+t_))>rp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: abs((-rv)*t_+r-ro)>rp() :: nil"
-                                                        ),
-                                                      "w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp()":
-                                                        orL('L=="0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t|t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo())"); <(
-                                                          "0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t":
-                                                            QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: w*(-(((alo()+c())/w-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil",
-                                                          "t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo())":
-                                                            orL('L=="w=(-1)|w=1"); <(
-                                                              "w=(-1)":
-                                                                QE using "w=(-1) :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: w*(-(((alo()+c())/w-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil",
-                                                              "w=1":
-                                                                QE using "w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: w*(-(((alo()+c())/w-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil"
-                                                            )
-                                                        )
-                                                    ),
-                                                  "t+t_>=maxI(v,w,vlo)/alo()":
-                                                    expand "maxI";
-                                                    simplify('L=="\forall ho (0<=t+t_&t+t_ < max(0,w*(vlo-v))/alo()&rv*(t+t_)=rv*(t+t_)&ho=w*alo()/2*(t+t_)^2+v*(t+t_)|t+t_>=max(0,w*(vlo-v))/alo()&rv*(t+t_)=rv*(t+t_)&ho=vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-rv*(t+t_))>rp()|w*h < w*ho-hp())") using "t+t_>=max(0,w*(vlo-v))/alo()";
-                                                    allL("vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())", 'L=="\forall ho (ho=vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-rv*(t+t_))>rp()|w*h < w*ho-hp())");
-                                                    simplify('L=="vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())=vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-rv*(t+t_))>rp()|w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp()") using "nil";
-                                                    orL('L=="abs(r-rv*(t+t_))>rp()|w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp()"); <(
-                                                      "abs(r-rv*(t+t_))>rp()":
-                                                        orL('L=="0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t|t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo())"); <(
-                                                          "0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t":
-                                                            QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: abs(r-rv*(t+t_))>rp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: abs((-rv)*t_+r-ro)>rp() :: nil",
-                                                          "t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo())":
-                                                            QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: abs(r-rv*(t+t_))>rp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: abs((-rv)*t_+r-ro)>rp() :: nil"
-                                                        ),
-                                                      "w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp()":
-                                                        orL('L=="0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t|t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo())"); <(
-                                                          "0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t":
-                                                            orL('L=="w=(-1)|w=1"); <(
-                                                              "w=(-1)":
-                                                                QE using "w=(-1) :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: w*(-(((alo()+c())/w-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil",
-                                                              "w=1":
-                                                                QE using "w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: w*(-(((alo()+c())/w-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil"
-                                                            ),
-                                                          "t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo())":
-                                                            orL('L=="w=(-1)|w=1"); <(
-                                                              "w=(-1)":
-                                                                QE using "w=(-1) :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: w*(-(((alo()+c())/w-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil",
-                                                              "w=1":
-                                                                QE using "w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: w*(-(((alo()+c())/w-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil"
-                                                            )
-                                                        )
-                                                    )
+                              "[{r'=-rv,h'=-v,v'=w*(alo()+c())-ai}]\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())":
+                                solve('R=="[{r'=-rv,h'=-v,v'=w*(alo()+c())-ai}]\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())");
+                                unfold;
+                                allL("t+t_", 'L=="\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())");
+                                allL("rv*(t+t_)", 'L=="\forall ro \forall ho (0<=t+t_&t+t_ < max(0,w*(vlo-v))/alo()&ro=rv*(t+t_)&ho=w*alo()/2*(t+t_)^2+v*(t+t_)|t+t_>=max(0,w*(vlo-v))/alo()&ro=rv*(t+t_)&ho=vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())");
+                                cut("0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()|t+t_>=maxI(v,w,vlo)/alo()"); <(
+                                  "Use":
+                                    orL('L=="0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()|t+t_>=maxI(v,w,vlo)/alo()"); <(
+                                      "0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()":
+                                        andL('L=="0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()");
+                                        expand "maxI";
+                                        simplify('L=="\forall ho (0<=t+t_&t+t_ < max(0,w*(vlo-v))/alo()&rv*(t+t_)=rv*(t+t_)&ho=w*alo()/2*(t+t_)^2+v*(t+t_)|t+t_>=max(0,w*(vlo-v))/alo()&rv*(t+t_)=rv*(t+t_)&ho=vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-rv*(t+t_))>rp()|w*h < w*ho-hp())") using "0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: nil";
+                                        allL("w*alo()/2*(t+t_)^2+v*(t+t_)", 'L=="\forall ho (ho=w*alo()/2*(t+t_)^2+v*(t+t_)->abs(r-rv*(t+t_))>rp()|w*h < w*ho-hp())");
+                                        simplify('L=="w*alo()/2*(t+t_)^2+v*(t+t_)=w*alo()/2*(t+t_)^2+v*(t+t_)->abs(r-rv*(t+t_))>rp()|w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp()") using "nil";
+                                        orL('L=="abs(r-rv*(t+t_))>rp()|w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp()"); <(
+                                          "abs(r-rv*(t+t_))>rp()":
+                                            orL('L=="0<=t&t < max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*(alo()+c())-ai)*t_+v)*t|t>=max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))^2/(2*alo())"); <(
+                                              "0<=t&t < max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*(alo()+c())-ai)*t_+v)*t":
+                                                QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*(alo()+c())-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: abs(r-rv*(t+t_))>rp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: abs((-rv)*t_+r-ro)>rp() :: nil",
+                                              "t>=max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))^2/(2*alo())":
+                                                QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: abs(r-rv*(t+t_))>rp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: abs((-rv)*t_+r-ro)>rp() :: nil"
+                                            ),
+                                          "w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp()":
+                                            orL('L=="0<=t&t < max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*(alo()+c())-ai)*t_+v)*t|t>=max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))^2/(2*alo())"); <(
+                                              "0<=t&t < max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*(alo()+c())-ai)*t_+v)*t":
+                                                QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*(alo()+c())-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: w*(-((w*(alo()+c())-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil",
+                                              "t>=max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))^2/(2*alo())":
+                                                orL('L=="w=(-1)|w=1"); <(
+                                                  "w=(-1)":
+                                                    QE using "w=(-1) :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: w*(-((w*(alo()+c())-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil",
+                                                  "w=1":
+                                                    QE using "w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(w*alo()/2*(t+t_)^2+v*(t+t_))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_ :: t+t_ < max(0,w*(vlo-v))/alo() :: w*(-((w*(alo()+c())-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil"
+                                                )
+                                            )
+                                        ),
+                                      "t+t_>=maxI(v,w,vlo)/alo()":
+                                        expand "maxI";
+                                        simplify('L=="\forall ho (0<=t+t_&t+t_ < max(0,w*(vlo-v))/alo()&rv*(t+t_)=rv*(t+t_)&ho=w*alo()/2*(t+t_)^2+v*(t+t_)|t+t_>=max(0,w*(vlo-v))/alo()&rv*(t+t_)=rv*(t+t_)&ho=vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-rv*(t+t_))>rp()|w*h < w*ho-hp())") using "t+t_>=max(0,w*(vlo-v))/alo()";
+                                        allL("vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())", 'L=="\forall ho (ho=vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-rv*(t+t_))>rp()|w*h < w*ho-hp())");
+                                        simplify('L=="vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())=vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-rv*(t+t_))>rp()|w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp()") using "nil";
+                                        orL('L=="abs(r-rv*(t+t_))>rp()|w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp()"); <(
+                                          "abs(r-rv*(t+t_))>rp()":
+                                            orL('L=="0<=t&t < max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*(alo()+c())-ai)*t_+v)*t|t>=max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))^2/(2*alo())"); <(
+                                              "0<=t&t < max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*(alo()+c())-ai)*t_+v)*t":
+                                                QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*(alo()+c())-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: abs(r-rv*(t+t_))>rp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: abs((-rv)*t_+r-ro)>rp() :: nil",
+                                              "t>=max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))^2/(2*alo())":
+                                                QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: abs(r-rv*(t+t_))>rp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: abs((-rv)*t_+r-ro)>rp() :: nil"
+                                            ),
+                                          "w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp()":
+                                            orL('L=="0<=t&t < max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*(alo()+c())-ai)*t_+v)*t|t>=max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))^2/(2*alo())"); <(
+                                              "0<=t&t < max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*(alo()+c())-ai)*t_+v)*t":
+                                                orL('L=="w=(-1)|w=1"); <(
+                                                  "w=(-1)":
+                                                    QE using "w=(-1) :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*(alo()+c())-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: w*(-((w*(alo()+c())-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil",
+                                                  "w=1":
+                                                    QE using "w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*(alo()+c())-ai)*t_+v)*t :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: w*(-((w*(alo()+c())-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil"
                                                 ),
-                                              "Show":
-                                                QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+(((alo()+c())/w-ai)*t_+v)*t|t>=max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-(((alo()+c())/w-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()|t+t_>=maxI(v,w,vlo)/alo() :: nil"
+                                              "t>=max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))^2/(2*alo())":
+                                                orL('L=="w=(-1)|w=1"); <(
+                                                  "w=(-1)":
+                                                    QE using "w=(-1) :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: w*(-((w*(alo()+c())-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil",
+                                                  "w=1":
+                                                    QE using "w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: t>=max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: w*h < w*(vlo*(t+t_)-w*max(0,w*(vlo-v))^2/(2*alo()))-hp() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t+t_>=max(0,w*(vlo-v))/alo() :: w*(-((w*(alo()+c())-ai)*(t_^2/2)+v*t_)+h) < w*ho-hp() :: nil"
+                                                )
                                             )
                                         )
-                                    )
+                                    ),
+                                  "Show":
+                                    QE using "w=(-1)|w=1 :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: t_>=0 :: 0<=t&t < max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=w*alo()/2*t^2+((w*(alo()+c())-ai)*t_+v)*t|t>=max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-((w*(alo()+c())-ai)*t_+v)))^2/(2*alo()) :: w=(-1)|w=1 :: -c() < ai :: ai < c() :: rp()>=0 :: hp()>0 :: rv>=0 :: alo()>0 :: c()>0 :: amax()>=alo()+c() :: 0<=t+t_&t+t_ < maxI(v,w,vlo)/alo()|t+t_>=maxI(v,w,vlo)/alo() :: nil"
                                 )
                             )
                         )
@@ -356,7 +324,7 @@ loop("loopInv(r,h,v,w,vlo,rv)", 'R=="[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Li
                 )
             ),
           "Show":
-            expand "motion";
+            hideR('R=="\exists ao ((-amax()<=ao&ao<=amax())&[{ai:=*;?-c() < ai&ai < c();motion{|^@|};}*]loopInv(r,h,v,w,vlo,rv))");
             QE using "w*v>=w*vlo|w*v < w*vlo"
         )
     ),
@@ -366,7 +334,6 @@ loop("loopInv(r,h,v,w,vlo,rv)", 'R=="[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Li
     allL("0", 'L=="\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())");
     allL("0", 'L=="\forall ro \forall ho (0<=0&0 < max(0,w*(vlo-v))/alo()&ro=rv*0&ho=w*alo()/2*0^2+v*0|0>=max(0,w*(vlo-v))/alo()&ro=rv*0&ho=vlo*0-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())");
     allL("0", 'L=="\forall ho (0<=0&0 < max(0,w*(vlo-v))/alo()&0=rv*0&ho=w*alo()/2*0^2+v*0|0>=max(0,w*(vlo-v))/alo()&0=rv*0&ho=vlo*0-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-0)>rp()|w*h < w*ho-hp())");
-    fullSimplify;
     QE
 )
 End.
