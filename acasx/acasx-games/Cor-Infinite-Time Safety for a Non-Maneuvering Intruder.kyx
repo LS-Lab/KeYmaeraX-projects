@@ -1,6 +1,6 @@
 /* Exported from KeYmaera X  */
 
-Theorem "ACAS X Hybrid Games/Corollary 3.2: Non-maneuvering intruder correctness of implicit safe regions".
+Theorem "ACAS X Hybrid Games/Corollary 3.2: Non-maneuvering intruder correctness of explicit safe regions".
 
 Definitions
   Real hp;   /* puck height */
@@ -94,8 +94,7 @@ Problem
      }
      { ao := *; ?(-amax<=ao & ao<=amax); }^@
      motion;
-   }*
-  ]( abs(r)>rp | abs(h)>hp ))
+   }*]( abs(r)>rp | abs(h)>hp ))
    ]( abs(r)>rp | abs(h)>hp )
 )
 End.
