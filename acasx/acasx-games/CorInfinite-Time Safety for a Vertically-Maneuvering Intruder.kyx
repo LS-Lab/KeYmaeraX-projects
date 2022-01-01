@@ -86,19 +86,7 @@ Problem
        }
      }
      { ao := *; ?(-amax<=ao & ao<=amax); }^@
-     { ai := * ; ?(-c<ai & ai<c); motion; }*@invariant(init(rv) & [{
-      { ?true;
-        ++
-        {
-         { w:=wUp; ++ w:=wLo; }
-         vlo := *;
-         ?Limpl(r,h,v,w,vlo,rv);
-        }
-      }
-      { ao := *; ?(-amax<=ao & ao<=amax); }^@
-      { ai := * ; ?(-c<ai & ai<c); motion; }*
-    }*
-   ]( abs(r)>rp | abs(h)>hp ))
+     { ai := * ; ?(-c<ai & ai<c); motion; }*
    }*@invariant(init(rv) & [{
       { ?true;
         ++
