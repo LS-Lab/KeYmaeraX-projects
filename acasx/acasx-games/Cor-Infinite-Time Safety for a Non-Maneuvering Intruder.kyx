@@ -115,6 +115,8 @@ Tactic "Contextual congruence proof"
                   propClose,
                 "Limpl(r,h,v,w,vlo,rv)":
                   label("useLem1");
+                  andL('L=="init(rv)&(w=wUp()|w=wLo())&Lexpl(r,h,v,w,vlo,rv)");
+                  andL('L=="(w=wUp()|w=wLo())&Lexpl(r,h,v,w,vlo,rv)");
                   todo
               )
           ),
