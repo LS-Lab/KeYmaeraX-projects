@@ -23,6 +23,8 @@ Definitions
   Bool Lexpl(Real r, Real h, Real v, Real w, Real vlo, Real rv) ;
   
   Bool init(Real rv) ;/*<-> rp>=0 & hp>0 & rv>=0 & alo>0 & amax >= alo;*/
+  
+  Bool inits(Real rv, Real w) <-> init(rv) & (w=wUp | w=wLo);
 
   Bool loopInv(Real r, Real h, Real v, Real w, Real vlo, Real rv) <-> ( (w=wUp | w=wLo) & init(rv) & Limpl(r,h,v,w,vlo,rv) );
 
@@ -83,7 +85,7 @@ Problem
       }
       { ao := *; ?(-amax<=ao & ao<=amax); }^@
       motion;
-    }*@invariant(init(rv) & [{
+    }*@invariant(inits(rv,w) & [{
      { ?true;
        ++
        {
@@ -100,184 +102,207 @@ Problem
 End.
       
 Tactic "Contextual congruence proof"
-      implyR('R=="(init(rv)&(w=wUp()|w=wLo())&Limpl(r,h,v,w,vlo,rv)->[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))->init(rv)&(w=wUp()|w=wLo())&Lexpl(r,h,v,w,vlo,rv)->[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Lexpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-      implyR('R=="init(rv)&(w=wUp()|w=wLo())&Lexpl(r,h,v,w,vlo,rv)->[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Lexpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-      implyL('L=="init(rv)&(w=wUp()|w=wLo())&Limpl(r,h,v,w,vlo,rv)->[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())"); <(
-        "init(rv)&(w=wUp()|w=wLo())&Limpl(r,h,v,w,vlo,rv)":
-          hideR('R=="[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Lexpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-          andR('R=="init(rv)&(w=wUp()|w=wLo())&Limpl(r,h,v,w,vlo,rv)"); <(
-            "init(rv)":
-              propClose,
-            "(w=wUp()|w=wLo())&Limpl(r,h,v,w,vlo,rv)":
-              andR('R=="(w=wUp()|w=wLo())&Limpl(r,h,v,w,vlo,rv)"); <(
-                "w=wUp()|w=wLo()":
-                  propClose,
-                "Limpl(r,h,v,w,vlo,rv)":
-                  label("useLem1");
-                  andL('L=="init(rv)&(w=wUp()|w=wLo())&Lexpl(r,h,v,w,vlo,rv)");
-                  andL('L=="(w=wUp()|w=wLo())&Lexpl(r,h,v,w,vlo,rv)");
-                  todo
-              )
-          ),
-        "[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())":
-          loop("init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())", 'R=="[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Lexpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())"); <(
-            "Init":
-              propClose,
-            "Step":
-              andL('L=="init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-              iterateb('L=="[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-              andL('L=="(abs(r)>rp()|abs(h)>hp())&[{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-              composeb('R=="[{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Lexpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
-              composeb('L=="[{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-              choiceb('R=="[?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
-              choiceb('L=="[?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-              andR('R=="[?true;][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))&[{w:=wUp();++w:=wLo();}vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))"); <(
-                "[?true;][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))":
-                  andL('L=="[?true;][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())&[{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-                  hideL('L=="[{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-                  testb('R=="[?true;][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
-                  testb('L=="[?true;][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-                  trueImply('R=="true->[{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
-                  trueImply('L=="true->[{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-                  composeb('R=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
-                  composeb('L=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-                  dualDirectb('R=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@][motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
-                  dualDirectb('L=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@][motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-                  composed('R=="<ao:=*;?-amax()<=ao&ao<=amax();>[motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
-                  composed('L=="<ao:=*;?-amax()<=ao&ao<=amax();>[motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-                  randomd('R=="<ao:=*;><?-amax()<=ao&ao<=amax();>[motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
-                  randomd('L=="<ao:=*;><?-amax()<=ao&ao<=amax();>[motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-                  existsL('L=="\exists ao <?-amax()<=ao&ao<=amax();>[motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-                  existsR('R=="\exists ao <?-amax()<=ao&ao<=amax();>[motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
-                  testd('R=="<?-amax()<=ao&ao<=amax();>[motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
-                  testd('L=="<?-amax()<=ao&ao<=amax();>[motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-                  andR('R=="(-amax()<=ao&ao<=amax())&[motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))"); <(
-                    "-amax()<=ao&ao<=amax()":
-                      propClose,
-                    "[motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))":
-                      andL('L=="(-amax()<=ao&ao<=amax())&[motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-                      expand "motion";
-                      boxAnd('R=="[{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                      andR('R=="[{r'=-rv,h'=-v,v'=ao}]init(rv)&[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())"); <(
-                        "[{r'=-rv,h'=-v,v'=ao}]init(rv)":
-                          GV('R=="[{r'=-rv,h'=-v,v'=ao}]init(rv)");
-                          propClose,
-                        "[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())":
-                          propClose
-                      )
-                  ),
-                "[{w:=wUp();++w:=wLo();}vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))":
-                  andL('L=="[?true;][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())&[{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-                  hideL('L=="[?true;][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-                  composeb('R=="[{w:=wUp();++w:=wLo();}vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
-                  composeb('L=="[{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-                  choiceb('R=="[w:=wUp();++w:=wLo();][vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
-                  choiceb('L=="[w:=wUp();++w:=wLo();][vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-                  andR('R=="[w:=wUp();][vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))&[w:=wLo();][vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))"); <(
-                    "[w:=wUp();][vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))":
-                      andL('L=="[w:=wUp();][vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())&[w:=wLo();][vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-                      hideL('L=="[w:=wLo();][vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-                      expand "motion";
-                      assignb('R=="[w:=wUp();][vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                      assignb('L=="[w:=wUp();][vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                      composeb('R=="[vlo:=*;?Lexpl(r,h,v,wUp(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                      composeb('L=="[vlo:=*;?Limpl(r,h,v,wUp(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                      randomb('R=="[vlo:=*;][?Lexpl(r,h,v,wUp(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                      randomb('L=="[vlo:=*;][?Limpl(r,h,v,wUp(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                      allR('R=="\forall vlo [?Lexpl(r,h,v,wUp(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                      allL('L=="\forall vlo [?Limpl(r,h,v,wUp(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                      testb('R=="[?Lexpl(r,h,v,wUp(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                      testb('L=="[?Limpl(r,h,v,wUp(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                      implyR('R=="Lexpl(r,h,v,wUp(),vlo,rv)->[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                      implyL('L=="Limpl(r,h,v,wUp(),vlo,rv)->[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())"); <(
-                        "Limpl(r,h,v,wUp(),vlo,rv)":
-                          hideR('R=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                          label("useLem2");
-                          todo,
-                        "[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())":
-                          composeb('R=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                          composeb('L=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                          dualDirectb('R=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@][{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                          dualDirectb('L=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@][{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                          composed('R=="<ao:=*;?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                          composed('L=="<ao:=*;?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                          randomd('R=="<ao:=*;><?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                          randomd('L=="<ao:=*;><?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                          existsL('L=="\exists ao <?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                          existsR('R=="\exists ao <?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                          testd('R=="<?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                          testd('L=="<?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                          andR('R=="(-amax()<=ao&ao<=amax())&[{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))"); <(
-                            "-amax()<=ao&ao<=amax()":
-                              propClose,
-                            "[{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))":
-                              andL('L=="(-amax()<=ao&ao<=amax())&[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                              boxAnd('R=="[{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                              andR('R=="[{r'=-rv,h'=-v,v'=ao}]init(rv)&[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())"); <(
-                                "[{r'=-rv,h'=-v,v'=ao}]init(rv)":
-                                  GV('R=="[{r'=-rv,h'=-v,v'=ao}]init(rv)");
-                                  propClose,
-                                "[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())":
-                                  propClose
-                              )
-                          )
-                      ),
-                    "[w:=wLo();][vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))":
-                      andL('L=="[w:=wUp();][vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())&[w:=wLo();][vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-                      hideL('L=="[w:=wUp();][vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-                      expand "motion";
-                      assignb('R=="[w:=wLo();][vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                      assignb('L=="[w:=wLo();][vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                      composeb('R=="[vlo:=*;?Lexpl(r,h,v,wLo(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                      composeb('L=="[vlo:=*;?Limpl(r,h,v,wLo(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                      randomb('R=="[vlo:=*;][?Lexpl(r,h,v,wLo(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                      randomb('L=="[vlo:=*;][?Limpl(r,h,v,wLo(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                      allR('R=="\forall vlo [?Lexpl(r,h,v,wLo(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                      allL('L=="\forall vlo [?Limpl(r,h,v,wLo(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                      testb('R=="[?Lexpl(r,h,v,wLo(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                      testb('L=="[?Limpl(r,h,v,wLo(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                      implyR('R=="Lexpl(r,h,v,wLo(),vlo,rv)->[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                      implyL('L=="Limpl(r,h,v,wLo(),vlo,rv)->[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())"); <(
-                        "Limpl(r,h,v,wLo(),vlo,rv)":
-                          hideR('R=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                          label("useLem3");
-                          todo,
-                        "[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())":
-                          composeb('R=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                          composeb('L=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                          dualDirectb('R=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@][{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                          dualDirectb('L=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@][{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                          composed('R=="<ao:=*;?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                          composed('L=="<ao:=*;?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                          randomd('R=="<ao:=*;><?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                          randomd('L=="<ao:=*;><?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                          existsL('L=="\exists ao <?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                          existsR('R=="\exists ao <?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                          testd('R=="<?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                          testd('L=="<?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                          andR('R=="(-amax()<=ao&ao<=amax())&[{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))"); <(
-                            "-amax()<=ao&ao<=amax()":
-                              propClose,
-                            "[{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))":
-                              boxAnd('R=="[{r'=-rv,h'=-v,v'=ao}](init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
-                              andR('R=="[{r'=-rv,h'=-v,v'=ao}]init(rv)&[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())"); <(
-                                "[{r'=-rv,h'=-v,v'=ao}]init(rv)":
-                                  GV('R=="[{r'=-rv,h'=-v,v'=ao}]init(rv)");
-                                  propClose,
-                                "[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())":
-                                  andL('L=="(-amax()<=ao&ao<=amax())&[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
-                                  propClose
-                              )
-                          )
-                      )
-                  )
-              ),
-            "Post":
-              andL('L=="init(rv)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-              iterateb('L=="[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
-              propClose
-          )
-      )
+     implyR('R=="(init(rv)&(w=wUp()|w=wLo())&Limpl(r,h,v,w,vlo,rv)->[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))->init(rv)&(w=wUp()|w=wLo())&Lexpl(r,h,v,w,vlo,rv)->[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Lexpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+     implyR('R=="init(rv)&(w=wUp()|w=wLo())&Lexpl(r,h,v,w,vlo,rv)->[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Lexpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+     implyL('L=="init(rv)&(w=wUp()|w=wLo())&Limpl(r,h,v,w,vlo,rv)->[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())"); <(
+       "init(rv)&(w=wUp()|w=wLo())&Limpl(r,h,v,w,vlo,rv)":
+         hideR('R=="[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Lexpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+         andR('R=="init(rv)&(w=wUp()|w=wLo())&Limpl(r,h,v,w,vlo,rv)"); <(
+           "init(rv)":
+             propClose,
+           "(w=wUp()|w=wLo())&Limpl(r,h,v,w,vlo,rv)":
+             andR('R=="(w=wUp()|w=wLo())&Limpl(r,h,v,w,vlo,rv)"); <(
+               "w=wUp()|w=wLo()":
+                 propClose,
+               "Limpl(r,h,v,w,vlo,rv)":
+                 andL('L=="init(rv)&(w=wUp()|w=wLo())&Lexpl(r,h,v,w,vlo,rv)");
+                 andL('L=="(w=wUp()|w=wLo())&Lexpl(r,h,v,w,vlo,rv)");
+                 label("useLem1");
+                 todo
+             )
+         ),
+       "[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())":
+         loop("inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())", 'R=="[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Lexpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())"); <(
+           "Init":
+             andR('R=="inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())"); <(
+               "inits(rv,w)":
+                 expand "inits";
+                 propClose,
+               "[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())":
+                 propClose
+             ),
+           "Step":
+             andL('L=="inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+             iterateb('L=="[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+             andL('L=="(abs(r)>rp()|abs(h)>hp())&[{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+             composeb('R=="[{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Lexpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
+             composeb('L=="[{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+             choiceb('R=="[?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
+             choiceb('L=="[?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+             andR('R=="[?true;][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))&[{w:=wUp();++w:=wLo();}vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))"); <(
+               "[?true;][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))":
+                 andL('L=="[?true;][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())&[{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+                 hideL('L=="[{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+                 testb('R=="[?true;][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
+                 testb('L=="[?true;][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+                 trueImply('R=="true->[{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
+                 trueImply('L=="true->[{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+                 composeb('R=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
+                 composeb('L=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+                 dualDirectb('R=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@][motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
+                 dualDirectb('L=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@][motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+                 composed('R=="<ao:=*;?-amax()<=ao&ao<=amax();>[motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
+                 composed('L=="<ao:=*;?-amax()<=ao&ao<=amax();>[motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+                 randomd('R=="<ao:=*;><?-amax()<=ao&ao<=amax();>[motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
+                 randomd('L=="<ao:=*;><?-amax()<=ao&ao<=amax();>[motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+                 existsL('L=="\exists ao <?-amax()<=ao&ao<=amax();>[motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+                 existsR("ao", 'R=="\exists ao <?-amax()<=ao&ao<=amax();>[motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
+                 testd('R=="<?-amax()<=ao&ao<=amax();>[motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
+                 testd('L=="<?-amax()<=ao&ao<=amax();>[motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+                 andR('R=="(-amax()<=ao&ao<=amax())&[motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))"); <(
+                   "-amax()<=ao&ao<=amax()":
+                     andL('L=="(-amax()<=ao&ao<=amax())&[motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+                     id,
+                   "[motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))":
+                     boxAnd('R=="[motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
+                     andR('R=="[motion{|^@|};]inits(rv,w)&[motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())"); <(
+                       "[motion{|^@|};]inits(rv,w)":
+                         expand "motion";
+                         GV('R=="[{r'=-rv,h'=-v,v'=ao}]inits(rv,w)");
+                         id,
+                       "[motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())":
+                         andL('L=="(-amax()<=ao&ao<=amax())&[motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+                         id
+                     )
+                 ),
+               "[{w:=wUp();++w:=wLo();}vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))":
+                 andL('L=="[?true;][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())&[{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+                 hideL('L=="[?true;][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+                 composeb('R=="[{w:=wUp();++w:=wLo();}vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
+                 composeb('L=="[{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+                 choiceb('R=="[w:=wUp();++w:=wLo();][vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))");
+                 choiceb('L=="[w:=wUp();++w:=wLo();][vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+                 andR('R=="[w:=wUp();][vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))&[w:=wLo();][vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))"); <(
+                   "[w:=wUp();][vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))":
+                     andL('L=="[w:=wUp();][vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())&[w:=wLo();][vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+                     hideL('L=="[w:=wLo();][vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+                     expand "motion";
+                     assignb('R=="[w:=wUp();][vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                     assignb('L=="[w:=wUp();][vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                     composeb('R=="[vlo:=*;?Lexpl(r,h,v,wUp(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](inits(rv,wUp())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                     composeb('L=="[vlo:=*;?Limpl(r,h,v,wUp(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                     randomb('R=="[vlo:=*;][?Lexpl(r,h,v,wUp(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](inits(rv,wUp())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                     randomb('L=="[vlo:=*;][?Limpl(r,h,v,wUp(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                     allR('R=="\forall vlo [?Lexpl(r,h,v,wUp(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](inits(rv,wUp())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                     allL('L=="\forall vlo [?Limpl(r,h,v,wUp(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                     testb('R=="[?Lexpl(r,h,v,wUp(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](inits(rv,wUp())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                     testb('L=="[?Limpl(r,h,v,wUp(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                     implyR('R=="Lexpl(r,h,v,wUp(),vlo,rv)->[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](inits(rv,wUp())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                     implyL('L=="Limpl(r,h,v,wUp(),vlo,rv)->[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())"); <(
+                       "Limpl(r,h,v,wUp(),vlo,rv)":
+                         hideR('R=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](inits(rv,wUp())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                         expand "inits";
+                         andL('L=="init(rv)&(w=wUp()|w=wLo())");
+                         label("useLem2");
+                         todo,
+                       "[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())":
+                         composeb('R=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](inits(rv,wUp())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                         composeb('L=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                         dualDirectb('R=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@][{r'=-rv,h'=-v,v'=ao}](inits(rv,wUp())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                         dualDirectb('L=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@][{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                         composed('R=="<ao:=*;?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}](inits(rv,wUp())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                         composed('L=="<ao:=*;?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                         randomd('R=="<ao:=*;><?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}](inits(rv,wUp())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                         randomd('L=="<ao:=*;><?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                         existsL('L=="\exists ao <?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                         existsR("ao", 'R=="\exists ao <?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}](inits(rv,wUp())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                         testd('R=="<?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}](inits(rv,wUp())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                         testd('L=="<?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                         andR('R=="(-amax()<=ao&ao<=amax())&[{r'=-rv,h'=-v,v'=ao}](inits(rv,wUp())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))"); <(
+                           "-amax()<=ao&ao<=amax()":
+                             andL('L=="(-amax()<=ao&ao<=amax())&[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                             id,
+                           "[{r'=-rv,h'=-v,v'=ao}](inits(rv,wUp())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))":
+                             andL('L=="(-amax()<=ao&ao<=amax())&[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                             boxAnd('R=="[{r'=-rv,h'=-v,v'=ao}](inits(rv,wUp())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                             andR('R=="[{r'=-rv,h'=-v,v'=ao}]inits(rv,wUp())&[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())"); <(
+                               "[{r'=-rv,h'=-v,v'=ao}]inits(rv,wUp())":
+                                 GV('R=="[{r'=-rv,h'=-v,v'=ao}]inits(rv,wUp())");
+                                 expand "inits";
+                                 andR('R=="init(rv)&(wUp()=wUp()|wUp()=wLo())"); <(
+                                   "init(rv)":
+                                     propClose,
+                                   "wUp()=wUp()|wUp()=wLo()":
+                                     QE using "wUp()=wUp()|wUp()=wLo()"
+                                 ),
+                               "[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())":
+                                 id
+                             )
+                         )
+                     ),
+                   "[w:=wLo();][vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp()))":
+                     andL('L=="[w:=wUp();][vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())&[w:=wLo();][vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+                     hideL('L=="[w:=wUp();][vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
+                     expand "motion";
+                     assignb('R=="[w:=wLo();][vlo:=*;?Lexpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](inits(rv,w)&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                     assignb('L=="[w:=wLo();][vlo:=*;?Limpl(r,h,v,w,vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                     composeb('R=="[vlo:=*;?Lexpl(r,h,v,wLo(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](inits(rv,wLo())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                     composeb('L=="[vlo:=*;?Limpl(r,h,v,wLo(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                     randomb('R=="[vlo:=*;][?Lexpl(r,h,v,wLo(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](inits(rv,wLo())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                     randomb('L=="[vlo:=*;][?Limpl(r,h,v,wLo(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                     allR('R=="\forall vlo [?Lexpl(r,h,v,wLo(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](inits(rv,wLo())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                     allL('L=="\forall vlo [?Limpl(r,h,v,wLo(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                     testb('R=="[?Lexpl(r,h,v,wLo(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](inits(rv,wLo())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                     testb('L=="[?Limpl(r,h,v,wLo(),vlo,rv);][{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                     implyR('R=="Lexpl(r,h,v,wLo(),vlo,rv)->[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](inits(rv,wLo())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                     implyL('L=="Limpl(r,h,v,wLo(),vlo,rv)->[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())"); <(
+                       "Limpl(r,h,v,wLo(),vlo,rv)":
+                         hideR('R=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](inits(rv,wLo())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                         expand "inits";
+                         andL('L=="init(rv)&(w=wUp()|w=wLo())");
+                         label("useLem3");
+                         todo,
+                       "[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())":
+                         composeb('R=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}](inits(rv,wLo())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                         composeb('L=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                         dualDirectb('R=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@][{r'=-rv,h'=-v,v'=ao}](inits(rv,wLo())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                         dualDirectb('L=="[{ao:=*;?-amax()<=ao&ao<=amax();}^@][{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                         composed('R=="<ao:=*;?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}](inits(rv,wLo())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                         composed('L=="<ao:=*;?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                         randomd('R=="<ao:=*;><?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}](inits(rv,wLo())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                         randomd('L=="<ao:=*;><?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                         existsL('L=="\exists ao <?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                         existsR("ao", 'R=="\exists ao <?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}](inits(rv,wLo())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                         testd('R=="<?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}](inits(rv,wLo())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                         testd('L=="<?-amax()<=ao&ao<=amax();>[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                         andR('R=="(-amax()<=ao&ao<=amax())&[{r'=-rv,h'=-v,v'=ao}](inits(rv,wLo())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))"); <(
+                           "-amax()<=ao&ao<=amax()":
+                             propClose,
+                           "[{r'=-rv,h'=-v,v'=ao}](inits(rv,wLo())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))":
+                             andL('L=="(-amax()<=ao&ao<=amax())&[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())");
+                             boxAnd('R=="[{r'=-rv,h'=-v,v'=ao}](inits(rv,wLo())&[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp()))");
+                             andR('R=="[{r'=-rv,h'=-v,v'=ao}]inits(rv,wLo())&[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())"); <(
+                               "[{r'=-rv,h'=-v,v'=ao}]inits(rv,wLo())":
+                                 GV('R=="[{r'=-rv,h'=-v,v'=ao}]inits(rv,wLo())");
+                                 expand "inits";
+                                 andR('R=="init(rv)&(wLo()=wUp()|wLo()=wLo())"); <(
+                                   "init(rv)":
+                                     propClose,
+                                   "wLo()=wUp()|wLo()=wLo()":
+                                     QE using "wLo()=wUp()|wLo()=wLo()"
+                                 ),
+                               "[{r'=-rv,h'=-v,v'=ao}][{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@{r'=-rv,h'=-v,v'=ao}}*](abs(r)>rp()|abs(h)>hp())":
+                                 propClose
+                             )
+                         )
+                     )
+                 )
+             ),
+           "Post":
+             iterateb('L=="inits(rv,w)&#[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())#");
+             propClose
+         )
+     )
 End.
 
 End.
