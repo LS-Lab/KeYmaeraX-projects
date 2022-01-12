@@ -24,7 +24,7 @@ Definitions
 
   Bool loopInv(Real r, Real h, Real v, Real w, Real vlo, Real rv) <-> ( (w=wUp | w=wLo) & init(rv) & Limpl(r,h,v,w,vlo,rv) );
 
-  HP motion ::= { {r' = -rv, h' = -v, v' = a } };
+  HP motion ::= { {r' = -rv, h' = -v, v' = ao } };
 End.
 
 ProgramVariables
@@ -42,7 +42,7 @@ ProgramVariables
   Real v;    /* vertical velocity of ownship */
   Real vlo;  /* target minimum velocity */
   Real w;    /* velocity direction */
-  Real a;    /* ownship climb rate */
+  Real ao;   /* ownship climb rate */
 
 End.
 
@@ -59,7 +59,7 @@ Problem
         ?Limpl(r,h,v,w,vlo,rv);
        }
      }
-     { a := *; ?(-amax<=ao & ao<=amax); }^@
+     { ao := *; ?(-amax<=ao & ao<=amax); }^@
      motion;
    }*@invariant(loopInv(r,h,v,w,vlo,rv))
   ]( abs(r)>rp | abs(h)>hp )
