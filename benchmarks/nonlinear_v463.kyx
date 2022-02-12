@@ -3265,7 +3265,7 @@ End.
 
 ArchiveEntry "Damped Mathieu System".
 
-Citation "James Kapinski, Jyotirmoy V. Deshmukh, Sriram Sankaranarayanan, and Nikos Arechiga. 2014. Simulation-guided Lyapunov analysis for hybrid dynamical systems. In Proceedings of the 17th International Conference on Hybrid systems: computation and control (HSCC '14). ACM, New York, NY, USA, 133-142. DOI=http://dx.doi.org/10.1145/2562059.2562139".
+Citation "James Kapinski, Jyotirmoy V. Deshmukh, Sriram Sankaranarayanan, and Nikos Arechiga. 2014. Simulation-guided Lyapunov analysis for hybrid dynamical systems. In Proceedings of the 17th International Conference on Hybrid systems: computation and control (HSCC '14). ACM, New York, NY, USA, 133-142. DOI=http://doi.org/10.1145/2562059.2562139".
 
 Definitions.
   R LyapunovCandidate(R x1, R x2) = ( 98*x1^2 + 24*x1*x2 + 24*x2*x1 + 55*x2^2 ).
