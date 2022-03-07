@@ -1,0 +1,152 @@
+﻿/* Exported from KeYmaera X v4.9.6 */
+
+Theorem "Examples/Example 3: stability"
+/*
+ * Generated from hybrid automaton
+ * Mode1("x1' = -0.1*x1 + x2,   x2' = -5*x1 - 0.1*x2 & -x1+x2>=0 & -x1-x2>=0")
+ * Mode2("x1' = -0.1*x1 + 5*x2, x2' = -x1 - 0.1*x2 & -x1+x2>=0 & x1+x2>=0")
+ * Mode3("x1' = -0.1*x1 + x2,   x2' = -5*x1 - 0.1*x2 & -x1+x2<=0 & -x1-x2<=0")
+ * Mode4("x1' = -0.1*x1 + 5*x2, x2' = -x1 - 0.1*x2 & -x1+x2<=0 & x1+x2<=0")
+ *
+ * Mode1 & Mode2 & Mode3 & Mode4 --> Mode1 & Mode2 & Mode3 & Mode4
+ */
+
+Definitions
+
+End.
+
+ProgramVariables
+  Real x1;
+  Real x2;
+End.
+
+Problem
+  \forall eps
+    (
+      eps > 0 ->
+      \exists del
+        (
+          del > 0 &
+          \forall x1
+            \forall x2
+              (
+                x1^2 + x2^2 < del^2 ->
+                [
+                  {
+                    {
+                      x1'=(-0.1) * x1 + x2,
+                      x2'=(-5) * x1 - 0.1 * x2 &
+                      -x1 + x2 >= 0 & -x1 - x2 >= 0
+                    }
+                    ++
+                    {
+                      x1'=(-0.1) * x1 + 5 * x2,
+                      x2'=-x1 - 0.1 * x2 &
+                      -x1 + x2 >= 0 & x1 + x2 >= 0
+                    }
+                    ++
+                    {
+                      x1'=(-0.1) * x1 + x2,
+                      x2'=(-5) * x1 - 0.1 * x2 &
+                      -x1 + x2 <= 0 & -x1 - x2 <= 0
+                    }
+                    ++
+                    {
+                      x1'=(-0.1) * x1 + 5 * x2,
+                      x2'=-x1 - 0.1 * x2 &
+                      -x1 + x2 <= 0 & x1 + x2 <= 0
+                    }
+                  }*
+                ]
+                  x1^2 + x2^2 < eps^2
+              )
+        )
+    )
+End.
+
+Tactic "Examples/Example 3: stability: Proof"
+stabilityStateMLF("5*x1^2+x2^2::x1^2+5*x2^2::5*x1^2+x2^2::x1^2+5*x2^2::nil", 'R=="\forall eps (eps>0->\exists del (del>0&\forall x1 \forall x2 (x1^2+x2^2 < del^2->[{{x1'=(-0.1)*x1+x2,x2'=(-5)*x1-0.1*x2&-x1+x2>=0&-x1-x2>=0}++{x1'=(-0.1)*x1+5*x2,x2'=-x1-0.1*x2&-x1+x2>=0&x1+x2>=0}++{x1'=(-0.1)*x1+x2,x2'=(-5)*x1-0.1*x2&-x1+x2<=0&-x1-x2<=0}++{x1'=(-0.1)*x1+5*x2,x2'=-x1-0.1*x2&-x1+x2<=0&x1+x2<=0}}*]x1^2+x2^2 < eps^2)))")
+End.
+
+End.
+
+/* Exported from KeYmaera X v4.9.6 */
+
+Theorem "Examples/Example 3: attractivity"
+/*
+ * Generated from hybrid automaton
+ * Mode1("x1' = -0.1*x1 + x2,   x2' = -5*x1 - 0.1*x2 & -x1+x2>=0 & -x1-x2>=0")
+ * Mode2("x1' = -0.1*x1 + 5*x2, x2' = -x1 - 0.1*x2 & -x1+x2>=0 & x1+x2>=0")
+ * Mode3("x1' = -0.1*x1 + x2,   x2' = -5*x1 - 0.1*x2 & -x1+x2<=0 & -x1-x2<=0")
+ * Mode4("x1' = -0.1*x1 + 5*x2, x2' = -x1 - 0.1*x2 & -x1+x2<=0 & x1+x2<=0")
+ *
+ * Mode1 & Mode2 & Mode3 & Mode4 --> Mode1 & Mode2 & Mode3 & Mode4
+ */
+
+Definitions
+
+End.
+
+ProgramVariables
+  Real x1;
+  Real x2;
+End.
+
+Problem
+  \forall eps
+    (
+      eps > 0 ->
+      \forall del
+        (
+          del > 0 ->
+          \exists T_
+            (
+              T_ >= 0 &
+              \forall x1
+                \forall x2
+                  (
+                    x1^2 + x2^2 < del^2 ->
+                    [
+                      t_:=0;
+                      {
+                        {
+                          t_'=1,
+                          x1'=(-0.1) * x1 + x2,
+                          x2'=(-5) * x1 - 0.1 * x2 &
+                          -x1 + x2 >= 0 & -x1 - x2 >= 0
+                        }
+                        ++
+                        {
+                          t_'=1,
+                          x1'=(-0.1) * x1 + 5 * x2,
+                          x2'=-x1 - 0.1 * x2 &
+                          -x1 + x2 >= 0 & x1 + x2 >= 0
+                        }
+                        ++
+                        {
+                          t_'=1,
+                          x1'=(-0.1) * x1 + x2,
+                          x2'=(-5) * x1 - 0.1 * x2 &
+                          -x1 + x2 <= 0 & -x1 - x2 <= 0
+                        }
+                        ++
+                        {
+                          t_'=1,
+                          x1'=(-0.1) * x1 + 5 * x2,
+                          x2'=-x1 - 0.1 * x2 &
+                          -x1 + x2 <= 0 & x1 + x2 <= 0
+                        }
+                      }*
+                    ]
+                      (t_ >= T_ -> x1^2 + x2^2 < eps^2)
+                  )
+            )
+        )
+    )
+End.
+
+Tactic "Examples/Example 3: attractivity: Proof"
+attractivityStateMLF("5*x1^2+x2^2::x1^2+5*x2^2::5*x1^2+x2^2::x1^2+5*x2^2::nil", 'R=="\forall eps (eps>0->\forall del (del>0->\exists T_ (T_>=0&\forall x1 \forall x2 (x1^2+x2^2 < del^2->[t_:=0;{{t_'=1,x1'=(-0.1)*x1+x2,x2'=(-5)*x1-0.1*x2&-x1+x2>=0&-x1-x2>=0}++{t_'=1,x1'=(-0.1)*x1+5*x2,x2'=-x1-0.1*x2&-x1+x2>=0&x1+x2>=0}++{t_'=1,x1'=(-0.1)*x1+x2,x2'=(-5)*x1-0.1*x2&-x1+x2<=0&-x1-x2<=0}++{t_'=1,x1'=(-0.1)*x1+5*x2,x2'=-x1-0.1*x2&-x1+x2<=0&x1+x2<=0}}*](t_>=T_->x1^2+x2^2 < eps^2)))))")
+End.
+
+End.
