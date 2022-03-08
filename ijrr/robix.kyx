@@ -146,23 +146,27 @@ Tactic "Proof Theorem 1: Static safety"
   );
 
   implyR(1); andL('L)*; loop("loopinv(x, y, v, dx, dy, xo, yo)", 1); <(
-    print("Base case..."); smartQE; print("Base case done")
+    "Init": print("Base case..."); smartQE; print("Base case done")
     ,
-    print("Use case..."); smartQE; print("Use case done")
+    "Post": print("Use case..."); smartQE; print("Use case done")
     ,
-    print("Induction step"); unfold; <(
-      print("Braking branch"); dib; dw; prop; doall(smartQE); print("Braking branch done")
+    "Step": print("Induction step"); unfold; <(
+      "[a:=-b();][t:=0;][{x'=v*dx,y'=v*dy,v'=a,dx'=-w*dy,dy'=w*dx,w'=a/r,t'=1&t<=ep()&v>=0}]loopinv(x,y,v,dx,dy,xo,yo)":
+        print("Braking branch"); dib; dw; prop; doall(smartQE); print("Braking branch done")
       ,
-      print("Stopped branch"); di0; dw; prop; doall(smartQE); print("Stopped branch done")
+      "[?v=0;a:=0;w:=0;][t:=0;][{x'=v*dx,y'=v*dy,v'=a,dx'=-w*dy,dy'=w*dx,w'=a/r,t'=1&t<=ep()&v>=0}]loopinv(x,y,v,dx,dy,xo,yo)":
+        print("Stopped branch"); di0; dw; prop; doall(smartQE); print("Stopped branch done")
       ,
-      print("Acceleration branch");
-      hideL('L == "abs(x-xo_0)>stopDist(v)|abs(y-yo_0)>stopDist(v)");
-      dia; dw;
-      prop; <(
-        xAccArith,
-        yAccArith
-      );
-      print("Acceleration branch done")
+      "[a:=A();w:=*;?-W()<=w&w<=W();r:=*;xo:=*;yo:=*;?r!=0&r*w=v;?abs(x-xo)>admissibleSeparation(v)|abs(y-yo)>admissibleSeparation(v);][t:=0;][{x'=v*dx,y'=v*dy,v'=a,dx'=-w*dy,dy'=w*dx,w'=a/r,t'=1&t<=ep()&v>=0}]loopinv(x,y,v,dx,dy,xo,yo)":
+        expand "loopinv";
+        andL('L)*;
+        hideL('L == "abs(x-xo_0)>stopDist(v)|abs(y-yo_0)>stopDist(v)");
+        dia; dw;
+        prop; <(
+          xAccArith,
+          yAccArith
+        );
+        print("Acceleration branch done")
     );
     print("Induction step done")
   );
@@ -870,7 +874,6 @@ Definitions
   Real A;       /* maximum acceleration -b <= a <= A */
   Real W;       /* maximum steering */
   Real V;       /* maximum obstacle velocity */
-  Real abs(Real);    /* predefined function of absolute value */
 
   Real stopDist(Real v) = v^2 / (2*b) + V*v/b;
   Real accelComp(Real v) = ((A/b + 1) * (A/2 * ep^2 + ep*(v+V)));
@@ -1028,23 +1031,28 @@ Tactic "Proof Theorem 2: Passive safety".
   );
 
   implyR(1); andL('L)*; loop("loopinv(x, y, v, dx, dy, xo, yo)", 1); <(
-    print("Base case..."); smartQE; print("Base case done")
+    "Init": print("Base case..."); smartQE; print("Base case done")
     ,
-    print("Use case..."); smartQE; print("Use case done")
+    "Post": print("Use case..."); smartQE; print("Use case done")
     ,
-    print("Induction step"); unfold; <(
-      print("Braking branch"); dib; dw; prop; doall(smartQE); print("Braking branch done")
+    "Step": print("Induction step"); unfold; <(
+      "[a:=-b();][t:=0;][{x'=v*dx,y'=v*dy,v'=a,dx'=-w*dy,dy'=w*dx,w'=a/r,xo'=vxo,yo'=vyo,t'=1&t<=ep()&v>=0}]loopinv(x,y,v,dx,dy,xo,yo)":
+        print("Braking branch"); dib; dw; prop; doall(smartQE); print("Braking branch done")
       ,
-      print("Stopped branch"); di0; dw; prop; doall(smartQE); print("Stopped branch done")
+      "[?v=0;a:=0;w:=0;][t:=0;][{x'=v*dx,y'=v*dy,v'=a,dx'=-w*dy,dy'=w*dx,w'=a/r,xo'=vxo,yo'=vyo,t'=1&t<=ep()&v>=0}]loopinv(x,y,v,dx,dy,xo,yo)":
+        print("Stopped branch"); di0; dw; prop; doall(smartQE); print("Stopped branch done")
       ,
-      print("Acceleration branch");
-      hideL('L == "v>0 -> abs(x-xo_0)>stopDist(v) | abs(y-yo_0)>stopDist(v)");
-      dia; dw;
-      prop; <(
-        xAccArith,
-        yAccArith
-      );
-      print("Acceleration branch done")
+      "[a:=A();w:=*;?-W()<=w&w<=W();r:=*;xo:=*;yo:=*;?r!=0&r*w=v;?abs(x-xo)>admissibleSeparation(v)|abs(y-yo)>admissibleSeparation(v);][t:=0;][{x'=v*dx,y'=v*dy,v'=a,dx'=-w*dy,dy'=w*dx,w'=a/r,xo'=vxo,yo'=vyo,t'=1&t<=ep()&v>=0}]loopinv(x,y,v,dx,dy,xo,yo)":
+        print("Acceleration branch");
+        expand "loopinv";
+        andL('L)*;
+        hideL('L == "v>0 -> abs(x-xo_0)>stopDist(v) | abs(y-yo_0)>stopDist(v)");
+        dia; dw;
+        prop; <(
+          xAccArith,
+          yAccArith
+        );
+        print("Acceleration branch done")
     );
     print("Induction step done")
   );

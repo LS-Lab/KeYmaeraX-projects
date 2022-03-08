@@ -111,9 +111,9 @@ Tactic "ETCS Essentials Proof with Solution"
 implyR('R);
 (andL('L)*);
 loop("loopInv(m,z,v)", 'R) ; <(                          /* prove loop by induction */
-  "Init": prop,                                          /* induction initial case */
+  "Init": expandAllDefs; propClose,                      /* induction initial case */
   "Post": QE,                                            /* induction use case */
-  "Step": unfold; doall(solveEnd('R); QE; done)          /* induction step: symbolically execute programs, solve ODE */
+  "Step": expandAllDefs; unfold; doall(solveEnd('R); QE) /* induction step: symbolically execute programs, solve ODE */
 )
 End.
 
@@ -121,23 +121,31 @@ Tactic "ETCS Essentials Proof with Differential Invariants"
 implyR('R);
 (andL('L)*);
 loop("loopInv(m,z,v)", 'R) ; <(                             /* prove loop by induction */
-  "Init": prop,                                             /* induction initial case */
+  "Init": expandAllDefs; propClose,                         /* induction initial case */
   "Post": QE,                                               /* induction use case */
-  "Step": unfold ; <(                                       /* induction step, symbolically execute program until ODE */
-    /* prove ODE in train protection branch (a=-b) */
-    diffInvariant("t>=old(t)", 'R);                        /* intuition: time progresses */
-    diffInvariant("v=old(v)-b*t", 'R);                     /* intuition: new speed is old speed - decrease by braking */
-    diffInvariant("z=old(z)+old(v)*t-b/2*t^2", 'R);        /* intuition: new position is old position + distance
-                                                                         travelled with mean speed */
-    dW('R);
-    QE
-    ,
-    /* prove ODE in free driving branch (a=A) */
-    diffInvariant("t>=old(t)", 'R);
-    diffInvariant("v=old(v)+A*t", 'R);
-    diffInvariant("z=old(z)+old(v)*t+A/2*t^2", 'R);
-    dW('R);
-    QE
+  "Step":
+    expand "ctrl";
+    unfold; <(                                              /* induction step, symbolically execute program until ODE */
+      "[?m()-z<=SB(v);a:=-b();][drive{|^@|};]loopInv(m(),z,v)":
+        expand "drive";
+        unfold;
+        /* prove ODE in train protection branch (a=-b) */
+        diffInvariant("t>=old(t)", 'R);                     /* intuition: time progresses */
+        diffInvariant("v=old(v)-b*t", 'R);                  /* intuition: new speed is old speed-decrease by braking  */
+        diffInvariant("z=old(z)+old(v)*t-b/2*t^2", 'R);     /* intuition: new position is old position + distance
+                                                                                            travelled with mean speed */
+        dW('R);
+        QE
+        ,
+      "[?m()-z>=SB(v);a:=A();][drive{|^@|};]loopInv(m(),z,v)":
+        expand "drive";
+        unfold;
+        /* prove ODE in free driving branch (a=A) */
+        diffInvariant("t>=old(t)", 'R);
+        diffInvariant("v=old(v)+A*t", 'R);
+        diffInvariant("z=old(z)+old(v)*t+A/2*t^2", 'R);
+        dW('R);
+        QE
   )
 )
 End.
@@ -159,8 +167,8 @@ Definitions
 
   /* train controller */
   HP ctrl ::= {
-        a := -b;                       /* train protection: emergency brake when close to end of movement authority */
-     ++ ?2*b*(m - z) >= v*v + (A+b)*(A*ep*ep + 2*ep*v); a :=  A;    /* free driving: accelerate when sufficient distance */
+        a := -b;                         /* train protection: emergency brake when close to end of movement authority */
+     ++ ?2*b*(m - z) >= v*v + (A+b)*(A*ep*ep + 2*ep*v); a :=  A; /* free driving: accelerate when sufficient distance */
   };
 End.
 
@@ -195,23 +203,31 @@ Tactic "ICFEM09/ETCS Essentials Proof with Differential Invariants"
 implyR('R);
 (andL('L)*);
 loop("loopInv(m,z,v)",1) ; <(                              /* prove loop by induction with invariant loopInv */
-  "Init": prop,                                            /* induction initial case */
+  "Init": expandAllDefs; print("Foo"); propClose,                        /* induction initial case */
   "Post": QE,                                              /* induction use case */
-  "Step": unfold ; <(                                      /* induction step, symbolically execute program until ODE */
-    /* prove ODE in train protection branch (a=-b) */
-    diffInvariant("t>=old(t)", 'R);                        /* intuition: time progresses */
-    diffInvariant("v=old(v)-b*t", 'R);                     /* intuition: new speed is old speed - decrease by braking */
-    diffInvariant("2*z=2*old(z)+2*old(v)*t-b*t*t", 'R);    /* intuition: new position is old position + distance
-                                                                         travelled with mean speed */
-    dW('R);
-    QE
-    ,
-    /* prove ODE in free driving branch (a=A) */
-    diffInvariant("t>=old(t)", 'R);
-    diffInvariant("v=old(v)+A*t", 'R);
-    diffInvariant("2*z=2*old(z)+2*old(v)*t+A*t*t", 'R);
-    dW('R);
-    QE
+  "Step":
+    expand "ctrl";
+    unfold ; <(                                      /* induction step, symbolically execute program until ODE */
+      "true":
+        expand "drive";
+        unfold;
+        /* prove ODE in train protection branch (a=-b) */
+        diffInvariant("t>=old(t)", 'R);                        /* intuition: time progresses */
+        diffInvariant("v=old(v)-b*t", 'R);                     /* intuition: new speed is old speed - decrease by braking */
+        diffInvariant("2*z=2*old(z)+2*old(v)*t-b*t*t", 'R);    /* intuition: new position is old position + distance
+                                                                             travelled with mean speed */
+        dW('R);
+        QE
+        ,
+      "false":
+        expand "drive";
+        unfold;
+        /* prove ODE in free driving branch (a=A) */
+        diffInvariant("t>=old(t)", 'R);
+        diffInvariant("v=old(v)+A*t", 'R);
+        diffInvariant("2*z=2*old(z)+2*old(v)*t+A*t*t", 'R);
+        dW('R);
+        QE
   )
 )
 End.
