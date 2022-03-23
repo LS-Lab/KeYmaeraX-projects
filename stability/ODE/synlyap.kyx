@@ -1,0 +1,644 @@
+/* Exported from KeYmaera X v4.9.9 */
+
+Theorem "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 5"
+
+Citation "Daniele Ahmed, Andrea Peruffo, and Alessandro Abate. Automated and Sound Synthesis of Lyapunov Functions with SMT Solvers. TACAS 2020".
+
+Definitions
+
+Real normsq(Real x1, Real x2, Real x3, Real x4, Real x5, Real x6) = x1^2 + x2^2 + x3^2 + x4^2 + x5^2 + x6^2;
+
+/* Stability for the ODE */
+Bool stable <->
+  \forall eps (eps > 0 ->
+  \exists del (del > 0 &
+  \forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 ( normsq(x1,x2,x3,x4,x5,x6) < del^2 ->
+    [{
+      x1' = -x1^3+4*x2^3-6*x3*x4,
+      x2' = -x1-x2+x5^3,
+      x3' = x1*x4-x3+x4*x6,
+      x4' = x1*x3+x3*x6-x4^3,
+      x5' = -2*x2^3-x5+x6,
+      x6' = -3*x3*x4-x5^3-x6
+    }] normsq(x1,x2,x3,x4,x5,x6) < eps^2
+  )));
+
+/* Lyapunov function from Ahmed et al. */
+Real lyap(Real x1, Real x2, Real x3, Real x4, Real x5, Real x6) = 2*x1^2 + 4*x2^4 + x3^2 + 11*x4^2 + 2*x5^4 + 4*x6^2;
+
+End.
+
+Problem
+  stable
+End.
+
+Tactic "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 5: Proof"
+expand "stable";
+unfold;
+cut("\exists k (k>0&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)&\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6) < del^2->lyap(x1,x2,x3,x4,x5,x6) < k)))"); <(
+  "Use":
+    unfold;
+    existsR('R=="\exists del (del>0&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6) < del^2->[{x1'=-x1^3+4*x2^3-6*x3*x4,x2'=-x1-x2+x5^3,x3'=x1*x4-x3+x4*x6,x4'=x1*x3+x3*x6-x4^3,x5'=(-2)*x2^3-x5+x6,x6'=(-3)*x3*x4-x5^3-x6}]normsq(x1,x2,x3,x4,x5,x6) < eps^2))");
+    unfold;
+    allL('L=="\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6) < del^2->lyap(x1,x2,x3,x4,x5,x6) < k)");
+    allL('L=="\forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6) < del^2->lyap(x1,x2,x3,x4,x5,x6) < k)");
+    allL('L=="\forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6) < del^2->lyap(x1,x2,x3,x4,x5,x6) < k)");
+    allL('L=="\forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6) < del^2->lyap(x1,x2,x3,x4,x5,x6) < k)");
+    allL('L=="\forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6) < del^2->lyap(x1,x2,x3,x4,x5,x6) < k)");
+    allL('L=="\forall x6 (normsq(x1,x2,x3,x4,x5,x6) < del^2->lyap(x1,x2,x3,x4,x5,x6) < k)");
+    fullSimplify;
+    dC("(normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)&lyap(x1,x2,x3,x4,x5,x6) < k", 'R=="[{x1'=-x1^3+4*x2^3-6*x3*x4,x2'=-x1-x2+x5^3,x3'=x1*x4-x3+x4*x6,x4'=x1*x3+x3*x6-x4^3,x5'=(-2)*x2^3-x5+x6,x6'=(-3)*x3*x4-x5^3-x6}]normsq(x1,x2,x3,x4,x5,x6) < eps^2"); <(
+      "Use":
+        hideL('L=="\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)");
+        dR("normsq(x1,x2,x3,x4,x5,x6)!=eps^2", 'R=="[{x1'=-x1^3+4*x2^3-6*x3*x4,x2'=-x1-x2+x5^3,x3'=x1*x4-x3+x4*x6,x4'=x1*x3+x3*x6-x4^3,x5'=(-2)*x2^3-x5+x6,x6'=(-3)*x3*x4-x5^3-x6&true&(normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)&lyap(x1,x2,x3,x4,x5,x6) < k}]normsq(x1,x2,x3,x4,x5,x6) < eps^2"); <(
+          expandAllDefs;
+          barrier('R=="[{x1'=-x1^3+4*x2^3-6*x3*x4,x2'=-x1-x2+x5^3,x3'=x1*x4-x3+x4*x6,x4'=x1*x3+x3*x6-x4^3,x5'=(-2)*x2^3-x5+x6,x6'=(-3)*x3*x4-x5^3-x6&x1^2+x2^2+x3^2+x4^2+x5^2+x6^2!=eps^2}]x1^2+x2^2+x3^2+x4^2+x5^2+x6^2 < eps^2"),
+          dW('R=="[{x1'=-x1^3+4*x2^3-6*x3*x4,x2'=-x1-x2+x5^3,x3'=x1*x4-x3+x4*x6,x4'=x1*x3+x3*x6-x4^3,x5'=(-2)*x2^3-x5+x6,x6'=(-3)*x3*x4-x5^3-x6&true&(normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)&lyap(x1,x2,x3,x4,x5,x6) < k}]normsq(x1,x2,x3,x4,x5,x6)!=eps^2");
+          QE
+        ),
+      "Show":
+        boxAnd('R=="[{x1'=-x1^3+4*x2^3-6*x3*x4,x2'=-x1-x2+x5^3,x3'=x1*x4-x3+x4*x6,x4'=x1*x3+x3*x6-x4^3,x5'=(-2)*x2^3-x5+x6,x6'=(-3)*x3*x4-x5^3-x6}]((normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)&lyap(x1,x2,x3,x4,x5,x6) < k)");
+        andR('R=="[{x1'=-x1^3+4*x2^3-6*x3*x4,x2'=-x1-x2+x5^3,x3'=x1*x4-x3+x4*x6,x4'=x1*x3+x3*x6-x4^3,x5'=(-2)*x2^3-x5+x6,x6'=(-3)*x3*x4-x5^3-x6}](normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)&[{x1'=-x1^3+4*x2^3-6*x3*x4,x2'=-x1-x2+x5^3,x3'=x1*x4-x3+x4*x6,x4'=x1*x3+x3*x6-x4^3,x5'=(-2)*x2^3-x5+x6,x6'=(-3)*x3*x4-x5^3-x6}]lyap(x1,x2,x3,x4,x5,x6) < k"); <(
+          "[{x1'=-x1^3+4*x2^3-6*x3*x4,x2'=-x1-x2+x5^3,x3'=x1*x4-x3+x4*x6,x4'=x1*x3+x3*x6-x4^3,x5'=(-2)*x2^3-x5+x6,x6'=(-3)*x3*x4-x5^3-x6}](normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)":
+            dW('R=="[{x1'=-x1^3+4*x2^3-6*x3*x4,x2'=-x1-x2+x5^3,x3'=x1*x4-x3+x4*x6,x4'=x1*x3+x3*x6-x4^3,x5'=(-2)*x2^3-x5+x6,x6'=(-3)*x3*x4-x5^3-x6}](normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)");
+            unfold;
+            allL('L=="\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)");
+            allL('L=="\forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)");
+            allL('L=="\forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)");
+            allL('L=="\forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)");
+            allL('L=="\forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)");
+            allL('L=="\forall x6 (normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)");
+            propClose,
+          "[{x1'=-x1^3+4*x2^3-6*x3*x4,x2'=-x1-x2+x5^3,x3'=x1*x4-x3+x4*x6,x4'=x1*x3+x3*x6-x4^3,x5'=(-2)*x2^3-x5+x6,x6'=(-3)*x3*x4-x5^3-x6}]lyap(x1,x2,x3,x4,x5,x6) < k":
+            hideL('L=="\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)");
+            expandAllDefs;
+            ODE('R=="[{x1'=-x1^3+4*x2^3-6*x3*x4,x2'=-x1-x2+x5^3,x3'=x1*x4-x3+x4*x6,x4'=x1*x3+x3*x6-x4^3,x5'=(-2)*x2^3-x5+x6,x6'=(-3)*x3*x4-x5^3-x6}]2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < k")
+        )
+    ),
+  "Show":
+    hideR('R=="\exists del (del>0&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6) < del^2->[{x1'=-x1^3+4*x2^3-6*x3*x4,x2'=-x1-x2+x5^3,x3'=x1*x4-x3+x4*x6,x4'=x1*x3+x3*x6-x4^3,x5'=(-2)*x2^3-x5+x6,x6'=(-3)*x3*x4-x5^3-x6}]normsq(x1,x2,x3,x4,x5,x6) < eps^2))");
+    cut("eps^2/4 < eps^8|eps^2/4>=eps^8"); <(
+      "Use":
+        orL('L=="eps^2/4 < eps^8|eps^2/4>=eps^8"); <(
+          "eps^2/4 < eps^8":
+            existsR("eps^2/4", 'R=="\exists k (k>0&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)&\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6) < del^2->lyap(x1,x2,x3,x4,x5,x6) < k)))");
+            expandAllDefs;
+            andR('R=="eps^2/4>0&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2=eps^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2>=eps^2/4)&\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2 < del^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < eps^2/4))"); <(
+              "eps^2/4>0":
+                QE,
+              "\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2=eps^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2>=eps^2/4)&\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2 < del^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < eps^2/4))":
+                andR('R=="\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2=eps^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2>=eps^2/4)&\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2 < del^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < eps^2/4))"); <(
+                  "\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2=eps^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2>=eps^2/4)":
+                    QE,
+                  "\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2 < del^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < eps^2/4))":
+                    existsRmon("del>0&del < eps&del^2 < eps^2/44&del^4 < eps^2/44", 'R=="\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2 < del^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < eps^2/4))"); <(
+                      "Use":
+                        QE,
+                      "Show":
+                        andR('R=="del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2 < del^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < eps^2/4)"); <(
+                          "del>0":
+                            propClose,
+                          "del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2 < del^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < eps^2/4)":
+                            andR('R=="del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2 < del^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < eps^2/4)"); <(
+                              "del < eps":
+                                propClose,
+                              "\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2 < del^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < eps^2/4)":
+                                unfold;
+                                cut("11*(x1^2+x2^4+x3^2+x4^2+x5^4+x6^2) < eps^2/4"); <(
+                                  "Use":
+                                    QE,
+                                  "Show":
+                                    hideR('R=="2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < eps^2/4");
+                                    QE
+                                )
+                            )
+                        )
+                    )
+                )
+            ),
+          "eps^2/4>=eps^8":
+            existsR("eps^8", 'R=="\exists k (k>0&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=k)&\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6) < del^2->lyap(x1,x2,x3,x4,x5,x6) < k)))");
+            andR('R=="eps^8>0&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=eps^8)&\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6) < del^2->lyap(x1,x2,x3,x4,x5,x6) < eps^8))"); <(
+              "eps^8>0":
+                QE,
+              "\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6)=eps^2->lyap(x1,x2,x3,x4,x5,x6)>=eps^8)&\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (normsq(x1,x2,x3,x4,x5,x6) < del^2->lyap(x1,x2,x3,x4,x5,x6) < eps^8))":
+                expandAllDefs;
+                andR('R=="\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2=eps^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2>=eps^8)&\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2 < del^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < eps^8))"); <(
+                  "\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2=eps^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2>=eps^8)":
+                    QE,
+                  "\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2 < del^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < eps^8))":
+                    existsRmon("del>0&del < eps&del^2 < eps^8/11&del^4 < eps^8/11", 'R=="\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2 < del^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < eps^8))"); <(
+                      "Use":
+                        QE,
+                      "Show":
+                        andR('R=="del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2 < del^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < eps^8)"); <(
+                          "del>0":
+                            propClose,
+                          "del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2 < del^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < eps^8)":
+                            andR('R=="del < eps&\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2 < del^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < eps^8)"); <(
+                              "del < eps":
+                                propClose,
+                              "\forall x1 \forall x2 \forall x3 \forall x4 \forall x5 \forall x6 (x1^2+x2^2+x3^2+x4^2+x5^2+x6^2 < del^2->2*x1^2+4*x2^4+x3^2+11*x4^2+2*x5^4+4*x6^2 < eps^8)":
+                                unfold;
+                                QE
+                            )
+                        )
+                    )
+                )
+            )
+        ),
+      "Show":
+        QE using "eps^2/4 < eps^8|eps^2/4>=eps^8"
+    )
+)
+End.
+
+End.
+
+/* Exported from KeYmaera X v4.9.9 */
+
+Theorem "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 6"
+
+Citation "Daniele Ahmed, Andrea Peruffo, and Alessandro Abate. Automated and Sound Synthesis of Lyapunov Functions with SMT Solvers. TACAS 2020".
+
+Definitions
+
+Real normsq(Real x1, Real x2) = x1^2 + x2^2;
+
+/* Stability for the ODE */
+Bool stable <->
+  \forall eps (eps > 0 ->
+  \exists del (del > 0 &
+  \forall x1 \forall x2 ( normsq(x1,x2) < del^2 ->
+    [{
+      x1' = -x1^3 + x2,
+      x2' = -x1 - x2
+    }] normsq(x1,x2) < eps^2
+  )));
+
+/* Lyapunov function from Ahmed et al. */
+Real lyap(Real x1, Real x2) = 5*10^-5*x1^2 + 5*10^-5*x2^2;
+
+End.
+
+Problem
+  stable
+End.
+
+Tactic "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 6: Proof"
+expand "stable";
+unfold;
+cut("\exists k (k>0&\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k))"); <(
+  "Use":
+    unfold;
+    existsRmon("del>0&del < eps&\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap(x1,x2) < k)", 'R=="\exists del (del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{x1'=-x1^3+x2,x2'=-x1-x2}]normsq(x1,x2) < eps^2))"); <(
+      "Use":
+        hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+        QE,
+      "Show":
+        unfold;
+        allL('L=="\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap(x1,x2) < k)");
+        allL('L=="\forall x2 (normsq(x1,x2) < del^2->lyap(x1,x2) < k)");
+        fullSimplify;
+        dC("(normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)&lyap(x1,x2) < k", 'R=="[{x1'=-x1^3+x2,x2'=-x1-x2}]normsq(x1,x2) < eps^2"); <(
+          "Use":
+            hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+            expandAllDefs;
+            ODE('R=="[{x1'=-x1^3+x2,x2'=-x1-x2&true&(x1^2+x2^2=eps^2->5*10^(-5)*x1^2+5*10^(-5)*x2^2>=k)&5*10^(-5)*x1^2+5*10^(-5)*x2^2 < k}]x1^2+x2^2 < eps^2"),
+          "Show":
+            boxAnd('R=="[{x1'=-x1^3+x2,x2'=-x1-x2}]((normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)&lyap(x1,x2) < k)");
+            andR('R=="[{x1'=-x1^3+x2,x2'=-x1-x2}](normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)&[{x1'=-x1^3+x2,x2'=-x1-x2}]lyap(x1,x2) < k"); <(
+              "[{x1'=-x1^3+x2,x2'=-x1-x2}](normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)":
+                dW('R=="[{x1'=-x1^3+x2,x2'=-x1-x2}](normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+                unfold;
+                allL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+                allL('L=="\forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+                propClose,
+              "[{x1'=-x1^3+x2,x2'=-x1-x2}]lyap(x1,x2) < k":
+                hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+                expandAllDefs;
+                ODE('R=="[{x1'=-x1^3+x2,x2'=-x1-x2}]5*10^(-5)*x1^2+5*10^(-5)*x2^2 < k")
+            )
+        )
+    ),
+  "Show":
+    hideR('R=="\exists del (del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{x1'=-x1^3+x2,x2'=-x1-x2}]normsq(x1,x2) < eps^2))");
+    QE
+)
+End.
+
+End.
+
+/* Exported from KeYmaera X v4.9.9 */
+
+Theorem "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 7"
+
+Citation "Daniele Ahmed, Andrea Peruffo, and Alessandro Abate. Automated and Sound Synthesis of Lyapunov Functions with SMT Solvers. TACAS 2020".
+
+Definitions
+
+Real normsq(Real x1, Real x2, Real x3) = x1^2 + x2^2 + x3^2;
+
+/* Stability for the ODE */
+Bool stable <->
+  \forall eps (eps > 0 ->
+  \exists del (del > 0 &
+  \forall x1 \forall x2 \forall x3 ( normsq(x1,x2,x3) < del^2 ->
+    [{
+      x1' = -x1^3 - x1*x3^2,
+      x2' = -x2 - x1^2*x2,
+      x3' = -x3 - 3*x3/(x3^2+1) + 3*x1^2*x3
+    }] normsq(x1,x2,x3) < eps^2
+  )));
+
+/* Lyapunov function from Ahmed et al. */
+Real lyap(Real x1, Real x2, Real x3) = 6.659*x1^2 + 4.628*x2^2 + 2.073*x3^2;
+
+End.
+
+Problem
+  stable
+End.
+
+Tactic "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 7: Proof"
+expand "stable";
+unfold;
+cut("\exists k (k>0&\forall x1 \forall x2 \forall x3 (normsq(x1,x2,x3)=eps^2->lyap(x1,x2,x3)>=k))"); <(
+  "Use":
+    unfold;
+    existsRmon("del>0&del < eps&\forall x1 \forall x2 \forall x3 (normsq(x1,x2,x3) < del^2->lyap(x1,x2,x3) < k)", 'R=="\exists del (del>0&\forall x1 \forall x2 \forall x3 (normsq(x1,x2,x3) < del^2->[{x1'=-x1^3-x1*x3^2,x2'=-x2-x1^2*x2,x3'=-x3-3*x3/(x3^2+1)+3*x1^2*x3}]normsq(x1,x2,x3) < eps^2))"); <(
+      "Use":
+        hideL('L=="\forall x1 \forall x2 \forall x3 (normsq(x1,x2,x3)=eps^2->lyap(x1,x2,x3)>=k)");
+        QE,
+      "Show":
+        unfold;
+        allL('L=="\forall x1 \forall x2 \forall x3 (normsq(x1,x2,x3) < del^2->lyap(x1,x2,x3) < k)");
+        allL('L=="\forall x2 \forall x3 (normsq(x1,x2,x3) < del^2->lyap(x1,x2,x3) < k)");
+        allL('L=="\forall x3 (normsq(x1,x2,x3) < del^2->lyap(x1,x2,x3) < k)");
+        fullSimplify;
+        dC("(normsq(x1,x2,x3)=eps^2->lyap(x1,x2,x3)>=k)&lyap(x1,x2,x3) < k", 'R=="[{x1'=-x1^3-x1*x3^2,x2'=-x2-x1^2*x2,x3'=-x3-3*x3/(x3^2+1)+3*x1^2*x3}]normsq(x1,x2,x3) < eps^2"); <(
+          "Use":
+            hideL('L=="\forall x1 \forall x2 \forall x3 (normsq(x1,x2,x3)=eps^2->lyap(x1,x2,x3)>=k)");
+            expandAllDefs;
+            ODE('R=="[{x1'=-x1^3-x1*x3^2,x2'=-x2-x1^2*x2,x3'=-x3-3*x3/(x3^2+1)+3*x1^2*x3&true&(x1^2+x2^2+x3^2=eps^2->6.659*x1^2+4.628*x2^2+2.073*x3^2>=k)&6.659*x1^2+4.628*x2^2+2.073*x3^2 < k}]x1^2+x2^2+x3^2 < eps^2"),
+          "Show":
+            boxAnd('R=="[{x1'=-x1^3-x1*x3^2,x2'=-x2-x1^2*x2,x3'=-x3-3*x3/(x3^2+1)+3*x1^2*x3}]((normsq(x1,x2,x3)=eps^2->lyap(x1,x2,x3)>=k)&lyap(x1,x2,x3) < k)");
+            andR('R=="[{x1'=-x1^3-x1*x3^2,x2'=-x2-x1^2*x2,x3'=-x3-3*x3/(x3^2+1)+3*x1^2*x3}](normsq(x1,x2,x3)=eps^2->lyap(x1,x2,x3)>=k)&[{x1'=-x1^3-x1*x3^2,x2'=-x2-x1^2*x2,x3'=-x3-3*x3/(x3^2+1)+3*x1^2*x3}]lyap(x1,x2,x3) < k"); <(
+              "[{x1'=-x1^3-x1*x3^2,x2'=-x2-x1^2*x2,x3'=-x3-3*x3/(x3^2+1)+3*x1^2*x3}](normsq(x1,x2,x3)=eps^2->lyap(x1,x2,x3)>=k)":
+                dW('R=="[{x1'=-x1^3-x1*x3^2,x2'=-x2-x1^2*x2,x3'=-x3-3*x3/(x3^2+1)+3*x1^2*x3}](normsq(x1,x2,x3)=eps^2->lyap(x1,x2,x3)>=k)");
+                unfold;
+                allL('L=="\forall x1 \forall x2 \forall x3 (normsq(x1,x2,x3)=eps^2->lyap(x1,x2,x3)>=k)");
+                allL('L=="\forall x2 \forall x3 (normsq(x1,x2,x3)=eps^2->lyap(x1,x2,x3)>=k)");
+                allL('L=="\forall x3 (normsq(x1,x2,x3)=eps^2->lyap(x1,x2,x3)>=k)");
+                propClose,
+              "[{x1'=-x1^3-x1*x3^2,x2'=-x2-x1^2*x2,x3'=-x3-3*x3/(x3^2+1)+3*x1^2*x3}]lyap(x1,x2,x3) < k":
+                hideL('L=="\forall x1 \forall x2 \forall x3 (normsq(x1,x2,x3)=eps^2->lyap(x1,x2,x3)>=k)");
+                expandAllDefs;
+                ODE('R=="[{x1'=-x1^3-x1*x3^2,x2'=-x2-x1^2*x2,x3'=-x3-3*x3/(x3^2+1)+3*x1^2*x3}]6.659*x1^2+4.628*x2^2+2.073*x3^2 < k")
+            )
+        )
+    ),
+  "Show":
+    hideR('R=="\exists del (del>0&\forall x1 \forall x2 \forall x3 (normsq(x1,x2,x3) < del^2->[{x1'=-x1^3-x1*x3^2,x2'=-x2-x1^2*x2,x3'=-x3-3*x3/(x3^2+1)+3*x1^2*x3}]normsq(x1,x2,x3) < eps^2))");
+    QE
+)
+End.
+
+End.
+
+/* Exported from KeYmaera X v4.9.9 */
+
+Theorem "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 8"
+
+Citation "Daniele Ahmed, Andrea Peruffo, and Alessandro Abate. Automated and Sound Synthesis of Lyapunov Functions with SMT Solvers. TACAS 2020".
+
+Definitions
+
+Real normsq(Real x1, Real x2) = x1^2 + x2^2;
+
+/* Stability for the ODE */
+Bool stable <->
+  \forall eps (eps > 0 ->
+  \exists del (del > 0 &
+  \forall x1 \forall x2 ( normsq(x1,x2) < del^2 ->
+    [{
+      x1' = -x1 - 1.5*x1^2*x2^3,
+      x2' = -x2^3 + 0.5*x1^3*x2^2
+    }] normsq(x1,x2) < eps^2
+  )));
+
+/* Lyapunov function from Ahmed et al. */
+Real lyap(Real x1, Real x2) = 1/3*x1^2 + x2^2;
+
+End.
+
+Problem
+  stable
+End.
+
+Tactic "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 8: Proof"
+expand "stable";
+unfold;
+cut("\exists k (k>0&\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k))"); <(
+  "Use":
+    unfold;
+    existsRmon("del>0&del < eps&\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap(x1,x2) < k)", 'R=="\exists del (del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{x1'=-x1-1.5*x1^2*x2^3,x2'=-x2^3+0.5*x1^3*x2^2}]normsq(x1,x2) < eps^2))"); <(
+      "Use":
+        hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+        QE,
+      "Show":
+        unfold;
+        allL('L=="\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap(x1,x2) < k)");
+        allL('L=="\forall x2 (normsq(x1,x2) < del^2->lyap(x1,x2) < k)");
+        fullSimplify;
+        dC("(normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)&lyap(x1,x2) < k", 'R=="[{x1'=-x1-1.5*x1^2*x2^3,x2'=-x2^3+0.5*x1^3*x2^2}]normsq(x1,x2) < eps^2"); <(
+          "Use":
+            hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+            expandAllDefs;
+            ODE('R=="[{x1'=-x1-1.5*x1^2*x2^3,x2'=-x2^3+0.5*x1^3*x2^2&true&(x1^2+x2^2=eps^2->1/3*x1^2+x2^2>=k)&1/3*x1^2+x2^2 < k}]x1^2+x2^2 < eps^2"),
+          "Show":
+            boxAnd('R=="[{x1'=-x1-1.5*x1^2*x2^3,x2'=-x2^3+0.5*x1^3*x2^2}]((normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)&lyap(x1,x2) < k)");
+            andR('R=="[{x1'=-x1-1.5*x1^2*x2^3,x2'=-x2^3+0.5*x1^3*x2^2}](normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)&[{x1'=-x1-1.5*x1^2*x2^3,x2'=-x2^3+0.5*x1^3*x2^2}]lyap(x1,x2) < k"); <(
+              "[{x1'=-x1-1.5*x1^2*x2^3,x2'=-x2^3+0.5*x1^3*x2^2}](normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)":
+                dW('R=="[{x1'=-x1-1.5*x1^2*x2^3,x2'=-x2^3+0.5*x1^3*x2^2}](normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+                unfold;
+                allL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+                allL('L=="\forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+                propClose,
+              "[{x1'=-x1-1.5*x1^2*x2^3,x2'=-x2^3+0.5*x1^3*x2^2}]lyap(x1,x2) < k":
+                hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+                expandAllDefs;
+                ODE('R=="[{x1'=-x1-1.5*x1^2*x2^3,x2'=-x2^3+0.5*x1^3*x2^2}]1/3*x1^2+x2^2 < k")
+            )
+        )
+    ),
+  "Show":
+    hideR('R=="\exists del (del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{x1'=-x1-1.5*x1^2*x2^3,x2'=-x2^3+0.5*x1^3*x2^2}]normsq(x1,x2) < eps^2))");
+    QE
+)
+End.
+
+End.
+
+/* Exported from KeYmaera X v4.9.9 */
+
+Theorem "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 9"
+
+Citation "Daniele Ahmed, Andrea Peruffo, and Alessandro Abate. Automated and Sound Synthesis of Lyapunov Functions with SMT Solvers. TACAS 2020".
+
+Definitions
+
+Real normsq(Real x1, Real x2, Real x3, Real x4) = x1^2 + x2^2 + x3^2 + x4^2;
+
+/* Stability for the ODE */
+Bool stable <->
+  \forall eps (eps > 0 ->
+  \exists del (del > 0 &
+  \forall x1 \forall x2 \forall x3 \forall x4 ( normsq(x1,x2,x3,x4) < del^2 ->
+    [{
+      x1' = -x1 + x2^3 - 3*x3*x4,
+      x2' = -x1 - x2^3,
+      x3' = x1*x4 - x3,
+      x4' = x1*x3 - x4^3
+    }] normsq(x1,x2,x3,x4) < eps^2
+  )));
+
+/* Lyapunov function from Ahmed et al. */
+Real lyap(Real x1, Real x2, Real x3, Real x4) = 2*x1^2 + x2^4 + 3201/1024*x3^2 + 2943/1024*x4^2;
+
+End.
+
+Problem
+  stable
+End.
+
+Tactic "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 9: Proof"
+expand "stable";
+unfold;
+cut("\exists k (k>0&\forall x1 \forall x2 \forall x3 \forall x4 (normsq(x1,x2,x3,x4)=eps^2->lyap(x1,x2,x3,x4)>=k))"); <(
+  "Use":
+    unfold;
+    existsRmon("del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 (normsq(x1,x2,x3,x4) < del^2->lyap(x1,x2,x3,x4) < k)", 'R=="\exists del (del>0&\forall x1 \forall x2 \forall x3 \forall x4 (normsq(x1,x2,x3,x4) < del^2->[{x1'=-x1+x2^3-3*x3*x4,x2'=-x1-x2^3,x3'=x1*x4-x3,x4'=x1*x3-x4^3}]normsq(x1,x2,x3,x4) < eps^2))"); <(
+      "Use":
+        hideL('L=="\forall x1 \forall x2 \forall x3 \forall x4 (normsq(x1,x2,x3,x4)=eps^2->lyap(x1,x2,x3,x4)>=k)");
+        expandAllDefs;
+        cut("\exists del (del>0&\forall x1 \forall x2 \forall x3 \forall x4 (normsq(x1,x2,x3,x4) < del^2->lyap(x1,x2,x3,x4) < k))"); <(
+          "Use":
+            unfold;
+            existsR("min(del,eps/2)", 'R=="\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 (x1^2+x2^2+x3^2+x4^2 < del^2->2*x1^2+x2^4+3201/1024*x3^2+2943/1024*x4^2 < k))");
+            andR('R=="min(del,eps/2)>0&min(del,eps/2) < eps&\forall x1 \forall x2 \forall x3 \forall x4 (x1^2+x2^2+x3^2+x4^2 < min(del,eps/2)^2->2*x1^2+x2^4+3201/1024*x3^2+2943/1024*x4^2 < k)"); <(
+              "min(del,eps/2)>0":
+                QE,
+              "min(del,eps/2) < eps&\forall x1 \forall x2 \forall x3 \forall x4 (x1^2+x2^2+x3^2+x4^2 < min(del,eps/2)^2->2*x1^2+x2^4+3201/1024*x3^2+2943/1024*x4^2 < k)":
+                andR('R=="min(del,eps/2) < eps&\forall x1 \forall x2 \forall x3 \forall x4 (x1^2+x2^2+x3^2+x4^2 < min(del,eps/2)^2->2*x1^2+x2^4+3201/1024*x3^2+2943/1024*x4^2 < k)"); <(
+                  "min(del,eps/2) < eps":
+                    QE,
+                  "\forall x1 \forall x2 \forall x3 \forall x4 (x1^2+x2^2+x3^2+x4^2 < min(del,eps/2)^2->2*x1^2+x2^4+3201/1024*x3^2+2943/1024*x4^2 < k)":
+                    unfold;
+                    allL('L=="\forall x1 \forall x2 \forall x3 \forall x4 (normsq(x1,x2,x3,x4) < del^2->lyap(x1,x2,x3,x4) < k)");
+                    allL('L=="\forall x2 \forall x3 \forall x4 (normsq(x1,x2,x3,x4) < del^2->lyap(x1,x2,x3,x4) < k)");
+                    allL('L=="\forall x3 \forall x4 (normsq(x1,x2,x3,x4) < del^2->lyap(x1,x2,x3,x4) < k)");
+                    allL('L=="\forall x4 (normsq(x1,x2,x3,x4) < del^2->lyap(x1,x2,x3,x4) < k)");
+                    QE
+                )
+            ),
+          "Show":
+            hideR('R=="\exists del (del>0&del < eps&\forall x1 \forall x2 \forall x3 \forall x4 (x1^2+x2^2+x3^2+x4^2 < del^2->2*x1^2+x2^4+3201/1024*x3^2+2943/1024*x4^2 < k))");
+            hideL('L=="eps>0");
+            QE
+        ),
+      "Show":
+        unfold;
+        allL('L=="\forall x1 \forall x2 \forall x3 \forall x4 (normsq(x1,x2,x3,x4) < del^2->lyap(x1,x2,x3,x4) < k)");
+        allL('L=="\forall x2 \forall x3 \forall x4 (normsq(x1,x2,x3,x4) < del^2->lyap(x1,x2,x3,x4) < k)");
+        allL('L=="\forall x3 \forall x4 (normsq(x1,x2,x3,x4) < del^2->lyap(x1,x2,x3,x4) < k)");
+        allL('L=="\forall x4 (normsq(x1,x2,x3,x4) < del^2->lyap(x1,x2,x3,x4) < k)");
+        fullSimplify;
+        dC("(normsq(x1,x2,x3,x4)=eps^2->lyap(x1,x2,x3,x4)>=k)&lyap(x1,x2,x3,x4) < k", 'R=="[{x1'=-x1+x2^3-3*x3*x4,x2'=-x1-x2^3,x3'=x1*x4-x3,x4'=x1*x3-x4^3}]normsq(x1,x2,x3,x4) < eps^2"); <(
+          "Use":
+            hideL('L=="\forall x1 \forall x2 \forall x3 \forall x4 (normsq(x1,x2,x3,x4)=eps^2->lyap(x1,x2,x3,x4)>=k)");
+            expandAllDefs;
+            ODE('R=="[{x1'=-x1+x2^3-3*x3*x4,x2'=-x1-x2^3,x3'=x1*x4-x3,x4'=x1*x3-x4^3&true&(x1^2+x2^2+x3^2+x4^2=eps^2->2*x1^2+x2^4+3201/1024*x3^2+2943/1024*x4^2>=k)&2*x1^2+x2^4+3201/1024*x3^2+2943/1024*x4^2 < k}]x1^2+x2^2+x3^2+x4^2 < eps^2"),
+          "Show":
+            boxAnd('R=="[{x1'=-x1+x2^3-3*x3*x4,x2'=-x1-x2^3,x3'=x1*x4-x3,x4'=x1*x3-x4^3}]((normsq(x1,x2,x3,x4)=eps^2->lyap(x1,x2,x3,x4)>=k)&lyap(x1,x2,x3,x4) < k)");
+            andR('R=="[{x1'=-x1+x2^3-3*x3*x4,x2'=-x1-x2^3,x3'=x1*x4-x3,x4'=x1*x3-x4^3}](normsq(x1,x2,x3,x4)=eps^2->lyap(x1,x2,x3,x4)>=k)&[{x1'=-x1+x2^3-3*x3*x4,x2'=-x1-x2^3,x3'=x1*x4-x3,x4'=x1*x3-x4^3}]lyap(x1,x2,x3,x4) < k"); <(
+              "[{x1'=-x1+x2^3-3*x3*x4,x2'=-x1-x2^3,x3'=x1*x4-x3,x4'=x1*x3-x4^3}](normsq(x1,x2,x3,x4)=eps^2->lyap(x1,x2,x3,x4)>=k)":
+                dW('R=="[{x1'=-x1+x2^3-3*x3*x4,x2'=-x1-x2^3,x3'=x1*x4-x3,x4'=x1*x3-x4^3}](normsq(x1,x2,x3,x4)=eps^2->lyap(x1,x2,x3,x4)>=k)");
+                unfold;
+                allL('L=="\forall x1 \forall x2 \forall x3 \forall x4 (normsq(x1,x2,x3,x4)=eps^2->lyap(x1,x2,x3,x4)>=k)");
+                allL('L=="\forall x2 \forall x3 \forall x4 (normsq(x1,x2,x3,x4)=eps^2->lyap(x1,x2,x3,x4)>=k)");
+                allL('L=="\forall x3 \forall x4 (normsq(x1,x2,x3,x4)=eps^2->lyap(x1,x2,x3,x4)>=k)");
+                allL('L=="\forall x4 (normsq(x1,x2,x3,x4)=eps^2->lyap(x1,x2,x3,x4)>=k)");
+                propClose,
+              "[{x1'=-x1+x2^3-3*x3*x4,x2'=-x1-x2^3,x3'=x1*x4-x3,x4'=x1*x3-x4^3}]lyap(x1,x2,x3,x4) < k":
+                hideL('L=="\forall x1 \forall x2 \forall x3 \forall x4 (normsq(x1,x2,x3,x4)=eps^2->lyap(x1,x2,x3,x4)>=k)");
+                expandAllDefs;
+                ODE('R=="[{x1'=-x1+x2^3-3*x3*x4,x2'=-x1-x2^3,x3'=x1*x4-x3,x4'=x1*x3-x4^3}]2*x1^2+x2^4+3201/1024*x3^2+2943/1024*x4^2 < k")
+            )
+        )
+    ),
+  "Show":
+    hideR('R=="\exists del (del>0&\forall x1 \forall x2 \forall x3 \forall x4 (normsq(x1,x2,x3,x4) < del^2->[{x1'=-x1+x2^3-3*x3*x4,x2'=-x1-x2^3,x3'=x1*x4-x3,x4'=x1*x3-x4^3}]normsq(x1,x2,x3,x4) < eps^2))");
+    QE
+)
+End.
+
+End.
+
+/* Exported from KeYmaera X v4.9.9 */
+
+Theorem "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 10"
+
+Citation "Daniele Ahmed, Andrea Peruffo, and Alessandro Abate. Automated and Sound Synthesis of Lyapunov Functions with SMT Solvers. TACAS 2020".
+
+Definitions
+
+Real mu; /* A symbolic parameter for the ODE */
+
+Real normsq(Real x1, Real x2) = x1^2 + x2^2;
+
+/* Stability for the ODE */
+Bool stable <->
+  \forall eps (eps > 0 ->
+  \exists del (del > 0 &
+  \forall x1 \forall x2 ( normsq(x1,x2) < del^2 ->
+    [{
+      x1' = x2,
+      x2' = -(2+mu)*x1-x2
+    }] normsq(x1,x2) < eps^2
+  )));
+
+/* Lyapunov function from Ahmed et al. */
+Real lyap(Real x1, Real x2) = (mu+2)*x1^2+x2^2;
+
+End.
+
+Problem
+  -2 < mu & mu <= 5 -> stable
+End.
+
+Tactic "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 10: Proof"
+expand "stable";
+unfold;
+cut("\exists k (k>0&\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k))"); <(
+  "Use":
+    unfold;
+    existsRmon("del>0&del < eps&\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap(x1,x2) < k)", 'R=="\exists del (del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{x1'=x2,x2'=-((2+mu())*x1)-x2}]normsq(x1,x2) < eps^2))"); <(
+      "Use":
+        hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+        QE,
+      "Show":
+        unfold;
+        allL('L=="\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap(x1,x2) < k)");
+        allL('L=="\forall x2 (normsq(x1,x2) < del^2->lyap(x1,x2) < k)");
+        fullSimplify;
+        dC("(normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)&lyap(x1,x2) < k", 'R=="[{x1'=x2,x2'=-((2+mu())*x1)-x2}]normsq(x1,x2) < eps^2"); <(
+          "Use":
+            hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+            expandAllDefs;
+            ODE('R=="[{x1'=x2,x2'=-((2+mu())*x1)-x2&true&(x1^2+x2^2=eps^2->(mu()+2)*x1^2+x2^2>=k)&(mu()+2)*x1^2+x2^2 < k}]x1^2+x2^2 < eps^2"),
+          "Show":
+            boxAnd('R=="[{x1'=x2,x2'=-((2+mu())*x1)-x2}]((normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)&lyap(x1,x2) < k)");
+            andR('R=="[{x1'=x2,x2'=-((2+mu())*x1)-x2}](normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)&[{x1'=x2,x2'=-((2+mu())*x1)-x2}]lyap(x1,x2) < k"); <(
+              "[{x1'=x2,x2'=-((2+mu())*x1)-x2}](normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)":
+                dW('R=="[{x1'=x2,x2'=-((2+mu())*x1)-x2}](normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+                unfold;
+                allL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+                allL('L=="\forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+                propClose,
+              "[{x1'=x2,x2'=-((2+mu())*x1)-x2}]lyap(x1,x2) < k":
+                hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+                expandAllDefs;
+                ODE('R=="[{x1'=x2,x2'=-((2+mu())*x1)-x2}](mu()+2)*x1^2+x2^2 < k")
+            )
+        )
+    ),
+  "Show":
+    hideR('R=="\exists del (del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{x1'=x2,x2'=-((2+mu())*x1)-x2}]normsq(x1,x2) < eps^2))");
+    QE
+)
+End.
+
+End.
+
+/* Exported from KeYmaera X v4.9.9 */
+
+Theorem "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 11"
+
+Citation "Daniele Ahmed, Andrea Peruffo, and Alessandro Abate. Automated and Sound Synthesis of Lyapunov Functions with SMT Solvers. TACAS 2020".
+
+Definitions
+
+Real mu1; /* Symbolic parameters for the ODE */
+Real mu2;
+Real mu3;
+Real mu4;
+
+Real normsq(Real x1, Real x2) = x1^2 + x2^2;
+
+/* Stability for the ODE */
+Bool stable <->
+  \forall eps (eps > 0 ->
+  \exists del (del > 0 &
+  \forall x1 \forall x2 ( normsq(x1,x2) < del^2 ->
+    [{
+      x1' = -(1+mu1)*x1 + (4+mu2)*x2,
+      x2' = -(1+mu3)*x1 - mu4*x2^3
+    }] normsq(x1,x2) < eps^2
+  )));
+
+/* Lyapunov function from Ahmed et al. */
+Real lyap(Real x1, Real x2) = (mu3+1)/(mu2+4)*x1^2+x2^2;
+
+End.
+
+Problem
+  0 <= mu1 & mu1 <= 100 &
+  0 <= mu2 & mu2 <= 100 &
+  0 <= mu3 & mu3 <= 100 &
+  0 <= mu4 & mu4 <= 100 -> stable
+End.
+
+Tactic "ODE Stability/Section 5 Other Examples, Ahmed et al. Example 11: Proof"
+expand "stable";
+unfold;
+cut("\exists k (k>0&\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k))"); <(
+  "Use":
+    unfold;
+    existsRmon("del>0&del < eps&\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap(x1,x2) < k)", 'R=="\exists del (del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{x1'=-((1+mu1())*x1)+(4+mu2())*x2,x2'=-((1+mu3())*x1)-mu4()*x2^3}]normsq(x1,x2) < eps^2))"); <(
+      "Use":
+        hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+        QE,
+      "Show":
+        unfold;
+        allL('L=="\forall x1 \forall x2 (normsq(x1,x2) < del^2->lyap(x1,x2) < k)");
+        allL('L=="\forall x2 (normsq(x1,x2) < del^2->lyap(x1,x2) < k)");
+        fullSimplify;
+        dC("(normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)&lyap(x1,x2) < k", 'R=="[{x1'=-((1+mu1())*x1)+(4+mu2())*x2,x2'=-((1+mu3())*x1)-mu4()*x2^3}]normsq(x1,x2) < eps^2"); <(
+          "Use":
+            hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+            expandAllDefs;
+            ODE('R=="[{x1'=-((1+mu1())*x1)+(4+mu2())*x2,x2'=-((1+mu3())*x1)-mu4()*x2^3&true&(x1^2+x2^2=eps^2->(mu3()+1)/(mu2()+4)*x1^2+x2^2>=k)&(mu3()+1)/(mu2()+4)*x1^2+x2^2 < k}]x1^2+x2^2 < eps^2"),
+          "Show":
+            boxAnd('R=="[{x1'=-((1+mu1())*x1)+(4+mu2())*x2,x2'=-((1+mu3())*x1)-mu4()*x2^3}]((normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)&lyap(x1,x2) < k)");
+            andR('R=="[{x1'=-((1+mu1())*x1)+(4+mu2())*x2,x2'=-((1+mu3())*x1)-mu4()*x2^3}](normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)&[{x1'=-((1+mu1())*x1)+(4+mu2())*x2,x2'=-((1+mu3())*x1)-mu4()*x2^3}]lyap(x1,x2) < k"); <(
+              "[{x1'=-((1+mu1())*x1)+(4+mu2())*x2,x2'=-((1+mu3())*x1)-mu4()*x2^3}](normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)":
+                dW('R=="[{x1'=-((1+mu1())*x1)+(4+mu2())*x2,x2'=-((1+mu3())*x1)-mu4()*x2^3}](normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+                unfold;
+                allL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+                allL('L=="\forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+                propClose,
+              "[{x1'=-((1+mu1())*x1)+(4+mu2())*x2,x2'=-((1+mu3())*x1)-mu4()*x2^3}]lyap(x1,x2) < k":
+                hideL('L=="\forall x1 \forall x2 (normsq(x1,x2)=eps^2->lyap(x1,x2)>=k)");
+                expandAllDefs;
+                ODE('R=="[{x1'=-((1+mu1())*x1)+(4+mu2())*x2,x2'=-((1+mu3())*x1)-mu4()*x2^3}](mu3()+1)/(mu2()+4)*x1^2+x2^2 < k")
+            )
+        )
+    ),
+  "Show":
+    hideR('R=="\exists del (del>0&\forall x1 \forall x2 (normsq(x1,x2) < del^2->[{x1'=-((1+mu1())*x1)+(4+mu2())*x2,x2'=-((1+mu3())*x1)-mu4()*x2^3}]normsq(x1,x2) < eps^2))");
+    QE
+)
+End.
+
+End.

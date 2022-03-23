@@ -1,0 +1,65 @@
+﻿/* Exported from KeYmaera X v4.9.9 */
+
+Theorem "ODE Stability/Example 13 Globally exponentially stable pendulum"
+
+Definitions
+
+Real a; /* Parameter a = g/L for the ratio of gravity to length of the rod holding the pendulum */
+Real b; /* Parameter b >= 0 for the coefficient of friction against angular velocity */
+
+Real normsq(Real x, Real y) = x^2 + y^2;
+
+/* ODE for (linearized) pendulum where theta is the angle of displacement and w is the angular velocity:
+ * theta'=w,w'=-a*theta-b*w
+ */
+
+/* Global exponential stability */
+Bool expstable <->
+  \exists alp (alp > 0 &
+  \exists beta (beta > 0 &
+  \forall theta \forall w (
+  [
+      aux:=alp^2*normsq(theta,w);
+      {aux'=(-2)*(beta*aux),theta'=w,w'=-a*theta-b*w}
+  ] normsq(theta,w)<=aux
+  )));
+
+/* Lyapunov function */
+Real lyap(Real theta, Real w) = a*(theta^2)/2 + ((b*theta+w)^2+w^2)/4;
+
+End.
+
+Problem
+  a = 1 & b = 1 -> expstable
+End.
+
+Tactic "ODE Stability/Example 13 Globally exponentially stable pendulum: Proof"
+unfold;
+expand "expstable";
+existsR("2", 'R=="\exists alp (alp>0&\exists beta (beta>0&\forall theta \forall w [aux:=alp^2*normsq(theta,w);{aux'=(-2)*(beta*aux),theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w)<=aux))");
+unfold; <(
+  "2>0":
+    QE,
+  "\exists beta (beta>0&\forall theta \forall w [aux:=2^2*normsq(theta,w);{aux'=(-2)*(beta*aux),theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w)<=aux)":
+    existsR("1/4", 'R=="\exists beta (beta>0&\forall theta \forall w [aux:=2^2*normsq(theta,w);{aux'=(-2)*(beta*aux),theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w)<=aux)");
+    unfold; <(
+      "1/4>0":
+        QE,
+      "\forall theta \forall w [aux:=2^2*normsq(theta,w);{aux'=(-2)*(1/4*aux),theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w)<=aux":
+        dC("lyap(theta,w)<=aux/4", 'R=="[{aux'=(-2)*(1/4*aux),theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w)<=aux"); <(
+          "Use":
+            expandAllDefs;
+            ODE('R=="[{aux'=(-2)*(1/4*aux),theta'=w,w'=-a()*theta-b()*w&true&a()*theta^2/2+((b()*theta+w)^2+w^2)/4<=aux/4}]theta^2+w^2<=aux"),
+          "Show":
+            expandAllDefs;
+            allL2R('L=="a()=1");
+            allL2R('L=="b()=1");
+            hideL('L=="a()=1");
+            hideL('L=="b()=1");
+            ODE('R=="[{aux'=(-2)*(1/4*aux),theta'=w,w'=-(1*theta)-1*w}]1*theta^2/2+((1*theta+w)^2+w^2)/4<=aux/4")
+        )
+    )
+)
+End.
+
+End.
