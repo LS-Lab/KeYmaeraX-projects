@@ -1,0 +1,142 @@
+﻿/* Exported from KeYmaera X v4.9.6 */
+
+Theorem "Examples/Example 4: stability"
+/*
+ * Generated from hybrid automaton
+ * Mode1("x1' = -x1 -100 *x2, x2' = 10*x1-x2")
+ * Mode2("x1' = x1 + 10*x2, x2' = -100*x1 + x2 & -10*x1-x2 >=0  & 2*x1-x2>=0")
+ *
+ * Mode1 -->|"?-10*x1-x2=0;"| Mode2
+ * Mode2 -->|"?2*x1-x2=0;"| Mode1
+ */
+
+Definitions
+  Real Mode1 = 0;
+  Real Mode2 = 1;
+End.
+
+ProgramVariables
+  Real x2;
+  Real x1;
+  Real mode;
+End.
+
+Problem
+  \forall eps
+    (
+      eps > 0 ->
+      \exists del
+        (
+          del > 0 &
+          \forall x1
+            \forall x2
+              (
+                x1^2 + x2^2 < del^2 ->
+                [
+                  {mode:=Mode1(); ++ mode:=Mode2();}
+                  {
+                    {
+                      ?mode = Mode1();
+                      {?(-10) * x1 - x2 = 0; mode:=Mode2(); ++ mode:=mode;}
+                      ++
+                      ?mode = Mode2();
+                      {?2 * x1 - x2 = 0; mode:=Mode1(); ++ mode:=mode;}
+                    }
+                    {
+                      ?mode = Mode1(); {x1'=-x1 - 100 * x2, x2'=10 * x1 - x2}
+                      ++
+                      ?mode = Mode2();
+                      {
+                        x1'=x1 + 10 * x2,
+                        x2'=(-100) * x1 + x2 &
+                        (-10) * x1 - x2 >= 0 & 2 * x1 - x2 >= 0
+                      }
+                    }
+                  }*
+                ]
+                  x1^2 + x2^2 < eps^2
+              )
+        )
+    )
+End.
+
+Tactic "Examples/Example 4: stability: Proof"
+stabilityStateMLF("17.9*x1^2-2*0.89*x1*x2+179*x2^2::739*x1^2-2*38.1*x1*x2+91.8*x2^2::nil", 'R=="\forall eps (eps>0->\exists del (del>0&\forall x1 \forall x2 (x1^2+x2^2 < del^2->[{mode:=Mode1();++mode:=Mode2();}{{?mode=Mode1();{?(-10)*x1-x2=0;mode:=Mode2();++mode:=mode;}++?mode=Mode2();{?2*x1-x2=0;mode:=Mode1();++mode:=mode;}}{?mode=Mode1();{x1'=-x1-100*x2,x2'=10*x1-x2}++?mode=Mode2();{x1'=x1+10*x2,x2'=(-100)*x1+x2&(-10)*x1-x2>=0&2*x1-x2>=0}}}*]x1^2+x2^2 < eps^2)))")
+End.
+
+End.
+
+/* Exported from KeYmaera X v4.9.6 */
+
+Theorem "Examples/Example 4: attractivity"
+/*
+ * Generated from hybrid automaton
+ * Mode1("x1' = -x1 -100 *x2, x2' = 10*x1-x2")
+ * Mode2("x1' = x1 + 10*x2, x2' = -100*x1 + x2 & -10*x1-x2 >=0  & 2*x1-x2>=0")
+ *
+ * Mode1 -->|"?-10*x1-x2=0;"| Mode2
+ * Mode2 -->|"?2*x1-x2=0;"| Mode1
+ */
+
+Definitions
+  Real Mode1 = 0;
+  Real Mode2 = 1;
+End.
+
+ProgramVariables
+  Real x2;
+  Real x1;
+  Real mode;
+End.
+
+Problem
+  \forall eps
+    (
+      eps > 0 ->
+      \forall del
+        (
+          del > 0 ->
+          \exists T_
+            (
+              T_ >= 0 &
+              \forall x1
+                \forall x2
+                  (
+                    x1^2 + x2^2 < del^2 ->
+                    [
+                      t_:=0;
+                      {mode:=Mode1(); ++ mode:=Mode2();}
+                      {
+                        {
+                          ?mode = Mode1();
+                          {?(-10) * x1 - x2 = 0; mode:=Mode2(); ++ mode:=mode;}
+                          ++
+                          ?mode = Mode2();
+                          {?2 * x1 - x2 = 0; mode:=Mode1(); ++ mode:=mode;}
+                        }
+                        {
+                          ?mode = Mode1();
+                          {t_'=1, x1'=-x1 - 100 * x2, x2'=10 * x1 - x2}
+                          ++
+                          ?mode = Mode2();
+                          {
+                            t_'=1,
+                            x1'=x1 + 10 * x2,
+                            x2'=(-100) * x1 + x2 &
+                            (-10) * x1 - x2 >= 0 & 2 * x1 - x2 >= 0
+                          }
+                        }
+                      }*
+                    ]
+                      (t_ >= T_ -> x1^2 + x2^2 < eps^2)
+                  )
+            )
+        )
+    )
+End.
+
+Tactic "Examples/Example 4: attractivity: Proof"
+attractivityStateMLF("17.9*x1^2-2*0.89*x1*x2+179*x2^2::739*x1^2-2*38.1*x1*x2+91.8*x2^2::nil", 'R=="\forall eps (eps>0->\forall del (del>0->\exists T_ (T_>=0&\forall x1 \forall x2 (x1^2+x2^2 < del^2->[t_:=0;{mode:=Mode1();++mode:=Mode2();}{{?mode=Mode1();{?(-10)*x1-x2=0;mode:=Mode2();++mode:=mode;}++?mode=Mode2();{?2*x1-x2=0;mode:=Mode1();++mode:=mode;}}{?mode=Mode1();{t_'=1,x1'=-x1-100*x2,x2'=10*x1-x2}++?mode=Mode2();{t_'=1,x1'=x1+10*x2,x2'=(-100)*x1+x2&(-10)*x1-x2>=0&2*x1-x2>=0}}}*](t_>=T_->x1^2+x2^2 < eps^2)))))")
+End.
+
+End.

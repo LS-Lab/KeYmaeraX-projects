@@ -1,0 +1,398 @@
+﻿/* Exported from KeYmaera X v4.9.6 */
+
+Theorem "Canonical max system f=0: attractivity"
+/*
+ * Generated from hybrid automaton
+ * Mode1("x'=y, y'=-a*x-b*y+f*x+g*y+gam &
+ *        f*x+g*y+gam >= 0 & f*x+gam >= 0")
+ * Mode2("x'=y, y'=-a*x-b*y+f*x+g*y+gam &
+ *        f*x+g*y+gam >= 0 & f*x+gam <= 0")
+ * Mode3("x'=y, y'=-a*x-b*y &
+ *        f*x+g*y+gam <= 0 & f*x+gam >= 0")
+ * Mode4("x'=y, y'=-a*x-b*y &
+ *        f*x+g*y+gam <= 0 & f*x+gam <= 0")
+ *
+ * Mode1 & Mode2 & Mode3 & Mode4 --> Mode1 & Mode2 & Mode3 & Mode4
+ */
+
+Definitions
+  Real g;
+  Real a;
+  Real gam;
+  Real f;
+  Real b;
+End.
+
+ProgramVariables
+  Real x;
+  Real y;
+End.
+
+Problem
+  a > 0 & b > 0 & a-f >0 & b-g > 0 & f=0 & gam <= 0 ->
+  \forall eps
+    (
+      eps > 0 ->
+      \forall del
+        (
+          del > 0 ->
+          \exists T_
+            (
+              T_ >= 0 &
+              \forall x
+                \forall y
+                  (
+                    x^2 + y^2 < del^2 ->
+                    [
+                      t_:=0;
+                      {
+                        {
+                          t_'=1,
+                          x'=y,
+                          y'=-a * x - b * y + f * x + g * y + gam &
+                          f * x + g * y + gam >= 0 & f * x + gam >= 0
+                        }
+                        ++
+                        {
+                          t_'=1,
+                          x'=y,
+                          y'=-a * x - b * y + f * x + g * y + gam &
+                          f * x + g * y + gam >= 0 & f * x + gam <= 0
+                        }
+                        ++
+                        {
+                          t_'=1,
+                          x'=y,
+                          y'=-a * x - b * y &
+                          f * x + g * y + gam <= 0 & f * x + gam >= 0
+                        }
+                        ++
+                        {
+                          t_'=1,
+                          x'=y,
+                          y'=-a * x - b * y &
+                          f * x + g * y + gam <= 0 & f * x + gam <= 0
+                        }
+                      }*
+                    ]
+                      (t_ >= T_ -> x^2 + y^2 < eps^2)
+                  )
+            )
+        )
+    )
+End.
+
+Tactic "Example: Canonical max system f=0 (global pre-attractivity): Proof"
+unfold;
+allL2R('L=="f()=0");
+hideL('L=="f()=0");
+cut("\exists c (0 < c&c < b()&c < b()-g()&c < a()*(b()-g())/(a()+g()^2))"); <(
+  "Use":
+    unfold;
+    cut("\exists W (W>0&\forall y \forall x (y^2+x^2 < del^2->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W))"); <(
+      "Use":
+        unfold;
+        cut("\exists U (U>0&\forall y \forall x (y^2+x^2>=eps^2->1/2*(b()*c*x^2+2*c*x*y+y^2)>=U))"); <(
+          "Use":
+            unfold;
+            cut("\exists kA1 (kA1 < 0&\forall x \forall y (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y))+2*y*(-a()*x-b()*y))+a()*(2*x*y)/2<=kA1))&\exists kB1 (kB1 < 0&\forall x \forall y (g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1))"); <(
+              "Use":
+                unfold;
+                cut("\exists k (k < 0&kA1 < k&kB1 < k)"); <(
+                  "Use":
+                    unfold;
+                    existsRmon("T_>=0&W+k*T_<=U", 'R=="\exists T_ (T_>=0&\forall x \forall y (x^2+y^2 < del^2->[t_:=0;{{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&0*x+g()*y+gam()>=0&0*x+gam()>=0}++{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&0*x+g()*y+gam()>=0&0*x+gam()<=0}++{t_'=1,x'=y,y'=-a()*x-b()*y&0*x+g()*y+gam()<=0&0*x+gam()>=0}++{t_'=1,x'=y,y'=-a()*x-b()*y&0*x+g()*y+gam()<=0&0*x+gam()<=0}}*](t_>=T_->x^2+y^2 < eps^2)))"); <(
+                      "Use":
+                        QE using "k < 0 :: \exists T_ (T_>=0&W+k*T_<=U) :: nil",
+                      "Show":
+                        unfold;
+                        allL('L=="\forall y \forall x (y^2+x^2 < del^2->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)");
+                        allL('L=="\forall x (y^2+x^2 < del^2->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)");
+                        implyL('L=="y^2+x^2 < del^2->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W"); <(
+                          "y^2+x^2 < del^2":
+                            edit("x^2+y^2 < del^2", 'R=="y^2+x^2 < del^2");
+                            propClose,
+                          "1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W":
+                            loop("1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_)", 'R=="[{{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&0*x+g()*y+gam()>=0&0*x+gam()>=0}++{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&0*x+g()*y+gam()>=0&0*x+gam()<=0}++{t_'=1,x'=y,y'=-a()*x-b()*y&0*x+g()*y+gam()<=0&0*x+gam()>=0}++{t_'=1,x'=y,y'=-a()*x-b()*y&0*x+g()*y+gam()<=0&0*x+gam()<=0}}*](t_>=T_->x^2+y^2 < eps^2)"); <(
+                              "Init":
+                                QE using "1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W :: t_=0 :: 1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_) :: nil",
+                              "Post":
+                                hideFactsAbout("kA1::kB1::nil");
+                                implyR('R=="t_>=T_->x^2+y^2 < eps^2");
+                                allL('L=="\forall y \forall x (y^2+x^2>=eps^2->1/2*(b()*c*x^2+2*c*x*y+y^2)>=U)");
+                                allL('L=="\forall x (y^2+x^2>=eps^2->1/2*(b()*c*x^2+2*c*x*y+y^2)>=U)");
+                                implyL('L=="y^2+x^2>=eps^2->1/2*(b()*c*x^2+2*c*x*y+y^2)>=U"); <(
+                                  "y^2+x^2>=eps^2":
+                                    QE using "x^2+y^2 < eps^2 :: y^2+x^2>=eps^2 :: nil",
+                                  "1/2*(b()*c*x^2+2*c*x*y+y^2)>=U":
+                                    andL('L=="1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_)");
+                                    implyL('L=="1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_"); <(
+                                      "1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U":
+                                        QE using "a()>0 :: 1/2*(b()*c*x^2+2*c*x*y+y^2)>=U :: 1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U :: nil",
+                                      "1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_":
+                                        hideR('R=="x^2+y^2 < eps^2");
+                                        QE
+                                    )
+                                ),
+                              "Step":
+                                hideFactsAbout("T::del::eps::nil");
+                                unfold; <(
+                                  "[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&0*x+g()*y+gam()>=0&0*x+gam()>=0}](1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_))":
+                                    hideFactsAbout("kA1");
+                                    dC("1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W", 'R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&0*x+g()*y+gam()>=0&0*x+gam()>=0}](1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_))"); <(
+                                      "Use":
+                                        dC("1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_", 'R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(0*x+g()*y+gam()>=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_))"); <(
+                                          "Use":
+                                            ODE('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&((0*x+g()*y+gam()>=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_)}](1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_))"),
+                                          "Show":
+                                            useAt("DCC", "1", 'R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(0*x+g()*y+gam()>=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_)");
+                                            andR('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&((0*x+g()*y+gam()>=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U}]1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_&[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(0*x+g()*y+gam()>=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(0*x+g()*y+gam()>=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U))"); <(
+                                              "[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&((0*x+g()*y+gam()>=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U}]1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_":
+                                                dC("1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=k", 'R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&((0*x+g()*y+gam()>=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U}]1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_"); <(
+                                                  "Use":
+                                                    hideL('L=="\forall x \forall y (g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1)");
+                                                    dIClose('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(((0*x+g()*y+gam()>=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U)&1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=k}]1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_"),
+                                                  "Show":
+                                                    dW('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&((0*x+g()*y+gam()>=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U}]1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=k");
+                                                    unfold;
+                                                    allL('L=="\forall x \forall y (g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1)");
+                                                    allL('L=="\forall y (g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1)");
+                                                    implyL('L=="g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1"); <(
+                                                      "g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U":
+                                                        QE,
+                                                      "1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1":
+                                                        QE
+                                                    )
+                                                ),
+                                              "[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(0*x+g()*y+gam()>=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(0*x+g()*y+gam()>=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U))":
+                                                hideL('L=="\forall x \forall y (g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1)");
+                                                dW('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(0*x+g()*y+gam()>=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(0*x+g()*y+gam()>=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U))");
+                                                implyR('R=="!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(0*x+g()*y+gam()>=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U)");
+                                                ODE('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(0*x+g()*y+gam()>=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U)")
+                                            )
+                                        ),
+                                      "Show":
+                                        hideL('L=="\forall x \forall y (g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1)");
+                                        ODE('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&0*x+g()*y+gam()>=0&0*x+gam()>=0}]1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W")
+                                    ),
+                                  "[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&0*x+g()*y+gam()>=0&0*x+gam()<=0}](1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_))":
+                                    hideFactsAbout("kA1");
+                                    dC("1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W", 'R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&0*x+g()*y+gam()>=0&0*x+gam()<=0}](1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_))"); <(
+                                      "Use":
+                                        dC("1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_", 'R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(0*x+g()*y+gam()>=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_))"); <(
+                                          "Use":
+                                            hideL('L=="\forall x \forall y (g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1)");
+                                            ODE('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&((0*x+g()*y+gam()>=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_)}](1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_))"),
+                                          "Show":
+                                            useAt("DCC", "1", 'R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(0*x+g()*y+gam()>=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_)");
+                                            andR('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&((0*x+g()*y+gam()>=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U}]1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_&[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(0*x+g()*y+gam()>=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(0*x+g()*y+gam()>=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U))"); <(
+                                              "[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&((0*x+g()*y+gam()>=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U}]1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_":
+                                                dC("1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=k", 'R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&((0*x+g()*y+gam()>=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U}]1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_"); <(
+                                                  "Use":
+                                                    hideL('L=="\forall x \forall y (g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1)");
+                                                    dIClose('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(((0*x+g()*y+gam()>=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U)&1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=k}]1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_"),
+                                                  "Show":
+                                                    dW('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&((0*x+g()*y+gam()>=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U}]1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=k");
+                                                    unfold;
+                                                    allL('L=="\forall x \forall y (g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1)");
+                                                    allL('L=="\forall y (g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1)");
+                                                    implyL('L=="g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1"); <(
+                                                      "g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U":
+                                                        hideR('R=="1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=k");
+                                                        QE,
+                                                      "1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1":
+                                                        QE
+                                                    )
+                                                ),
+                                              "[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(0*x+g()*y+gam()>=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(0*x+g()*y+gam()>=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U))":
+                                                hideL('L=="\forall x \forall y (g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1)");
+                                                dW('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(0*x+g()*y+gam()>=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(0*x+g()*y+gam()>=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U))");
+                                                implyR('R=="!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(0*x+g()*y+gam()>=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U)");
+                                                ODE('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&(0*x+g()*y+gam()>=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U)")
+                                            )
+                                        ),
+                                      "Show":
+                                        hideL('L=="\forall x \forall y (g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1)");
+                                        ODE('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&0*x+g()*y+gam()>=0&0*x+gam()<=0}]1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W")
+                                    ),
+                                  "[{t_'=1,x'=y,y'=-a()*x-b()*y&0*x+g()*y+gam()<=0&0*x+gam()>=0}](1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_))":
+                                    hideFactsAbout("kB1");
+                                    dC("1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W", 'R=="[{t_'=1,x'=y,y'=-a()*x-b()*y&0*x+g()*y+gam()<=0&0*x+gam()>=0}](1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_))"); <(
+                                      "Use":
+                                        dC("1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_", 'R=="[{t_'=1,x'=y,y'=-a()*x-b()*y&(0*x+g()*y+gam()<=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_))"); <(
+                                          "Use":
+                                            hideL('L=="\forall x \forall y (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y))+2*y*(-a()*x-b()*y))+a()*(2*x*y)/2<=kA1)");
+                                            ODE('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y&((0*x+g()*y+gam()<=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_)}](1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_))"),
+                                          "Show":
+                                            useAt("DCC", "1", 'R=="[{t_'=1,x'=y,y'=-a()*x-b()*y&(0*x+g()*y+gam()<=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_)");
+                                            andR('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y&((0*x+g()*y+gam()<=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U}]1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_&[{t_'=1,x'=y,y'=-a()*x-b()*y&(0*x+g()*y+gam()<=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->[{t_'=1,x'=y,y'=-a()*x-b()*y&(0*x+g()*y+gam()<=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U))"); <(
+                                              "[{t_'=1,x'=y,y'=-a()*x-b()*y&((0*x+g()*y+gam()<=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U}]1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_":
+                                                dC("1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y))+2*y*(-a()*x-b()*y))+a()*(2*x*y)/2<=k", 'R=="[{t_'=1,x'=y,y'=-a()*x-b()*y&((0*x+g()*y+gam()<=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U}]1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_"); <(
+                                                  "Use":
+                                                    hideL('L=="\forall x \forall y (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y))+2*y*(-a()*x-b()*y))+a()*(2*x*y)/2<=kA1)");
+                                                    dIClose('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y&(((0*x+g()*y+gam()<=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U)&1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y))+2*y*(-a()*x-b()*y))+a()*(2*x*y)/2<=k}]1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_"),
+                                                  "Show":
+                                                    dW('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y&((0*x+g()*y+gam()<=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U}]1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y))+2*y*(-a()*x-b()*y))+a()*(2*x*y)/2<=k");
+                                                    unfold;
+                                                    allL('L=="\forall x \forall y (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y))+2*y*(-a()*x-b()*y))+a()*(2*x*y)/2<=kA1)");
+                                                    allL('L=="\forall y (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y))+2*y*(-a()*x-b()*y))+a()*(2*x*y)/2<=kA1)");
+                                                    implyL('L=="1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y))+2*y*(-a()*x-b()*y))+a()*(2*x*y)/2<=kA1"); <(
+                                                      "1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U":
+                                                        propClose,
+                                                      "1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y))+2*y*(-a()*x-b()*y))+a()*(2*x*y)/2<=kA1":
+                                                        QE
+                                                    )
+                                                ),
+                                              "[{t_'=1,x'=y,y'=-a()*x-b()*y&(0*x+g()*y+gam()<=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->[{t_'=1,x'=y,y'=-a()*x-b()*y&(0*x+g()*y+gam()<=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U))":
+                                                hideL('L=="\forall x \forall y (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y))+2*y*(-a()*x-b()*y))+a()*(2*x*y)/2<=kA1)");
+                                                dW('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y&(0*x+g()*y+gam()<=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->[{t_'=1,x'=y,y'=-a()*x-b()*y&(0*x+g()*y+gam()<=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U))");
+                                                implyR('R=="!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->[{t_'=1,x'=y,y'=-a()*x-b()*y&(0*x+g()*y+gam()<=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U)");
+                                                ODE('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y&(0*x+g()*y+gam()<=0&0*x+gam()>=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U)")
+                                            )
+                                        ),
+                                      "Show":
+                                        hideL('L=="\forall x \forall y (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y))+2*y*(-a()*x-b()*y))+a()*(2*x*y)/2<=kA1)");
+                                        ODE('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y&0*x+g()*y+gam()<=0&0*x+gam()>=0}]1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W")
+                                    ),
+                                  "[{t_'=1,x'=y,y'=-a()*x-b()*y&0*x+g()*y+gam()<=0&0*x+gam()<=0}](1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_))":
+                                    hideFactsAbout("kB1");
+                                    dC("1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W", 'R=="[{t_'=1,x'=y,y'=-a()*x-b()*y&0*x+g()*y+gam()<=0&0*x+gam()<=0}](1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_))"); <(
+                                      "Use":
+                                        dC("1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_", 'R=="[{t_'=1,x'=y,y'=-a()*x-b()*y&(0*x+g()*y+gam()<=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_))"); <(
+                                          "Use":
+                                            hideL('L=="\forall x \forall y (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y))+2*y*(-a()*x-b()*y))+a()*(2*x*y)/2<=kA1)");
+                                            ODE('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y&((0*x+g()*y+gam()<=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_)}](1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W&(1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_))"),
+                                          "Show":
+                                            useAt("DCC", "1", 'R=="[{t_'=1,x'=y,y'=-a()*x-b()*y&(0*x+g()*y+gam()<=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_)");
+                                            andR('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y&((0*x+g()*y+gam()<=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U}]1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_&[{t_'=1,x'=y,y'=-a()*x-b()*y&(0*x+g()*y+gam()<=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->[{t_'=1,x'=y,y'=-a()*x-b()*y&(0*x+g()*y+gam()<=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U))"); <(
+                                              "[{t_'=1,x'=y,y'=-a()*x-b()*y&((0*x+g()*y+gam()<=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U}]1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_":
+                                                dIRule('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y&((0*x+g()*y+gam()<=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U}]1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W+k*t_"); <(
+                                                  "dI Init":
+                                                    propClose,
+                                                  "dI Step":
+                                                    unfold;
+                                                    allL('L=="\forall x \forall y (1/2*(b()*c()*x^2+2*c()*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c()*(2*x*y)+2*c()*(y*y+x*(-a()*x-b()*y))+2*y*(-a()*x-b()*y))+a()*(2*x*y)/2<=kA1)");
+                                                    allL('L=="\forall y (1/2*(b()*c()*x^2+2*c()*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c()*(2*x*y)+2*c()*(y*y+x*(-a()*x-b()*y))+2*y*(-a()*x-b()*y))+a()*(2*x*y)/2<=kA1)");
+                                                    QE
+                                                ),
+                                              "[{t_'=1,x'=y,y'=-a()*x-b()*y&(0*x+g()*y+gam()<=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->[{t_'=1,x'=y,y'=-a()*x-b()*y&(0*x+g()*y+gam()<=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U))":
+                                                hideL('L=="\forall x \forall y (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y))+2*y*(-a()*x-b()*y))+a()*(2*x*y)/2<=kA1)");
+                                                dW('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y&(0*x+g()*y+gam()<=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->[{t_'=1,x'=y,y'=-a()*x-b()*y&(0*x+g()*y+gam()<=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U))");
+                                                implyR('R=="!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->[{t_'=1,x'=y,y'=-a()*x-b()*y&(0*x+g()*y+gam()<=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U)");
+                                                ODE('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y&(0*x+g()*y+gam()<=0&0*x+gam()<=0)&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W}](!1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U)")
+                                            )
+                                        ),
+                                      "Show":
+                                        hideL('L=="\forall x \forall y (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y))+2*y*(-a()*x-b()*y))+a()*(2*x*y)/2<=kA1)");
+                                        ODE('R=="[{t_'=1,x'=y,y'=-a()*x-b()*y&0*x+g()*y+gam()<=0&0*x+gam()<=0}]1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W")
+                                    )
+                                )
+                            )
+                        )
+                    ),
+                  "Show":
+                    hideR('R=="\exists T_ (T_>=0&\forall x \forall y (x^2+y^2 < del^2->[t_:=0;{{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&0*x+g()*y+gam()>=0&0*x+gam()>=0}++{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&0*x+g()*y+gam()>=0&0*x+gam()<=0}++{t_'=1,x'=y,y'=-a()*x-b()*y&0*x+g()*y+gam()<=0&0*x+gam()>=0}++{t_'=1,x'=y,y'=-a()*x-b()*y&0*x+g()*y+gam()<=0&0*x+gam()<=0}}*](t_>=T_->x^2+y^2 < eps^2)))");
+                    QE
+                ),
+              "Show":
+                hideR('R=="\exists T_ (T_>=0&\forall x \forall y (x^2+y^2 < del^2->[t_:=0;{{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&0*x+g()*y+gam()>=0&0*x+gam()>=0}++{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&0*x+g()*y+gam()>=0&0*x+gam()<=0}++{t_'=1,x'=y,y'=-a()*x-b()*y&0*x+g()*y+gam()<=0&0*x+gam()>=0}++{t_'=1,x'=y,y'=-a()*x-b()*y&0*x+g()*y+gam()<=0&0*x+gam()<=0}}*](t_>=T_->x^2+y^2 < eps^2)))");
+                hideL('L=="\forall y \forall x (y^2+x^2 < del^2->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)");
+                hideL('L=="\forall y \forall x (y^2+x^2>=eps^2->1/2*(b()*c*x^2+2*c*x*y+y^2)>=U)");
+                andR('R=="\exists kA1 (kA1 < 0&\forall x \forall y (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y))+2*y*(-a()*x-b()*y))+a()*(2*x*y)/2<=kA1))&\exists kB1 (kB1 < 0&\forall x \forall y (g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1))"); <(
+                  "\exists kA1 (kA1 < 0&\forall x \forall y (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y))+2*y*(-a()*x-b()*y))+a()*(2*x*y)/2<=kA1))":
+                    QE,
+                  "\exists kB1 (kB1 < 0&\forall x \forall y (g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1))":
+                    cut("\forall y \forall x (c*x+y<=0&g()*y+gam()>=0->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=-(b()-c)*y^2-a()*c*x^2)&\forall y \forall x (c*x+y>0->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=-(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y))&\exists kB1a (kB1a < 0&\forall y \forall x -(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y)<=kB1a*(x^2+y^2))&\exists I (I>0&\forall y \forall x (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->x^2+y^2>=I))"); <(
+                      "Use":
+                        unfold;
+                        existsRmon("kB1 < 0&kB1>I*kB1a&kB1>-(b()-c)*I&kB1>-a()*c*I", 'R=="\exists kB1 (kB1 < 0&\forall x \forall y (g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1))"); <(
+                          "Use":
+                            hideL('L=="\forall y \forall x (c*x+y<=0&g()*y+gam()>=0->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=-(b()-c)*y^2-a()*c*x^2)");
+                            hideL('L=="\forall y \forall x (c*x+y>0->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=-(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y))");
+                            hideL('L=="\forall y \forall x -(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y)<=kB1a*(x^2+y^2)");
+                            hideL('L=="\forall y \forall x (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->x^2+y^2>=I)");
+                            QE,
+                          "Show":
+                            andR('R=="kB1 < 0&\forall x \forall y (g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1)"); <(
+                              "kB1 < 0":
+                                propClose,
+                              "\forall x \forall y (g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1)":
+                                unfold;
+                                allL('L=="\forall y \forall x (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->x^2+y^2>=I)");
+                                allL('L=="\forall x (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->x^2+y^2>=I)");
+                                implyL('L=="1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->x^2+y^2>=I"); <(
+                                  "1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U":
+                                    propClose,
+                                  "x^2+y^2>=I":
+                                    allL('L=="\forall y \forall x -(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y)<=kB1a*(x^2+y^2)");
+                                    allL('L=="\forall x -(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y)<=kB1a*(x^2+y^2)");
+                                    allL('L=="\forall y \forall x (c*x+y<=0&g()*y+gam()>=0->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=-(b()-c)*y^2-a()*c*x^2)");
+                                    allL('L=="\forall x (c*x+y<=0&g()*y+gam()>=0->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=-(b()-c)*y^2-a()*c*x^2)");
+                                    allL('L=="\forall y \forall x (c*x+y>0->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=-(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y))");
+                                    allL('L=="\forall x (c*x+y>0->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=-(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y))");
+                                    cut("c*x+y<=0|c*x+y>0"); <(
+                                      "Use":
+                                        orL('L=="c*x+y<=0|c*x+y>0"); <(
+                                          "c*x+y<=0":
+                                            hideL('L=="c*x+y>0->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=-(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y)");
+                                            implyL('L=="c*x+y<=0&g()*y+gam()>=0->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=-(b()-c)*y^2-a()*c*x^2"); <(
+                                              "c*x+y<=0&g()*y+gam()>=0":
+                                                propClose,
+                                              "1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=-(b()-c)*y^2-a()*c*x^2":
+                                                edit("abbrv(1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2)<=kB1", 'R=="1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1");
+                                                QE using "a()>0 :: 0 < c :: c < b() :: abbrv<=-(b()-c)*y^2-a()*c*x^2 :: x^2+y^2>=I :: kB1>-(b()-c)*I :: kB1>-a()*c*I :: abbrv<=kB1 :: nil"
+                                            ),
+                                          "c*x+y>0":
+                                            hideL('L=="c*x+y<=0&g()*y+gam()>=0->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=-(b()-c)*y^2-a()*c*x^2");
+                                            implyL('L=="c*x+y>0->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=-(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y)"); <(
+                                              "c*x+y>0":
+                                                propClose,
+                                              "1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=-(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y)":
+                                                edit("abbrv(1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2)<=kB1", 'R=="1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1");
+                                                edit("abbrv(-(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y))<=kB1a*(x^2+y^2)", 'L=="-(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y)<=kB1a*(x^2+y^2)");
+                                                QE using "abbrv<=abbrv_0 :: kB1a < 0 :: abbrv_0<=kB1a*(x^2+y^2) :: x^2+y^2>=I :: kB1>I*kB1a :: abbrv<=kB1 :: nil"
+                                            )
+                                        ),
+                                      "Show":
+                                        QE using "c*x+y<=0|c*x+y>0"
+                                    )
+                                )
+                            )
+                        ),
+                      "Show":
+                        hideR('R=="\exists kB1 (kB1 < 0&\forall x \forall y (g()*y+gam()>=0&1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=kB1))");
+                        andR('R=="\forall y \forall x (c*x+y<=0&g()*y+gam()>=0->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=-(b()-c)*y^2-a()*c*x^2)&\forall y \forall x (c*x+y>0->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=-(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y))&\exists kB1a (kB1a < 0&\forall y \forall x -(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y)<=kB1a*(x^2+y^2))&\exists I (I>0&\forall y \forall x (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->x^2+y^2>=I))"); <(
+                          "\forall y \forall x (c*x+y<=0&g()*y+gam()>=0->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=-(b()-c)*y^2-a()*c*x^2)":
+                            QE,
+                          "\forall y \forall x (c*x+y>0->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=-(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y))&\exists kB1a (kB1a < 0&\forall y \forall x -(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y)<=kB1a*(x^2+y^2))&\exists I (I>0&\forall y \forall x (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->x^2+y^2>=I))":
+                            andR('R=="\forall y \forall x (c*x+y>0->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=-(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y))&\exists kB1a (kB1a < 0&\forall y \forall x -(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y)<=kB1a*(x^2+y^2))&\exists I (I>0&\forall y \forall x (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->x^2+y^2>=I))"); <(
+                              "\forall y \forall x (c*x+y>0->1/2*(b()*c*(2*x*y)+2*c*(y*y+x*(-a()*x-b()*y+g()*y+gam()))+2*y*(-a()*x-b()*y+g()*y+gam()))+a()*(2*x*y)/2<=-(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y))":
+                                QE,
+                              "\exists kB1a (kB1a < 0&\forall y \forall x -(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y)<=kB1a*(x^2+y^2))&\exists I (I>0&\forall y \forall x (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->x^2+y^2>=I))":
+                                andR('R=="\exists kB1a (kB1a < 0&\forall y \forall x -(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y)<=kB1a*(x^2+y^2))&\exists I (I>0&\forall y \forall x (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->x^2+y^2>=I))"); <(
+                                  "\exists kB1a (kB1a < 0&\forall y \forall x -(b()-c)*y^2-a()*c*x^2+g()*y*(c*x+y)<=kB1a*(x^2+y^2))":
+                                    QE,
+                                  "\exists I (I>0&\forall y \forall x (1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2>=U->x^2+y^2>=I))":
+                                    QE
+                                )
+                            )
+                        )
+                    )
+                )
+            ),
+          "Show":
+            hideR('R=="\exists T_ (T_>=0&\forall x \forall y (x^2+y^2 < del^2->[t_:=0;{{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&0*x+g()*y+gam()>=0&0*x+gam()>=0}++{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&0*x+g()*y+gam()>=0&0*x+gam()<=0}++{t_'=1,x'=y,y'=-a()*x-b()*y&0*x+g()*y+gam()<=0&0*x+gam()>=0}++{t_'=1,x'=y,y'=-a()*x-b()*y&0*x+g()*y+gam()<=0&0*x+gam()<=0}}*](t_>=T_->x^2+y^2 < eps^2)))");
+            hideL('L=="\forall y \forall x (y^2+x^2 < del^2->1/2*(b()*c*x^2+2*c*x*y+y^2)+a()*x^2/2 < W)");
+            QE
+        ),
+      "Show":
+        hideR('R=="\exists T_ (T_>=0&\forall x \forall y (x^2+y^2 < del^2->[t_:=0;{{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&0*x+g()*y+gam()>=0&0*x+gam()>=0}++{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&0*x+g()*y+gam()>=0&0*x+gam()<=0}++{t_'=1,x'=y,y'=-a()*x-b()*y&0*x+g()*y+gam()<=0&0*x+gam()>=0}++{t_'=1,x'=y,y'=-a()*x-b()*y&0*x+g()*y+gam()<=0&0*x+gam()<=0}}*](t_>=T_->x^2+y^2 < eps^2)))");
+        QE
+    ),
+  "Show":
+    hideR('R=="\exists T_ (T_>=0&\forall x \forall y (x^2+y^2 < del^2->[t_:=0;{{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&0*x+g()*y+gam()>=0&0*x+gam()>=0}++{t_'=1,x'=y,y'=-a()*x-b()*y+0*x+g()*y+gam()&0*x+g()*y+gam()>=0&0*x+gam()<=0}++{t_'=1,x'=y,y'=-a()*x-b()*y&0*x+g()*y+gam()<=0&0*x+gam()>=0}++{t_'=1,x'=y,y'=-a()*x-b()*y&0*x+g()*y+gam()<=0&0*x+gam()<=0}}*](t_>=T_->x^2+y^2 < eps^2)))");
+    QE
+)
+End.
+
+End.

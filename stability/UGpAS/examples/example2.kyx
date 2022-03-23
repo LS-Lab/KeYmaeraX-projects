@@ -1,0 +1,114 @@
+﻿/* Exported from KeYmaera X v4.9.6 */
+
+Theorem "Examples/Example 2: stability"
+/*
+ * Generated from hybrid automaton
+ * Mode1("x1'=-5*x1-4*x2, x2'=-x1-2*x2 & x1<=0")
+ * Mode2("x1'=-2*x1-4*x2, x2'=20*x1-2*x2 & x1>=0")
+ *
+ * Mode1 & Mode2 --> Mode1 & Mode2
+ */
+
+Definitions
+
+End.
+
+ProgramVariables
+  Real x1;
+  Real x2;
+End.
+
+Problem
+  \forall eps
+    (
+      eps > 0 ->
+      \exists del
+        (
+          del > 0 &
+          \forall x1
+            \forall x2
+              (
+                x1^2 + x2^2 < del^2 ->
+                [
+                  {
+                    {x1'=(-5) * x1 - 4 * x2, x2'=-x1 - 2 * x2 & x1 <= 0}
+                    ++
+                    {x1'=(-2) * x1 - 4 * x2, x2'=20 * x1 - 2 * x2 & x1 >= 0}
+                  }*
+                ]
+                  x1^2 + x2^2 < eps^2
+              )
+        )
+    )
+End.
+
+Tactic "Examples/Example 2: stability: Proof"
+stabilityStateMLF("x1^2+3*x2^2::10*x1^2+3*x2^2::nil", 'R=="\forall eps (eps>0->\exists del (del>0&\forall x1 \forall x2 (x1^2+x2^2 < del^2->[{{x1'=(-5)*x1-4*x2,x2'=-x1-2*x2&x1<=0}++{x1'=(-2)*x1-4*x2,x2'=20*x1-2*x2&x1>=0}}*]x1^2+x2^2 < eps^2)))")
+End.
+
+End.
+
+/* Exported from KeYmaera X v4.9.6 */
+
+Theorem "Examples/Example 2: attractivity"
+/*
+ * Generated from hybrid automaton
+ * Mode1("x1'=-5*x1-4*x2, x2'=-x1-2*x2 & x1<=0")
+ * Mode2("x1'=-2*x1-4*x2, x2'=20*x1-2*x2 & x1>=0")
+ *
+ * Mode1 & Mode2 --> Mode1 & Mode2
+ */
+
+Definitions
+
+End.
+
+ProgramVariables
+  Real x1;
+  Real x2;
+End.
+
+Problem
+  \forall eps
+    (
+      eps > 0 ->
+      \forall del
+        (
+          del > 0 ->
+          \exists T_
+            (
+              T_ >= 0 &
+              \forall x1
+                \forall x2
+                  (
+                    x1^2 + x2^2 < del^2 ->
+                    [
+                      t_:=0;
+                      {
+                        {
+                          t_'=1,
+                          x1'=(-5) * x1 - 4 * x2,
+                          x2'=-x1 - 2 * x2 &
+                          x1 <= 0
+                        }
+                        ++
+                        {
+                          t_'=1,
+                          x1'=(-2) * x1 - 4 * x2,
+                          x2'=20 * x1 - 2 * x2 &
+                          x1 >= 0
+                        }
+                      }*
+                    ]
+                      (t_ >= T_ -> x1^2 + x2^2 < eps^2)
+                  )
+            )
+        )
+    )
+End.
+
+Tactic "Examples/Example 2: attractivity: Proof"
+attractivityStateMLF("x1^2+3*x2^2::10*x1^2+3*x2^2::nil", 'R=="\forall eps (eps>0->\forall del (del>0->\exists T_ (T_>=0&\forall x1 \forall x2 (x1^2+x2^2 < del^2->[t_:=0;{{t_'=1,x1'=(-5)*x1-4*x2,x2'=-x1-2*x2&x1<=0}++{t_'=1,x1'=(-2)*x1-4*x2,x2'=20*x1-2*x2&x1>=0}}*](t_>=T_->x1^2+x2^2 < eps^2)))))")
+End.
+
+End.

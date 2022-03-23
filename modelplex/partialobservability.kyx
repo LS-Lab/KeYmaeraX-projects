@@ -273,7 +273,7 @@ Definitions.
 
   HP watertankctrl ::= {
     f :=*;
-    ?-1 <= f & f <= (m()-(lu+U()))/ep();
+    ?-1 <= f & f <= (m()-(lu+U()))/ep(); /* does not guarantee existence of control choice! */
     c := 0;
   };
 
@@ -312,6 +312,63 @@ loop("0<=l&l<=m()&l-U()<=lu&lu<=l+U()", 'R=="[{{f:=*;?(-1)<=f&f<=(m()-(lu+U()))/
     implyR('R=="(-1)<=f&f<=(m()-(lu+U()))/ep()->\forall c (c=0->[{l'=f,c'=1&0<=l&c<=ep()}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U()))");
     allR('R=="\forall c (c=0->[{l'=f,c'=1&0<=l&c<=ep()}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U()))");
     implyR('R=="c=0->[{l'=f,c'=1&0<=l&c<=ep()}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U())");
+    diffInvariant("c>=0", 'R=="[{l'=f,c'=1&0<=l&c<=ep()}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U())");
+    diffInvariant("l=old(l)+f*c", 'R=="[{l'=f,c'=1&(0<=l&c<=ep())&c>=0}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U())");
+    dW('R=="[{l'=f,c'=1&((0<=l&c<=ep())&c>=0)&l=l_0+f*c}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U())");
+    QE
+)
+End.
+
+End.
+
+Lemma "ModelPlex/Partial Observability/Water tank with load measurement uncertainty is safe (control choice exists)"
+
+Definitions.
+  Real m();
+  Real ep();
+  Real U();
+
+  HP watertankmeasure ::= { lu:=*; ?l-U()<=lu&lu<=l+U(); };
+
+  HP watertankctrl ::= {
+    f :=*;
+    ?-1 <= f & f <= max(0, (m()-(lu+U()))/ep());
+    c := 0;
+  };
+
+  HP watertankplant ::= {
+    { l' = f, c' = 1 & 0 <= l & c <= ep() }
+  };
+End.
+
+ProgramVariables
+  Real f;
+  Real l;
+  Real lu;
+  Real c;
+End.
+
+Problem
+     (0 <= l & l <= m() &l-U()<=lu&lu<=l+U() & 0 < ep() & 0<=U())
+  -> [
+      { watertankctrl;
+        watertankplant;
+        watertankmeasure;
+      }*
+     ](0 <= l & l <= m())
+End.
+
+Tactic "Proof Water tank with load measurement uncertainty is safe"
+implyR('R=="0<=l&l<=m()&l-U()<=lu&lu<=l+U()&0 < ep()&0<=U()->[{watertankctrl{|^@|};watertankplant{|^@|};watertankmeasure{|^@|};}*](0<=l&l<=m())");
+loop("0<=l&l<=m()&l-U()<=lu&lu<=l+U()", 'R=="[{watertankctrl{|^@|};watertankplant{|^@|};watertankmeasure{|^@|};}*](0<=l&l<=m())"); <(
+  "Init":
+    QE,
+  "Post":
+    QE,
+  "Step":
+    expandAllDefs;
+    unfold;
+    chaseAt('R=="[{l'=f,c'=1&0<=l&c<=ep()}]#[lu:=*;?l-U()<=lu&lu<=l+U();](0<=l&l<=m()&l-U()<=lu&lu<=l+U())#");
     diffInvariant("c>=0", 'R=="[{l'=f,c'=1&0<=l&c<=ep()}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U())");
     diffInvariant("l=old(l)+f*c", 'R=="[{l'=f,c'=1&(0<=l&c<=ep())&c>=0}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U())");
     dW('R=="[{l'=f,c'=1&((0<=l&c<=ep())&c>=0)&l=l_0+f*c}]\forall lu (l-U()<=lu&lu<=l+U()->0<=l&l<=m()&l-U()<=lu&lu<=l+U())");
@@ -666,7 +723,7 @@ loop("dx^2+dy^2=1&x^2+y^2>0", 'R=="[{{w2:=0;{w1:=0;?I1(v1,v2,dx,dy,x,y)>v1+v2;++
     propClose,
   "Step":
     unfold; <(
-      "[w1:=0;?v2*dy*x-(v2*dx-v1)*y>v1+v2;][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)":
+      "[w1:=0;?I1(v1,v2,dx,dy,x,y)>v1+v2;][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)":
         diffInvariant("dx=old(dx)&dy=old(dy)", 'R=="[{x'=v2*dx-v1+0*y,y'=v2*dy-0*x,dx'=-((0-0)*dy),dy'=(0-0)*dx}](dx^2+dy^2=1&x^2+y^2>0)");
         dC("I1(1,1,dx,dy,x,y)=old(I1(1,1,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+0*y,y'=v2*dy-0*x,dx'=-((0-0)*dy),dy'=(0-0)*dx&true&dx=dx_0&dy=dy_0}](dx^2+dy^2=1&x^2+y^2>0)"); <(
           "Use":
@@ -684,7 +741,7 @@ loop("dx^2+dy^2=1&x^2+y^2>0", 'R=="[{{w2:=0;{w1:=0;?I1(v1,v2,dx,dy,x,y)>v1+v2;++
             expand "I1";
             dIClose('R=="[{x'=v2*dx-v1+0*y,y'=v2*dy-0*x,dx'=-((0-0)*dy),dy'=(0-0)*dx&true&dx=dx_0&dy=dy_0}]1*dy*x-(1*dx-1)*y=old")
         ),
-      "[w1:=1;?-w1*0*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*0-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*w1+v1*0)+w1*0;][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)":
+      "[w1:=1;?I2(v1,v2,w1,0,dx,dy,x,y)>2*v1*v2+2*(v2*w1+v1*0)+w1*0;][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)":
         diffInvariant("dx^2+dy^2=1", 'R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx}](dx^2+dy^2=1&x^2+y^2>0)");
         dC("I2(1,1,1,0,dx,dy,x,y)=old(I2(1,1,1,0,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx&true&dx^2+dy^2=1}](dx^2+dy^2=1&x^2+y^2>0)"); <(
           "Use":
@@ -767,7 +824,7 @@ loop("dx^2+dy^2=1&x^2+y^2>0", 'R=="[{{w2:=0;{w1p:=0;?I1(v1,v2,dx,dy,x,y)>v1+v2;+
     propClose,
   "Step":
     unfold; <(
-      "[w1p:=0;?v2*dy*x-(v2*dx-v1)*y>v1+v2;][{w1:=*;?0<=w1&w1<=w1p*wD();}{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)":
+      "[w1p:=0;?I1(v1,v2,dx,dy,x,y)>v1+v2;][{w1:=*;?0<=w1&w1<=w1p*wD();}{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)":
         diffInvariant("dx=old(dx)&dy=old(dy)", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)");
         dC("I1(1,1,dx,dy,x,y)=old(I1(1,1,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx&true&dx=dx_0&dy=dy_0}](dx^2+dy^2=1&x^2+y^2>0)"); <(
           "Use":
@@ -785,9 +842,9 @@ loop("dx^2+dy^2=1&x^2+y^2>0", 'R=="[{{w2:=0;{w1p:=0;?I1(v1,v2,dx,dy,x,y)>v1+v2;+
             expand "I1";
             dIClose('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx&true&dx=dx_0&dy=dy_0}]1*dy*x-(1*dx-1)*y=old")
         ),
-      "[w1p:=1;?\forall pw1 (0<=pw1&pw1<=w1p*wD()->-pw1*0*(x^2+y^2)+2*v2*pw1*dy*x+2*(v1*0-v2*pw1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*pw1+v1*0)+pw1*0);][{w1:=*;?0<=w1&w1<=w1p*wD();}{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)":
+      "[w1p:=1;?\forall pw1 (0<=pw1&pw1<=w1p*wD()->I2(v1,v2,pw1,0,dx,dy,x,y)>2*v1*v2+2*(v2*pw1+v1*0)+pw1*0);][{w1:=*;?0<=w1&w1<=w1p*wD();}{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)":
         diffInvariant("dx^2+dy^2=1", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}](dx^2+dy^2=1&x^2+y^2>0)");
-        dC("I2(1,1,w1,0,dx,dy,x,y)=old(I2(1,1,w1,0,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx&true&dx^2+dy^2=1}](dx^2+dy^2=1&x^2+y^2>0)"); <(
+        dC("I2(1,1,w1,0,dx,dy,x,y)=const()", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx&true&dx^2+dy^2=1}](dx^2+dy^2=1&x^2+y^2>0)"); <(
           "Use":
             dWplus('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx&(true&dx^2+dy^2=1)&I2(1,1,w1,0,dx,dy,x,y)=old}](dx^2+dy^2=1&x^2+y^2>0)");
             andL('L)*;
@@ -869,14 +926,14 @@ loop("dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U()", 'R=="[{{w2:=0;{w1:=0;?
     propClose,
   "Step":
     unfold; <(
-      "[w1:=0;?\forall v2p (v2m-v2U()<=v2p&v2p<=v2m+v2U()->v2p*dy*x-(v2p*dx-v1)*y>v1+v2p);][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())":
-        allL("v2", 'L=="\forall v2p (v2m-v2U()<=v2p&v2p<=v2m+v2U()->v2p*dy*x-(v2p*dx-v1)*y>v1+v2p)");
-        implyL('L=="v2m-v2U()<=v2&v2<=v2m+v2U()->v2*dy*x-(v2*dx-v1)*y>v1+v2"); <(
+      "[w1:=0;?\forall v2p (v2m-v2U()<=v2p&v2p<=v2m+v2U()->I1(v1,v2p,dx,dy,x,y)>v1+v2p);][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())":
+        allL("v2", 'L=="\forall v2p (v2m-v2U()<=v2p&v2p<=v2m+v2U()->I1(v1,v2p,dx,dy,x,y)>v1+v2p)");
+        implyL('L=="v2m-v2U()<=v2&v2<=v2m+v2U()->I1(v1,v2,dx,dy,x,y)>v1+v2"); <(
           "v2m-v2U()<=v2&v2<=v2m+v2U()":
             QE using "v1=1 :: v2=1 :: 0<=v2U() :: v2U()<=1 :: dx^2+dy^2=1 :: x^2+y^2>0 :: v2-v2U()<=v2m :: v2m<=v2+v2U() :: v2m-v2U()<=v2&v2<=v2m+v2U() :: nil",
-          "v2*dy*x-(v2*dx-v1)*y>v1+v2":
-            diffInvariant("dx=old(dx)&dy=old(dy)", 'R=="[{x'=v2*dx-v1+0*y,y'=v2*dy-0*x,dx'=-((0-0)*dy),dy'=(0-0)*dx}][v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())");
-            dC("I1(1,1,dx,dy,x,y)=old(I1(1,1,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+0*y,y'=v2*dy-0*x,dx'=-((0-0)*dy),dy'=(0-0)*dx&true&dx=dx_0&dy=dy_0}][v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())"); <(
+          "I1(v1,v2,dx,dy,x,y)>v1+v2":
+            diffInvariant("dx=const()&dy=const()", 'R=="[{x'=v2*dx-v1+0*y,y'=v2*dy-0*x,dx'=-((0-0)*dy),dy'=(0-0)*dx}][v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())");
+            dC("I1(1,1,dx,dy,x,y)=const()", 'R=="[{x'=v2*dx-v1+0*y,y'=v2*dy-0*x,dx'=-((0-0)*dy),dy'=(0-0)*dx&true&dx=dx_0&dy=dy_0}][v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())"); <(
               "Use":
                 dWplus('R=="[{x'=v2*dx-v1+0*y,y'=v2*dy-0*x,dx'=-((0-0)*dy),dy'=(0-0)*dx&(true&dx=dx_0&dy=dy_0)&I1(1,1,dx,dy,x,y)=old}][v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())");
                 unfold;
@@ -893,9 +950,9 @@ loop("dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U()", 'R=="[{{w2:=0;{w1:=0;?
                 dIClose('R=="[{x'=v2*dx-v1+0*y,y'=v2*dy-0*x,dx'=-((0-0)*dy),dy'=(0-0)*dx&true&dx=dx_0&dy=dy_0}]1*dy*x-(1*dx-1)*y=old")
             )
         ),
-      "[w1:=1;?\forall v2p (v2m-v2U()<=v2p&v2p<=v2m+v2U()->-w1*0*(x^2+y^2)+2*v2p*w1*dy*x+2*(v1*0-v2p*w1*dx)*y+2*v1*v2p*dx>2*v1*v2p+2*(v2p*w1+v1*0)+w1*0);][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())":
+      "[w1:=1;?\forall v2p (v2m-v2U()<=v2p&v2p<=v2m+v2U()->I2(v1,v2p,w1,0,dx,dy,x,y)>2*v1*v2p+2*(v2p*w1+v1*0)+w1*0);][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-((0-w1)*dy),dy'=(0-w1)*dx}v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())":
         diffInvariant("dx^2+dy^2=1", 'R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx}][v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())");
-        dC("I2(1,1,1,0,dx,dy,x,y)=old(I2(1,1,1,0,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx&true&dx^2+dy^2=1}][v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())"); <(
+        dC("I2(1,1,1,0,dx,dy,x,y)=const()", 'R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx&true&dx^2+dy^2=1}][v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())"); <(
           "Use":
             dWplus('R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx&(true&dx^2+dy^2=1)&I2(1,1,1,0,dx,dy,x,y)=old}][v2m:=*;?v2-v2U()<=v2m&v2m<=v2+v2U();](dx^2+dy^2=1&x^2+y^2>0&v2-v2U()<=v2m&v2m<=v2+v2U())");
             unfold;
@@ -990,9 +1047,10 @@ loop("dx^2+dy^2=1&x^2+y^2>0&(mx-x)^2+(my-y)^2<=pU()^2", 'R=="[{{w1:=1;w2:=0;?\fo
         expand "I2";
         allL2R('L=="v1=1");
         allL2R('L=="v2=1");
-        edit("old>2*v1*v2+2*pU()*(v2*1+v1*0)+pU()^2*1*0", 'L=="2*1*dy_0*x_0+2*(-(1*dx_0))*y_0+2*1*1*dx_0>2*1*1+2*pU()*1");
+        allR2L('L=="old=-(1*0*(x_0^2+y_0^2))+2*1*1*dy_0*x_0+2*(1*0-1*1*dx_0)*y_0+2*1*1*dx_0");
         simplify('R=="dx^2+dy^2=1&x^2+y^2>0&(mx-x)^2+(my-y)^2<=pU()^2") using "(mx-x)^2+(my-y)^2<=pU()^2 :: dx^2+dy^2=1 :: nil";
-        QE using "v1=1 :: v2=1 :: pU()>=0 :: old>2*v1*v2+2*pU()*(v2*1+v1*0)+pU()^2*1*0 :: -(1*0*(x^2+y^2))+2*1*1*dy*x+2*(1*0-1*1*dx)*y+2*1*1*dx=old :: dx^2+dy^2=1 :: x^2+y^2>0 :: nil",
+        print("Bar");
+        QE using "v1=1 :: v2=1 :: pU()>=0 :: old>2*1*1+2*pU()*1 :: -(1*0*(x^2+y^2))+2*1*1*dy*x+2*(1*0-1*1*dx)*y+2*1*1*dx=old :: dx^2+dy^2=1 :: x^2+y^2>0 :: nil",
       "Show":
         expand "I2";
         dIClose('R=="[{x'=v2*dx-v1+1*y,y'=v2*dy-1*x,dx'=-((0-1)*dy),dy'=(0-1)*dx&true&dx^2+dy^2=1}]-(1*0*(x^2+y^2))+2*1*1*dy*x+2*(1*0-1*1*dx)*y+2*1*1*dx=old")
@@ -1300,7 +1358,7 @@ loop("dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()", 'R=="[{{w1:=*;w2
     propClose,
   "Step":
     unfold; <(
-      "[?w1=0&w2=0;?\forall v2p (v2m-vU()<=v2p&v2p<=v2m+vU()->v2p*dy*x-(v2p*dx-v1)*y>v1+v2p);][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU())":
+      "[?w1=0&w2=0;?\forall v2p (v2m-vU()<=v2p&v2p<=v2m+vU()->I1(v1,v2p,dx,dy,x,y)>v1+v2p);][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU())":
         chaseAt('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}]#[v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU())#");
         diffInvariant("dx=old(dx)&dy=old(dy)", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}]\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU())");
         dC("I1(v1,v2,dx,dy,x,y)=old(I1(v1,v2,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx=dx_0&dy=dy_0}]\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU())"); <(
@@ -1319,10 +1377,10 @@ loop("dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()", 'R=="[{{w1:=*;w2
             expand "I1";
             dIClose('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx=dx_0&dy=dy_0}]v2*dy*x-(v2*dx-v1)*y=old")
         ),
-      "[?!(w1=0&w2=0);?w1>0;?w2>0;?\forall v2p (v2m-vU()<=v2p&v2p<=v2m+vU()->-w1*w2*(x^2+y^2)+2*v2p*w1*dy*x+2*(v1*w2-v2p*w1*dx)*y+2*v1*v2p*dx>2*v1*v2p+2*(v2p*abs(w1)+v1*abs(w2))+abs(w1*w2));][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU())":
+      "[?!(w1=0&w2=0);?w1>0;?w2>0;?\forall v2p (v2m-vU()<=v2p&v2p<=v2m+vU()->I2(v1,v2p,w1,w2,dx,dy,x,y)>2*v1*v2p+2*(v2p*abs(w1)+v1*abs(w2))+abs(w1*w2));][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU())":
         chaseAt('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}]#[v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU())#");
         allL("v2", 'L=="\forall v2p (v2m-vU()<=v2p&v2p<=v2m+vU()->-w1*w2*(x^2+y^2)+2*v2p*w1*dy*x+2*(v1*w2-v2p*w1*dx)*y+2*v1*v2p*dx>2*v1*v2p+2*(v2p*abs(w1)+v1*abs(w2))+abs(w1*w2))");
-        edit("-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2))+abs(w1*w2)", 'L=="v2m-vU()<=v2&v2<=v2m+vU()->-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2))+abs(w1*w2)") using "v2-vU()<=v2m :: v2m<=v2+vU() :: nil";
+        edit("I2(v1,v2,w1,w2,dx,dy,x,y)>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2))+abs(w1*w2)", 'L=="v2m-vU()<=v2&v2<=v2m+vU()->I2(v1,v2,w1,w2,dx,dy,x,y)>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2))+abs(w1*w2)") using "v2-vU()<=v2m :: v2m<=v2+vU() :: nil";
         diffInvariant("dx^2+dy^2=1", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}]\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU())");
         dC("I2(v1,v2,w1,w2,dx,dy,x,y)=old(I2(v1,v2,w1,w2,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx^2+dy^2=1}]\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU())"); <(
           "Use":
@@ -1410,11 +1468,11 @@ loop("dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w
     propClose,
   "Step":
     unfold; <(
-      "[?w1=0&w2=0;?\forall v2p \forall w2p (v2m-vU()<=v2p&v2p<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->v2p*dy*x-(v2p*dx-v1)*y>v1+v2p);][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}w2:=*;w2m:=*;?0 < w2m&w2-wU()<=w2m&w2m<=w2+wU();v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU())":
+      "[?w1=0&w2=0;?\forall v2p \forall w2p (v2m-vU()<=v2p&v2p<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->I1(v1,v2p,dx,dy,x,y)>v1+v2p);][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}w2:=*;w2m:=*;?0 < w2m&w2-wU()<=w2m&w2m<=w2+wU();v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU())":
         chaseAt('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}]#[w2:=*;w2m:=*;?0 < w2m&w2-wU()<=w2m&w2m<=w2+wU();v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU())#");
         allL("v2", 'L=="\forall v2p \forall w2p (v2m-vU()<=v2p&v2p<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->v2p*dy*x-(v2p*dx-v1)*y>v1+v2p)");
         allL("w2", 'L=="\forall w2p (v2m-vU()<=v2&v2<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->v2*dy*x-(v2*dx-v1)*y>v1+v2)");
-        edit("v2*dy*x-(v2*dx-v1)*y>v1+v2", 'L=="v2m-vU()<=v2&v2<=v2m+vU()&w2m-wU()<=w2&w2<=w2m+wU()->v2*dy*x-(v2*dx-v1)*y>v1+v2") using "v2-vU()<=v2m :: v2m<=v2+vU() :: w2-wU()<=w2m :: w2m<=w2+wU() :: nil";
+        edit("I1(v1,v2,dx,dy,x,y)>v1+v2", 'L=="v2m-vU()<=v2&v2<=v2m+vU()&w2m-wU()<=w2&w2<=w2m+wU()->I1(v1,v2,dx,dy,x,y)>v1+v2") using "v2-vU()<=v2m :: v2m<=v2+vU() :: w2-wU()<=w2m :: w2m<=w2+wU() :: nil";
         diffInvariant("dx=old(dx)&dy=old(dy)", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}]\forall w2 \forall w2m (0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()->\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()))");
         dC("I1(v1,v2,dx,dy,x,y)=old(I1(v1,v2,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx=dx_0&dy=dy_0}]\forall w2 \forall w2m (0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()->\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()))"); <(
           "Use":
@@ -1430,10 +1488,10 @@ loop("dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w
             expand "I1";
             dIClose('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx=dx_0&dy=dy_0}]v2*dy*x-(v2*dx-v1)*y=old")
         ),
-      "[?!(w1=0&w2=0);?w1>0;?w2>0;?\forall v2p \forall w2p (v2m-vU()<=v2p&v2p<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->-w1*w2p*(x^2+y^2)+2*v2p*w1*dy*x+2*(v1*w2p-v2p*w1*dx)*y+2*v1*v2p*dx>2*v1*v2p+2*(v2p*abs(w1)+v1*abs(w2p))+abs(w1*w2p));][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}w2:=*;w2m:=*;?0 < w2m&w2-wU()<=w2m&w2m<=w2+wU();v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU())":
-        allL("v2", 'L=="\forall v2p \forall w2p (v2m-vU()<=v2p&v2p<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->-w1*w2p*(x^2+y^2)+2*v2p*w1*dy*x+2*(v1*w2p-v2p*w1*dx)*y+2*v1*v2p*dx>2*v1*v2p+2*(v2p*abs(w1)+v1*abs(w2p))+abs(w1*w2p))");
-        allL("w2", 'L=="\forall w2p (v2m-vU()<=v2&v2<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->-w1*w2p*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2p-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2p))+abs(w1*w2p))");
-        edit("-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2))+abs(w1*w2)", 'L=="v2m-vU()<=v2&v2<=v2m+vU()&w2m-wU()<=w2&w2<=w2m+wU()->-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2))+abs(w1*w2)") using "v2-vU()<=v2m :: v2m<=v2+vU() :: w2-wU()<=w2m :: w2m<=w2+wU() :: nil";
+      "[?!(w1=0&w2=0);?w1>0;?w2>0;?\forall v2p \forall w2p (v2m-vU()<=v2p&v2p<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->I2(v1,v2p,w1,w2p,dx,dy,x,y)>2*v1*v2p+2*(v2p*abs(w1)+v1*abs(w2p))+abs(w1*w2p));][{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}w2:=*;w2m:=*;?0 < w2m&w2-wU()<=w2m&w2m<=w2+wU();v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU())":
+        allL("v2", 'L=="\forall v2p \forall w2p (v2m-vU()<=v2p&v2p<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->I2(v1,v2p,w1,w2p,dx,dy,x,y)>2*v1*v2p+2*(v2p*abs(w1)+v1*abs(w2p))+abs(w1*w2p))");
+        allL("w2", 'L=="\forall w2p (v2m-vU()<=v2&v2<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->I2(v1,v2,w1,w2p,dx,dy,x,y)>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2p))+abs(w1*w2p))");
+        edit("I2(v1,v2,w1,w2,dx,dy,x,y)>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2))+abs(w1*w2)", 'L=="v2m-vU()<=v2&v2<=v2m+vU()&w2m-wU()<=w2&w2<=w2m+wU()->I2(v1,v2,w1,w2,dx,dy,x,y)>2*v1*v2+2*(v2*abs(w1)+v1*abs(w2))+abs(w1*w2)") using "v2-vU()<=v2m :: v2m<=v2+vU() :: w2-wU()<=w2m :: w2m<=w2+wU() :: nil";
         chaseAt('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}]#[w2:=*;w2m:=*;?0 < w2m&w2-wU()<=w2m&w2m<=w2+wU();v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU())#");
         diffInvariant("dx^2+dy^2=1", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}]\forall w2 \forall w2m (0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()->\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()))");
         dC("I2(v1,v2,w1,w2,dx,dy,x,y)=old(I2(v1,v2,w1,w2,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx^2+dy^2=1}]\forall w2 \forall w2m (0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()->\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()))"); <(
@@ -1528,7 +1586,7 @@ loop("dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2&0 < w2m&w2-
     allL("v2", 'L=="\forall v2p \forall w2p (w1p<=w1&w1<=w1p+wD()&v2m-vU()<=v2p&v2p<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->-w1*w2p*(x^2+y^2)+2*v2p*w1*dy*x+2*(v1*w2p-v2p*w1*dx)*y+2*v1*v2p*dx>2*v1*v2p+2*(v2p*w1+v1*w2p)+w1*w2p)");
     allL("w2", 'L=="\forall w2p (w1p<=w1&w1<=w1p+wD()&v2m-vU()<=v2&v2<=v2m+vU()&w2m-wU()<=w2p&w2p<=w2m+wU()->-w1*w2p*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2p-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*w1+v1*w2p)+w1*w2p)");
     chaseAt('R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}]#[w2:=*;w2m:=*;?0 < w2&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU();v2m:=*;?0 < v2m&v2-vU()<=v2m&v2m<=v2+vU();](dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU())#");
-    edit("-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*w1+v1*w2)+w1*w2", 'L=="w1p<=w1&w1<=w1p+wD()&v2m-vU()<=v2&v2<=v2m+vU()&w2m-wU()<=w2&w2<=w2m+wU()->-w1*w2*(x^2+y^2)+2*v2*w1*dy*x+2*(v1*w2-v2*w1*dx)*y+2*v1*v2*dx>2*v1*v2+2*(v2*w1+v1*w2)+w1*w2") using "w1p<=w1 :: w1<=w1p+wD() :: v2-vU()<=v2m :: v2m<=v2+vU() :: w2-wU()<=w2m :: w2m<=w2+wU() :: nil";
+    edit("I2(v1,v2,w1,w2,dx,dy,x,y)>2*v1*v2+2*(v2*w1+v1*w2)+w1*w2", 'L=="w1p<=w1&w1<=w1p+wD()&v2m-vU()<=v2&v2<=v2m+vU()&w2m-wU()<=w2&w2<=w2m+wU()->I2(v1,v2,w1,w2,dx,dy,x,y)>2*v1*v2+2*(v2*w1+v1*w2)+w1*w2") using "w1p<=w1 :: w1<=w1p+wD() :: v2-vU()<=v2m :: v2m<=v2+vU() :: w2-wU()<=w2m :: w2m<=w2+wU() :: nil";
     diffInvariant("dx^2+dy^2=1", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx}]\forall w2 \forall w2m (0 < w2&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()->\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()))");
     dC("I2(v1,v2,w1,w2,dx,dy,x,y)=old(I2(v1,v2,w1,w2,dx,dy,x,y))", 'R=="[{x'=v2*dx-v1+w1*y,y'=v2*dy-w1*x,dx'=-(w2-w1)*dy,dy'=(w2-w1)*dx&true&dx^2+dy^2=1}]\forall w2 \forall w2m (0 < w2&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()->\forall v2m (0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()->dx^2+dy^2=1&x^2+y^2>0&0 < v2m&v2-vU()<=v2m&v2m<=v2+vU()&0 < w2&0 < w2m&w2-wU()<=w2m&w2m<=w2+wU()))"); <(
       "Use":
@@ -1628,6 +1686,7 @@ Problem
   xr != xo | yr != yo -> [
    {ctrl;
     ghosts;
+    evolDomTest;
     approxPlant;
     evolDomTest;
    }*
@@ -2145,14 +2204,14 @@ loop("loopInv(m(),z,zm,v)", 'R=="[{trainCtrl{|^@|};drive{|^@|};measure{|^@|};}*]
     expand "drive";
     expand "measure";
     unfold; <(
-      "[?m()-(zm+zU())<=v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v);a:=-b();][t:=0;][{z'=v,v'=a,t'=1&v>=0&t<=ep()}zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())":
+      "[?m()-(zm+zU())<=SB(v);a:=-b();][t:=0;][{z'=v,v'=a,t'=1&v>=0&t<=ep()}zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())":
         diffInvariant("t>=old(t)", 'R=="[{z'=v,v'=-b(),t'=1&v>=0&t<=ep()}][zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())");
         diffInvariant("v=old(v)-b()*t", 'R=="[{z'=v,v'=-b(),t'=1&(v>=0&t<=ep())&t>=t_0}][zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())");
         diffInvariant("z=old(z)+old(v)*t-b()/2*t^2", 'R=="[{z'=v,v'=-b(),t'=1&((v>=0&t<=ep())&t>=t_0)&v=v_0-b()*t}][zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())");
         dW('R=="[{z'=v,v'=-b(),t'=1&(((v>=0&t<=ep())&t>=t_0)&v=v_0-b()*t)&z=z_0+v_0*t-b()/2*t^2}][zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())");
         unfold;
         QE,
-      "[?m()-(zm+zU())>=v^2/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v);a:=A();][t:=0;][{z'=v,v'=a,t'=1&v>=0&t<=ep()}zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())":
+      "[?m()-(zm+zU())>=SB(v);a:=A();][t:=0;][{z'=v,v'=a,t'=1&v>=0&t<=ep()}zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())":
         diffInvariant("t>=old(t)", 'R=="[{z'=v,v'=A(),t'=1&v>=0&t<=ep()}][zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())");
         diffInvariant("v=old(v)+A()*t", 'R=="[{z'=v,v'=A(),t'=1&(v>=0&t<=ep())&t>=t_0}][zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())");
         diffInvariant("z=old(z)+old(v)*t+A()/2*t^2", 'R=="[{z'=v,v'=A(),t'=1&((v>=0&t<=ep())&t>=t_0)&v=v_0+A()*t}][zm:=*;?z-zU()<=zm&zm<=z+zU();](m()-z>=v^2/(2*b())&z-zU()<=zm&zm<=z+zU())");
@@ -2249,13 +2308,13 @@ loop("loopInv(m(),z,v)", 'R=="[{trainCtrl{|^@|};act{|^@|};drive{|^@|};}*]z<=m()"
     expand "act";
     expand "drive";
     unfold; <(
-      "[?m()-z<=v^2/(2*(b()-aD()))+((A()+aD())/(b()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v);acc:=-b();][t:=0;][{a:=*;?acc-aD()<=a&a<=acc+aD();}{z'=v,v'=a,t'=1&v>=0&t<=ep()}]m()-z>=v^2/(2*(b()-aD()))":
+      "[?m()-z<=SB(v);acc:=-b();][t:=0;][{a:=*;?acc-aD()<=a&a<=acc+aD();}{z'=v,v'=a,t'=1&v>=0&t<=ep()}]m()-z>=v^2/(2*(b()-aD()))":
         diffInvariant("t>=old(t)", 'R=="[{z'=v,v'=a,t'=1&v>=0&t<=ep()}]m()-z>=v^2/(2*(b()-aD()))");
         diffInvariant("a>-b()+aD()|v<=old(v)-(b()-aD())*t", 'R=="[{z'=v,v'=a,t'=1&(v>=0&t<=ep())&t>=t_0}]m()-z>=v^2/(2*(b()-aD()))");
         diffInvariant("a>-b()+aD()|z<=old(z)+old(v)*t-(b()-aD())/2*t^2", 'R=="[{z'=v,v'=a,t'=1&((v>=0&t<=ep())&t>=t_0)&(a>-b()+aD()|v<=v_0-(b()-aD())*t)}]m()-z>=v^2/(2*(b()-aD()))");
         dW('R=="[{z'=v,v'=a,t'=1&(((v>=0&t<=ep())&t>=t_0)&(a>-b()+aD()|v<=v_0-(b()-aD())*t))&(a>-b()+aD()|z<=z_0+v_0*t-(b()-aD())/2*t^2)}]m()-z>=v^2/(2*(b()-aD()))");
         QE,
-      "[?m()-z>=v^2/(2*(b()-aD()))+((A()+aD())/(b()-aD())+1)*((A()+aD())/2*ep()^2+ep()*v);acc:=A();][t:=0;][{a:=*;?acc-aD()<=a&a<=acc+aD();}{z'=v,v'=a,t'=1&v>=0&t<=ep()}]m()-z>=v^2/(2*(b()-aD()))":
+      "[?m()-z>=SB(v);acc:=A();][t:=0;][{a:=*;?acc-aD()<=a&a<=acc+aD();}{z'=v,v'=a,t'=1&v>=0&t<=ep()}]m()-z>=v^2/(2*(b()-aD()))":
         diffInvariant("t>=old(t)", 'R=="[{z'=v,v'=a,t'=1&v>=0&t<=ep()}]m()-z>=v^2/(2*(b()-aD()))");
         diffInvariant("a>A()+aD()|v<=old(v)+(A()+aD())*t", 'R=="[{z'=v,v'=a,t'=1&(v>=0&t<=ep())&t>=t_0}]m()-z>=v^2/(2*(b()-aD()))");
         diffInvariant("a>A()+aD()|z<=old(z)+old(v)*t+(A()+aD())/2*t^2", 'R=="[{z'=v,v'=a,t'=1&((v>=0&t<=ep())&t>=t_0)&(a>A()+aD()|v<=v_0+(A()+aD())*t)}]m()-z>=v^2/(2*(b()-aD()))");
