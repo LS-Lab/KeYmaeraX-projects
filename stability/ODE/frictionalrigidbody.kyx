@@ -1,6 +1,4 @@
-﻿/* Exported from KeYmaera X v4.9.9 */
-
-Theorem "ODE Stability/Section 5 Frictional Tennis Racket Theorem"
+﻿Theorem "ODE Stability/Section 5 Frictional Tennis Racket Theorem"
 
 Definitions
 
@@ -249,9 +247,9 @@ cut("\forall eps (eps>0->\forall x1 \forall x2 \forall x3 <{x1'=(I2()-I3())/I1()
     hideR('R=="(stable1()&gattractive1())&stable3()&gattractive3()");
     unfold;
     dV('R=="<{x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3}>I1()*x1^2+I2()*x2^2+I3()*x3^2 < eps*eps"); <(
-      "2":
+      "dV derivative":
         QE,
-      "<{t'=1,x1'=(I2()-I3())/I1()*x2*x3-a1()*x1,x2'=(I3()-I1())/I2()*x3*x1-a2()*x2,x3'=(I1()-I2())/I3()*x1*x2-a3()*x3}>t>-oldp/eps_0":
+      "dV existence":
         cut("\exists r I1()*x1^2+I2()*x2^2+I3()*x3^2=r"); <(
           "Use":
             unfold;
