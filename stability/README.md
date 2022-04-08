@@ -4,11 +4,11 @@ This directory contains [KeYmaera X](http://keymaeraX.org/) stability proofs for
 
 - `ODE` contains ODE stability proofs (Examples from TACAS'21, Section 5)
 
-- `switchedsystems` contains stability proofs for several switched systems stabilized using different switching approaches (Examples from ADHS'21, Section 5). The directory `switched_systems` contains more stability proofs for switched systems.
+- `switchedsystems.kyx` contains stability proofs for several switched systems stabilized using different switching approaches (Examples from ADHS'21, Section 5). The directory `switched_systems` contains more experimental stability proofs for switched systems.
 
 - `UGpAS` contains switched system stability case studies and proofs using the notion of uniform global asymptotic stability (Examples from HSCC'22, Section 5).
 
-See the respective `.kyx` files for further details.
+See the respective directories and `.kyx` files for further details.
 
 # References
 Yong Kiam Tan and André Platzer. Deductive stability proofs for ordinary differential equations. 
