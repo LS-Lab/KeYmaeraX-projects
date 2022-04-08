@@ -12,10 +12,10 @@ See the respective `.kyx` files for further details.
 
 # References
 Yong Kiam Tan and André Platzer. Deductive stability proofs for ordinary differential equations. 
-In Jan Friso Groote and Kim G. Larsen, editors, Tools and Algorithms for the Construction and Analysis of Systems, TACAS 2021, Proceedings, LNCS. Springer, 2021. 
+In Jan Friso Groote and Kim G. Larsen, editors, Tools and Algorithms for the Construction and Analysis of Systems, TACAS 2021, Proceedings, LNCS. Springer, 2021. [doi](https://doi.org/10.1007/978-3-030-72013-1_10)
 
 Yong Kiam Tan and André Platzer. Switched systems as hybrid programs.
-In Raphaël M. Jungers, Necmiye Ozay and Alessandro Abate, editors, Analysis and Design of Hybrid Systems, ADHS 2021. IFAC-PapersOnline, pp. 247-252. 2021.
+In Raphaël M. Jungers, Necmiye Ozay and Alessandro Abate, editors, Analysis and Design of Hybrid Systems, ADHS 2021. IFAC-PapersOnline, pp. 247-252. 2021. [doi](https://doi.org/10.1016/j.ifacol.2021.08.506)
 
 Yong Kiam Tan, Stefan Mitsch, and André Platzer. Verifying switched system stability with logic.
-In Ezio Bartocci and Sylvie Putot, editors, Hybrid Systems: Computation and Control, HSCC'22. To appear.
+In Ezio Bartocci and Sylvie Putot, editors, Hybrid Systems: Computation and Control, HSCC 2022, ACM. 2022. [doi](https://doi.org/10.1145/3501710.3519541)
