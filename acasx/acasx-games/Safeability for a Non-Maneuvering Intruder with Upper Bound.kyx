@@ -74,7 +74,7 @@ SharedDefinitions
 End.
 
 
-Theorem "ACAS X Hybrid Games/Safeable Non Case 1"
+Lemma "ACAS X Hybrid Games/Safeable Non Case 1"
 
 ProgramVariables
   /* horizontal */
@@ -833,7 +833,7 @@ End.
 
 End.
 
-Theorem "ACAS X Hybrid Games/Safeable Non Case 2"
+Lemma "ACAS X Hybrid Games/Safeable Non Case 2"
 
 ProgramVariables
   /* horizontal */
@@ -2121,7 +2121,7 @@ End.
 End.
 
 
-Theorem "ACAS X Hybrid Games/Safeable Non Case 3"
+Lemma "ACAS X Hybrid Games/Safeable Non Case 3"
 
 ProgramVariables
   /* horizontal */

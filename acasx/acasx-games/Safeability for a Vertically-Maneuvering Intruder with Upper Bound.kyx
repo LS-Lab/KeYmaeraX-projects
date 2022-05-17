@@ -88,7 +88,7 @@
 End.
 
 
-Theorem "ACAS X Hybrid Games/Safeability Vertical inLoEvent".
+Lemma "ACAS X Hybrid Games/Safeability Vertical inLoEvent".
 
 ProgramVariables
   /* horizontal */
@@ -930,7 +930,7 @@ End.
 End.
 
 
-Theorem "ACAS X Hybrid Games/Safeability Vertical inMotion".
+Lemma "ACAS X Hybrid Games/Safeability Vertical inMotion".
 
 ProgramVariables
   /* horizontal */
@@ -1823,7 +1823,7 @@ End.
 
 End.
 
-Theorem "ACAS X Hybrid Games/Safeability Vertical inUpEvent".
+Lemma "ACAS X Hybrid Games/Safeability Vertical inUpEvent".
 
 ProgramVariables
   /* horizontal */
