@@ -176,7 +176,7 @@ Tactic "Proof Theorem 1: Static safety"
 End.
 
 Tactic "Proof Theorem 1: Static safety from annotations"
-  master
+  auto
 End.
 
 End.
@@ -1363,24 +1363,33 @@ End.
 Tactic "IJRR17/Proof Theorem 3: Passive Friendly Safety".
   useSolver("Mathematica");
   tactic obstacleCanStop as (
-    unfold ; cut("vo=0|dxo^2+dyo^2=1") ; <(
+    unfold;
+    cut("vo=0|dxo^2+dyo^2=1") ; <(
       cut("vo<=V") ; <(
-        hideL('L=="vo^2=vxo^2+vyo^2") ; hideL('L=="vxo^2+vyo^2<=V^2");
+        hideL('L=="vo^2=vxo^2+vyo^2");
+        hideL('L=="vxo^2+vyo^2<=V^2");
         con("v", "(vo=0|dxo^2+dyo^2=1)&bo>0&ep>0&(x-xo)^2+(y-yo)^2>(vo^2/(2*bo))^2&0<=vo&vo<=V&(v*ep*bo>=vo|vo=0)", 1); <(
           QE,
           QE,
-          unfold ; existsR("-bo", 1) ; unfold ; <(
+          unfold;
+          existsR("-bo", 1);
+          unfold; <(
             QE
             ,
-            assignd(1); solve(1) ; existsR("min((vo/bo,ep))", 1) ; abbrv("min((vo/bo,ep))", "minT") ;
+            solve(1);
+            existsR("min((vo/bo,ep))", 1);
+            abbrv("min((vo/bo,ep))", "minT");
             edit("minT=expand(min(vo/bo(),ep()))", 'Llast);
-            orL('L=="vo=0|dxo^2+dyo^2=1") ; doall(QE)
+            orL('L=="vo=0|dxo^2+dyo^2=1");
+            doall(QE)
           )
         )
         ,
-        hideR(1) ; QE
+        hideR(1);
+        QE
       ),
-      hideR(1) ; QE
+      hideR(1);
+      QE
     )
   );
 
@@ -1473,7 +1482,7 @@ Tactic "IJRR17/Proof Theorem 3: Passive Friendly Safety".
       loop("vxo^2+vyo^2<=V^2", 1); <(
         id ; done,
         id ; done,
-        composeb(1) ; GV(1.1) ; composeb(1) ; GV(1.1) ; master ; done
+        composeb(1) ; GV(1.1) ; composeb(1) ; GV(1.1) ; auto ; done
       )
       ,
       andL('L)* ;
@@ -2881,7 +2890,7 @@ End.
 
 Tactic "Proof Theorem 11: Reach waypoint".
   implyR(1) ; andL('L)* ; andR(1) ; <(
-    master,
+    auto,
     iterated(1) ; orR(1) ; composed(2) ; composed(2) ; choiced(2) ; orR(2) ; hideR(2) ; choiced(2) ; orR(2) ;
     hideR(2) ; choiced(2) ; orR(2) ; hideR(2) ; composed(2) ; testd(2) ; andR(2); <(
       QE,
