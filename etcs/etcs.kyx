@@ -203,12 +203,12 @@ Tactic "ICFEM09/ETCS Essentials Proof with Differential Invariants"
 implyR('R);
 (andL('L)*);
 loop("loopInv(m,z,v)",1) ; <(                              /* prove loop by induction with invariant loopInv */
-  "Init": expandAllDefs; print("Foo"); propClose,                        /* induction initial case */
+  "Init": expandAllDefs; propClose,                        /* induction initial case */
   "Post": QE,                                              /* induction use case */
   "Step":
     expand "ctrl";
     unfold ; <(                                      /* induction step, symbolically execute program until ODE */
-      "true":
+      "[a:=-b();][drive{|^@|};]loopInv(m(),z,v)":
         expand "drive";
         unfold;
         /* prove ODE in train protection branch (a=-b) */
@@ -219,7 +219,7 @@ loop("loopInv(m,z,v)",1) ; <(                              /* prove loop by indu
         dW('R);
         QE
         ,
-      "false":
+      "[?2*b()*(m()-z)>=v*v+(A()+b())*(A()*ep()*ep()+2*ep()*v);a:=A();][drive{|^@|};]loopInv(m(),z,v)":
         expand "drive";
         unfold;
         /* prove ODE in free driving branch (a=A) */
