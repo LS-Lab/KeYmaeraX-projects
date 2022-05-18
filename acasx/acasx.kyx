@@ -202,12 +202,14 @@ implyR('R=="init(rv)&(w=wUp()|w=wLo())&Limpl(r,h,v,w,vlo,rv)->[{{{?true;++{w:=wU
 andL('L)*;
 loop("loopInv(r,h,v,w,vlo,rv)", 'R=="[{{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}a:=*;}motion{|^@|};}*]((abs(r)>rp()|abs(h)>hp())&Limpl(r,h,v,w,vlo,rv))"); <(
   "Init":
+    expandAllDefs;
     propClose,
   "Post":
     andR('R=="(abs(r)>rp()|abs(h)>hp())&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())"); <(
       "abs(r)>rp()|abs(h)>hp()":
         useLemma("ACAS X/Safe use case lower bound", "prop"),
       "\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())":
+        expandAllDefs;
         propClose
     ),
   "Step":
@@ -215,8 +217,8 @@ loop("loopInv(r,h,v,w,vlo,rv)", 'R=="[{{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?L
     MR("loopInv(r,h,v,w,vlo,rv)&init(rv)", 'R=="[{?true;++{w:=(-1);++w:=1;}vlo:=*;?\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp());}a:=*;][{r'=-rv,h'=-v,v'=a&w*v>=w*vlo|w*a>=alo()}]((w=(-1)|w=1)&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp()))"); <(
       "Use Q->P":
         chaseAt('R=="[{?true;++{w:=(-1);++w:=1;}vlo:=*;?\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp());}a:=*;](loopInv(r,h,v,w,vlo,rv)&init(rv))");
-        andL('L=="(w=(-1)|w=1)&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())");
         expandAllDefs;
+        andL('L=="(w=(-1)|w=1)&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp())");
         simplify('R=="(true->\forall a (((w=(-1)|w=1)&\forall t \forall ro \forall ho (0<=t&t < max(0,w*(vlo-v))/alo()&ro=rv*t&ho=w*alo()/2*t^2+v*t|t>=max(0,w*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-w*max(0,w*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|w*h < w*ho-hp()))&rp()>=0&hp()>0&rv>=0&alo()>0))&\forall vlo (\forall t \forall ro \forall ho (0<=t&t < max(0,(-1)*(vlo-v))/alo()&ro=rv*t&ho=(-1)*alo()/2*t^2+v*t|t>=max(0,(-1)*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-(-1)*max(0,(-1)*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|(-1)*h < (-1)*ho-hp())->\forall a ((((-1)=(-1)|(-1)=1)&\forall t \forall ro \forall ho (0<=t&t < max(0,(-1)*(vlo-v))/alo()&ro=rv*t&ho=(-1)*alo()/2*t^2+v*t|t>=max(0,(-1)*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-(-1)*max(0,(-1)*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|(-1)*h < (-1)*ho-hp()))&rp()>=0&hp()>0&rv>=0&alo()>0))&\forall vlo (\forall t \forall ro \forall ho (0<=t&t < max(0,1*(vlo-v))/alo()&ro=rv*t&ho=1*alo()/2*t^2+v*t|t>=max(0,1*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-1*max(0,1*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|1*h < 1*ho-hp())->\forall a (((1=(-1)|1=1)&\forall t \forall ro \forall ho (0<=t&t < max(0,1*(vlo-v))/alo()&ro=rv*t&ho=1*alo()/2*t^2+v*t|t>=max(0,1*(vlo-v))/alo()&ro=rv*t&ho=vlo*t-1*max(0,1*(vlo-v))^2/(2*alo())->abs(r-ro)>rp()|1*h < 1*ho-hp()))&rp()>=0&hp()>0&rv>=0&alo()>0))");
         closeT,
       "Show [a]Q":
