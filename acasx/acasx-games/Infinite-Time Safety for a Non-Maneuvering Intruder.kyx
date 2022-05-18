@@ -1,5 +1,3 @@
-/* Exported from KeYmaera X v4.9.7 */
-
 Theorem "ACAS X Hybrid Games/Theorem 3.2: Non-maneuvering intruder correctness of implicit safe regions".
 
 Definitions
@@ -65,7 +63,7 @@ Problem
   ]( abs(r)>rp | abs(h)>hp )
 End.
 
-Tactic "ACAS X Hybrid Games: No Intruder Control REFORMULATED v6: Proof"
+Tactic "ACAS X Hybrid Games/Proof Theorem 3.2: Non-maneuvering intruder correctness of implicit safe regions"
 implyR('R=="init(rv)&(w=wUp()|w=wLo())&Limpl(r,h,v,w,vlo,rv)->[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())");
 loop("loopInv(r,h,v,w,vlo,rv)", 'R=="[{{?true;++{w:=wUp();++w:=wLo();}vlo:=*;?Limpl(r,h,v,w,vlo,rv);}{ao:=*;?-amax()<=ao&ao<=amax();}^@motion{|^@|};}*](abs(r)>rp()|abs(h)>hp())"); <(
   "Init":
