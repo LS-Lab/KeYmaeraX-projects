@@ -1,0 +1,211 @@
+﻿/* Exported from KeYmaera X v4.9.6 */
+
+Theorem "Time-triggered nonholonomic integrator: stability"
+/*
+ * Generated from hybrid automaton (modified)
+ * A("x' = -x+a*y, y' = -y-a*x, z'= x*(-y-a*x) - y*(-x+a*y) & z>=0")
+ * B("x' = -x-a*y, y' = -y+a*x, z'= x*(-y+a*x) - y*(-x-a*y) & z<=0")
+ * C("x' = -x, y' = -y, z'= x*(-y) - y*(-x) & z=0")
+ *
+ * A & B & C --> A & B & C
+
+ */
+
+Definitions
+  Real T;
+End.
+
+ProgramVariables
+  Real z;
+  Real x;
+  Real y;
+  Real a;
+  Real t;
+End.
+
+Problem
+  T > 0 ->
+  \forall eps
+    (
+      eps > 0 ->
+      \exists del
+        (
+          del > 0 &
+          \forall z
+            \forall y
+              \forall x
+                (
+                  z^2 + y^2 + x^2 < del^2 ->
+                  [
+                    {
+                      if (x=0 & y=0 & z!=0) {
+                        t:=0;
+                        {t'= 1, x' = z, y' = z, z'= x*z - y*z & t <= T}
+                      }
+                      else {
+                        a := 2*z/(x^2+y^2);
+                        {x' = -x+a*y, y' = -y-a*x, z'= x*(-y-a*x) - y*(-x+a*y)}
+                      }
+                    }*
+                  ]
+                    z^2 + y^2 + x^2 < eps^2
+                )
+        )
+    )
+End.
+
+Tactic "Time-triggered nonholonomic integrator: stability: Proof"
+unfold ; existsRmon("del>0&del^2*(2*T()^2+1)<=eps^2", 'R=="\exists del (del>0&\forall z \forall y \forall x (z^2+y^2+x^2 < del^2->[{?x=0&y=0&z!=0;t:=0;{t'=1,x'=z,y'=z,z'=x*z-y*z&t<=T()}++?!(x=0&y=0&z!=0);a:=2*z/(x^2+y^2);{x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)}}*]z^2+y^2+x^2 < eps^2))") ; <(
+  "Use": QE,
+  "Show": unfold ; loop("(x=0&y=0&z!=0)&z^2 < del^2|!(x=0&y=0&z!=0)&x^2+y^2+z^2 < eps^2", 'R=="[{?x=0&y=0&z!=0;t:=0;{t'=1,x'=z,y'=z,z'=x*z-y*z&t<=T()}++?!(x=0&y=0&z!=0);a:=2*z/(x^2+y^2);{x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)}}*]z^2+y^2+x^2 < eps^2") ; <(
+      "Init": QE,
+      "Post": QE,
+      "Step": unfold ; <(
+          "[?x=0&y=0&z!=0;t:=0;{t'=1,x'=z,y'=z,z'=x*z-y*z&t<=T()}]((x=0&y=0&z!=0)&z^2 < del^2|!(x=0&y=0&z!=0)&x^2+y^2+z^2 < eps^2)": orL('L=="(x=0&y=0&z!=0)&z^2 < del^2|!(x=0&y=0&z!=0)&x^2+y^2+z^2 < eps^2") ; <(
+              "(x=0&y=0&z!=0)&z^2 < del^2": dC("t>=0&x=old(z)*t&y=old(z)*t&z=old(z)", 'R=="[{t'=1,x'=z,y'=z,z'=x*z-y*z&t<=T()}]((x=0&y=0&z!=0)&z^2 < del^2|!(x=0&y=0&z!=0)&x^2+y^2+z^2 < eps^2)") ; <(
+                  "Use": ODE('R=="[{t'=1,x'=z,y'=z,z'=x*z-y*z&t<=T()&t>=0&x=z_0*t&y=z_0*t&z=z_0}]((x=0&y=0&z!=0)&z^2 < del^2|!(x=0&y=0&z!=0)&x^2+y^2+z^2 < eps^2)"),
+                  "Show": ODE('R=="[{t'=1,x'=z,y'=z,z'=x*z-y*z&t<=T()}](t>=0&x=z_0*t&y=z_0*t&z=z_0)")
+                ),
+              "!(x=0&y=0&z!=0)&x^2+y^2+z^2 < eps^2": hideR('R=="[{t'=1,x'=z,y'=z,z'=x*z-y*z&t<=T()}]((x=0&y=0&z!=0)&z^2 < del^2|!(x=0&y=0&z!=0)&x^2+y^2+z^2 < eps^2)") ; QE
+            ),
+          "[?!(x=0&y=0&z!=0);a:=2*z/(x^2+y^2);{x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)}]((x=0&y=0&z!=0)&z^2 < del^2|!(x=0&y=0&z!=0)&x^2+y^2+z^2 < eps^2)": orL('L=="(x=0&y=0&z!=0)&z^2 < del^2|!(x=0&y=0&z!=0)&x^2+y^2+z^2 < eps^2") ; <(
+              "(x=0&y=0&z!=0)&z^2 < del^2": hideR('R=="[{x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)}]((x=0&y=0&z!=0)&z^2 < del^2|!(x=0&y=0&z!=0)&x^2+y^2+z^2 < eps^2)") ; QE,
+              "!(x=0&y=0&z!=0)&x^2+y^2+z^2 < eps^2": unfold ; dC("z=a/2*(x^2+y^2)", 'R=="[{x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)}]((x=0&y=0&z!=0)&z^2 < del^2|!(x=0&y=0&z!=0)&x^2+y^2+z^2 < eps^2)") ; <(
+                  "Use": dC("x^2+y^2+z^2<=old(x^2+y^2+z^2)", 'R=="[{x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)&true&z=a/2*(x^2+y^2)}]((x=0&y=0&z!=0)&z^2 < del^2|!(x=0&y=0&z!=0)&x^2+y^2+z^2 < eps^2)") ; <(
+                      "Use": ODE('R=="[{x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)&(true&z=a/2*(x^2+y^2))&x^2+y^2+z^2<=old}]((x=0&y=0&z!=0)&z^2 < del^2|!(x=0&y=0&z!=0)&x^2+y^2+z^2 < eps^2)"),
+                      "Show": ODE('R=="[{x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)&true&z=a/2*(x^2+y^2)}]x^2+y^2+z^2<=old")
+                    ),
+                  "Show": ODE('R=="[{x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)}]z=a/2*(x^2+y^2)")
+                )
+            )
+        )
+    )
+)
+End.
+
+End.
+
+/* Exported from KeYmaera X v4.9.6 */
+
+Theorem "Time-triggered nonholonomic integrator: attractivity"
+/*
+ * Generated from hybrid automaton (modified)
+ * A("x' = -x+a*y, y' = -y-a*x, z'= x*(-y-a*x) - y*(-x+a*y) & z>=0")
+ * B("x' = -x-a*y, y' = -y+a*x, z'= x*(-y+a*x) - y*(-x-a*y) & z<=0")
+ * C("x' = -x, y' = -y, z'= x*(-y) - y*(-x) & z=0")
+ *
+ * A & B & C --> A & B & C
+
+ */
+
+Definitions
+  Real T;
+End.
+
+ProgramVariables
+  Real z;
+  Real x;
+  Real y;
+  Real a;
+  Real t;
+End.
+
+Problem
+  T > 0 ->
+  \forall eps
+    (
+      eps > 0 ->
+      \forall del
+        (
+          del > 0 ->
+          \exists T_
+            (
+              T_ >= 0 &
+              \forall z
+                \forall y
+                  \forall x
+                    (
+                      z^2 + y^2 + x^2 < del^2 ->
+                      [
+                        t_:=0;
+                        {
+                          if (x=0 & y=0 & z!=0) {
+                            t:=0;
+                            {t_'=1, t'= 1, x' = z, y' = z, z'= x*z - y*z & t <= T}
+                          }
+                          else {
+                            a := 2*z/(x^2+y^2);
+                            {t_'=1, x' = -x+a*y, y' = -y-a*x, z'= x*(-y-a*x) - y*(-x+a*y)}
+                          }
+                        }*
+                      ]
+                        (t_ >= T_ -> z^2 + y^2 + x^2 < eps^2)
+                    )
+            )
+        )
+    )
+End.
+
+Tactic "Time-triggered nonholonomic integrator: attractivity: Proof"
+unfold;
+existsRmon("T_>=T()&del^2*(2*T()^2+1)-eps^2*(T_-T())<=eps^2", 'R=="\exists T_ (T_>=0&\forall z \forall y \forall x (z^2+y^2+x^2 < del^2->[t_:=0;{?x=0&y=0&z!=0;t:=0;{t_'=1,t'=1,x'=z,y'=z,z'=x*z-y*z&t<=T()}++?!(x=0&y=0&z!=0);a:=2*z/(x^2+y^2);{t_'=1,x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)}}*](t_>=T_->z^2+y^2+x^2 < eps^2)))"); <(
+  "Use":
+    QE,
+  "Show":
+    unfold; <(
+      "T_>=0":
+        QE,
+      "\forall z \forall y \forall x (z^2+y^2+x^2 < del^2->[t_:=0;{?x=0&y=0&z!=0;t:=0;{t_'=1,t'=1,x'=z,y'=z,z'=x*z-y*z&t<=T()}++?!(x=0&y=0&z!=0);a:=2*z/(x^2+y^2);{t_'=1,x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)}}*](t_>=T_->z^2+y^2+x^2 < eps^2))":
+        loop("(x=0&y=0&z!=0->z^2 < del^2&t_=0)&(!(x=0&y=0&z!=0)->x^2+y^2+z^2>=eps^2->x^2+y^2+z^2 < del^2*(2*T()^2+1)-eps^2*(t_-T()))", 'R=="[{?x=0&y=0&z!=0;t:=0;{t_'=1,t'=1,x'=z,y'=z,z'=x*z-y*z&t<=T()}++?!(x=0&y=0&z!=0);a:=2*z/(x^2+y^2);{t_'=1,x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)}}*](t_>=T_->z^2+y^2+x^2 < eps^2)"); <(
+          "Init":
+            QE,
+          "Post":
+            QE,
+          "Step":
+            unfold; <(
+              "[?x=0&y=0&z!=0;t:=0;{t_'=1,t'=1,x'=z,y'=z,z'=x*z-y*z&t<=T()}]((x=0&y=0&z!=0->z^2 < del^2&t_=0)&(!(x=0&y=0&z!=0)->x^2+y^2+z^2>=eps^2->x^2+y^2+z^2 < del^2*(2*T()^2+1)-eps^2*(t_-T())))":
+                implyL('L=="x=0&y=0&z!=0->z^2 < del^2&t_=0"); <(
+                  "x=0&y=0&z!=0":
+                    propClose,
+                  "z^2 < del^2&t_=0":
+                    hideL('L=="!(x=0&y=0&z!=0)->x^2+y^2+z^2>=eps^2->x^2+y^2+z^2 < del^2*(2*T()^2+1)-eps^2*(t_-T())");
+                    dC("t>=0&x=old(z)*t&y=old(z)*t&z=old(z)&t=t_", 'R=="[{t_'=1,t'=1,x'=z,y'=z,z'=x*z-y*z&t<=T()}]((x=0&y=0&z!=0->z^2 < del^2&t_=0)&(!(x=0&y=0&z!=0)->x^2+y^2+z^2>=eps^2->x^2+y^2+z^2 < del^2*(2*T()^2+1)-eps^2*(t_-T())))"); <(
+                      "Use":
+                        ODE('R=="[{t_'=1,t'=1,x'=z,y'=z,z'=x*z-y*z&t<=T()&t>=0&x=z_0*t&y=z_0*t&z=z_0&t=t_}]((x=0&y=0&z!=0->z^2 < del^2&t_=0)&(!(x=0&y=0&z!=0)->x^2+y^2+z^2>=eps^2->x^2+y^2+z^2 < del^2*(2*T()^2+1)-eps^2*(t_-T())))"),
+                      "Show":
+                        ODE('R=="[{t_'=1,t'=1,x'=z,y'=z,z'=x*z-y*z&t<=T()}](t>=0&x=z_0*t&y=z_0*t&z=z_0&t=t_)")
+                    )
+                ),
+              "[?!(x=0&y=0&z!=0);a:=2*z/(x^2+y^2);{t_'=1,x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)}]((x=0&y=0&z!=0->z^2 < del^2&t_=0)&(!(x=0&y=0&z!=0)->x^2+y^2+z^2>=eps^2->x^2+y^2+z^2 < del^2*(2*T()^2+1)-eps^2*(t_-T())))":
+                hideL('L=="x=0&y=0&z!=0->z^2 < del^2&t_=0");
+                implyL('L=="!(x=0&y=0&z!=0)->x^2+y^2+z^2>=eps^2->x^2+y^2+z^2 < del^2*(2*T()^2+1)-eps^2*(t_-T())"); <(
+                  "!(x=0&y=0&z!=0)":
+                    propClose,
+                  "x^2+y^2+z^2>=eps^2->x^2+y^2+z^2 < del^2*(2*T()^2+1)-eps^2*(t_-T())":
+                    dC("a*(x^2+y^2)=2*z", 'R=="[{t_'=1,x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)}]((x=0&y=0&z!=0->z^2 < del^2&t_=0)&(!(x=0&y=0&z!=0)->x^2+y^2+z^2>=eps^2->x^2+y^2+z^2 < del^2*(2*T()^2+1)-eps^2*(t_-T())))"); <(
+                      "Use":
+                        dC("x^2+y^2+z^2>=eps^2->x^2+y^2+z^2 < del^2*(2*T()^2+1)-eps^2*(t_-T())", 'R=="[{t_'=1,x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)&true&a*(x^2+y^2)=2*z}]((x=0&y=0&z!=0->z^2 < del^2&t_=0)&(!(x=0&y=0&z!=0)->x^2+y^2+z^2>=eps^2->x^2+y^2+z^2 < del^2*(2*T()^2+1)-eps^2*(t_-T())))"); <(
+                          "Use":
+                            ODE('R=="[{t_'=1,x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)&(true&a*(x^2+y^2)=2*z)&(x^2+y^2+z^2>=eps^2->x^2+y^2+z^2 < del^2*(2*T()^2+1)-eps^2*(t_-T()))}]((x=0&y=0&z!=0->z^2 < del^2&t_=0)&(!(x=0&y=0&z!=0)->x^2+y^2+z^2>=eps^2->x^2+y^2+z^2 < del^2*(2*T()^2+1)-eps^2*(t_-T())))"),
+                          "Show":
+                            useAt("DCC", "1", 'R=="[{t_'=1,x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)&true&a*(x^2+y^2)=2*z}](x^2+y^2+z^2>=eps^2->x^2+y^2+z^2 < del^2*(2*T()^2+1)-eps^2*(t_-T()))");
+                            andR('R=="[{t_'=1,x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)&(true&a*(x^2+y^2)=2*z)&x^2+y^2+z^2>=eps^2}]x^2+y^2+z^2 < del^2*(2*T()^2+1)-eps^2*(t_-T())&[{t_'=1,x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)&true&a*(x^2+y^2)=2*z}](!x^2+y^2+z^2>=eps^2->[{t_'=1,x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)&true&a*(x^2+y^2)=2*z}](!x^2+y^2+z^2>=eps^2))"); <(
+                              "[{t_'=1,x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)&(true&a*(x^2+y^2)=2*z)&x^2+y^2+z^2>=eps^2}]x^2+y^2+z^2 < del^2*(2*T()^2+1)-eps^2*(t_-T())":
+                                dIClose('R=="[{t_'=1,x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)&(true&a*(x^2+y^2)=2*z)&x^2+y^2+z^2>=eps^2}]x^2+y^2+z^2 < del^2*(2*T()^2+1)-eps^2*(t_-T())"),
+                              "[{t_'=1,x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)&true&a*(x^2+y^2)=2*z}](!x^2+y^2+z^2>=eps^2->[{t_'=1,x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)&true&a*(x^2+y^2)=2*z}](!x^2+y^2+z^2>=eps^2))":
+                                dW('R=="[{t_'=1,x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)&true&a*(x^2+y^2)=2*z}](!x^2+y^2+z^2>=eps^2->[{t_'=1,x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)&true&a*(x^2+y^2)=2*z}](!x^2+y^2+z^2>=eps^2))");
+                                implyR('R=="!x^2+y^2+z^2>=eps^2->[{t_'=1,x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)&true&a*(x^2+y^2)=2*z}](!x^2+y^2+z^2>=eps^2)");
+                                ODE('R=="[{t_'=1,x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)&true&a*(x^2+y^2)=2*z}](!x^2+y^2+z^2>=eps^2)")
+                            )
+                        ),
+                      "Show":
+                        ODE('R=="[{t_'=1,x'=-x+a*y,y'=-y-a*x,z'=x*(-y-a*x)-y*(-x+a*y)}]a*(x^2+y^2)=2*z")
+                    )
+                )
+            )
+        )
+    )
+)
+End.
+
+End.

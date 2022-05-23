@@ -1,0 +1,196 @@
+﻿/* Exported from KeYmaera X v4.9.9 */
+
+Theorem "ODE Stability/Example 7 Asymptotically stable pendulum"
+
+Definitions
+
+Real a; /* Parameter a = g/L for the ratio of gravity to length of the rod holding the pendulum */
+Real b; /* Parameter b >= 0 for the coefficient of friction against angular velocity */
+
+Real normsq(Real x, Real y) = x^2 + y^2;
+
+/* ODE for (linearized) pendulum where theta is the angle of displacement and w is the angular velocity:
+ * theta'=w,w'=-a*theta-b*w
+ */
+
+/* Asymptotic stability for the ODE */
+Bool stable <->
+  \forall eps (eps > 0 ->
+  \exists del (del > 0 &
+  \forall theta \forall w (normsq(theta,w) < del^2 ->
+    [{theta'=w,w'=-a*theta-b*w}] normsq(theta,w) < eps^2
+  )));
+
+Bool attractive <->
+  \exists del (del > 0 &
+  \forall theta \forall w ( normsq(theta,w) < del^2 ->
+  \forall eps (eps > 0 ->
+    <{theta'=w,w'=-a*theta-b*w}> [{theta'=w,w'=-a*theta-b*w}] normsq(theta,w) < eps^2
+  )));
+
+/* Lyapunov function */
+Real lyap(Real theta, Real w) = a*(theta^2)/2 + ((b*theta+w)^2+w^2)/4;
+
+End.
+
+Problem
+  a > 0 & b > 0 -> stable & attractive
+End.
+
+Tactic "ODE Stability/Example 7 Asymptotically stable pendulum: Proof"
+implyR('R=="a()>0&b()>0->stable()&attractive()");
+cut("stable()&(stable()->attractive())"); <(
+  "Use":
+    propClose,
+  "Show":
+    hideR('R=="stable()&attractive()");
+    andR('R=="stable()&(stable()->attractive())"); <(
+      "stable()":
+        expand "stable";
+        unfold;
+        cut("\exists k (k>0&\forall theta \forall w (normsq(theta,w)=eps^2->lyap(theta,w)>=k))"); <(
+          "Use":
+            unfold;
+            existsRmon("del>0&del < eps&\forall theta \forall w (normsq(theta,w) < del^2->lyap(theta,w) < k)", 'R=="\exists del (del>0&\forall theta \forall w (normsq(theta,w) < del^2->[{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < eps^2))"); <(
+              "Use":
+                hideL('L=="\forall theta \forall w (normsq(theta,w)=eps^2->lyap(theta,w)>=k)");
+                expandAllDefs;
+                QE,
+              "Show":
+                unfold;
+                allL('L=="\forall theta \forall w (normsq(theta,w) < del^2->lyap(theta,w) < k)");
+                allL('L=="\forall w (normsq(theta,w) < del^2->lyap(theta,w) < k)");
+                fullSimplify;
+                dC("normsq(theta,w)=eps^2->lyap(theta,w)>=k", 'R=="[{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < eps^2"); <(
+                  "Use":
+                    hideL('L=="\forall theta \forall w (normsq(theta,w)=eps^2->lyap(theta,w)>=k)");
+                    dC("lyap(theta,w) < k", 'R=="[{theta'=w,w'=-a()*theta-b()*w&true&(normsq(theta,w)=eps^2->lyap(theta,w)>=k)}]normsq(theta,w) < eps^2"); <(
+                      "Use":
+                        expandAllDefs;
+                        ODE('R=="[{theta'=w,w'=-a()*theta-b()*w&(true&(theta^2+w^2=eps^2->a()*theta^2/2+((b()*theta+w)^2+w^2)/4>=k))&a()*theta^2/2+((b()*theta+w)^2+w^2)/4 < k}]theta^2+w^2 < eps^2"),
+                      "Show":
+                        expandAllDefs;
+                        ODE('R=="[{theta'=w,w'=-a()*theta-b()*w&true&(theta^2+w^2=eps^2->a()*theta^2/2+((b()*theta+w)^2+w^2)/4>=k)}]a()*theta^2/2+((b()*theta+w)^2+w^2)/4 < k")
+                    ),
+                  "Show":
+                    dW('R=="[{theta'=w,w'=-a()*theta-b()*w}](normsq(theta,w)=eps^2->lyap(theta,w)>=k)");
+                    unfold;
+                    allL('L=="\forall theta \forall w (normsq(theta,w)=eps^2->lyap(theta,w)>=k)");
+                    allL('L=="\forall w (normsq(theta,w)=eps^2->lyap(theta,w)>=k)");
+                    propClose
+                )
+            ),
+          "Show":
+            hideR('R=="\exists del (del>0&\forall theta \forall w (normsq(theta,w) < del^2->[{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < eps^2))");
+            expandAllDefs;
+            QE
+        ),
+      "stable()->attractive()":
+        implyR('R=="stable()->attractive()");
+        cut("\exists del (del>0&\forall theta \forall w (normsq(theta,w) < del^2->\forall eps (eps>0-><{theta'=w,w'=-a()*theta-b()*w}>normsq(theta,w) < eps^2)))"); <(
+          "Use":
+            unfold;
+            expand "attractive";
+            existsR('R=="\exists del (del>0&\forall theta \forall w (normsq(theta,w) < del^2->\forall eps (eps>0-><{theta'=w,w'=-a()*theta-b()*w}>[{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < eps^2)))");
+            unfold;
+            allL('L=="\forall theta \forall w (normsq(theta,w) < del^2->\forall eps (eps>0-><{theta'=w,w'=-a()*theta-b()*w}>normsq(theta,w) < eps^2))");
+            allL('L=="\forall w (normsq(theta,w) < del^2->\forall eps (eps>0-><{theta'=w,w'=-a()*theta-b()*w}>normsq(theta,w) < eps^2))");
+            fullSimplify;
+            expand "stable";
+            allL('L=="\forall eps (eps>0->\exists del (del>0&\forall theta \forall w (normsq(theta,w) < del^2->[{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < eps^2)))");
+            implyL('L=="eps>0->\exists del (del>0&\forall theta \forall w (normsq(theta,w) < del^2->[{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < eps^2))"); <(
+              "eps>0":
+                propClose,
+              "\exists del (del>0&\forall theta \forall w (normsq(theta,w) < del^2->[{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < eps^2))":
+                unfold;
+                allL("del", 'L=="\forall eps (eps>0-><{theta'=w,w'=-a()*theta-b()*w}>normsq(theta,w) < eps^2)");
+                unfold;
+                kDomainDiamond("normsq(theta,w) < del^2", 'R=="<{theta'=w,w'=-a()*theta-b()*w}>[{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < eps^2"); <(
+                  "Use":
+                    propClose,
+                  "Show":
+                    dC("normsq(theta,w) < del^2->[{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < eps^2", 'R=="[{theta'=w,w'=-a()*theta-b()*w&true&![{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < eps^2}](!normsq(theta,w) < del^2)"); <(
+                      "Use":
+                        dW('R=="[{theta'=w,w'=-a()*theta-b()*w&(true&![{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < eps^2)&(normsq(theta,w) < del^2->[{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < eps^2)}](!normsq(theta,w) < del^2)");
+                        propClose,
+                      "Show":
+                        dW('R=="[{theta'=w,w'=-a()*theta-b()*w&true&![{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < eps^2}](normsq(theta,w) < del^2->[{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < eps^2)");
+                        unfold;
+                        allL('L=="\forall theta \forall w (normsq(theta,w) < del^2->[{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < eps^2)");
+                        allL('L=="\forall w (normsq(theta,w) < del^2->[{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < eps^2)");
+                        propClose
+                    )
+                )
+            ),
+          "Show":
+            hideR('R=="attractive()");
+            expand "stable";
+            allL("1", 'L=="\forall eps (eps>0->\exists del (del>0&\forall theta \forall w (normsq(theta,w) < del^2->[{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < eps^2)))");
+            implyL('L=="1>0->\exists del (del>0&\forall theta \forall w (normsq(theta,w) < del^2->[{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < 1^2))"); <(
+              "1>0":
+                QE using "1>0",
+              "\exists del (del>0&\forall theta \forall w (normsq(theta,w) < del^2->[{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < 1^2))":
+                unfold;
+                existsR('R=="\exists del (del>0&\forall theta \forall w (normsq(theta,w) < del^2->\forall eps (eps>0-><{theta'=w,w'=-a()*theta-b()*w}>normsq(theta,w) < eps^2)))");
+                unfold;
+                allL('L=="\forall theta \forall w (normsq(theta,w) < del^2->[{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < 1^2)");
+                allL('L=="\forall w (normsq(theta,w) < del^2->[{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < 1^2)");
+                fullSimplify;
+                cut("\exists bnd \forall theta \forall w (normsq(theta,w) < 1*1->lyap(theta,w)>=bnd)"); <(
+                  "Use":
+                    unfold;
+                    compatCut("!normsq(theta,w) < eps^2", 'R=="<{theta'=w,w'=-a()*theta-b()*w}>normsq(theta,w) < eps^2"); <(
+                      "Use":
+                        kDomainDiamond("lyap(theta,w) < bnd", 'R=="<{theta'=w,w'=-a()*theta-b()*w}>normsq(theta,w) < eps^2"); <(
+                          "Use":
+                            hideL('L=="\forall theta \forall w (normsq(theta,w) < 1*1->lyap(theta,w)>=bnd)");
+                            expand "lyap";
+                            dV('R=="<{theta'=w,w'=-a()*theta-b()*w}>a()*theta^2/2+((b()*theta+w)^2+w^2)/4 < bnd");
+                            cut("\exists bnd (bnd>0&\forall theta \forall w (normsq(theta,w) < 1^2&!normsq(theta,w) < eps^2->-(a()*(2*theta*w)*2/4+(2*(b()*theta+w)*(b()*w+(-a()*theta-b()*w))+2*w*(-a()*theta-b()*w))*4/16)>=bnd))"); <(
+                              "Use":
+                                unfold;
+                                existsR("bnd", 'R=="\exists eps_0 (eps_0>0&\forall theta \forall w (((true&bnd_0-(a()*theta^2/2+((b()*theta+w)^2+w^2)/4)<=0)&theta^2+w^2 < 1)&!theta^2+w^2 < eps^2->-(a()*(2*theta*w)*2/4+(2*(b()*theta+w)*(b()*w+(-a()*theta-b()*w))+2*w*(-a()*theta-b()*w))*4/16)>=eps_0))");
+                                andR('R=="bnd>0&\forall theta \forall w (((true&bnd_0-(a()*theta^2/2+((b()*theta+w)^2+w^2)/4)<=0)&theta^2+w^2 < 1)&!theta^2+w^2 < eps^2->-(a()*(2*theta*w)*2/4+(2*(b()*theta+w)*(b()*w+(-a()*theta-b()*w))+2*w*(-a()*theta-b()*w))*4/16)>=bnd)"); <(
+                                  "bnd>0":
+                                    propClose,
+                                  "\forall theta \forall w (((true&bnd_0-(a()*theta^2/2+((b()*theta+w)^2+w^2)/4)<=0)&theta^2+w^2 < 1)&!theta^2+w^2 < eps^2->-(a()*(2*theta*w)*2/4+(2*(b()*theta+w)*(b()*w+(-a()*theta-b()*w))+2*w*(-a()*theta-b()*w))*4/16)>=bnd)":
+                                    unfold;
+                                    allL('L=="\forall theta \forall w (normsq(theta,w) < 1^2&!normsq(theta,w) < eps^2->-(a()*(2*theta*w)*2/4+(2*(b()*theta+w)*(b()*w+(-a()*theta-b()*w))+2*w*(-a()*theta-b()*w))*4/16)>=bnd)");
+                                    allL('L=="\forall w (normsq(theta,w) < 1^2&!normsq(theta,w) < eps^2->-(a()*(2*theta*w)*2/4+(2*(b()*theta+w)*(b()*w+(-a()*theta-b()*w))+2*w*(-a()*theta-b()*w))*4/16)>=bnd)");
+                                    implyL('L=="normsq(theta,w) < 1^2&!normsq(theta,w) < eps^2->-(a()*(2*theta*w)*2/4+(2*(b()*theta+w)*(b()*w+(-a()*theta-b()*w))+2*w*(-a()*theta-b()*w))*4/16)>=bnd"); <(
+                                      "normsq(theta,w) < 1^2&!normsq(theta,w) < eps^2":
+                                        QE,
+                                      "-(a()*(2*theta*w)*2/4+(2*(b()*theta+w)*(b()*w+(-a()*theta-b()*w))+2*w*(-a()*theta-b()*w))*4/16)>=bnd":
+                                        QE
+                                    )
+                                ),
+                              "Show":
+                                hideR('R=="\exists eps_0 (eps_0>0&\forall theta \forall w (((true&bnd-(a()*theta^2/2+((b()*theta+w)^2+w^2)/4)<=0)&theta^2+w^2 < 1)&!theta^2+w^2 < eps^2->-(a()*(2*theta*w)*2/4+(2*(b()*theta+w)*(b()*w+(-a()*theta-b()*w))+2*w*(-a()*theta-b()*w))*4/16)>=eps_0))");
+                                expandAllDefs;
+                                QE
+                            ),
+                          "Show":
+                            dW('R=="[{theta'=w,w'=-a()*theta-b()*w&(true&!normsq(theta,w) < eps^2)&normsq(theta,w) < 1}](!lyap(theta,w) < bnd)");
+                            unfold;
+                            allL('L=="\forall theta \forall w (normsq(theta,w) < 1*1->lyap(theta,w)>=bnd)");
+                            allL('L=="\forall w (normsq(theta,w) < 1*1->lyap(theta,w)>=bnd)");
+                            fullSimplify;
+                            propClose
+                        ),
+                      "Show":
+                        diamondd('R=="<{theta'=w,w'=-a()*theta-b()*w}>normsq(theta,w) < eps^2");
+                        propClose
+                    ),
+                  "Show":
+                    hideR('R=="<{theta'=w,w'=-a()*theta-b()*w}>normsq(theta,w) < eps^2");
+                    hideL('L=="[{theta'=w,w'=-a()*theta-b()*w}]normsq(theta,w) < 1");
+                    expandAllDefs;
+                    QE
+                )
+            )
+        )
+    )
+)
+End.
+
+End.

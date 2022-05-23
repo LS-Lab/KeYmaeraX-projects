@@ -1,0 +1,212 @@
+/* Exported from KeYmaera X v4.9.6 */
+
+Theorem "Canonical max system: stability"
+/*
+ * Generated from hybrid automaton
+ * Mode1("x'=y, y'=-a*x-b*y+f*x+g*y+gam &
+ *        f*x+g*y+gam >= 0 & f*x+gam >= 0")
+ * Mode2("x'=y, y'=-a*x-b*y+f*x+g*y+gam &
+ *        f*x+g*y+gam >= 0 & f*x+gam <= 0")
+ * Mode3("x'=y, y'=-a*x-b*y &
+ *        f*x+g*y+gam <= 0 & f*x+gam >= 0")
+ * Mode4("x'=y, y'=-a*x-b*y &
+ *        f*x+g*y+gam <= 0 & f*x+gam <= 0")
+ *
+ * Mode1 & Mode2 & Mode3 & Mode4 --> Mode1 & Mode2 & Mode3 & Mode4
+ */
+
+Definitions
+  Real g;
+  Real a;
+  Real gam;
+  Real f;
+  Real b;
+End.
+
+ProgramVariables
+  Real x;
+  Real y;
+End.
+
+Problem
+  a > 0 & b > 0 & a-f >0 & b-g > 0 & gam <= 0 ->
+  \forall eps
+    (
+      eps > 0 ->
+      \exists del
+        (
+          del > 0 &
+          \forall x
+            \forall y
+              (
+                x^2 + y^2 < del^2 ->
+                [
+                  {
+                    {
+                      x'=y,
+                      y'=-a * x - b * y + f * x + g * y + gam &
+                      f * x + g * y + gam >= 0 & f * x + gam >= 0
+                    }
+                    ++
+                    {
+                      x'=y,
+                      y'=-a * x - b * y + f * x + g * y + gam &
+                      f * x + g * y + gam >= 0 & f * x + gam <= 0
+                    }
+                    ++
+                    {
+                      x'=y,
+                      y'=-a * x - b * y &
+                      f * x + g * y + gam <= 0 & f * x + gam >= 0
+                    }
+                    ++
+                    {
+                      x'=y,
+                      y'=-a * x - b * y &
+                      f * x + g * y + gam <= 0 & f * x + gam <= 0
+                    }
+                  }*
+                ]
+                  x^2 + y^2 < eps^2
+              )
+        )
+    )
+End.
+
+Tactic "Canonical max system: stability: Proof"
+unfold ; cut("f()=0|f()!=0") ; <(
+  "Use": orL('L=="f()=0|f()!=0") ; <(
+      "f()=0": cut("\exists k (k>0&\forall x \forall y (x^2+y^2=eps^2->1/2*y^2+a()/2*x^2>=k))") ; <(
+          "Use": unfold ; existsRmon("del>0&del < eps&\forall x \forall y (x^2+y^2 < del^2->1/2*y^2+a()/2*x^2 < k)", 'R=="\exists del (del>0&\forall x \forall y (x^2+y^2 < del^2->[{{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()>=0}++{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()<=0}++{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()>=0}++{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()<=0}}*]x^2+y^2 < eps^2))") ; <(
+              "Use": hideL('L=="\forall x \forall y (x^2+y^2=eps^2->1/2*y^2+a()/2*x^2>=k)") ; QE,
+              "Show": unfold ; allL('L=="\forall x \forall y (x^2+y^2 < del^2->1/2*y^2+a()/2*x^2 < k)") ; allL('L=="\forall y (x^2+y^2 < del^2->1/2*y^2+a()/2*x^2 < k)") ; implyL('L=="x^2+y^2 < del^2->1/2*y^2+a()/2*x^2 < k") ; <(
+                  "x^2+y^2 < del^2": propClose,
+                  "1/2*y^2+a()/2*x^2 < k": loop("x^2+y^2 < eps^2&1/2*y^2+a()/2*x^2 < k", 'R=="[{{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()>=0}++{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()<=0}++{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()>=0}++{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()<=0}}*]x^2+y^2 < eps^2") ; <(
+                      "Init": hideL('L=="\forall x \forall y (x^2+y^2=eps^2->1/2*y^2+a()/2*x^2>=k)") ; QE,
+                      "Post": propClose,
+                      "Step": unfold ; <(
+                          "[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()>=0}](x^2+y^2 < eps^2&1/2*y^2+a()/2*x^2 < k)": dC("1/2*y^2+a()/2*x^2 < k", 'R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()>=0}](x^2+y^2 < eps^2&1/2*y^2+a()/2*x^2 < k)") ; <(
+                              "Use": dC("x^2+y^2!=eps^2", 'R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&(f()*x+g()*y+gam()>=0&f()*x+gam()>=0)&1/2*y^2+a()/2*x^2 < k}](x^2+y^2 < eps^2&1/2*y^2+a()/2*x^2 < k)") ; <(
+                                  "Use": ODE('R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&((f()*x+g()*y+gam()>=0&f()*x+gam()>=0)&1/2*y^2+a()/2*x^2 < k)&x^2+y^2!=eps^2}](x^2+y^2 < eps^2&1/2*y^2+a()/2*x^2 < k)"),
+                                  "Show": dW('R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&(f()*x+g()*y+gam()>=0&f()*x+gam()>=0)&1/2*y^2+a()/2*x^2 < k}]x^2+y^2!=eps^2") ; unfold ; allL('L=="\forall x \forall y (x^2+y^2=eps^2->1/2*y^2+a()/2*x^2>=k)") ; allL('L=="\forall y (x^2+y^2=eps^2->1/2*y^2+a()/2*x^2>=k)") ; QE
+                                ),
+                              "Show": ODE('R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()>=0}]1/2*y^2+a()/2*x^2 < k")
+                            ),
+                          "[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()<=0}](x^2+y^2 < eps^2&1/2*y^2+a()/2*x^2 < k)": dC("1/2*y^2+a()/2*x^2 < k", 'R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()<=0}](x^2+y^2 < eps^2&1/2*y^2+a()/2*x^2 < k)") ; <(
+                              "Use": dC("x^2+y^2!=eps^2", 'R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&(f()*x+g()*y+gam()>=0&f()*x+gam()<=0)&1/2*y^2+a()/2*x^2 < k}](x^2+y^2 < eps^2&1/2*y^2+a()/2*x^2 < k)") ; <(
+                                  "Use": ODE('R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&((f()*x+g()*y+gam()>=0&f()*x+gam()<=0)&1/2*y^2+a()/2*x^2 < k)&x^2+y^2!=eps^2}](x^2+y^2 < eps^2&1/2*y^2+a()/2*x^2 < k)"),
+                                  "Show": dW('R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&(f()*x+g()*y+gam()>=0&f()*x+gam()<=0)&1/2*y^2+a()/2*x^2 < k}]x^2+y^2!=eps^2") ; unfold ; allL('L=="\forall x \forall y (x^2+y^2=eps^2->1/2*y^2+a()/2*x^2>=k)") ; allL('L=="\forall y (x^2+y^2=eps^2->1/2*y^2+a()/2*x^2>=k)") ; QE
+                                ),
+                              "Show": ODE('R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()<=0}]1/2*y^2+a()/2*x^2 < k")
+                            ),
+                          "[{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()>=0}](x^2+y^2 < eps^2&1/2*y^2+a()/2*x^2 < k)": dC("1/2*y^2+a()/2*x^2 < k", 'R=="[{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()>=0}](x^2+y^2 < eps^2&1/2*y^2+a()/2*x^2 < k)") ; <(
+                              "Use": dC("x^2+y^2!=eps^2", 'R=="[{x'=y,y'=-a()*x-b()*y&(f()*x+g()*y+gam()<=0&f()*x+gam()>=0)&1/2*y^2+a()/2*x^2 < k}](x^2+y^2 < eps^2&1/2*y^2+a()/2*x^2 < k)") ; <(
+                                  "Use": ODE('R=="[{x'=y,y'=-a()*x-b()*y&((f()*x+g()*y+gam()<=0&f()*x+gam()>=0)&1/2*y^2+a()/2*x^2 < k)&x^2+y^2!=eps^2}](x^2+y^2 < eps^2&1/2*y^2+a()/2*x^2 < k)"),
+                                  "Show": dW('R=="[{x'=y,y'=-a()*x-b()*y&(f()*x+g()*y+gam()<=0&f()*x+gam()>=0)&1/2*y^2+a()/2*x^2 < k}]x^2+y^2!=eps^2") ; unfold ; allL('L=="\forall x \forall y (x^2+y^2=eps^2->1/2*y^2+a()/2*x^2>=k)") ; allL('L=="\forall y (x^2+y^2=eps^2->1/2*y^2+a()/2*x^2>=k)") ; QE
+                                ),
+                              "Show": ODE('R=="[{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()>=0}]1/2*y^2+a()/2*x^2 < k")
+                            ),
+                          "[{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()<=0}](x^2+y^2 < eps^2&1/2*y^2+a()/2*x^2 < k)": dC("1/2*y^2+a()/2*x^2 < k", 'R=="[{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()<=0}](x^2+y^2 < eps^2&1/2*y^2+a()/2*x^2 < k)") ; <(
+                              "Use": dC("x^2+y^2!=eps^2", 'R=="[{x'=y,y'=-a()*x-b()*y&(f()*x+g()*y+gam()<=0&f()*x+gam()<=0)&1/2*y^2+a()/2*x^2 < k}](x^2+y^2 < eps^2&1/2*y^2+a()/2*x^2 < k)") ; <(
+                                  "Use": ODE('R=="[{x'=y,y'=-a()*x-b()*y&((f()*x+g()*y+gam()<=0&f()*x+gam()<=0)&1/2*y^2+a()/2*x^2 < k)&x^2+y^2!=eps^2}](x^2+y^2 < eps^2&1/2*y^2+a()/2*x^2 < k)"),
+                                  "Show": dW('R=="[{x'=y,y'=-a()*x-b()*y&(f()*x+g()*y+gam()<=0&f()*x+gam()<=0)&1/2*y^2+a()/2*x^2 < k}]x^2+y^2!=eps^2") ; unfold ; allL('L=="\forall x \forall y (x^2+y^2=eps^2->1/2*y^2+a()/2*x^2>=k)") ; allL('L=="\forall y (x^2+y^2=eps^2->1/2*y^2+a()/2*x^2>=k)") ; QE
+                                ),
+                              "Show": hideL('L=="\forall x \forall y (x^2+y^2=eps^2->1/2*y^2+a()/2*x^2>=k)") ; ODE('R=="[{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()<=0}]1/2*y^2+a()/2*x^2 < k")
+                            )
+                        )
+                    )
+                )
+            ),
+          "Show": hideR('R=="\exists del (del>0&\forall x \forall y (x^2+y^2 < del^2->[{{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()>=0}++{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()<=0}++{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()>=0}++{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()<=0}}*]x^2+y^2 < eps^2))") ; QE
+        ),
+      "f()!=0": cut("\exists k (k>0&\forall x \forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k)))") ; <(
+          "Use": unfold ; existsRmon("del>0&del < eps&\forall x \forall y (x^2+y^2 < del^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))", 'R=="\exists del (del>0&\forall x \forall y (x^2+y^2 < del^2->[{{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()>=0}++{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()<=0}++{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()>=0}++{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()<=0}}*]x^2+y^2 < eps^2))") ; <(
+              "Use": hideL('L=="\forall x \forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k))") ; cut("\exists del1 (del1>0&\forall x \forall y (x^2+y^2 < del1^2->f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k))") ; <(
+                  "Use": cut("\exists del2 (del2>0&\forall x \forall y (x^2+y^2 < del2^2->f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))") ; <(
+                      "Use": unfold ; existsRmon("del>0&del < eps&del < del1&del < del2", 'R=="\exists del (del>0&del < eps&\forall x \forall y (x^2+y^2 < del^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k)))") ; <(
+                          "Use": hideL('L=="\forall x \forall y (x^2+y^2 < del1^2->f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)") ; hideL('L=="\forall x \forall y (x^2+y^2 < del2^2->f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k)") ; QE,
+                          "Show": unfold ; andR('R=="del>0&del < eps&\forall x \forall y (x^2+y^2 < del^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))") ; <(
+                              "del>0": propClose,
+                              "del < eps&\forall x \forall y (x^2+y^2 < del^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))": andR('R=="del < eps&\forall x \forall y (x^2+y^2 < del^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))") ; <(
+                                  "del < eps": propClose,
+                                  "\forall x \forall y (x^2+y^2 < del^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))": unfold ; allL('L=="\forall x \forall y (x^2+y^2 < del1^2->f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)") ; allL('L=="\forall y (x^2+y^2 < del1^2->f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)") ; allL('L=="\forall x \forall y (x^2+y^2 < del2^2->f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k)") ; allL('L=="\forall y (x^2+y^2 < del2^2->f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k)") ; QE
+                                )
+                            )
+                        ),
+                      "Show": hideR('R=="\exists del (del>0&del < eps&\forall x \forall y (x^2+y^2 < del^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k)))") ; hideL('L=="\exists del1 (del1>0&\forall x \forall y (x^2+y^2 < del1^2->f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k))") ; QE
+                    ),
+                  "Show": hideR('R=="\exists del (del>0&del < eps&\forall x \forall y (x^2+y^2 < del^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k)))") ; QE
+                ),
+              "Show": unfold ; allL('L=="\forall x \forall y (x^2+y^2 < del^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))") ; allL('L=="\forall y (x^2+y^2 < del^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))") ; implyL('L=="x^2+y^2 < del^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k)") ; <(
+                  "x^2+y^2 < del^2": propClose,
+                  "(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k)": loop("x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k)", 'R=="[{{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()>=0}++{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()<=0}++{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()>=0}++{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()<=0}}*]x^2+y^2 < eps^2") ; <(
+                      "Init": andR('R=="x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k)") ; <(
+                          "x^2+y^2 < eps^2": hideL('L=="\forall x \forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k))") ; QE,
+                          "(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k)": propClose
+                        ),
+                      "Post": propClose,
+                      "Step": unfold ; <(
+                          "[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()>=0}](x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))": diffUnpackEvolDomain('R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()>=0}](x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))") ; implyL('L=="f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k") ; <(
+                              "f()*x+gam()>=0": propClose,
+                              "1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k": dC("1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k", 'R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()>=0}](x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))") ; <(
+                                  "Use": dC("x^2+y^2!=eps^2", 'R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&(f()*x+g()*y+gam()>=0&f()*x+gam()>=0)&1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k}](x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))") ; <(
+                                      "Use": hideL('L=="\forall x \forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k))") ; ODE('R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&((f()*x+g()*y+gam()>=0&f()*x+gam()>=0)&1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k)&x^2+y^2!=eps^2}](x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))"),
+                                      "Show": dW('R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&(f()*x+g()*y+gam()>=0&f()*x+gam()>=0)&1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k}]x^2+y^2!=eps^2") ; unfold ; allL('L=="\forall x \forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k))") ; allL('L=="\forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k))") ; QE
+                                    ),
+                                  "Show": hideL('L=="\forall x \forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k))") ; ODE('R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()>=0}]1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k")
+                                )
+                            ),
+                          "[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()<=0}](x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))": diffUnpackEvolDomain('R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()<=0}](x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))") ; implyL('L=="f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k") ; <(
+                              "f()*x+gam()<=0": propClose,
+                              "1/2*y^2+a()/2*x^2 < k": dC("1/2*y^2+a()/2*x^2 < k", 'R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()<=0}](x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))") ; <(
+                                  "Use": dC("x^2+y^2!=eps^2", 'R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&(f()*x+g()*y+gam()>=0&f()*x+gam()<=0)&1/2*y^2+a()/2*x^2 < k}](x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))") ; <(
+                                      "Use": hideL('L=="\forall x \forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k))") ; ODE('R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&((f()*x+g()*y+gam()>=0&f()*x+gam()<=0)&1/2*y^2+a()/2*x^2 < k)&x^2+y^2!=eps^2}](x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))"),
+                                      "Show": dW('R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&(f()*x+g()*y+gam()>=0&f()*x+gam()<=0)&1/2*y^2+a()/2*x^2 < k}]x^2+y^2!=eps^2") ; unfold ; allL('L=="\forall x \forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k))") ; allL('L=="\forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k))") ; QE
+                                    ),
+                                  "Show": hideL('L=="\forall x \forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k))") ; ODE('R=="[{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()<=0}]1/2*y^2+a()/2*x^2 < k")
+                                )
+                            ),
+                          "[{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()>=0}](x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))": diffUnpackEvolDomain('R=="[{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()>=0}](x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))") ; implyL('L=="f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k") ; <(
+                              "f()*x+gam()>=0": propClose,
+                              "1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k": dC("1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k", 'R=="[{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()>=0}](x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))") ; <(
+                                  "Use": dC("x^2+y^2!=eps^2", 'R=="[{x'=y,y'=-a()*x-b()*y&(f()*x+g()*y+gam()<=0&f()*x+gam()>=0)&1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k}](x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))") ; <(
+                                      "Use": hideL('L=="\forall x \forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k))") ; ODE('R=="[{x'=y,y'=-a()*x-b()*y&((f()*x+g()*y+gam()<=0&f()*x+gam()>=0)&1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k)&x^2+y^2!=eps^2}](x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))"),
+                                      "Show": dW('R=="[{x'=y,y'=-a()*x-b()*y&(f()*x+g()*y+gam()<=0&f()*x+gam()>=0)&1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k}]x^2+y^2!=eps^2") ; unfold ; allL('L=="\forall x \forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k))") ; allL('L=="\forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k))") ; QE
+                                    ),
+                                  "Show": hideL('L=="\forall x \forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k))") ; ODE('R=="[{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()>=0}]1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k")
+                                )
+                            ),
+                          "[{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()<=0}](x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))": diffUnpackEvolDomain('R=="[{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()<=0}](x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))") ; implyL('L=="f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k") ; <(
+                              "f()*x+gam()<=0": propClose,
+                              "1/2*y^2+a()/2*x^2 < k": dC("1/2*y^2+a()/2*x^2 < k", 'R=="[{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()<=0}](x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))") ; <(
+                                  "Use": dC("x^2+y^2!=eps^2", 'R=="[{x'=y,y'=-a()*x-b()*y&(f()*x+g()*y+gam()<=0&f()*x+gam()<=0)&1/2*y^2+a()/2*x^2 < k}](x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))") ; <(
+                                      "Use": hideL('L=="\forall x \forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k))") ; ODE('R=="[{x'=y,y'=-a()*x-b()*y&((f()*x+g()*y+gam()<=0&f()*x+gam()<=0)&1/2*y^2+a()/2*x^2 < k)&x^2+y^2!=eps^2}](x^2+y^2 < eps^2&(f()*x+gam()<=0->1/2*y^2+a()/2*x^2 < k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2 < k))"),
+                                      "Show": dW('R=="[{x'=y,y'=-a()*x-b()*y&(f()*x+g()*y+gam()<=0&f()*x+gam()<=0)&1/2*y^2+a()/2*x^2 < k}]x^2+y^2!=eps^2") ; unfold ; allL('L=="\forall x \forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k))") ; allL('L=="\forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k))") ; QE
+                                    ),
+                                  "Show": hideL('L=="\forall x \forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k))") ; ODE('R=="[{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()<=0}]1/2*y^2+a()/2*x^2 < k")
+                                )
+                            )
+                        )
+                    )
+                )
+            ),
+          "Show": hideR('R=="\exists del (del>0&\forall x \forall y (x^2+y^2 < del^2->[{{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()>=0}++{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()<=0}++{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()>=0}++{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()<=0}}*]x^2+y^2 < eps^2))") ; cut("\exists k1 (k1>0&\forall x \forall y (x^2+y^2=eps^2->f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k1))&\exists k2 (k2>0&\forall x \forall y (x^2+y^2=eps^2->f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k2))") ; <(
+              "Use": unfold ; existsRmon("k>0&k1>k&k2>k", 'R=="\exists k (k>0&\forall x \forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k)))") ; <(
+                  "Use": hideL('L=="\forall x \forall y (x^2+y^2=eps^2->f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k2)") ; hideL('L=="\forall x \forall y (x^2+y^2=eps^2->f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k1)") ; QE,
+                  "Show": unfold ; andR('R=="k>0&\forall x \forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k))") ; <(
+                      "k>0": propClose,
+                      "\forall x \forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k))": unfold ; allL('L=="\forall x \forall y (x^2+y^2=eps^2->f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k1)") ; allL('L=="\forall y (x^2+y^2=eps^2->f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k1)") ; allL('L=="\forall x \forall y (x^2+y^2=eps^2->f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k2)") ; allL('L=="\forall y (x^2+y^2=eps^2->f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k2)") ; fullSimplify ; QE
+                    )
+                ),
+              "Show": hideR('R=="\exists k (k>0&\forall x \forall y (x^2+y^2=eps^2->(f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k)&(f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k)))") ; andR('R=="\exists k1 (k1>0&\forall x \forall y (x^2+y^2=eps^2->f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k1))&\exists k2 (k2>0&\forall x \forall y (x^2+y^2=eps^2->f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k2))") ; <(
+                  "\exists k1 (k1>0&\forall x \forall y (x^2+y^2=eps^2->f()*x+gam()<=0->1/2*y^2+a()/2*x^2>=k1))": QE,
+                  "\exists k2 (k2>0&\forall x \forall y (x^2+y^2=eps^2->f()*x+gam()>=0->1/2*y^2+a()/2*x^2-1/(2*f())*(f()*x+gam())^2>=k2))": hideL('L=="b()-g()>0") ; hideL('L=="b()>0") ; QE
+                )
+            )
+        )
+    ),
+  "Show": hideR('R=="\exists del (del>0&\forall x \forall y (x^2+y^2 < del^2->[{{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()>=0}++{x'=y,y'=-a()*x-b()*y+f()*x+g()*y+gam()&f()*x+g()*y+gam()>=0&f()*x+gam()<=0}++{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()>=0}++{x'=y,y'=-a()*x-b()*y&f()*x+g()*y+gam()<=0&f()*x+gam()<=0}}*]x^2+y^2 < eps^2))") ; QE
+)
+End.
+
+End.
