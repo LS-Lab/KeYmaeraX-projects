@@ -1,28 +1,25 @@
-﻿ArchiveEntry "Differential Ghosts Blog Post Example 4".
+ArchiveEntry "Differential Ghosts Blog Post Example 4"
 
-Functions.
-  
+ProgramVariables
+  Real x;
 End.
-ProgramVariables.
-  R x.
-End.
-Problem.
+Problem
   x>=0 -> [{x'=x}] x>=0
 End.
 
-Tactic "Differential Ghosts Blog Post Example 4: Proof 2".
-  implyR(1) ; cut({`x>0|x=0`}) ; <(
+Tactic "Differential Ghosts Blog Post Example 4: Proof 2"
+  implyR(1) ; cut("x>0|x=0") ; <(
   hideL(-1) ; orL(-1) ; <(
-    MR({`x>0`}, 1) ; <(
+    MR("x>0", 1) ; <(
       ODE(1),
-      QE({`Mathematica`})
+      QE("Mathematica")
       ),
-    MR({`x=0`}, 1) ; <(
+    MR("x=0", 1) ; <(
       ODE(1),
-      QE({`Mathematica`})
+      QE("Mathematica")
       )
     ),
-  hideR(1) ; QE({`Mathematica`})
+  hideR(1) ; QE("Mathematica")
   )
 End.
        

@@ -278,7 +278,7 @@ ProgramVariables
   Real d;    /* damping ratio */
 End.
 
-Problem.
+Problem
     w^2*x^2 + y^2 <= c^2
   & d>=0
 ->
@@ -361,7 +361,7 @@ Tactic "Parachute: Proof 1"
   QE,
   QE,
   boxAnd(1) ; andR(1) ; <(
-    master,
+    auto,
     unfold ; <(
       dC("v>=old(v)-g*t", 1) ; <(
         dW(1) ; QE,
@@ -388,15 +388,9 @@ implyR(1) ; loop("(x>=0&v < 0)&v>-(g/p)^(1/2)", 1) ; <(
   )
 End.
 
-Tactic "Parachute: Automatic"
-  useSolver("Mathematica");
-  master
-End.
-
 Illustration "https://lfcps.org/info/fig-parachute.png".
 End.
-       
-ArchiveEntry "DLDS/09 Dual Filibuster Game"
+       ArchiveEntry "DLDS/09 Dual Filibuster Game"
 
 ProgramVariables
   Real x;

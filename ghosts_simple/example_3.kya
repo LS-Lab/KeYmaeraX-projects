@@ -1,18 +1,15 @@
-﻿ArchiveEntry "Differential Ghosts Blog Post Example 3".
+ArchiveEntry "Differential Ghosts Blog Post Example 3"
 
-Functions.
-  
+ProgramVariables
+  Real x;
 End.
-ProgramVariables.
-  R x.
-End.
-Problem.
+Problem
   x=0 -> [{x' = -x}]x=0
 End.
 
-Tactic "Differential Ghosts Blog Post Example 3: Proof 3".
-  implyR(1) ; dG({`{y'=1*y}`}, {`y>0&x*y=0`}, 1) ; cut({`\exists yinit yinit>0`}) ; <(
-  existsL(-2) ; hideL(-2) ; existsR({`1`}, 1) ; boxAnd(1) ; andR(1) ; <(
+Tactic "Differential Ghosts Blog Post Example 3: Proof 3"
+  implyR(1) ; dG("y'=1*y", "y>0&x*y=0", 1) ; cut("\exists yinit yinit>0") ; <(
+  existsL(-2) ; hideL(-2) ; existsR("1", 1) ; boxAnd(1) ; andR(1) ; <(
     ODE(1),
     dI(1)
     ),

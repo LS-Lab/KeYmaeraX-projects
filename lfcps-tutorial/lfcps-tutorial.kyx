@@ -30,7 +30,7 @@ implyR(1) ; loop("2*g*x<=2*g*H-v^2&x>=0", 1) ; <(
   composeb(1) ; dC("2*g*x<=2*g*H-v^2", 1) ; <(
     dW(1) ; choiceb(1) ; andR(1) ; <(
       composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE,
-      composeb(1) ; testb(1) ; implyR(1) ; testb(1) ; implyR(1) ; prop ; done
+      testb(1) ; prop ; done
       ),
     dI(1)
     )
@@ -85,8 +85,7 @@ Tactic "Coasting Car: Automatic Proof"
   master
 End.
 
-End.
-ArchiveEntry "LFCPS Tutorial/3 Exercise: Accelerating Car"
+End.ArchiveEntry "LFCPS Tutorial/3 Exercise: Accelerating Car"
 Description "Cars need invariants and control constraints to stop before m".
 
 Definitions       /* function symbols cannot change their value */
@@ -114,8 +113,7 @@ Problem           /* differential dynamic logic formula */
     ] x <= m
 End.
 
-End.
-ArchiveEntry "LFCPS Tutorial/3 Solution: Accelerating Car"
+End.ArchiveEntry "LFCPS Tutorial/3 Solution: Accelerating Car"
 Description "Cars don't run stop signs".
 
 Definitions       /* function symbols cannot change their value */
@@ -187,9 +185,9 @@ End.
 
 Definitions
   Bool Q(Real om, Real x, Real y, Real ox, Real oy, Real v, Real w) <-> 
-    (__________).
+    (__________);
   Bool Qline(Real x, Real y, Real ox, Real oy, Real v, Real w) <-> 
-    (__________).
+    (__________);
 End.
     
 Problem
@@ -219,9 +217,9 @@ End.
 
 Definitions
   Bool Q(Real om, Real x, Real y, Real ox, Real oy, Real v, Real w) <-> 
-    ((x+w/om-ox)^2+(y-v/om-oy)^2 != v^2+w^2).
+    ((x+w/om-ox)^2+(y-v/om-oy)^2 != v^2+w^2);
   Bool Qline(Real x, Real y, Real ox, Real oy, Real v, Real w) <-> 
-    ((ox-x)*w != (oy-y)*v).
+    ((ox-x)*w != (oy-y)*v);
 End.
     
 Problem
@@ -241,10 +239,10 @@ implyR(1) ; loop("!(x=ox&y=oy)", 1) ; <(
   QE,
   id,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
-    unfold ; expand "Q" ; ODE(1),
+    unfold ; expand("Q"); ODE(1),
     unfold ; <(
-      expand "Q" ; ODE(1),
-      expand "Qline" ; ODE(1)
+      expand("Q"); ODE(1),
+      expand("Qline"); ODE(1)
       )
     )
   )
@@ -281,7 +279,7 @@ Tactic "4 Solution: Runaround Robot: Manual Proof"
 End.
 
 Tactic "4 Solution: Runaround Robot: automatic"
-  master
+  autoClose
 End.
 
 Tactic "4 Solution: Runaround Robot: unfold"
@@ -295,11 +293,10 @@ End.
 
 Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
 
-End.
-Exercise "LFCPS Tutorial/5 Exercise: Modeling two cars"
+End.Exercise "LFCPS Tutorial/5 Exercise: Modeling two cars"
 Description "Control one car to safely follow another".
 
-Functions
+Definitions
   Real A;   /* Acceleration constant */
   Real B;   /* Braking constant */
   Real T;   /* Maximum reaction time constant */
@@ -333,8 +330,7 @@ Problem
   (__________) /* safety condition */
 
 End.
-End.
-ArchiveEntry "LFCPS Tutorial/6 Damped oscillator"
+End.ArchiveEntry "LFCPS Tutorial/6 Damped oscillator"
 Description "Damped oscillators stay in ellipses".
 
 Definitions        /* function symbols cannot change their value */
@@ -380,7 +376,7 @@ ProgramVariables
   Real d;    /* damping ratio */
 End.
 
-Problem.
+Problem
     w^2*x^2 + y^2 <= c^2
   & d>=0
 ->
@@ -522,13 +518,12 @@ End.
 
 Tactic "Parachute nonaerodynamic: Automatic"
   useSolver("Mathematica");
-  master
+  autoClose
 End.
 
 Illustration "https://lfcps.org/info/fig-parachute.png".
 End.
-       
-ArchiveEntry "LFCPS Tutorial/9 Kepler two body"
+       ArchiveEntry "LFCPS Tutorial/9 Kepler two body"
 Description "Two planets in gravitational force field with one planet as origin, mathematically normalized constants".
 Citation "Ernst Hairer. Geometric Numerical Integration. TU Munich 2010".
 

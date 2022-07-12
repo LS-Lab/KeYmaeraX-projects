@@ -1,20 +1,20 @@
-﻿ArchiveEntry "LMPC".
+ArchiveEntry "LMPC"
 
-Functions.        /* function symbols cannot change their value */
-      R b().          /* braking capabilities */
-      R A().           /* maximum acceleration */
-      R ep().         /* reaction time */
+Definitions        /* function symbols cannot change their value */
+      Real b;          /* braking capabilities */
+      Real A;           /* maximum acceleration */
+      Real ep;         /* reaction time */
     End.
     
-    ProgramVariables. /* program variables may change their value over time */
-      R x.            /* position of the car */
-      R v.            /* velocity of the car */
-      R a.            /* acceleration of the car */
-      R m.            /* stop sign position */
-      R t.            /* clock variable */
+    ProgramVariables /* program variables may change their value over time */
+      Real x;            /* position of the car */
+      Real v;            /* velocity of the car */
+      Real a;            /* acceleration of the car */
+      Real m;            /* stop sign position */
+      Real t;            /* clock variable */
     End.
     
-    Problem.          /* differential dynamic logic formula */
+    Problem          /* differential dynamic logic formula */
       [{x'=v, v'=-b}](x<=m)
        & v >= 0  
        & A >= 0
@@ -31,16 +31,16 @@ Functions.        /* function symbols cannot change their value */
       ] (x <= m)
     End.
 
-Tactic "LMPC: Proof".
-  implyR(1) ; loop({`[{x'=v,v'=-b()&true}]x<=m`}, 1) ; <(
+Tactic "LMPC: Proof"
+  implyR(1) ; loop("[{x'=v,v'=-b()&true}]x<=m", 1) ; <(
   id,
-  boxd(-1) ; notL(-1) ; solve(2) ; existsR({`0`}, 2) ; andR(2) ; <(
+  boxd(-1) ; notL(-1) ; solve(2) ; existsR("0", 2) ; andR(2) ; <(
     QE,
     QE
     ),
   composeb(1) ; choiceb(1) ; andR(1) ; <(
     composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; id,
-    assignb(1) ; composeb(1) ; assignb(1) ; solve(-1) ; MR({`\forall t_ (t_>=0->(-b())/2*t_^2+v*t_+x<=m)`}, 1) ; <(
+    assignb(1) ; composeb(1) ; assignb(1) ; solve(-1) ; MR("\forall t_ (t_>=0->(-b())/2*t_^2+v*t_+x<=m)", 1) ; <(
       solve(1) ; QE,
       solve(1) ; QE
       )

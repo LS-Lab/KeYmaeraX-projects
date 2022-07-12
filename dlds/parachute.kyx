@@ -69,7 +69,7 @@ End.
 
 Tactic "Parachute: Automatic"
   useSolver("Mathematica");
-  master
+  autoClose
 End.
 
 Illustration "https://lfcps.org/info/fig-parachute.png".

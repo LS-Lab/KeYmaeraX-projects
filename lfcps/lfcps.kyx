@@ -182,7 +182,8 @@ Tactic "07: Bouncing Ball: in-place proof: named"
 End.
        
 Tactic "07: Bouncing Ball: automatic"
-  auto
+  useSolver("Mathematica");
+  autoClose
 End.
        
 Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
@@ -459,13 +460,13 @@ Tactic "10: Self-crossing invariant: Proof Steps: positional"
 End.
 
 Tactic  "10: Self-crossing invariant: Proof Steps"
-  implyR('R=="x^2+x^3-y^2-c()=0->[{x'=(-2)*y,y'=(-2)*x-3*x^2}]x^2+x^3-y^2-c()=0");
-  dIRule('R=="[{x'=(-2)*y,y'=(-2)*x-3*x^2}]x^2+x^3-y^2-c()=0"); <(
+  implyR('R=="x^2+x^3-y^2-c()=0->[{x'=-2*y,y'=-2*x-3*x^2}]x^2+x^3-y^2-c()=0");
+  dIRule('R=="[{x'=-2*y,y'=-2*x-3*x^2}]x^2+x^3-y^2-c()=0"); <(
     "dI Init":
       id,
     "dI Step":
-      Dassignb('R=="[y':=(-2)*x-3*x^2;][x':=(-2)*y;]2*x^(2-1)*x'+3*x^(3-1)*x'-2*y^(2-1)*y'-0=0");
-      Dassignb('R=="[x':=(-2)*y;]2*x^(2-1)*x'+3*x^(3-1)*x'-2*y^(2-1)*((-2)*x-3*x^2)-0=0");
+      Dassignb('R=="[y':=-2*x-3*x^2;][x':=-2*y;]2*x^(2-1)*x'+3*x^(3-1)*x'-2*y^(2-1)*y'-0=0");
+      Dassignb('R=="[x':=-2*y;]2*x^(2-1)*x'+3*x^(3-1)*x'-2*y^(2-1)*(-2*x-3*x^2)-0=0");
       QE
   )
 End.
@@ -540,7 +541,7 @@ Definitions      /* function symbols cannot change their value */
 End.
 
 ProgramVariables /* program variables may change their value over time */
-  R x, v;        /* height and vertical velocity of ball */
+  Real x, v;        /* height and vertical velocity of ball */
 End.
 
 Problem
@@ -1166,30 +1167,30 @@ Tactic "16: Push-around Cart: Proof: positional"
 End.
 
 Tactic "16: Push-around Cart: Proof: named"
-  implyR('R=="x>=0&v>=0->[{{d:=1;++d:=(-1);}^@{a:=1;++a:=(-1);}{x'=v,v'=a+d}}*]x>=0");
-  loop("x>=0&v>=0", 'R=="[{{d:=1;++d:=(-1);}^@{a:=1;++a:=(-1);}{x'=v,v'=a+d}}*]x>=0"); <(
+  implyR('R=="x>=0&v>=0->[{{d:=1;++d:=-1;}^@{a:=1;++a:=-1;}{x'=v,v'=a+d}}*]x>=0");
+  loop("x>=0&v>=0", 'R=="[{{d:=1;++d:=-1;}^@{a:=1;++a:=-1;}{x'=v,v'=a+d}}*]x>=0"); <(
     "Init":
       propClose,
     "Step":
-      composeb('R=="[{d:=1;++d:=(-1);}^@{a:=1;++a:=(-1);}{x'=v,v'=a+d}](x>=0&v>=0)");
-      dualb('R=="[{d:=1;++d:=(-1);}^@][{a:=1;++a:=(-1);}{x'=v,v'=a+d}](x>=0&v>=0)");
-      diamond('R=="![d:=1;++d:=(-1);](![{a:=1;++a:=(-1);}{x'=v,v'=a+d}](x>=0&v>=0))");
-      composeb('R=="<d:=1;++d:=(-1);>#[{a:=1;++a:=(-1);}{x'=v,v'=a+d}](x>=0&v>=0)#");
-      choiced('R=="<d:=1;++d:=(-1);>[a:=1;++a:=(-1);][{x'=v,v'=a+d}](x>=0&v>=0)");
-      orR('R=="<d:=1;>[a:=1;++a:=(-1);][{x'=v,v'=a+d}](x>=0&v>=0)|<d:=(-1);>[a:=1;++a:=(-1);][{x'=v,v'=a+d}](x>=0&v>=0)");
-      assignd('R=="<d:=1;>[a:=1;++a:=(-1);][{x'=v,v'=a+d}](x>=0&v>=0)");
-      assignd('R=="<d:=(-1);>[a:=1;++a:=(-1);][{x'=v,v'=a+d}](x>=0&v>=0)");
-      choiceb('R=="[a:=1;++a:=(-1);][{x'=v,v'=a+1}](x>=0&v>=0)");
-      andR('R=="[a:=1;][{x'=v,v'=a+1}](x>=0&v>=0)&[a:=(-1);][{x'=v,v'=a+1}](x>=0&v>=0)"); <(
+      composeb('R=="[{d:=1;++d:=-1;}^@{a:=1;++a:=-1;}{x'=v,v'=a+d}](x>=0&v>=0)");
+      dualb('R=="[{d:=1;++d:=-1;}^@][{a:=1;++a:=-1;}{x'=v,v'=a+d}](x>=0&v>=0)");
+      diamond('R=="![d:=1;++d:=-1;](![{a:=1;++a:=-1;}{x'=v,v'=a+d}](x>=0&v>=0))");
+      composeb('R=="<d:=1;++d:=-1;>#[{a:=1;++a:=-1;}{x'=v,v'=a+d}](x>=0&v>=0)#");
+      choiced('R=="<d:=1;++d:=-1;>[a:=1;++a:=-1;][{x'=v,v'=a+d}](x>=0&v>=0)");
+      orR('R=="<d:=1;>[a:=1;++a:=-1;][{x'=v,v'=a+d}](x>=0&v>=0)|<d:=-1;>[a:=1;++a:=-1;][{x'=v,v'=a+d}](x>=0&v>=0)");
+      assignd('R=="<d:=1;>[a:=1;++a:=-1;][{x'=v,v'=a+d}](x>=0&v>=0)");
+      assignd('R=="<d:=-1;>[a:=1;++a:=-1;][{x'=v,v'=a+d}](x>=0&v>=0)");
+      choiceb('R=="[a:=1;++a:=-1;][{x'=v,v'=a+1}](x>=0&v>=0)");
+      andR('R=="[a:=1;][{x'=v,v'=a+1}](x>=0&v>=0)&[a:=-1;][{x'=v,v'=a+1}](x>=0&v>=0)"); <(
         "[a:=1;][{x'=v,v'=a+1}](x>=0&v>=0)":
           assignb('R=="[a:=1;][{x'=v,v'=a+1}](x>=0&v>=0)");
           solve('R=="[{x'=v,v'=1+1}](x>=0&v>=0)");
-          hideR('R=="[a:=1;++a:=(-1);][{x'=v,v'=a+(-1)}](x>=0&v>=0)");
+          hideR('R=="[a:=1;++a:=-1;][{x'=v,v'=a+-1}](x>=0&v>=0)");
           QE,
-        "[a:=(-1);][{x'=v,v'=a+1}](x>=0&v>=0)":
-          assignb('R=="[a:=(-1);][{x'=v,v'=a+1}](x>=0&v>=0)");
-          solve('R=="[{x'=v,v'=(-1)+1}](x>=0&v>=0)");
-          hideR('R=="[a:=1;++a:=(-1);][{x'=v,v'=a+(-1)}](x>=0&v>=0)");
+        "[a:=-1;][{x'=v,v'=a+1}](x>=0&v>=0)":
+          assignb('R=="[a:=-1;][{x'=v,v'=a+1}](x>=0&v>=0)");
+          solve('R=="[{x'=v,v'=-1+1}](x>=0&v>=0)");
+          hideR('R=="[a:=1;++a:=-1;][{x'=v,v'=a+-1}](x>=0&v>=0)");
           QE
       ),
     "Post":
@@ -1224,6 +1225,7 @@ Tactic "16: Goalie in Robot Soccer: Proof: positional"
 End.
 
 Tactic "16: Goalie in Robot Soccer: Proof: named"
+  useSolver("Mathematica");
   implyR('R=="(x/v)^2*(u-w)^2<=1&x < 0&v>0&y=g-><{w:=w;++w:=-w;}^@{u:=u;++u:=-u;}{x'=v,y'=w,g'=u}>x^2+(y-g)^2<=1");
   composed('R=="<{w:=w;++w:=-w;}^@{u:=u;++u:=-u;}{x'=v,y'=w,g'=u}>x^2+(y-g)^2<=1");
   composed('R=="<{w:=w;++w:=-w;}^@>#<{u:=u;++u:=-u;}{x'=v,y'=w,g'=u}>x^2+(y-g)^2<=1#");

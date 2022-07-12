@@ -1,4 +1,4 @@
-ArchiveEntry "Parachute with Declarations".
+ArchiveEntry "Parachute with Declarations"
 
 Definitions
   Real g;      /* gravity */
@@ -55,24 +55,27 @@ assumptions(x, v, r) ->
   ](x=0 -> v >= m)
 End.
 
-Tactic "Proof: Parachute with Declarations".
+Tactic "Proof: Parachute with Declarations"
+expandAllDefs();
 implyR(1);
-loop("loopinv(x, v)", 1) <(
+loop("loopinv(x, v)", 1); <(
   QE,
   QE,
-  boxAnd(1); andR(1) <(master, nil); /* prove x>=0 & v<0 is an invariant */
-  boxAnd(1); andR(1) <(master, nil); /* prove all constraints on constants are invariants */
-  unfold <(
-    dC("g>0 & pr>0", 1) <(nil, dI(1));
-    dC("v >= old(v) - g*t", 1) <(nil, dI(1));
-    dC("old(v) - g*t >= reactionDelaySpeed(old(v))", 1) <(nil, dW(1); QE("Mathematica"));
-    dC("reactionDelaySpeed(old(v)) > steadyStateSpeed()", 1) <(nil, dI(1));
+  expand("loopinv");
+  boxAnd(1); andR(1); <(auto, nil); /* prove x>=0 & v<0 is an invariant */
+  boxAnd(1); andR(1); <(auto, nil); /* prove all constraints on constants are invariants */
+  unfold; <(
+    dC("g>0 & pr>0", 1); <(nil, dI(1));
+    dC("v >= old(v) - g*t", 1); <(nil, dI(1));
+    dC("old(v) - g*t >= reactionDelaySpeed(old(v))", 1); <(nil, dW(1); QE("Mathematica"));
+    dC("reactionDelaySpeed(old(v)) > steadyStateSpeed()", 1); <(nil, dI(1));
     dW(1);
-    cut("fourwayTransitivity()") <(nil, cohideR('Rlast); QE("Mathematica"));
+    cut("fourwayTransitivity()"); <(nil, cohideR('Rlast); QE("Mathematica"));
+    expand("fourwayTransitivity");
     allL("v", 'Llast) ; allL("v_0-g*t", 'Llast) ; allL("reactionDelaySpeed(v_0)", 'Llast) ; allL("steadyStateSpeed()", 'Llast);
     QE("Mathematica")
     ,
-    dC("pr>0&g>0", 1) <(nil, dI(1)); /* avoid singularities in dG */
+    dC("pr>0&g>0", 1); <(nil, dI(1)); /* avoid singularities in dG */
     dG("y'=(-1/2*pr*(v+steadyStateSpeed()))*y", "pr>0&g>0&y^2*(v-steadyStateSpeed())=1", 1) ;
     dI(1.0); /* Apply dI inside of existential. */
     QE("Mathematica")
@@ -80,14 +83,16 @@ loop("loopinv(x, v)", 1) <(
 )
 End.
 
-Tactic "Proof: Parachute with Declarations (transformation and abbreviate)".
+Tactic "Proof: Parachute with Declarations (transformation and abbreviate)"
+  expandAllDefs();
   implyR(1) ; loop("loopinv(x, v)", 1) ; <(
     QE,
     QE,
+    expand("loopinv");
     boxAnd(1) ; andR(1) ; <(
-      master,
+      auto,
       boxAnd(1) ; andR(1) ; <(
-        master,
+        auto,
         unfold ; <(
           fullSimplify ; diffInvariant("v>=old(v)-g*t", 1) ;
             dW(1) ; abbrv("steadyStateSpeed()", "c") ; hideL('L=="c=steadyStateSpeed()") ; QE("Mathematica"),

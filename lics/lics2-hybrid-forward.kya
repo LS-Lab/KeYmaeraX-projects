@@ -1,4 +1,4 @@
-﻿ArchiveEntry "LICS: 2 Single car drives forward"
+ArchiveEntry "LICS: 2 Single car drives forward"
 Description "Cars have nonnegative velocity".
 
 Definitions       /* function symbols cannot change their value */

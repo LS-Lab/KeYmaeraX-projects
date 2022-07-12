@@ -1,4 +1,4 @@
-﻿ArchiveEntry "LICS: 1 Continuous car accelerates forward"
+ArchiveEntry "LICS: 1 Continuous car accelerates forward"
 
 ProgramVariables  /* program variables may change their value over time */
   Real x;         /* position of the car */

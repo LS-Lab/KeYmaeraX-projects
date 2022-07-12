@@ -1,4 +1,4 @@
-﻿ArchiveEntry "Wall-E & Eve"
+ArchiveEntry "Wall-E & Eve"
 
 ProgramVariables
   Real w;    /* WALL-E position */

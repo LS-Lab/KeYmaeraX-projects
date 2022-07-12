@@ -1,4 +1,4 @@
-﻿ArchiveEntry "Parachute: Transformed".
+ArchiveEntry "Parachute: Transformed"
 
 Definitions
   Real g = 3;    /* square root of gravity */
@@ -36,7 +36,7 @@ Tactic "Parachute: Transformed: Interactive Proof"
   QE,
   QE,
   boxAnd(1) ; andR(1) ; <(
-    master,
+    auto,
     unfold ; <(
       dC("v>=old(v)-g^2*t", 1) ; <(
         dW(1) ; QE,

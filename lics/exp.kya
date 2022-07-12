@@ -1,4 +1,4 @@
-﻿ArchiveEntry "Exponential Decay: [x'=-x]x>0"
+ArchiveEntry "Exponential Decay: [x'=-x]x>0"
 
 ProgramVariables
   Real x;

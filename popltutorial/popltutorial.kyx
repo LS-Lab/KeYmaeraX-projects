@@ -30,7 +30,7 @@ implyR(1) ; loop("2*g*x<=2*g*H-v^2&x>=0", 1) ; <(
   composeb(1) ; dC("2*g*x<=2*g*H-v^2", 1) ; <(
     dW(1) ; choiceb(1) ; andR(1) ; <(
       composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE,
-      composeb(1) ; testb(1) ; implyR(1) ; testb(1) ; implyR(1) ; prop ; done
+      testb(1) ; prop ; done
       ),
     dI(1)
     )
@@ -116,9 +116,9 @@ End.
 
 Definitions
   Bool Q(Real om, Real x, Real y, Real ox, Real oy, Real v, Real w) <-> 
-    (__________).
+    (__________);
   Bool Qline(Real x, Real y, Real ox, Real oy, Real v, Real w) <-> 
-    (__________).
+    (__________);
 End.
     
 Problem
@@ -148,9 +148,9 @@ End.
 
 Definitions
   Bool Q(Real om, Real x, Real y, Real ox, Real oy, Real v, Real w) <-> 
-    ((x+w/om-ox)^2+(y-v/om-oy)^2 != v^2+w^2).
+    ((x+w/om-ox)^2+(y-v/om-oy)^2 != v^2+w^2);
   Bool Qline(Real x, Real y, Real ox, Real oy, Real v, Real w) <-> 
-    ((ox-x)*w != (oy-y)*v).
+    ((ox-x)*w != (oy-y)*v);
 End.
     
 Problem
@@ -170,10 +170,10 @@ implyR(1) ; loop("!(x=ox&y=oy)", 1) ; <(
   QE,
   id,
   composeb(1) ; choiceb(1) ; andR(1) ; <(
-    unfold ; expand "Q" ; ODE(1),
+    unfold ; expand("Q"); ODE(1),
     unfold ; <(
-      expand "Q" ; ODE(1),
-      expand "Qline" ; ODE(1)
+      expand("Q"); ODE(1),
+      expand("Qline"); ODE(1)
       )
     )
   )
@@ -210,22 +210,22 @@ Tactic "4 Solution: Runaround Robot: Manual Proof"
 End.
 
 Tactic "4 Solution: Runaround Robot: automatic"
-  master
+  autoClose
 End.
 
 Tactic "4 Solution: Runaround Robot: unfold"
-unfold ; loop("!(x=ox&y=oy)", 1) ; <(
-  QE,
-  QE,
-  unfold ; doall(ODE(1))
-  )
+unfold;
+loop("!(x=ox&y=oy)", 1); <(
+  "Init": QE,
+  "Post": QE,
+  "Step": unfold; doall(ODE(1))
+)
 End.
 
 
 Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
 
-End.
-Exercise "POPL/POPL: 4 Exercise: Bouncing ball"
+End.Exercise "POPL/POPL: 4 Exercise: Bouncing ball"
 Description "Exercise: Bouncing Ball".
 
 Definitions       /* function symbols cannot change their value */
@@ -298,7 +298,7 @@ ProgramVariables
   Real d;    /* damping ratio */
 End.
 
-Problem.
+Problem
     w^2*x^2 + y^2 <= c^2
   & d>=0
 ->
@@ -353,8 +353,7 @@ Problem
 End.
 
 Illustration "https://lfcps.org/info/fig-parachute.png".
-End.
-ArchiveEntry "POPL/POPL: 6 Solution: Parachute"
+End.ArchiveEntry "POPL/POPL: 6 Solution: Parachute"
 Description "Safely deployed parachutes have bounded velocities".
 
 Definitions
@@ -421,11 +420,6 @@ implyR(1) ; loop("(x>=0&v < 0)&v>-(g/p)^(1/2)", 1) ; <(
     assignb(1) ; composeb(1) ; assignb(1) ; ODE(1)
     )
   )
-End.
-
-Tactic "Parachute: Automatic"
-  useSolver("Mathematica");
-  master
 End.
 
 Illustration "https://lfcps.org/info/fig-parachute.png".

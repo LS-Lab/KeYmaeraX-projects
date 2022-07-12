@@ -10,9 +10,9 @@ End.
 
 Definitions
   Bool Q(Real om, Real x, Real y, Real ox, Real oy, Real v, Real w) <-> 
-    (__________).
+    (__________);
   Bool Qline(Real x, Real y, Real ox, Real oy, Real v, Real w) <-> 
-    (__________).
+    (__________);
 End.
     
 Problem

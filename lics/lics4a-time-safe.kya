@@ -1,4 +1,4 @@
-﻿ArchiveEntry "LICS: 4a safe stopping of time-triggered car"
+ArchiveEntry "LICS: 4a safe stopping of time-triggered car"
 Description "Cars don't run stop signs".
 
 Definitions       /* function symbols cannot change their value */

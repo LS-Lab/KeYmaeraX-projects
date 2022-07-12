@@ -1,7 +1,7 @@
 Exercise "Exercise: TwoCar"
 Description "Control one car to safely follow another".
 
-Functions
+Definitions
   Real A;   /* Acceleration constant */
   Real B;   /* Braking constant */
   Real T;   /* Maximum reaction time constant */

@@ -1,4 +1,4 @@
-﻿ArchiveEntry "Goalie in robot soccer"
+ArchiveEntry "Goalie in robot soccer"
 
 ProgramVariables
   Real x, y;   /* x/y-coordinate of ball */

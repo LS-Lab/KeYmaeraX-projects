@@ -1,4 +1,4 @@
-﻿ArchiveEntry "Push-around cart"
+ArchiveEntry "Push-around cart"
 
 ProgramVariables
   Real x;     /* cart position */
