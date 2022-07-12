@@ -111,23 +111,24 @@ Tactic "ETCS Essentials Proof with Solution"
 implyR('R);
 (andL('L)*);
 loop("loopInv(m,z,v)", 'R) ; <(                          /* prove loop by induction */
-  "Init": expandAllDefs; propClose,                      /* induction initial case */
+  "Init": expandAllDefs(); propClose,                      /* induction initial case */
   "Post": QE,                                            /* induction use case */
-  "Step": expandAllDefs; unfold; doall(solveEnd('R); QE) /* induction step: symbolically execute programs, solve ODE */
+  "Step": expandAllDefs(); unfold; doall(solveEnd('R); QE) /* induction step: symbolically execute programs, solve ODE */
 )
 End.
 
 Tactic "ETCS Essentials Proof with Differential Invariants"
+useSolver("Mathematica");
 implyR('R);
 (andL('L)*);
 loop("loopInv(m,z,v)", 'R) ; <(                             /* prove loop by induction */
-  "Init": expandAllDefs; propClose,                         /* induction initial case */
+  "Init": expandAllDefs(); propClose,                         /* induction initial case */
   "Post": QE,                                               /* induction use case */
   "Step":
-    expand "ctrl";
+    expand("ctrl");
     unfold; <(                                              /* induction step, symbolically execute program until ODE */
       "[?m()-z<=SB(v);a:=-b();][drive{|^@|};]loopInv(m(),z,v)":
-        expand "drive";
+        expand("drive");
         unfold;
         /* prove ODE in train protection branch (a=-b) */
         diffInvariant("t>=old(t)", 'R);                     /* intuition: time progresses */
@@ -138,7 +139,7 @@ loop("loopInv(m,z,v)", 'R) ; <(                             /* prove loop by ind
         QE
         ,
       "[?m()-z>=SB(v);a:=A();][drive{|^@|};]loopInv(m(),z,v)":
-        expand "drive";
+        expand("drive");
         unfold;
         /* prove ODE in free driving branch (a=A) */
         diffInvariant("t>=old(t)", 'R);
@@ -203,13 +204,13 @@ Tactic "ICFEM09/ETCS Essentials Proof with Differential Invariants"
 implyR('R);
 (andL('L)*);
 loop("loopInv(m,z,v)",1) ; <(                              /* prove loop by induction with invariant loopInv */
-  "Init": expandAllDefs; propClose,                        /* induction initial case */
+  "Init": expandAllDefs(); propClose,                        /* induction initial case */
   "Post": QE,                                              /* induction use case */
   "Step":
-    expand "ctrl";
+    expand("ctrl");
     unfold ; <(                                      /* induction step, symbolically execute program until ODE */
       "[a:=-b();][drive{|^@|};]loopInv(m(),z,v)":
-        expand "drive";
+        expand("drive");
         unfold;
         /* prove ODE in train protection branch (a=-b) */
         diffInvariant("t>=old(t)", 'R);                        /* intuition: time progresses */
@@ -220,7 +221,7 @@ loop("loopInv(m,z,v)",1) ; <(                              /* prove loop by indu
         QE
         ,
       "[?2*b()*(m()-z)>=v*v+(A()+b())*(A()*ep()*ep()+2*ep()*v);a:=A();][drive{|^@|};]loopInv(m(),z,v)":
-        expand "drive";
+        expand("drive");
         unfold;
         /* prove ODE in free driving branch (a=A) */
         diffInvariant("t>=old(t)", 'R);
@@ -291,8 +292,8 @@ Problem
   \forall z \forall v (Controllable(m,z,v,d) -> [mo:=m;do:=d;rbc;](M(d,do,m,mo)-> Controllable(m,z,v,d)))
 End.
 
-Tactic "Proposition 2: RBC Preserves Train Controllability (Automated Proof)".
-  expand "rbc";
+Tactic "Proposition 2: RBC Preserves Train Controllability (Automated Proof)"
+  expand("rbc");
   /* symbolically execute [mo:=m;do:=d;rbc] */
   chaseAt('R=="\forall z \forall v (Controllable(m,z,v,d)->#[mo:=m;do:=d;{em:=emOn();++m:=*;d:=*;?d>0;}](M(d,do,m,mo)->Controllable(m,z,v,d))#)");
   auto
@@ -339,7 +340,7 @@ End.
 Tactic "Proposition 2: RBC Preserves Train Controllability (Automated Proof)"
   /* symbolically execute <m:=mo;d:=do;> */
   chaseAt('R=="em=emOff()&d>=0&b()>0->[do:=d;mo:=m;rbc{|^@|};](M(d,do,m,mo)<->\forall z \forall v (#<m:=mo;d:=do;>Controllable(m,z,v,d)#->Controllable(m,z,v,d)))");
-  expandAllDefs;
+  expandAllDefs();
   auto
 End.
 
@@ -377,18 +378,18 @@ Tactic "Proposition 3 Analysis"
   /* split [atp;drive;] into [atp;][drive;] */
   composeb('R=="Controllable(m,z,v,d)->[mo:=m;do:=d;rbc{|^@|};](M(d,do,m,mo)->[spd{|^@|};]<sb:=*;>#[atp{|^@|};drive{|^@|};]safe(m,z,v,d)#)");
   /* symbolically execute and solve drive */
-  expand "drive";
+  expand("drive");
   chaseAt('R=="Controllable(m,z,v,d)->[mo:=m;do:=d;rbc{|^@|};](M(d,do,m,mo)->[spd{|^@|};]<sb:=*;>[atp{|^@|};]#[t:=0;{z'=v,v'=a,t'=1&v>=0&t<=ep()}]safe(m,z,v,d)#)");
   solve('R=="Controllable(m,z,v,d)->[mo:=m;do:=d;rbc{|^@|};](M(d,do,m,mo)->[spd{|^@|};]<sb:=*;>[atp{|^@|};]\forall t (t=0->#[{z'=v,v'=a,t'=1&v>=0&t<=ep()}]safe(m,z,v,d)#))");
   /* symbolically execute <sb:=*;> */
   randomd('R=="Controllable(m,z,v,d)->[mo:=m;do:=d;rbc{|^@|};](M(d,do,m,mo)->[spd{|^@|};]#<sb:=*;>[atp{|^@|};]\forall t (t=0->\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a*s_+v>=0&s_+t<=ep())->safe(m,a*(t_^2/2)+v*t_+z,a*t_+v,d)))#)");
   /* symbolically execute [atp;] and [spd;] */
-  expand "atp";
-  chaseAt('R=="Controllable(m,z,v,d)->[mo:=m;do:=d;rbc{|^@|};](M(d,do,m,mo)->[spd{|^@|};]\exists sb #[?m-z<=sb|em=emOn();a:=-b();++?!(m-z<=sb|em=emOn());?true;]\forall t (t=0->\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a*s_+v>=0&s_+t<=ep())->safe(m,a*(t_^2/2)+v*t_+z,a*t_+v,d)))#)");
-  expand "spd";
+  expand("atp");
+  chaseAt('R=="Controllable(m,z,v,d)->[mo:=m;do:=d;rbc{|^@|};](M(d,do,m,mo)->[spd{|^@|};]\exists sb #[?m-z<=sb|em=emOn();a:=-b();++?!(m-z<=sb|em=emOn());]\forall t (t=0->\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a*s_+v>=0&s_+t<=ep())->safe(m,a*(t_^2/2)+v*t_+z,a*t_+v,d)))#)");
+  expand("spd");
   chaseAt('R=="Controllable(m,z,v,d)->[mo:=m;do:=d;rbc{|^@|};](M(d,do,m,mo)->#[?v<=vdes;a:=*;?-b()<=a&a<=A();++?v>=vdes;a:=*;?-b()<=a&a<=0;]\exists sb ((m-z<=sb|em=emOn()->\forall t (t=0->\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->(-b())*s_+v>=0&s_+t<=ep())->safe(m,(-b())*(t_^2/2)+v*t_+z,(-b())*t_+v,d))))&(!(m-z<=sb|em=emOn())->\forall t (t=0->\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a*s_+v>=0&s_+t<=ep())->safe(m,a*(t_^2/2)+v*t_+z,a*t_+v,d)))))#)");
   /* symbolically execute [mo:=m; do:=d; rbc;] */
-  expand "rbc";
+  expand("rbc");
   chaseAt('R=="Controllable(m,z,v,d)->#[mo:=m;do:=d;{em:=emOn();++m:=*;d:=*;?d>0;}](M(d,do,m,mo)->(v<=vdes->\forall a (-b()<=a&a<=A()->\exists sb ((m-z<=sb|em=emOn()->\forall t (t=0->\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->(-b())*s_+v>=0&s_+t<=ep())->safe(m,(-b())*(t_^2/2)+v*t_+z,(-b())*t_+v,d))))&(!(m-z<=sb|em=emOn())->\forall t (t=0->\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a*s_+v>=0&s_+t<=ep())->safe(m,a*(t_^2/2)+v*t_+z,a*t_+v,d)))))))&(v>=vdes->\forall a (-b()<=a&a<=0->\exists sb ((m-z<=sb|em=emOn()->\forall t (t=0->\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->(-b())*s_+v>=0&s_+t<=ep())->safe(m,(-b())*(t_^2/2)+v*t_+z,(-b())*t_+v,d))))&(!(m-z<=sb|em=emOn())->\forall t (t=0->\forall t_ (t_>=0->\forall s_ (0<=s_&s_<=t_->a*s_+v>=0&s_+t<=ep())->safe(m,a*(t_^2/2)+v*t_+z,a*t_+v,d))))))))#");
   print("Symbolic Execution Result")
   /* no proof expected, simplify sb */
@@ -429,6 +430,7 @@ End.
 
 Tactic "Proof Proposition 4: Reactivity Constraint"
   useSolver("Mathematica");
+  expandAllDefs();
   implyR('R=="em=0&d>=0&b()>0&ep()>0&A()>0&v>=0->(\forall m \forall z (m-z>=sb&v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0->[a:=A();t:=0;{z'=v,v'=a,t'=1&v>=0&t<=ep()}](v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0))<->sb>=(v^2-d^2)/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v))");
   equivR('R=="\forall m \forall z (m-z>=sb&v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0->[a:=A();t:=0;{z'=v,v'=a,t'=1&v>=0&t<=ep()}](v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0))<->sb>=(v^2-d^2)/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v)"); <(
     "\forall m \forall z (m-z>=sb&v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0->[a:=A();t:=0;{z'=v,v'=a,t'=1&v>=0&t<=ep()}](v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0))&sb>=(v^2-d^2)/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v)":
@@ -501,6 +503,7 @@ Controllable(m,z,v,d) & em = emOff & A>=0 & ep>=0
 End.
 
 Tactic "Proof Proposition 5: Safety"
+  expandAllDefs();
   auto
 End.
 
