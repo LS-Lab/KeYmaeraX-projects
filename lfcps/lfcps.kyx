@@ -1,4 +1,4 @@
-ArchiveEntry "05: Short Bouncing Ball: single hop"
+ArchiveEntry "LFCPS Textbook/05: Short Bouncing Ball: single hop"
 Description "5.4: A Proof of a Short Bouncing Ball single-hop without loop".
 
 Definitions      /* function symbols cannot change their value */
@@ -43,7 +43,8 @@ End.
 
 Illustration "https://lfcps.org/info/fig-bouncing-ball-dark1ghost.png".
 End.
-ArchiveEntry "07: Bouncing Ball"
+
+ArchiveEntry "LFCPS Textbook/07: Bouncing Ball"
 Description "7.4: Acrophobic Bouncing Ball".
 
 Definitions      /* function symbols cannot change their value */
@@ -188,9 +189,8 @@ End.
        
 Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
 End.
-       
-       
-ArchiveEntry "07: Simple Discrete Loop"
+
+ArchiveEntry "LFCPS Textbook/07: Simple Discrete Loop"
 Description "Example 7.2: Stronger Invariants for simple discrete loop".
 
 ProgramVariables
@@ -216,7 +216,8 @@ Tactic "07: Simple Discrete Loop: automatic"
 End.
 
 End.
-ArchiveEntry "08: Event-triggered Ping-Pong Ball"
+
+ArchiveEntry "LFCPS Textbook/08: Event-triggered Ping-Pong Ball"
 Description "8.2.7 Proposition 8.1: Event-triggered ping-pong is safe".
 
 Definitions
@@ -290,7 +291,8 @@ End.
 
 Illustration "https://lfcps.org/info/ping-pong-ball-early.png".
 End.
-       ArchiveEntry "09: Time-Triggered Ping-Pong Ball"
+
+ArchiveEntry "LFCPS Textbook/09: Time-Triggered Ping-Pong Ball"
 Description "9.2.5 Proposition 9.1: Time-triggered ping-pong is safe".
 
 Definitions
@@ -394,7 +396,8 @@ End.
 
 Illustration "https://lfcps.org/info/ping-pong-ball-time-miss.png".
 End.
-       ArchiveEntry "10: Simple rotational dynamics"
+
+ArchiveEntry "LFCPS Textbook/10: Simple rotational dynamics"
 Description "10.3.7 Simple rotational dynamics".
 
 Definitions
@@ -435,7 +438,7 @@ End.
 
 End.
 
-ArchiveEntry "10: Self-crossing invariant"
+ArchiveEntry "LFCPS Textbook/10: Self-crossing invariant"
 Description "Example 10.7: Self-crossing".
 
 Definitions
@@ -478,7 +481,7 @@ End.
 Illustration "https://lfcps.org/info/fig-self-crossing.png".
 End.
 
-ArchiveEntry "10: Motzkin polynomial invariant"
+ArchiveEntry "LFCPS Textbook/10: Motzkin polynomial invariant"
 Description "Example 10.8: Motzkin".
 
 Definitions
@@ -504,7 +507,7 @@ End.
 Illustration "https://lfcps.org/info/fig-DI-dynamics2.png".
 End.
 
-ArchiveEntry "10: Henon-Heiles motion of a star"
+ArchiveEntry "LFCPS Textbook/10: Henon-Heiles motion of a star"
 Description "Henon-Heiles system for the motion of a star around the center of the galaxy".
 
 Definitions
@@ -529,8 +532,7 @@ End.
 
 End.
 
-
-       ArchiveEntry "11: Aerodynamic Bouncing Ball"
+ArchiveEntry "LFCPS Textbook/11: Aerodynamic Bouncing Ball"
 Description "11.12: Proving Aerodynamic Bouncing Balls".
 
 Definitions      /* function symbols cannot change their value */
@@ -682,7 +684,7 @@ End.
 
 End.
 
-ArchiveEntry "11: Bouncing Ball"
+ArchiveEntry "LFCPS Textbook/11: Bouncing Ball"
 Description "Example 11.6: Acrophobic Bouncing Ball as in chapter 7 but without solutions".
 
 Definitions      /* function symbols cannot change their value */
@@ -727,7 +729,7 @@ End.
 Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
 End.
 
-ArchiveEntry "11: Damped Oscillator"
+ArchiveEntry "LFCPS Textbook/11: Damped Oscillator"
 Description "Example 11.8: Damped oscillator".
 
 Definitions      /* function symbols cannot change their value */
@@ -754,7 +756,7 @@ Illustration "https://lfcps.org/info/fig-damposc-evo2t-region.png".
 End.
 
 
-ArchiveEntry "11: Increasingly Damped Oscillator"
+ArchiveEntry "LFCPS Textbook/11: Increasingly Damped Oscillator"
 Description "Example 11.9: Increasingly damped oscillator".
 
 Definitions
@@ -785,7 +787,7 @@ End.
 Illustration "https://lfcps.org/info/fig-damped-damped-osc-field-region.png".
 End.
        
-ArchiveEntry "12: Bouncing Ball with ghost solutions"
+ArchiveEntry "LFCPS Textbook/12: Bouncing Ball with ghost solutions"
 Description "12.3.2 Proving Bouncing Balls with Sneaky Solutions".
 
 Definitions      /* function symbols cannot change their value */
@@ -908,7 +910,7 @@ End.
 Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
 End.
 
-ArchiveEntry "12: Exponential Decay"
+ArchiveEntry "LFCPS Textbook/12: Exponential Decay"
 Description "12.3.4 Differential ghost as counterweight".
 
 ProgramVariables
@@ -970,7 +972,7 @@ End.
 
 End.
 
-ArchiveEntry "12: Exponential Growth"
+ArchiveEntry "LFCPS Textbook/12: Exponential Growth"
 Description "Example 12.3".
 
 ProgramVariables
@@ -1005,7 +1007,7 @@ End.
 End.
 
 
-ArchiveEntry "12: Exponential at Equilibrium"
+ArchiveEntry "LFCPS Textbook/12: Exponential at Equilibrium"
 Description "Example 12.6 Exponential equilibrium".
 
 ProgramVariables
@@ -1072,7 +1074,7 @@ End.
 
 End.
 
-ArchiveEntry "12: Exponential Difference"
+ArchiveEntry "LFCPS Textbook/12: Exponential Difference"
 Description "Example 12.4".
 
 ProgramVariables
@@ -1092,7 +1094,8 @@ Tactic "12: Exponential difference: top-level proof"
 End.
    
 End.
-       ArchiveEntry "16: Dual Filibuster Game"
+
+ArchiveEntry "LFCPS Textbook/16: Dual Filibuster Game"
 Description "Example 16.4".
 
 ProgramVariables
@@ -1135,7 +1138,7 @@ End.
 
 End.
 
-ArchiveEntry "16: Push-around Cart"
+ArchiveEntry "LFCPS Textbook/16: Push-around Cart"
 Description "Proposition 16.1: Push-around carts are safe".
 
 ProgramVariables /* program variables may change their value over time */
@@ -1201,7 +1204,7 @@ End.
 Illustration "https://lfcps.org/info/fig-push-around-cart.png".
 End.
 
-ArchiveEntry "16: Goalie in Robot Soccer"
+ArchiveEntry "LFCPS Textbook/16: Goalie in Robot Soccer"
 Description "Proof for Example 14.6".
 
 ProgramVariables
