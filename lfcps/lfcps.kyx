@@ -540,7 +540,7 @@ Definitions      /* function symbols cannot change their value */
 End.
 
 ProgramVariables /* program variables may change their value over time */
-  R x, v;        /* height and vertical velocity of ball */
+  Real x, v;     /* height and vertical velocity of ball */
 End.
 
 Problem
