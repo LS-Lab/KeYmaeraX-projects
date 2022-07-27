@@ -44,7 +44,7 @@ ProgramVariables
   Real d;    /* damping ratio */
 End.
 
-Problem.
+Problem
     w^2*x^2 + y^2 <= c^2
   & d>=0
 ->

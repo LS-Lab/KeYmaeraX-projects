@@ -85,8 +85,7 @@ Tactic "Coasting Car: Automatic Proof"
   master
 End.
 
-End.
-ArchiveEntry "LFCPS Tutorial/3 Exercise: Accelerating Car"
+End.ArchiveEntry "LFCPS Tutorial/3 Exercise: Accelerating Car"
 Description "Cars need invariants and control constraints to stop before m".
 
 Definitions       /* function symbols cannot change their value */
@@ -114,8 +113,7 @@ Problem           /* differential dynamic logic formula */
     ] x <= m
 End.
 
-End.
-ArchiveEntry "LFCPS Tutorial/3 Solution: Accelerating Car"
+End.ArchiveEntry "LFCPS Tutorial/3 Solution: Accelerating Car"
 Description "Cars don't run stop signs".
 
 Definitions       /* function symbols cannot change their value */
@@ -295,8 +293,7 @@ End.
 
 Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
 
-End.
-Exercise "LFCPS Tutorial/5 Exercise: Modeling two cars"
+End.Exercise "LFCPS Tutorial/5 Exercise: Modeling two cars"
 Description "Control one car to safely follow another".
 
 Functions
@@ -333,8 +330,7 @@ Problem
   (__________) /* safety condition */
 
 End.
-End.
-ArchiveEntry "LFCPS Tutorial/6 Damped oscillator"
+End.ArchiveEntry "LFCPS Tutorial/6 Damped oscillator"
 Description "Damped oscillators stay in ellipses".
 
 Definitions        /* function symbols cannot change their value */
@@ -380,7 +376,7 @@ ProgramVariables
   Real d;    /* damping ratio */
 End.
 
-Problem.
+Problem
     w^2*x^2 + y^2 <= c^2
   & d>=0
 ->
@@ -527,8 +523,7 @@ End.
 
 Illustration "https://lfcps.org/info/fig-parachute.png".
 End.
-       
-ArchiveEntry "LFCPS Tutorial/9 Kepler two body"
+       ArchiveEntry "LFCPS Tutorial/9 Kepler two body"
 Description "Two planets in gravitational force field with one planet as origin, mathematically normalized constants".
 Citation "Ernst Hairer. Geometric Numerical Integration. TU Munich 2010".
 

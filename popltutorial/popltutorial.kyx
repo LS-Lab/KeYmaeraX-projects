@@ -224,8 +224,7 @@ End.
 
 Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
 
-End.
-Exercise "POPL/POPL: 4 Exercise: Bouncing ball"
+End.Exercise "POPL/POPL: 4 Exercise: Bouncing ball"
 Description "Exercise: Bouncing Ball".
 
 Definitions       /* function symbols cannot change their value */
@@ -298,7 +297,7 @@ ProgramVariables
   Real d;    /* damping ratio */
 End.
 
-Problem.
+Problem
     w^2*x^2 + y^2 <= c^2
   & d>=0
 ->
@@ -353,8 +352,7 @@ Problem
 End.
 
 Illustration "https://lfcps.org/info/fig-parachute.png".
-End.
-ArchiveEntry "POPL/POPL: 6 Solution: Parachute"
+End.ArchiveEntry "POPL/POPL: 6 Solution: Parachute"
 Description "Safely deployed parachutes have bounded velocities".
 
 Definitions

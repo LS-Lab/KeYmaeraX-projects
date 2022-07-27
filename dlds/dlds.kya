@@ -278,7 +278,7 @@ ProgramVariables
   Real d;    /* damping ratio */
 End.
 
-Problem.
+Problem
     w^2*x^2 + y^2 <= c^2
   & d>=0
 ->
@@ -395,8 +395,7 @@ End.
 
 Illustration "https://lfcps.org/info/fig-parachute.png".
 End.
-       
-ArchiveEntry "DLDS/09 Dual Filibuster Game"
+       ArchiveEntry "DLDS/09 Dual Filibuster Game"
 
 ProgramVariables
   Real x;
