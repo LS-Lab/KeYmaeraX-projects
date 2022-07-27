@@ -1,18 +1,18 @@
 /*Exercise "RLC-Circuit".*/
 
-Functions.        /* function symbols cannot change their value */
-  R R.          /* resistance */
-  R L.          /* inductance of inductor */
-  R C.          /* capacitance of capacitor */
-  R e.          /* some constant */
+Definitions        /* function symbols cannot change their value */
+  Real R;          /* resistance */
+  Real L;          /* inductance of inductor */
+  Real C;          /* capacitance of capacitor */
+  Real e;          /* some constant */
 End.
 
-ProgramVariables. /* program variables may change their value over time */
-  R I.            /* current */
-  R i.            /* derivative of current */
+ProgramVariables   /* program variables may change their value over time */
+  Real I;          /* current */
+  Real i;          /* derivative of current */
 End.
 
-Problem.
+Problem
   R>0 & L>0 & C>0 &
   1/(L*C)*I^2 + i^2 <= e^2
 ->

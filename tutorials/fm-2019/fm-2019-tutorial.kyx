@@ -28,7 +28,7 @@ implyR(1) ; loop("2*g*x<=2*g*H-v^2&x>=0", 1) ; <(
   QE,
   QE,
   composeb(1) ; dC("2*g*x<=2*g*H-v^2", 1) ; <(
-    dW(1) ; implyR(1) ; choiceb(1) ; andR(1) ; <(
+    dW(1) ; choiceb(1) ; andR(1) ; <(
       composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; QE,
       composeb(1) ; testb(1) ; implyR(1) ; testb(1) ; implyR(1) ; prop ; done
       ),
@@ -38,7 +38,7 @@ implyR(1) ; loop("2*g*x<=2*g*H-v^2&x>=0", 1) ; <(
 End.
 
 Tactic "Bouncing Ball: automatic"
-  /* needs QE("Mathematica") */
+  useSolver("Mathematica");
   master
 End.
 
@@ -164,8 +164,7 @@ End.
 
 Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
 
-End.
-ArchiveEntry "FM19/3 Swirl invariant"
+End.ArchiveEntry "FM19/3 Swirl invariant"
 Description "LICS'18 hourglass swirl".
 
 ProgramVariables
@@ -262,7 +261,7 @@ ProgramVariables
   Real d;    /* damping ratio */
 End.
 
-Problem.
+Problem
     w^2*x^2 + y^2 <= c^2
   & d>=0
 ->
@@ -357,8 +356,7 @@ Tactic "Coasting Car: Automatic Proof"
   master
 End.
 
-End.
-ArchiveEntry "FM19/7 Exercise: Accelerating Car"
+End.ArchiveEntry "FM19/7 Exercise: Accelerating Car"
 Description "Cars need invariants and control constraints to stop before m".
 
 Definitions       /* function symbols cannot change their value */
@@ -386,8 +384,7 @@ Problem           /* differential dynamic logic formula */
     ] x <= m
 End.
 
-End.
-ArchiveEntry "FM19/7 Solution: Accelerating Car"
+End.ArchiveEntry "FM19/7 Solution: Accelerating Car"
 Description "Cars don't run stop signs".
 
 Definitions       /* function symbols cannot change their value */
