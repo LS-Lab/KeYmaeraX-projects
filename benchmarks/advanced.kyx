@@ -66,20 +66,27 @@ initial(m, z, v)  ->
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; loop("v>=0&m-z>=v^2/(2*b)", 1) ; <(
-    prop,
-    QE,
-    composeb(1) ; composeb(1.1) ; solve(1.1.1) ; unfold ; <(
-      QE,
-      allL("t_",-6) ; implyL(-6) ; <(
-        hideR(1=="A*t_+v>=0&m-(A*(t_^2/2)+v*t_+z)>=(A*t_+v)^2/(2*b)") ; QE,
-        QE
-      )
+  expandAllDefs();
+  implyR(1);
+  loop("v>=0&m-z>=v^2/(2*b)", 1) ; <(
+    "Init": prop,
+    "Post": QE,
+    "Step":
+      composeb(1);
+      composeb(1.1);
+      solve(1.1.1);
+      unfold; <(
+        QE,
+        allL("t_",-6); implyL(-6); <(
+          hideR(1=="A*t_+v>=0&m-(A*(t_^2/2)+v*t_+z)>=(A*t_+v)^2/(2*b)") ; QE,
+          QE
+        )
     )
   )
 End.
 
 Tactic "Scripted proof (2)"
+expandAllDefs();
 implyR(1) ; loop("v>=0&m-z>=v^2/(2*b)", 1) ; <(
   prop,
   QE,
@@ -122,6 +129,7 @@ Problem
 End.
 
 Tactic "Scripted proof"
+  expandAllDefs();
   implyR(1); equivR(1); <(
     solve('Llast); QE,
     solve('Rlast); QE
@@ -182,6 +190,8 @@ em = 0 & d >= 0 & b > 0 & ep > 0 & A > 0 & v>=0
 End.
 
 Tactic "Scripted proof"
+useSolver("Mathematica");
+expandAllDefs();
 implyR('R=="em=0&d>=0&b()>0&ep()>0&A()>0&v>=0->(\forall m \forall z (m-z>=sb&v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0->[a:=A();t:=0;{z'=v,v'=a,t'=1&v>=0&t<=ep()}](v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0))<->sb>=(v^2-d^2)/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v))");
 equivR('R=="\forall m \forall z (m-z>=sb&v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0->[a:=A();t:=0;{z'=v,v'=a,t'=1&v>=0&t<=ep()}](v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0))<->sb>=(v^2-d^2)/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v)"); <(
   "\forall m \forall z (m-z>=sb&v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0->[a:=A();t:=0;{z'=v,v'=a,t'=1&v>=0&t<=ep()}](v^2-d^2<=2*b()*(m-z)&v>=0&d>=0&b()>0))&sb>=(v^2-d^2)/(2*b())+(A()/b()+1)*(A()/2*ep()^2+ep()*v)":
@@ -217,9 +227,9 @@ ProgramVariables
   Real d1, d2;   /* direction of aircraft 1 */
   Real y1, y2;   /* position of aircraft 2 */
   Real e1, e2;   /* direction of aircraft 2 */
-  Real om;   /* angular velocity of aircraft 1 */
-  Real omy;  /* angular velocity of aircraft 2 */
-  Real c1, c2.   /* position of center of roundabout circle */
+  Real om;       /* angular velocity of aircraft 1 */
+  Real omy;      /* angular velocity of aircraft 2 */
+  Real c1, c2;   /* position of center of roundabout circle */
 End.
 
 Problem
@@ -278,7 +288,7 @@ Description "Essentials of Tangential Roundabout Maneuver (TRM) in Air Traffic C
 Citation "Andre Platzer. Differential-algebraic dynamic logic for differential-algebraic programs. Journal of Logic and Computation, 20(1), pages 309-352, 2010.".
 Link "https://doi.org/10.1093/logcom/exn070".
 
-Definitions.
+Definitions
   Real p;  /* protected zone radius */
 
   Bool safeSeparation(Real x1, Real y1, Real x2, Real y2) <-> ( (x1-y1)^2 + (x2-y2)^2 >= p^2 );
@@ -287,7 +297,7 @@ Definitions.
       safeSeparation(x1, y1, x2, y2)
     & safeSeparation(y1, z1, y2, z2)
     & safeSeparation(x1, z1, x2, z2)
-  ).
+  );
 
 End.
 
@@ -370,23 +380,23 @@ loop("safeSeparation3(x1,y1,x2,y2,z1,z2)", 'R=="[{{om:=*;omy:=*;omz:=*;{x1'=d1,x
         diffInvariant("d1=-om*(x2-c2)&d2=om*(x1-c1)", 1) using "d1=-om*(x2-c2) :: d2=om*(x1-c1) :: [{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1}]safeSeparation3(x1,y1,x2,y2,z1,z2) :: nil";
         diffInvariant("e1=-om*(y2-c2)&e2=om*(y1-c1)", 1) using "e1=-om*(y2-c2) :: e2=om*(y1-c1) :: [{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1&true&d1=-om*(x2-c2)&d2=om*(x1-c1)}]safeSeparation3(x1,y1,x2,y2,z1,z2) :: nil";
         diffInvariant("f1=-om*(z2-c2)&f2=om*(z1-c1)", 1) using "f1=-om*(z2-c2) :: f2=om*(z1-c1) :: [{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1&(true&d1=-om*(x2-c2)&d2=om*(x1-c1))&e1=-om*(y2-c2)&e2=om*(y1-c1)}]safeSeparation3(x1,y1,x2,y2,z1,z2) :: nil";
-        expand "safeSeparation3";
+        expand("safeSeparation3");
         boxAnd('R=="[{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1&((true&d1=-om*(x2-c2)&d2=om*(x1-c1))&e1=-om*(y2-c2)&e2=om*(y1-c1))&f1=-om*(z2-c2)&f2=om*(z1-c1)}](safeSeparation(x1,y1,x2,y2)&safeSeparation(y1,z1,y2,z2)&safeSeparation(x1,z1,x2,z2))");
         andR('R=="[{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1&((true&d1=-om*(x2-c2)&d2=om*(x1-c1))&e1=-om*(y2-c2)&e2=om*(y1-c1))&f1=-om*(z2-c2)&f2=om*(z1-c1)}]safeSeparation(x1,y1,x2,y2)&[{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1&((true&d1=-om*(x2-c2)&d2=om*(x1-c1))&e1=-om*(y2-c2)&e2=om*(y1-c1))&f1=-om*(z2-c2)&f2=om*(z1-c1)}](safeSeparation(y1,z1,y2,z2)&safeSeparation(x1,z1,x2,z2))"); <(
           "[{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1&((true&d1=-om*(x2-c2)&d2=om*(x1-c1))&e1=-om*(y2-c2)&e2=om*(y1-c1))&f1=-om*(z2-c2)&f2=om*(z1-c1)}]safeSeparation(x1,y1,x2,y2)":
             andL('L=="safeSeparation(x1,y1,x2,y2)&safeSeparation(y1,z1,y2,z2)&safeSeparation(x1,z1,x2,z2)");
-            expand "safeSeparation";
+            expand("safeSeparation");
             dIClose(1) using "(x1-y1)^2+(x2-y2)^2>=p()^2 :: [{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1&((true&d1=-om*(x2-c2)&d2=om*(x1-c1))&e1=-om*(y2-c2)&e2=om*(y1-c1))&f1=-om*(z2-c2)&f2=om*(z1-c1)}](x1-y1)^2+(x2-y2)^2>=p()^2 :: nil",
           "[{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1&((true&d1=-om*(x2-c2)&d2=om*(x1-c1))&e1=-om*(y2-c2)&e2=om*(y1-c1))&f1=-om*(z2-c2)&f2=om*(z1-c1)}](safeSeparation(y1,z1,y2,z2)&safeSeparation(x1,z1,x2,z2))":
             boxAnd('R=="[{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1&((true&d1=-om*(x2-c2)&d2=om*(x1-c1))&e1=-om*(y2-c2)&e2=om*(y1-c1))&f1=-om*(z2-c2)&f2=om*(z1-c1)}](safeSeparation(y1,z1,y2,z2)&safeSeparation(x1,z1,x2,z2))");
             andR('R=="[{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1&((true&d1=-om*(x2-c2)&d2=om*(x1-c1))&e1=-om*(y2-c2)&e2=om*(y1-c1))&f1=-om*(z2-c2)&f2=om*(z1-c1)}]safeSeparation(y1,z1,y2,z2)&[{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1&((true&d1=-om*(x2-c2)&d2=om*(x1-c1))&e1=-om*(y2-c2)&e2=om*(y1-c1))&f1=-om*(z2-c2)&f2=om*(z1-c1)}]safeSeparation(x1,z1,x2,z2)"); <(
               "[{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1&((true&d1=-om*(x2-c2)&d2=om*(x1-c1))&e1=-om*(y2-c2)&e2=om*(y1-c1))&f1=-om*(z2-c2)&f2=om*(z1-c1)}]safeSeparation(y1,z1,y2,z2)":
                 unfold;
-                expand "safeSeparation";
+                expand("safeSeparation");
                 dIClose(1) using "(y1-z1)^2+(y2-z2)^2>=p()^2 :: [{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1&((true&d1=-om*(x2-c2)&d2=om*(x1-c1))&e1=-om*(y2-c2)&e2=om*(y1-c1))&f1=-om*(z2-c2)&f2=om*(z1-c1)}](y1-z1)^2+(y2-z2)^2>=p()^2 :: nil",
               "[{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1&((true&d1=-om*(x2-c2)&d2=om*(x1-c1))&e1=-om*(y2-c2)&e2=om*(y1-c1))&f1=-om*(z2-c2)&f2=om*(z1-c1)}]safeSeparation(x1,z1,x2,z2)":
                 unfold;
-                expand "safeSeparation";
+                expand("safeSeparation");
                 dIClose(1) using "(x1-z1)^2+(x2-z2)^2>=p()^2 :: [{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1&((true&d1=-om*(x2-c2)&d2=om*(x1-c1))&e1=-om*(y2-c2)&e2=om*(y1-c1))&f1=-om*(z2-c2)&f2=om*(z1-c1)}](x1-z1)^2+(x2-z2)^2>=p()^2 :: nil"
             )
         ),
@@ -488,7 +498,7 @@ loop("safeSeparation4(x1,y1,x2,y2,z1,z2,u1,u2)", 'R=="[{{om:=*;omy:=*;omz:=*;omu
         diffInvariant("e1=-om*(y2-c2)&e2=om*(y1-c1)", 1) using "e1=-om*(y2-c2) :: e2=om*(y1-c1) :: [{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1,u1'=g1,u2'=g2,g1'=-om*g2,g2'=om*g1&true&d1=-om*(x2-c2)&d2=om*(x1-c1)}]safeSeparation4(x1,y1,x2,y2,z1,z2,u1,u2) :: nil";
         diffInvariant("f1=-om*(z2-c2)&f2=om*(z1-c1)", 1) using "f1=-om*(z2-c2) :: f2=om*(z1-c1) :: [{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1,u1'=g1,u2'=g2,g1'=-om*g2,g2'=om*g1&(true&d1=-om*(x2-c2)&d2=om*(x1-c1))&e1=-om*(y2-c2)&e2=om*(y1-c1)}]safeSeparation4(x1,y1,x2,y2,z1,z2,u1,u2) :: nil";
         diffInvariant("g1=-om*(u2-c2)&g2=om*(u1-c1)", 1) using "g1=-om*(u2-c2) :: g2=om*(u1-c1) :: [{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1,u1'=g1,u2'=g2,g1'=-om*g2,g2'=om*g1&((true&d1=-om*(x2-c2)&d2=om*(x1-c1))&e1=-om*(y2-c2)&e2=om*(y1-c1))&f1=-om*(z2-c2)&f2=om*(z1-c1)}]safeSeparation4(x1,y1,x2,y2,z1,z2,u1,u2) :: nil";
-        expandAllDefs;
+        expandAllDefs();
         unfold;
         boxAnd('R=="[{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1,u1'=g1,u2'=g2,g1'=-om*g2,g2'=om*g1&(((true&d1=-om*(x2-c2)&d2=om*(x1-c1))&e1=-om*(y2-c2)&e2=om*(y1-c1))&f1=-om*(z2-c2)&f2=om*(z1-c1))&g1=-om*(u2-c2)&g2=om*(u1-c1)}]((x1-y1)^2+(x2-y2)^2>=p()^2&(y1-z1)^2+(y2-z2)^2>=p()^2&(x1-z1)^2+(x2-z2)^2>=p()^2&(x1-u1)^2+(x2-u2)^2>=p()^2&(y1-u1)^2+(y2-u2)^2>=p()^2&(z1-u1)^2+(z2-u2)^2>=p()^2)");
         andR('R=="[{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1,u1'=g1,u2'=g2,g1'=-om*g2,g2'=om*g1&(((true&d1=-om*(x2-c2)&d2=om*(x1-c1))&e1=-om*(y2-c2)&e2=om*(y1-c1))&f1=-om*(z2-c2)&f2=om*(z1-c1))&g1=-om*(u2-c2)&g2=om*(u1-c1)}](x1-y1)^2+(x2-y2)^2>=p()^2&[{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1,y1'=e1,y2'=e2,e1'=-om*e2,e2'=om*e1,z1'=f1,z2'=f2,f1'=-om*f2,f2'=om*f1,u1'=g1,u2'=g2,g1'=-om*g2,g2'=om*g1&(((true&d1=-om*(x2-c2)&d2=om*(x1-c1))&e1=-om*(y2-c2)&e2=om*(y1-c1))&f1=-om*(z2-c2)&f2=om*(z1-c1))&g1=-om*(u2-c2)&g2=om*(u1-c1)}]((y1-z1)^2+(y2-z2)^2>=p()^2&(x1-z1)^2+(x2-z2)^2>=p()^2&(x1-u1)^2+(x2-u2)^2>=p()^2&(y1-u1)^2+(y2-u2)^2>=p()^2&(z1-u1)^2+(z2-u2)^2>=p()^2)"); <(
@@ -582,7 +592,7 @@ ProgramVariables
   Real x, y;    /* robot position */
   Real v, w;    /* robot translational and rotational velocity */
   Real a;       /* robot translational acceleration */
-  Real dx, dy.  /* robot orientation */
+  Real dx, dy;  /* robot orientation */
   Real r;       /* robot curve radius */
   Real xo, yo;  /* position of closest obstacle on curve */
   Real t;       /* time */
@@ -638,6 +648,8 @@ assumptions(x, y, v, dx, dy, xo, yo) ->
 End.
 
 Tactic "Scripted proof"
+  useSolver("Mathematica");
+
   tactic diall as (
     diffInvariant("t>=0", 1);
     diffInvariant("dx^2+dy^2=1", 1)
@@ -709,10 +721,6 @@ Tactic "Scripted proof"
   print("Proof done")
 End.
 
-Tactic "Automated proof"
-  autoClose
-End.
-
 End.
 
 ArchiveEntry "Benchmarks/Advanced/Robot collision avoidance in two-dimensional space: Passive safety"
@@ -763,7 +771,7 @@ ProgramVariables
   Real x, y;    /* robot position */
   Real v, w;    /* robot translational and rotational velocity */
   Real a;       /* robot translational acceleration */
-  Real dx, dy.  /* robot orientation */
+  Real dx, dy;  /* robot orientation */
   Real r;       /* robot curve radius */
   Real xo, yo;  /* position of closest obstacle on curve */
   Real vxo, vyo; /* velocity of obstacle */
@@ -829,19 +837,20 @@ assumptions(x, y, v, dx, dy, xo, yo) ->
 End.
 
 Tactic "Scripted proof"
+useSolver("Mathematica");
 implyR('R=="assumptions(x,y,v,dx,dy,xo,yo)->[{{{vxo:=*;vyo:=*;?vxo^2+vyo^2<=V()^2;}{a:=-b();++?v=0;a:=0;w:=0;++a:=A();w:=*;?-W()<=w&w<=W();r:=*;xo:=*;yo:=*;?r!=0&r*w=v;?abs(x-xo)>admissibleSeparation(v)|abs(y-yo)>admissibleSeparation(v);}t:=0;}{x'=v*dx,y'=v*dy,v'=a,dx'=-w*dy,dy'=w*dx,w'=a/r,xo'=vxo,yo'=vyo,t'=1&t<=ep()&v>=0}}*](v>0->(x-xo)^2+(y-yo)^2>0)");
-expand "assumptions";
+expand("assumptions");
 loop("loopinv(x,y,v,dx,dy,xo,yo)", 'R=="[{{{vxo:=*;vyo:=*;?vxo^2+vyo^2<=V()^2;}{a:=-b();++?v=0;a:=0;w:=0;++a:=A();w:=*;?-W()<=w&w<=W();r:=*;xo:=*;yo:=*;?r!=0&r*w=v;?abs(x-xo)>admissibleSeparation(v)|abs(y-yo)>admissibleSeparation(v);}t:=0;}{x'=v*dx,y'=v*dy,v'=a,dx'=-w*dy,dy'=w*dx,w'=a/r,xo'=vxo,yo'=vyo,t'=1&t<=ep()&v>=0}}*](v>0->(x-xo)^2+(y-yo)^2>0)"); <(
   "Init":
-    expandAllDefs;
+    expandAllDefs();
     unfold;
     simplify('R=="v>=0&dx^2+dy^2=1&(v>0->abs(x-xo)>v^2/(2*b())+V()*v/b()|abs(y-yo)>v^2/(2*b())+V()*v/b())");
     closeT,
   "Post":
-    expandAllDefs;
+    expandAllDefs();
     QE,
   "Step":
-    expandAllDefs;
+    expandAllDefs();
     unfold; <(
       "[a:=-b();][t:=0;][{x'=v*dx,y'=v*dy,v'=a,dx'=-w*dy,dy'=w*dx,w'=a/r,xo'=vxo,yo'=vyo,t'=1&t<=ep()&v>=0}](v>=0&dx^2+dy^2=1&(v>0->abs(x-xo)>v^2/(2*b())+V()*v/b()|abs(y-yo)>v^2/(2*b())+V()*v/b()))":
         diffInvariant("t>=0", 'R~="[ode;]loopinv(x,y,v,dx,dy,xo,yo)") using "t=0" ;
@@ -855,7 +864,16 @@ loop("loopinv(x,y,v,dx,dy,xo,yo)", 'R=="[{{{vxo:=*;vyo:=*;?vxo^2+vyo^2<=V()^2;}{
         unfold;
         simplify('R=="v>=0&dx^2+dy^2=1&(v>0->abs(x-xo)>v^2/(2*b())+V()*v/b()|abs(y-yo)>v^2/(2*b())+V()*v/b())") using "dx^2+dy^2=1 :: v>=0 :: nil";
         implyR('R=="v>0->abs(x-xo)>v^2/(2*b())+V()*v/b()|abs(y-yo)>v^2/(2*b())+V()*v/b()");
-        QE using "-t*(v+b()/2*t)<=y-y_0 :: y-y_0<=t*(v+b()/2*t) :: b()>0 :: v=v_0-b()*t :: -t*(v+b()/2*t)<=x-x_0 :: x-x_0<=t*(v+b()/2*t) :: -t*V()<=yo-yo_0 :: yo-yo_0<=t*V() :: -t*V()<=xo-xo_0 :: xo-xo_0<=t*V() :: v_0>=0 :: v_0>0->abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()|abs(y_0-yo_0)>v_0^2/(2*b())+V()*v_0/b() :: t>=0 :: v>0 :: abs(x-xo)>v^2/(2*b())+V()*v/b()|abs(y-yo)>v^2/(2*b())+V()*v/b() :: nil",
+        orR('R=="abs(x-xo)>v^2/(2*b())+V()*v/b()|abs(y-yo)>v^2/(2*b())+V()*v/b()");
+        edit("v_0>0", 'L=="v_0>=0") using "v=v_0-b()*t :: v>0 :: b()>0 :: t>=0 :: nil";
+        simplify('L=="v_0>0->abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()|abs(y_0-yo_0)>v_0^2/(2*b())+V()*v_0/b()") using "v_0>0";
+        orL('L=="abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()|abs(y_0-yo_0)>v_0^2/(2*b())+V()*v_0/b()"); <(
+          "abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b()":
+            QE using "b()>0 :: v=v_0-b()*t :: -t*(v+b()/2*t)<=x-x_0 :: x-x_0<=t*(v+b()/2*t) :: -t*V()<=xo-xo_0 :: xo-xo_0<=t*V() :: v_0>0 :: abs(x_0-xo_0)>v_0^2/(2*b())+V()*v_0/b() :: t>=0 :: v>0 :: abs(x-xo)>v^2/(2*b())+V()*v/b() :: nil",
+          "abs(y_0-yo_0)>v_0^2/(2*b())+V()*v_0/b()":
+            QE using "-t*(v+b()/2*t)<=y-y_0 :: y-y_0<=t*(v+b()/2*t) :: b()>0 :: v=v_0-b()*t :: -t*V()<=yo-yo_0 :: yo-yo_0<=t*V() :: v_0>0 :: abs(y_0-yo_0)>v_0^2/(2*b())+V()*v_0/b() :: t>=0 :: v>0 :: abs(y-yo)>v^2/(2*b())+V()*v/b() :: nil"
+        )
+        ,
       "[?v=0;a:=0;w:=0;][t:=0;][{x'=v*dx,y'=v*dy,v'=a,dx'=-w*dy,dy'=w*dx,w'=a/r,xo'=vxo,yo'=vyo,t'=1&t<=ep()&v>=0}](v>=0&dx^2+dy^2=1&(v>0->abs(x-xo)>v^2/(2*b())+V()*v/b()|abs(y-yo)>v^2/(2*b())+V()*v/b()))":
         diffInvariant("t>=0", 'R~="[ode;]loopinv(x,y,v,dx,dy,xo,yo)") using "t=0";
         diffInvariant("dx^2+dy^2=1", 'R~="[ode;]loopinv(x,y,v,dx,dy,xo,yo)") using "dx^2+dy^2=1";
@@ -1047,7 +1065,7 @@ ProgramVariables
   Real v332;
 End.
 
-Problem.
+Problem
 
 initial(a, v, s, i, lvl, lu, COswitched, conf, v211, v212, v221, v222, v231, v232, v311, v312, v321, v322, v331, v332)
 ->
@@ -1087,7 +1105,7 @@ ProgramVariables
   Real alC;
 End.
 
-Problem.
+Problem
   m=1250 & r=30 & v=-2 & Fc=2027.5
   ->
   [{

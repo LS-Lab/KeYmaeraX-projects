@@ -1,17 +1,17 @@
 /* 2D Problems */
 
-ArchiveEntry "Benchmarks/Nonlinear/Ahmadi Parrilo Krstic".
+ArchiveEntry "Benchmarks/Nonlinear/Ahmadi Parrilo Krstic"
 
 Description "Theorem 1.1 (1)".
-Citation "Amir Ali Ahmadi, Miroslav Krstic, and Pablo A. Parrilo. A globally asymptotically stable polynomial vector field with no polynomial Lyapunov function. CDC-ECE 2011".
+Citation "Amir Ali Ahmadi, Miroslav Krstic, and Pablo A; Parrilo. A globally asymptotically stable polynomial vector field with no polynomial Lyapunov function; CDC-ECE 2011".
 Link "https://doi.org/10.1109/CDC.2011.6161499".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   0.5<=x & x<=0.7 & 0<=y & y<=0.3
   ->
   [
@@ -27,23 +27,23 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Automated proof".
+Tactic "Automated proof"
   auto
 End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Arrowsmith Place Fig_3_11 page 83".
+ArchiveEntry "Benchmarks/Nonlinear/Arrowsmith Place Fig_3_11 page 83"
 
 Description "Fig 3.11 Page 83".
 Citation "D. K. Arrowsmith and C. M. Place. An Introduction to Dynamical Systems".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   x=1 & y=1/8
   ->
   [
@@ -64,17 +64,17 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Arrowsmith Place Fig_3_5e page 79".
+ArchiveEntry "Benchmarks/Nonlinear/Arrowsmith Place Fig_3_5e page 79"
 
 Description "Fig 3.5e Page 79".
 Citation "D. K. Arrowsmith and C. M. Place. An Introduction to Dynamical Systems".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   x=1 & y=-1
   ->
   [
@@ -82,32 +82,32 @@ Problem.
   ] !(y>0)
 End.
 
-Tactic "Scripted proof".
+Tactic "Scripted proof"
   implyR(1);
   dC("y-x+1<=0 & y<=0",1); <(
     dW(1); QE,
-    ODE(1)
+    ODEinv(1)
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Ben Sassi Girard 20104 Moore-Greitzer Jet".
+ArchiveEntry "Benchmarks/Nonlinear/Ben Sassi Girard 20104 Moore-Greitzer Jet"
 
 Description "6.1 Moore-Greitzer jet engine model".
 Citation "Mohamed Amin Ben Sassi, Antoine Girard. Controller synthesis for robust invariance of polynomial dynamical systems using linear programming".
 Link "https://doi.org/10.1016/j.sysconle.2012.01.004".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   -1/5000 + (1/20+x)^2 + (3/200 + y)^2 <= 0
   ->
   [
@@ -115,32 +115,34 @@ Problem.
   ] !(49/100 + x + x^2 + y + y^2 <= 0)
 End.
 
-Tactic "Scripted proof".
+Tactic "Scripted proof"
+  useSolver("Mathematica");
   implyR(1);
   dC("0.073036*x^6-0.014461*x^5*y+0.059693*x^4*y^2-0.0063143*x^3*y^3+0.029392*x^2*y^4+0.0036316*y^6+0.064262*x^5+0.24065*x^4*y-0.082711*x^3*y^2+0.28107*x^2*y^3-0.015542*x*y^4+0.036437*y^5+0.47415*x^4-0.56542*x^3*y+1.1849*x^2*y^2-0.22203*x*y^3+0.19053*y^4-0.59897*x^3+1.8838*x^2*y-0.59653*x*y^2+0.47413*y^3+1.0534*x^2-0.51581*x*y+0.43393*y^2-0.35572*x-0.11888*y-0.25586<=0",1); <(
     dW(1); QE,
-    ODE(1)
+    ODEinv(1)
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
+  useSolver("Mathematica");
   auto
 End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Ben Sassi Girard Sankaranarayanan 2014 Fitzhugh-Nagumo".
+ArchiveEntry "Benchmarks/Nonlinear/Ben Sassi Girard Sankaranarayanan 2014 Fitzhugh-Nagumo"
 
 Description "Fitzhugh-Nagumo system".
 Citation "Mohamed Amin Ben Sassi, Antoine Girard, Sriram Sankaranarayanan. Iterative computation of polyhedral invariants sets for polynomial dynamical systems".
 Link "10.1109/CDC.2014.7040384".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   -1/20 + (5/4+x)^2 + (-5/4+y)^2 <= 0
   ->
   [
@@ -156,31 +158,31 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Scripted proof (2)".
+Tactic "Scripted proof (2)"
   implyR(1);
   dC("0.12152*x^4+0.22807*x^3*y+0.214*x^2*y^2-0.71222*y^4-0.27942*x^3-0.48799*x^2*y-0.2517*x*y^2-0.3366*y^3-0.21526*x^2+0.16728*x*y-0.44613*y^2+0.35541*x-0.21594*y-0.72852<=0",1); <(
     dW(1); QE,
-    ODE(1)
+    ODEinv(1)
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Bhatia Szego Ex_2_4 page 68".
+ArchiveEntry "Benchmarks/Nonlinear/Bhatia Szego Ex_2_4 page 68"
 
 Description "Ex 2.4 Page 68".
 Citation "Bhatia, N. P. and Szego, G. P.. Stability Theory of Dynamical Systems".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   x^2 + (-1/2 + y)^2 < 1/24
   ->
   [
@@ -188,35 +190,37 @@ Problem.
   ] !(x <= -2 | y <= -1)
 End.
 
-Tactic "Scripted proof".
+Tactic "Scripted proof"
+  useSolver("Mathematica");
   implyR(1); dC("4*x*(1821+5601250*x)+4827750*x*y+125*(76794+(-45619)*x^3)*y^2 < 1375*(4891+3332*y)", 1); <(
     dW(1); QE,
     barrier(1)
   )
 End.
 
-Tactic "Scripted proof (2)".
+Tactic "Scripted proof (2)"
   implyR(1);
   dC("-0.00028346*x^6*y^3 - 0.00049999*x^5*y^4 + 0.00018784*x^4*y^5 + 0.0002836*x^3*y^6 - 0.00020211*x^2*y^7 - 0.00011251*x*y^8 + 0.00032872 *y^9 - 0.00032162*x^7*y - 0.0012954*x^6*y^2 - 0.0038775*x^5*y^3 - 0.0085289*x^4*y^4 + 0.0016293*x^3*y^5 + 0.0018949*x^2*y^6 - 0.0035577 *x*y^7 + 0.011859*y^8 - 0.00043993*x^7 - 0.0050214*x^6*y - 0.0047617*x^5 *y^2 + 0.011009*x^4*y^3 + 0.012178*x^3*y^4 + 0.0055785*x^2*y^5 + 0.0037099*x*y^6 - 0.062198*y^7 - 0.0023971*x^6 + 0.005244*x^5*y + 0.0031699*x^4*y^2 + 0.00069299*x^3*y^3 + 0.14159*x^2*y^4 - 0.081176*x *y^5 + 0.27277*y^6 + 0.0089006*x^5 + 0.10703*x^4*y + 0.0021026*x^3*y^2 - 0.39217*x^2*y^3 + 0.17202*x*y^4 - 0.85217*y^5 + 0.052331*x^4 - 0.008468*x^3*y - 0.21988*x^2*y^2 - 0.19426*x*y^3 + 1.3672*y^4 - 0.067608*x^3 - 1.3917*x^2*y - 1.3541*x*y^2 - 1.0593*y^3 - 0.80894*x^2 - 2.9459*x*y + 1.0078*y^2 - 1.8819*x - 2.2726*y - 1.433 <= 0 & y>=0 & x>=-2",1); <(
     dW(1); QE,
-    ODE(1) /* todo */
+    ODEinv(1) /* todo */
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
+  useSolver("Mathematica");
   auto
 End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Collin Goriely page 60".
+ArchiveEntry "Benchmarks/Nonlinear/Collin Goriely page 60"
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   (2+x)^2 + (-1+y)^2 <= 1/4
   ->
   [
@@ -238,7 +242,7 @@ Tactic "Scripted proof (2)"
   implyR(1);
   dC("y>=0 & x+y<=0",1); <(
     dW(1); QE,
-    ODE(1)
+    ODEinv(1)
   )
 End.
 
@@ -248,18 +252,18 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Dai Gan Xia Zhan JSC14 Ex. 2".
+ArchiveEntry "Benchmarks/Nonlinear/Dai Gan Xia Zhan JSC14 Ex. 2"
 
 Description "Example 2".
-Citation "Liyun Dai, Ting Gan, Bican Xia, Naijun Zhan. Barrier certificates revisited. J. Symb. Comput.".
+Citation "Liyun Dai, Ting Gan, Bican Xia, Naijun Zhan. Barrier certificates revisited; J. Symb. Comput.".
 Link "https://doi.org/10.1016/j.jsc.2016.07.010".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   x^2 + (2+y)^2 <= 1
   ->
   [
@@ -267,33 +271,35 @@ Problem.
   ] !(x^2+(-1+y)^2 <= 9/100)
 End.
 
-Tactic "Scripted proof".
+Tactic "Scripted proof"
+  useSolver("Mathematica");
   implyR(1);
   dC("0.0052726*x^10+0.013182*x^8*y^2+0.013181*x^6*y^4+0.0065909*x^4*y^6+0.0016477*x^2*y^8+0.00016477*y^10-0.060426*x^8*y-0.11666*x^6*y^3-0.08401*x^4*y^5-0.02829*x^2*y^7-0.0026618*y^9-0.0093935*x^8+0.25715*x^6*y^2+0.35556*x^4*y^4+0.18385*x^2*y^6+0.017843*y^8-0.22922*x^6*y-0.82409*x^4*y^3-0.6654*x^2*y^5-0.072582*y^7+0.38533*x^6+1.6909*x^4*y^2+1.7759*x^2*y^4+0.20099*y^6+1.8855*x^4*y-0.83113*x^2*y^3-0.10854*y^5-4.9159*x^4-11.581*x^2*y^2-1.9047*y^4+6.644*x^2*y+7.8358*y^3+1.5029*x^2-13.2338*y^2+10.8962*y-3.4708<=0&0.10731*x^10+0.26827*x^8*y^2+0.26827*x^6*y^4+0.13413*x^4*y^6+0.033534*x^2*y^8+0.0033532*y^10-1.2677*x^8*y-2.4914*x^6*y^3-1.8208*x^4*y^5-0.59588*x^2*y^7-0.057773*y^9-0.82207*x^8+4.1107*x^6*y^2+6.7924*x^4*y^4+3.4828*x^2*y^6+0.36938*y^8+6.8306*x^6*y-0.93431*x^4*y^3-5.9328*x^2*y^5-0.95223*y^7+2.2556*x^6-17.4284*x^4*y^2-6.4448*x^2*y^4-0.33741*y^6-1.2936*x^4*y+16.8675*x^2*y^3+8.8828*y^5-16.1915*x^4-39.7751*x^2*y^2-25.8126*y^4+43.7284*x^2*y+39.2116*y^3-12.7866*x^2-33.0675*y^2+15.2878*y-3.1397<=0",1); <(
     dW(1); QE,
-    ODE(1)
+    ODEinv(1)
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
+  useSolver("Mathematica");
   auto
 End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Dai Gan Xia Zhan JSC14 Ex. 5".
+ArchiveEntry "Benchmarks/Nonlinear/Dai Gan Xia Zhan JSC14 Ex. 5"
 
 Description "Example 5".
-Citation "Liyun Dai, Ting Gan, Bican Xia, Naijun Zhan. Barrier certificates revisited. J. Symb. Comput.".
+Citation "Liyun Dai, Ting Gan, Bican Xia, Naijun Zhan. Barrier certificates revisited; J. Symb. Comput.".
 Link "https://doi.org/10.1016/j.jsc.2016.07.010".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
-  (1+x)^2 + (-2+y)^2 <= 4/25
+Problem
+  (1+x)^2 + ((-2)+y)^2 <= 4/25
   ->
   [
     {x'=y, y'=2*x-x^3-y-x^2*y}@invariant(0.23942*x^6 + 0.097208*x^5*y + 0.06013*x^4*y^2 - 0.0076888*x^3*y^3
@@ -303,77 +309,92 @@ Problem.
                                            *y^3 + 0.11756*y^4 - 0.021196*x^3 - 0.40047*x^2*y - 0.28433*x*y^2
                                            - 0.028468*y^3 - 0.020192*x^2 - 0.37629*x*y - 0.13713*y^2 + 1.9803*x
                                            - 1.4121*y - 0.51895<=0)
-  ] !((-1+x)^2 + y^2 <= 1/25)
+  ] !(((-1)+x)^2 + y^2 <= 1/25)
 End.
 
-Tactic "Scripted proof".
+Tactic "Scripted proof"
+  useSolver("Mathematica");
   implyR(1);
   dC("0.23942*x^6 + 0.097208*x^5*y + 0.06013*x^4*y^2 - 0.0076888*x^3*y^3 - 0.022097*x^2*y^4 + 0.067444*x*y^5 + 0.063249*y^6 - 0.11511*x^5 - 0.093461*x^4*y - 0.061763*x^3*y^2 + 0.065902*x^2*y^3 + 0.053766*x*y^4 - 0.1151*y^5 - 0.95442*x^4 + 0.38703*x^3*y + 0.46309*x^2*y^2 - 0.14691*x*y^3 + 0.11756*y^4 - 0.021196*x^3 - 0.40047*x^2*y - 0.28433*x*y^2 - 0.028468*y^3 - 0.020192*x^2 - 0.37629*x*y - 0.13713*y^2 + 1.9803*x - 1.4121*y - 0.51895<=0",1); <(
     dW(1); QE,
-    ODE(1)
+    ODEinv(1)
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
+  useSolver("Mathematica");
   auto
 End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Darboux Christoffel Int Goriely page 58".
+ArchiveEntry "Benchmarks/Nonlinear/Darboux Christoffel Int Goriely page 58"
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   x^2+y^2<=1
   ->
   [
-    {x'=3*(-4+x^2), y'=3+x*y-y^2}
+    {x'=3*((-4)+x^2), y'=3+x*y-y^2}
     @invariant(
-      (-0.0013138)*x^5+0.00048141*x^4*y+0.000828*x^2*y^3-0.0016748*x*y^4+0.0008106*y^5+0.010722*x^4-0.0018729*x^3*y+0.0041383*x^2*y^2-0.013911*x*y^3+0.0085091*y^4-0.039948*x^3-0.0060006*x^2*y-0.046355*x*y^2+0.054433*y^3-0.028132*x^2+0.13217*x*y+0.10916*y^2+0.62004*x-0.88775*y-1.1161<=0&(-0.00011438)*x^4*y^2+0.00015105*x^2*y^4-0.0018063*x^5+0.0012699*x^3*y^2+0.0014498*x^2*y^3-0.0014334*x*y^4+0.0013001*y^5+0.017567*x^4+0.0050023*x^3*y-0.0016674*x^2*y^2-0.015315*x*y^3+0.01038*y^4-0.072259*x^3-0.035874*x^2*y-0.050558*x*y^2+0.058708*y^3-0.05097*x^2+0.042626*x*y+0.19257*y^2+1.3148*x+0.014613*y-1.2585<=0,
+      x^2<4,
+      -0.0013138*x^5+0.00048141*x^4*y+0.000828*x^2*y^3-0.0016748*x*y^4+0.0008106*y^5+0.010722*x^4-0.0018729*x^3*y+0.0041383*x^2*y^2-0.013911*x*y^3+0.0085091*y^4-0.039948*x^3-0.0060006*x^2*y-0.046355*x*y^2+0.054433*y^3-0.028132*x^2+0.13217*x*y+0.10916*y^2+0.62004*x-0.88775*y-1.1161<=0&(-0.00011438)*x^4*y^2+0.00015105*x^2*y^4-0.0018063*x^5+0.0012699*x^3*y^2+0.0014498*x^2*y^3-0.0014334*x*y^4+0.0013001*y^5+0.017567*x^4+0.0050023*x^3*y-0.0016674*x^2*y^2-0.015315*x*y^3+0.01038*y^4-0.072259*x^3-0.035874*x^2*y-0.050558*x*y^2+0.058708*y^3-0.05097*x^2+0.042626*x*y+0.19257*y^2+1.3148*x+0.014613*y-1.2585<=0,
       x^2+y^2-16<=0)
-  ] !(x < -4 | y < -4 | x>4 | y>4)
+  ] !(x < (-4) | y < (-4) | x>4 | y>4)
 End.
 
-Tactic "Scripted proof".
+Tactic "Scripted proof"
+useSolver("Mathematica");
 implyR('R=="x^2+y^2<=1->[{x'=3*((-4)+x^2),y'=3+x*y-y^2}](!(x < (-4)|y < (-4)|x>4|y>4))");
-dC("(-0.0013138)*x^5+0.00048141*x^4*y+0.000828*x^2*y^3-0.0016748*x*y^4+0.0008106*y^5+0.010722*x^4-0.0018729*x^3*y+0.0041383*x^2*y^2-0.013911*x*y^3+0.0085091*y^4-0.039948*x^3-0.0060006*x^2*y-0.046355*x*y^2+0.054433*y^3-0.028132*x^2+0.13217*x*y+0.10916*y^2+0.62004*x-0.88775*y-1.1161<=0&(-0.00011438)*x^4*y^2+0.00015105*x^2*y^4-0.0018063*x^5+0.0012699*x^3*y^2+0.0014498*x^2*y^3-0.0014334*x*y^4+0.0013001*y^5+0.017567*x^4+0.0050023*x^3*y-0.0016674*x^2*y^2-0.015315*x*y^3+0.01038*y^4-0.072259*x^3-0.035874*x^2*y-0.050558*x*y^2+0.058708*y^3-0.05097*x^2+0.042626*x*y+0.19257*y^2+1.3148*x+0.014613*y-1.2585<=0", 'R=="[{x'=3*((-4)+x^2),y'=3+x*y-y^2}](!(x < (-4)|y < (-4)|x>4|y>4))"); <(
+dC("-0.0013138*x^5+0.00048141*x^4*y+0.000828*x^2*y^3-0.0016748*x*y^4+0.0008106*y^5+0.010722*x^4-0.0018729*x^3*y+0.0041383*x^2*y^2-0.013911*x*y^3+0.0085091*y^4-0.039948*x^3-0.0060006*x^2*y-0.046355*x*y^2+0.054433*y^3-0.028132*x^2+0.13217*x*y+0.10916*y^2+0.62004*x-0.88775*y-1.1161<=0&(-0.00011438)*x^4*y^2+0.00015105*x^2*y^4-0.0018063*x^5+0.0012699*x^3*y^2+0.0014498*x^2*y^3-0.0014334*x*y^4+0.0013001*y^5+0.017567*x^4+0.0050023*x^3*y-0.0016674*x^2*y^2-0.015315*x*y^3+0.01038*y^4-0.072259*x^3-0.035874*x^2*y-0.050558*x*y^2+0.058708*y^3-0.05097*x^2+0.042626*x*y+0.19257*y^2+1.3148*x+0.014613*y-1.2585<=0", 'R=="[{x'=3*((-4)+x^2),y'=3+x*y-y^2}](!(x < (-4)|y < (-4)|x>4|y>4))"); <(
   "Use":
-    dC("x^2+y^2-16<=0", 'R=="[{x'=3*((-4)+x^2),y'=3+x*y-y^2&true&(-0.0013138)*x^5+0.00048141*x^4*y+0.000828*x^2*y^3-0.0016748*x*y^4+0.0008106*y^5+0.010722*x^4-0.0018729*x^3*y+0.0041383*x^2*y^2-0.013911*x*y^3+0.0085091*y^4-0.039948*x^3-0.0060006*x^2*y-0.046355*x*y^2+0.054433*y^3-0.028132*x^2+0.13217*x*y+0.10916*y^2+0.62004*x-0.88775*y-1.1161<=0&(-0.00011438)*x^4*y^2+0.00015105*x^2*y^4-0.0018063*x^5+0.0012699*x^3*y^2+0.0014498*x^2*y^3-0.0014334*x*y^4+0.0013001*y^5+0.017567*x^4+0.0050023*x^3*y-0.0016674*x^2*y^2-0.015315*x*y^3+0.01038*y^4-0.072259*x^3-0.035874*x^2*y-0.050558*x*y^2+0.058708*y^3-0.05097*x^2+0.042626*x*y+0.19257*y^2+1.3148*x+0.014613*y-1.2585<=0}](!(x < (-4)|y < (-4)|x>4|y>4))"); <(
+    dC("x^2+y^2-16<=0", 'R=="[{x'=3*((-4)+x^2),y'=3+x*y-y^2&true&-0.0013138*x^5+0.00048141*x^4*y+0.000828*x^2*y^3-0.0016748*x*y^4+0.0008106*y^5+0.010722*x^4-0.0018729*x^3*y+0.0041383*x^2*y^2-0.013911*x*y^3+0.0085091*y^4-0.039948*x^3-0.0060006*x^2*y-0.046355*x*y^2+0.054433*y^3-0.028132*x^2+0.13217*x*y+0.10916*y^2+0.62004*x-0.88775*y-1.1161<=0&(-0.00011438)*x^4*y^2+0.00015105*x^2*y^4-0.0018063*x^5+0.0012699*x^3*y^2+0.0014498*x^2*y^3-0.0014334*x*y^4+0.0013001*y^5+0.017567*x^4+0.0050023*x^3*y-0.0016674*x^2*y^2-0.015315*x*y^3+0.01038*y^4-0.072259*x^3-0.035874*x^2*y-0.050558*x*y^2+0.058708*y^3-0.05097*x^2+0.042626*x*y+0.19257*y^2+1.3148*x+0.014613*y-1.2585<=0}](!(x < (-4)|y < (-4)|x>4|y>4))"); <(
       "Use":
-        dW('R=="[{x'=3*((-4)+x^2),y'=3+x*y-y^2&(true&(-0.0013138)*x^5+0.00048141*x^4*y+0.000828*x^2*y^3-0.0016748*x*y^4+0.0008106*y^5+0.010722*x^4-0.0018729*x^3*y+0.0041383*x^2*y^2-0.013911*x*y^3+0.0085091*y^4-0.039948*x^3-0.0060006*x^2*y-0.046355*x*y^2+0.054433*y^3-0.028132*x^2+0.13217*x*y+0.10916*y^2+0.62004*x-0.88775*y-1.1161<=0&(-0.00011438)*x^4*y^2+0.00015105*x^2*y^4-0.0018063*x^5+0.0012699*x^3*y^2+0.0014498*x^2*y^3-0.0014334*x*y^4+0.0013001*y^5+0.017567*x^4+0.0050023*x^3*y-0.0016674*x^2*y^2-0.015315*x*y^3+0.01038*y^4-0.072259*x^3-0.035874*x^2*y-0.050558*x*y^2+0.058708*y^3-0.05097*x^2+0.042626*x*y+0.19257*y^2+1.3148*x+0.014613*y-1.2585<=0)&x^2+y^2-16<=0}](!(x < (-4)|y < (-4)|x>4|y>4))");
+        dW('R=="[{x'=3*((-4)+x^2),y'=3+x*y-y^2&(true&-0.0013138*x^5+0.00048141*x^4*y+0.000828*x^2*y^3-0.0016748*x*y^4+0.0008106*y^5+0.010722*x^4-0.0018729*x^3*y+0.0041383*x^2*y^2-0.013911*x*y^3+0.0085091*y^4-0.039948*x^3-0.0060006*x^2*y-0.046355*x*y^2+0.054433*y^3-0.028132*x^2+0.13217*x*y+0.10916*y^2+0.62004*x-0.88775*y-1.1161<=0&(-0.00011438)*x^4*y^2+0.00015105*x^2*y^4-0.0018063*x^5+0.0012699*x^3*y^2+0.0014498*x^2*y^3-0.0014334*x*y^4+0.0013001*y^5+0.017567*x^4+0.0050023*x^3*y-0.0016674*x^2*y^2-0.015315*x*y^3+0.01038*y^4-0.072259*x^3-0.035874*x^2*y-0.050558*x*y^2+0.058708*y^3-0.05097*x^2+0.042626*x*y+0.19257*y^2+1.3148*x+0.014613*y-1.2585<=0)&x^2+y^2-16<=0}](!(x < (-4)|y < (-4)|x>4|y>4))");
         QE,
       "Show":
-        barrier('R=="[{x'=3*((-4)+x^2),y'=3+x*y-y^2&true&(-0.0013138)*x^5+0.00048141*x^4*y+0.000828*x^2*y^3-0.0016748*x*y^4+0.0008106*y^5+0.010722*x^4-0.0018729*x^3*y+0.0041383*x^2*y^2-0.013911*x*y^3+0.0085091*y^4-0.039948*x^3-0.0060006*x^2*y-0.046355*x*y^2+0.054433*y^3-0.028132*x^2+0.13217*x*y+0.10916*y^2+0.62004*x-0.88775*y-1.1161<=0&(-0.00011438)*x^4*y^2+0.00015105*x^2*y^4-0.0018063*x^5+0.0012699*x^3*y^2+0.0014498*x^2*y^3-0.0014334*x*y^4+0.0013001*y^5+0.017567*x^4+0.0050023*x^3*y-0.0016674*x^2*y^2-0.015315*x*y^3+0.01038*y^4-0.072259*x^3-0.035874*x^2*y-0.050558*x*y^2+0.058708*y^3-0.05097*x^2+0.042626*x*y+0.19257*y^2+1.3148*x+0.014613*y-1.2585<=0}]x^2+y^2-16<=0")
+        ODEinv('R=="[{x'=3*((-4)+x^2),y'=3+x*y-y^2&true&-0.0013138*x^5+0.00048141*x^4*y+0.000828*x^2*y^3-0.0016748*x*y^4+0.0008106*y^5+0.010722*x^4-0.0018729*x^3*y+0.0041383*x^2*y^2-0.013911*x*y^3+0.0085091*y^4-0.039948*x^3-0.0060006*x^2*y-0.046355*x*y^2+0.054433*y^3-0.028132*x^2+0.13217*x*y+0.10916*y^2+0.62004*x-0.88775*y-1.1161<=0&(-0.00011438)*x^4*y^2+0.00015105*x^2*y^4-0.0018063*x^5+0.0012699*x^3*y^2+0.0014498*x^2*y^3-0.0014334*x*y^4+0.0013001*y^5+0.017567*x^4+0.0050023*x^3*y-0.0016674*x^2*y^2-0.015315*x*y^3+0.01038*y^4-0.072259*x^3-0.035874*x^2*y-0.050558*x*y^2+0.058708*y^3-0.05097*x^2+0.042626*x*y+0.19257*y^2+1.3148*x+0.014613*y-1.2585<=0}]x^2+y^2-16<=0")
     ),
   "Show":
-    boxAnd('R=="[{x'=3*((-4)+x^2),y'=3+x*y-y^2}]((-0.0013138)*x^5+0.00048141*x^4*y+0.000828*x^2*y^3-0.0016748*x*y^4+0.0008106*y^5+0.010722*x^4-0.0018729*x^3*y+0.0041383*x^2*y^2-0.013911*x*y^3+0.0085091*y^4-0.039948*x^3-0.0060006*x^2*y-0.046355*x*y^2+0.054433*y^3-0.028132*x^2+0.13217*x*y+0.10916*y^2+0.62004*x-0.88775*y-1.1161<=0&(-0.00011438)*x^4*y^2+0.00015105*x^2*y^4-0.0018063*x^5+0.0012699*x^3*y^2+0.0014498*x^2*y^3-0.0014334*x*y^4+0.0013001*y^5+0.017567*x^4+0.0050023*x^3*y-0.0016674*x^2*y^2-0.015315*x*y^3+0.01038*y^4-0.072259*x^3-0.035874*x^2*y-0.050558*x*y^2+0.058708*y^3-0.05097*x^2+0.042626*x*y+0.19257*y^2+1.3148*x+0.014613*y-1.2585<=0)");
-    andR('R=="[{x'=3*((-4)+x^2),y'=3+x*y-y^2}](-0.0013138)*x^5+0.00048141*x^4*y+0.000828*x^2*y^3-0.0016748*x*y^4+0.0008106*y^5+0.010722*x^4-0.0018729*x^3*y+0.0041383*x^2*y^2-0.013911*x*y^3+0.0085091*y^4-0.039948*x^3-0.0060006*x^2*y-0.046355*x*y^2+0.054433*y^3-0.028132*x^2+0.13217*x*y+0.10916*y^2+0.62004*x-0.88775*y-1.1161<=0&[{x'=3*((-4)+x^2),y'=3+x*y-y^2}](-0.00011438)*x^4*y^2+0.00015105*x^2*y^4-0.0018063*x^5+0.0012699*x^3*y^2+0.0014498*x^2*y^3-0.0014334*x*y^4+0.0013001*y^5+0.017567*x^4+0.0050023*x^3*y-0.0016674*x^2*y^2-0.015315*x*y^3+0.01038*y^4-0.072259*x^3-0.035874*x^2*y-0.050558*x*y^2+0.058708*y^3-0.05097*x^2+0.042626*x*y+0.19257*y^2+1.3148*x+0.014613*y-1.2585<=0"); <(
-      "[{x'=3*((-4)+x^2),y'=3+x*y-y^2}](-0.0013138)*x^5+0.00048141*x^4*y+0.000828*x^2*y^3-0.0016748*x*y^4+0.0008106*y^5+0.010722*x^4-0.0018729*x^3*y+0.0041383*x^2*y^2-0.013911*x*y^3+0.0085091*y^4-0.039948*x^3-0.0060006*x^2*y-0.046355*x*y^2+0.054433*y^3-0.028132*x^2+0.13217*x*y+0.10916*y^2+0.62004*x-0.88775*y-1.1161<=0":
-        barrier('R=="[{x'=3*((-4)+x^2),y'=3+x*y-y^2}](-0.0013138)*x^5+0.00048141*x^4*y+0.000828*x^2*y^3-0.0016748*x*y^4+0.0008106*y^5+0.010722*x^4-0.0018729*x^3*y+0.0041383*x^2*y^2-0.013911*x*y^3+0.0085091*y^4-0.039948*x^3-0.0060006*x^2*y-0.046355*x*y^2+0.054433*y^3-0.028132*x^2+0.13217*x*y+0.10916*y^2+0.62004*x-0.88775*y-1.1161<=0"),
+    boxAnd('R=="[{x'=3*((-4)+x^2),y'=3+x*y-y^2}](-0.0013138*x^5+0.00048141*x^4*y+0.000828*x^2*y^3-0.0016748*x*y^4+0.0008106*y^5+0.010722*x^4-0.0018729*x^3*y+0.0041383*x^2*y^2-0.013911*x*y^3+0.0085091*y^4-0.039948*x^3-0.0060006*x^2*y-0.046355*x*y^2+0.054433*y^3-0.028132*x^2+0.13217*x*y+0.10916*y^2+0.62004*x-0.88775*y-1.1161<=0&(-0.00011438)*x^4*y^2+0.00015105*x^2*y^4-0.0018063*x^5+0.0012699*x^3*y^2+0.0014498*x^2*y^3-0.0014334*x*y^4+0.0013001*y^5+0.017567*x^4+0.0050023*x^3*y-0.0016674*x^2*y^2-0.015315*x*y^3+0.01038*y^4-0.072259*x^3-0.035874*x^2*y-0.050558*x*y^2+0.058708*y^3-0.05097*x^2+0.042626*x*y+0.19257*y^2+1.3148*x+0.014613*y-1.2585<=0)");
+    andR('R=="[{x'=3*((-4)+x^2),y'=3+x*y-y^2}]-0.0013138*x^5+0.00048141*x^4*y+0.000828*x^2*y^3-0.0016748*x*y^4+0.0008106*y^5+0.010722*x^4-0.0018729*x^3*y+0.0041383*x^2*y^2-0.013911*x*y^3+0.0085091*y^4-0.039948*x^3-0.0060006*x^2*y-0.046355*x*y^2+0.054433*y^3-0.028132*x^2+0.13217*x*y+0.10916*y^2+0.62004*x-0.88775*y-1.1161<=0&[{x'=3*((-4)+x^2),y'=3+x*y-y^2}](-0.00011438)*x^4*y^2+0.00015105*x^2*y^4-0.0018063*x^5+0.0012699*x^3*y^2+0.0014498*x^2*y^3-0.0014334*x*y^4+0.0013001*y^5+0.017567*x^4+0.0050023*x^3*y-0.0016674*x^2*y^2-0.015315*x*y^3+0.01038*y^4-0.072259*x^3-0.035874*x^2*y-0.050558*x*y^2+0.058708*y^3-0.05097*x^2+0.042626*x*y+0.19257*y^2+1.3148*x+0.014613*y-1.2585<=0"); <(
+      "[{x'=3*((-4)+x^2),y'=3+x*y-y^2}]-0.0013138*x^5+0.00048141*x^4*y+0.000828*x^2*y^3-0.0016748*x*y^4+0.0008106*y^5+0.010722*x^4-0.0018729*x^3*y+0.0041383*x^2*y^2-0.013911*x*y^3+0.0085091*y^4-0.039948*x^3-0.0060006*x^2*y-0.046355*x*y^2+0.054433*y^3-0.028132*x^2+0.13217*x*y+0.10916*y^2+0.62004*x-0.88775*y-1.1161<=0":
+        ODEinv('R=="[{x'=3*((-4)+x^2),y'=3+x*y-y^2}]-0.0013138*x^5+0.00048141*x^4*y+0.000828*x^2*y^3-0.0016748*x*y^4+0.0008106*y^5+0.010722*x^4-0.0018729*x^3*y+0.0041383*x^2*y^2-0.013911*x*y^3+0.0085091*y^4-0.039948*x^3-0.0060006*x^2*y-0.046355*x*y^2+0.054433*y^3-0.028132*x^2+0.13217*x*y+0.10916*y^2+0.62004*x-0.88775*y-1.1161<=0"),
       "[{x'=3*((-4)+x^2),y'=3+x*y-y^2}](-0.00011438)*x^4*y^2+0.00015105*x^2*y^4-0.0018063*x^5+0.0012699*x^3*y^2+0.0014498*x^2*y^3-0.0014334*x*y^4+0.0013001*y^5+0.017567*x^4+0.0050023*x^3*y-0.0016674*x^2*y^2-0.015315*x*y^3+0.01038*y^4-0.072259*x^3-0.035874*x^2*y-0.050558*x*y^2+0.058708*y^3-0.05097*x^2+0.042626*x*y+0.19257*y^2+1.3148*x+0.014613*y-1.2585<=0":
-        ODE('R=="[{x'=3*((-4)+x^2),y'=3+x*y-y^2}](-0.00011438)*x^4*y^2+0.00015105*x^2*y^4-0.0018063*x^5+0.0012699*x^3*y^2+0.0014498*x^2*y^3-0.0014334*x*y^4+0.0013001*y^5+0.017567*x^4+0.0050023*x^3*y-0.0016674*x^2*y^2-0.015315*x*y^3+0.01038*y^4-0.072259*x^3-0.035874*x^2*y-0.050558*x*y^2+0.058708*y^3-0.05097*x^2+0.042626*x*y+0.19257*y^2+1.3148*x+0.014613*y-1.2585<=0")
+        dC("x^2<4", 'R=="[{x'=3*((-4)+x^2),y'=3+x*y-y^2}](-0.00011438)*x^4*y^2+0.00015105*x^2*y^4-0.0018063*x^5+0.0012699*x^3*y^2+0.0014498*x^2*y^3-0.0014334*x*y^4+0.0013001*y^5+0.017567*x^4+0.0050023*x^3*y-0.0016674*x^2*y^2-0.015315*x*y^3+0.01038*y^4-0.072259*x^3-0.035874*x^2*y-0.050558*x*y^2+0.058708*y^3-0.05097*x^2+0.042626*x*y+0.19257*y^2+1.3148*x+0.014613*y-1.2585<=0"); <(
+          "Use":
+            ODEinv('R=="[{x'=3*((-4)+x^2),y'=3+x*y-y^2&true&x^2 < 4}](-0.00011438)*x^4*y^2+0.00015105*x^2*y^4-0.0018063*x^5+0.0012699*x^3*y^2+0.0014498*x^2*y^3-0.0014334*x*y^4+0.0013001*y^5+0.017567*x^4+0.0050023*x^3*y-0.0016674*x^2*y^2-0.015315*x*y^3+0.01038*y^4-0.072259*x^3-0.035874*x^2*y-0.050558*x*y^2+0.058708*y^3-0.05097*x^2+0.042626*x*y+0.19257*y^2+1.3148*x+0.014613*y-1.2585<=0")
+            ,
+          "Show":
+            ODEinv('R=="[{x'=3*((-4)+x^2),y'=3+x*y-y^2}]x^2<4")
+        )
     )
 )
 End.
 
+Tactic "Automated proof (from annotations)"
+  useSolver("Mathematica");
+  auto
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Djaballah Chapoutot Kieffer Bouissou 2017 Ex. 2".
+End.
+
+ArchiveEntry "Benchmarks/Nonlinear/Djaballah Chapoutot Kieffer Bouissou 2017 Ex. 2"
 
 Description "Example 2, p. 293".
-Citation "Adel Djaballah, Alexandre Chapoutot, Michel Kieffer, Olivier Bouissou. Construction of parametric barrier functions for dynamical systems using interval analysis. Automatica 78 (2017) 287–296.".
+Citation "Adel Djaballah, Alexandre Chapoutot, Michel Kieffer, Olivier Bouissou; Construction of parametric barrier functions for dynamical systems using interval analysis; Automatica 78 (2017) 287–296.".
 Link "https://doi.org/10.1016/j.automatica.2016.12.013".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   -1/20 + (5/4 + x)^2 + (-5/4 + y)^2 <= 0
   ->
   [
@@ -391,29 +412,29 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 10_11".
+ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 10_11"
 
 Description "Exercise 10.11".
 Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   x^2 + y^2 < 1/4
   ->
   [
-    {x'=-70-100*x+70*x^2+100*x^3-200*y+200*x^2*y, y'=146*x+100*y+140*x*y+100*x^2*y+200*x*y^2}
+    {x'=(-70)-100*x+70*x^2+100*x^3-200*y+200*x^2*y, y'=146*x+100*y+140*x*y+100*x^2*y+200*x*y^2}
     @invariant(1+x>0, x < 1)
-  ] !(2*x >= 3 | x <= -3/2)
+  ] !(2*x >= 3 | x <= (-3)/2)
 End.
 
 Tactic "Scripted proof"
@@ -425,26 +446,30 @@ dC("1+x>0", 'R=="[{x'=(-70)-100*x+70*x^2+100*x^3-200*y+200*x^2*y,y'=146*x+100*y+
         dW('R=="[{x'=(-70)-100*x+70*x^2+100*x^3-200*y+200*x^2*y,y'=146*x+100*y+140*x*y+100*x^2*y+200*x*y^2&(true&1+x>0)&x < 1}](!(2*x>=3|x<=(-3)/2))");
         QE,
       "Show":
-        ODE('R=="[{x'=(-70)-100*x+70*x^2+100*x^3-200*y+200*x^2*y,y'=146*x+100*y+140*x*y+100*x^2*y+200*x*y^2&true&1+x>0}]x < 1")
+        ODEinv('R=="[{x'=(-70)-100*x+70*x^2+100*x^3-200*y+200*x^2*y,y'=146*x+100*y+140*x*y+100*x^2*y+200*x*y^2&true&1+x>0}]x < 1")
     ),
   "Show":
-    ODE('R=="[{x'=(-70)-100*x+70*x^2+100*x^3-200*y+200*x^2*y,y'=146*x+100*y+140*x*y+100*x^2*y+200*x*y^2}]1+x>0")
+    ODEinv('R=="[{x'=(-70)-100*x+70*x^2+100*x^3-200*y+200*x^2*y,y'=146*x+100*y+140*x*y+100*x^2*y+200*x*y^2}]1+x>0")
 )
 End.
 
+Tactic "Automated proof"
+  autoClose
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 10_11b".
+End.
+
+ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 10_11b"
 
 Description "Exercise 10.11b".
 Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   (-1 + x)^2 + (1 + y)^2 < 1/4
   ->
   [
@@ -465,17 +490,17 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 10_15_i".
+ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 10_15_i"
 
 Description "Exercise 10.15".
 Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   x > -1 & x < -3/4 & y <= 3/2 & y >= 1
   ->
   [
@@ -491,23 +516,23 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 10_15_ii".
+ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 10_15_ii"
 
 Description "Exercise 10.15 (modified)".
 Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   x > -1 & x < -1/2 & y <= -1/10 & y >= -3/10
   ->
   [
@@ -529,17 +554,17 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 10_9".
+ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 10_9"
 
 Description "Exercise 10.9".
 Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   (-1 + x)^2 + (1 + y)^2 < 1/4
   ->
   [
@@ -560,17 +585,17 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 1_11a".
+ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 1_11a"
 
 Description "Exercise 1.11".
 Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   x > -1/2 & x < -1/3 & y < 0 & y >= -1/2
   ->
   [
@@ -594,17 +619,17 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 1_9a".
+ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 1_9a"
 
 Description "Example 1.9a".
 Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   x>-1/2 & x < -1/3 & y<0 & y>=-1/2
   ->
   [
@@ -628,70 +653,76 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 5_2".
+ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 5_2"
 
 Description "Example 5.2".
 Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
-  x > -1 & x < -1/2 & y < -1/2 & y >= -1
+Problem
+  x > (-1) & x < (-1)/2 & y < (-1)/2 & y >= (-1)
   ->
   [
-    {x'=y, y'=x^5-x*y}@invariant(x^5+(-1)*x*y+(-4)*x^3*y<=0, y<=0)
+    {x'=y, y'=x^5-x*y}@invariant(x^5-x*y-4*x^3*y<=0, y<=0)
   ] !(x + y > 1)
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; dC("x^5+(-1)*x*y+(-4)*x^3*y<=0", 1) ; <(
+  implyR(1) ; dC("x^5-x*y-4*x^3*y<=0", 1) ; <(
     dC("y<=0", 1) ; <(
       dW(1) ; QE,
-      ODE(1)
+      ODEinv(1)
     ),
-    ODE(1)
+    ODEinv(1)
   )
 End.
 
-Tactic "Scripted proof (2) fails".
+Tactic "Scripted proof (2) fails"
   implyR(1);
   dC("x+1/2<=0 & y+1/2<=0",1); <(
     dW(1); QE,
-    ODE(1) /* todo */
+    ODEinv(1) /* todo */
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 5_2_ii".
+ArchiveEntry "Benchmarks/Nonlinear/Dumortier Llibre Artes Ex. 5_2_ii"
 
 Description "Exercise 5.2 ii".
 Citation "Freddy Dumortier, Jaume Llibre, Joan C. Artes. Qualitative Theory of Planar Differential Systems".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   x > -4/5 & x < -1/3 & y < 0 & y >= -1
   ->
   [
-    {x'=2*x-2*x*y, y'=-x^2+2*y+y^2}@invariant(x < 0)
+    {x'=2*x-2*x*y, y'=-x^2+2*y+y^2}@invariant(x < 0, y < 0)
   ] !((x = 0 & y = 0) | x + y > 1)
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; dC("x < 0", 1) ; <(
-    ODE(1),
-    dbx(1)
+  implyR(1);
+  dC("x < 0", 1); <(
+    "Use":
+      dC("y < 0", 1); <(
+        "Use": dW(1); QE,
+        "Show": dbx(1)
+      ),
+    "Show":
+      dbx(1)
   )
 End.
 
@@ -701,18 +732,18 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Fitzhugh Nagumo Ben Sassi Girard 2".
+ArchiveEntry "Benchmarks/Nonlinear/Fitzhugh Nagumo Ben Sassi Girard 2"
 
 Description "Fitzhugh-Nagumo system (modified)".
 Citation "Mohamed Amin Ben Sassi, Antoine Girard, Sriram Sankaranarayanan. Iterative computation of polyhedral invariants sets for polynomial dynamical systems".
 Link "10.1109/CDC.2014.7040384".
 
-ProgramVariables.
-  R a.
-  R y.
+ProgramVariables
+  Real a;
+  Real y;
 End.
 
-Problem.
+Problem
   -1<=a & a<=-0.5 & 1<=y & y<=1.5
   ->
   [
@@ -720,7 +751,8 @@ Problem.
   ] !(-2.5<=a & a<=-2 & -2<=y & y<=-1.5)
 End.
 
-Tactic "Scripted proof".
+Tactic "Scripted proof"
+  useSolver("Mathematica");
   implyR(1);
   dC("0.12152*a^4+0.22807*a^3*y+0.214*a^2*y^2-0.71222*y^4-0.27942*a^3-0.48799*a^2*y-0.2517*a*y^2-0.3366*y^3-0.21526*a^2+0.16728*a*y-0.44613*y^2+0.35541*a-0.21594*y-0.72852<=0",1); <(
     dW(1); QE,
@@ -728,20 +760,21 @@ Tactic "Scripted proof".
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
+  useSolver("Mathematica");
   auto
 End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Forsman Phd Ex 6_1 page 99".
+ArchiveEntry "Benchmarks/Nonlinear/Forsman Phd Ex 6_1 page 99"
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   x^2 + (-2 + y)^2 < 1/24
   ->
   [
@@ -765,14 +798,14 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Forsman Phd Ex 6_14 page 119".
+ArchiveEntry "Benchmarks/Nonlinear/Forsman Phd Ex 6_14 page 119"
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   x^2 + (-1 + y)^2 < 1/8
   ->
   [
@@ -793,14 +826,14 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Hamiltonian System 1".
+ArchiveEntry "Benchmarks/Nonlinear/Hamiltonian System 1"
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   (2/3 + x)^2 + y^2 <= 1/24
   ->
   [
@@ -812,18 +845,18 @@ Tactic "Scripted proof"
   implyR(1) ;
   dC("x^2*(1+x)<=1855/12521+y^2", 1) ; <(
     dC("x^2*(1+x)>=121/1235+y^2", 1) ; <(
-      ODE(1),
+      ODEinv(1),
       dI(1)
     ),
     dI(1)
   )
 End.
 
-Tactic "Scripted proof (2)".
+Tactic "Scripted proof (2)"
   implyR(1);
   dC("-(x^2+x^3-y^2)<0 & x<0",1); <(
     dW(1); QE,
-    ODE(1)
+    ODEinv(1)
   )
 End.
 
@@ -833,16 +866,16 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Hybrid Controller Mode 1".
+ArchiveEntry "Benchmarks/Nonlinear/Hybrid Controller Mode 1"
 
-Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems. CoRR abs/1605.01450 (2016)".
+Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems; CoRR abs/1605;01450 (2016)".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   (x-9)^2+(y-20)^20 <= 4
   ->
   [
@@ -857,11 +890,11 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Scripted proof (2)".
+Tactic "Scripted proof (2)"
   implyR(1) ; cut("\exists u11 \exists u12 (u11^2+u12^2!=0 & invcluster(x,y,u11,u12)=0)") ; <(
     existsL('Llast)*2 ; dC("invcluster(x,y,u11,u12)=0", 1) ; <(
       dWplus(1); QE,
-      ODE(1)
+      ODEinv(1)
     )
     ,
     hideR(1) ; QE
@@ -874,16 +907,16 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Hybrid Controller Mode 2".
+ArchiveEntry "Benchmarks/Nonlinear/Hybrid Controller Mode 2"
 
-Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems. CoRR abs/1605.01450 (2016)".
+Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems; CoRR abs/1605;01450 (2016)".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   (x-9)^2+(y-20)^20 <= 4
   ->
   [
@@ -898,7 +931,7 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Scripted proof (2)".
+Tactic "Scripted proof (2)"
   implyR(1) ; cut("\exists u21 \exists u22 (u21^2+u22^2!=0 & invcluster(x,y,u21,u22)=0)") ; <(
     existsL('Llast)*2 ; dC("invcluster(x,y,u21,u22)=0", 1) ; <(
       dWplus(1); QE,
@@ -915,16 +948,16 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Invariant Clusters Example 6".
+ArchiveEntry "Benchmarks/Nonlinear/Invariant Clusters Example 6"
 
-Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems. CoRR abs/1605.01450 (2016)".
+Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems; CoRR abs/1605;01450 (2016)".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   (x+15)^2+(y-17)^2-1<=0
   ->
   [
@@ -939,16 +972,16 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Scripted proof (2)".
+Tactic "Scripted proof (2)"
   implyR(1); cut("\exists u1 \exists u3 (u1^2+u3^2!=0 & invcluster(x,y,u1,u3)=0)"); <(
-    existsL('Llast)*2; dC("invcluster(x,y,u1,u3)=0", 1); doall(ODE(1)); done
+    existsL('Llast)*2; dC("invcluster(x,y,u1,u3)=0", 1); doall(ODEinv(1)); done
     ,
     hideR(1) ; QE
   )
 End.
 
-Tactic "Scripted proof (3)".
-  implyR(1); dC("x^2-y^2 - (old(x)^2-old(y)^2) = 0", 1); doall(ODE(1)); done
+Tactic "Scripted proof (3)"
+  implyR(1); dC("x^2-y^2 - (old(x)^2-old(y)^2) = 0", 1); doall(ODEinv(1)); done
 End.
 
 Tactic "Automated proof"
@@ -957,16 +990,16 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Invariant Clusters Example 7".
+ArchiveEntry "Benchmarks/Nonlinear/Invariant Clusters Example 7"
 
-Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems. CoRR abs/1605.01450 (2016)".
+Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems; CoRR abs/1605;01450 (2016)".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   1-(x+6)^2 - (y+6)^2 >= 0
   ->
   [
@@ -982,7 +1015,7 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Scripted proof (1)".
+Tactic "Scripted proof (1)"
   implyR(1) ; cut("\exists u1 \exists u3 (u1^2+u3^2!=0 & invcluster(x,y,u1,u3)=0)") ; <(
     existsL('Llast)*2 ; dC("invcluster(x,y,u1,u3)=0", 1) ; <(
       dWplus(1) ; QE,
@@ -993,10 +1026,10 @@ Tactic "Scripted proof (1)".
   )
 End.
 
-Tactic "Scripted proof (2)".
+Tactic "Scripted proof (2)"
   /* disprovable */ /*invcluster(x,y,-3081.9,7.1798)=0*/
   implyR(1); dC("invcluster(x,y,-3081.9,21.539)<=0", 1);
-  doall(ODE(1)); done
+  doall(ODEinv(1)); done
 End.
 
 Tactic "Automated proof"
@@ -1005,14 +1038,14 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Locally stable nonlinear system".
+ArchiveEntry "Benchmarks/Nonlinear/Locally stable nonlinear system"
 
-ProgramVariables.
- R x.   /* x-coordinate */
- R y.   /* y-coordinate */
+ProgramVariables
+ Real x;   /* x-coordinate */
+ Real y;   /* y-coordinate */
 End.
 
-Problem.
+Problem
   x^2 <= 1/2 & (y + 2)^2 <= 1/3
   ->
   [
@@ -1020,7 +1053,7 @@ Problem.
   ] ((-1 + x)^2 + (-3/2 + y)^2 > 1/4)
 End.
 
-Tactic "Scripted proof".
+Tactic "Scripted proof"
   implyR(1) ;
   dC("2*x^2+(y+3/2)^2-4<=0", 1) ; <(
     dW(1) ; QE,
@@ -1028,20 +1061,20 @@ Tactic "Scripted proof".
   )
 End.
 
-Tactic "Automated proof".
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/MIT astronautics Lyapunov".
+ArchiveEntry "Benchmarks/Nonlinear/MIT astronautics Lyapunov"
 
-ProgramVariables.
- R x.   /* x-coordinate */
- R y.   /* y-coordinate */
+ProgramVariables
+ Real x;   /* x-coordinate */
+ Real y;   /* y-coordinate */
 End.
 
-Problem.
+Problem
   x^2 <= 1/2 & y^2 <= 1/3
   ->
   [
@@ -1051,26 +1084,30 @@ Problem.
 End.
 
 Tactic "Scripted proof"
-implyR('R=="x^2<=1/2&y^2<=1/3->[{x'=y-x^7*(x^4+2*y^2-10),y'=-x^3-3*y^5*(x^4+2*y^2-10)}]((-2)+x)^2+((-3)+y)^2>1/4");
-dC("x^4+2*y^2<=10", 'R=="[{x'=y-x^7*(x^4+2*y^2-10),y'=-x^3-3*y^5*(x^4+2*y^2-10)}]((-2)+x)^2+((-3)+y)^2>1/4"); <(
+implyR('R=="x^2<=1/2&y^2<=1/3->[{x'=y-x^7*(x^4+2*y^2-10),y'=-x^3-3*y^5*(x^4+2*y^2-10)}](-2+x)^2+(-3+y)^2>1/4");
+dC("x^4+2*y^2<=10", 'R=="[{x'=y-x^7*(x^4+2*y^2-10),y'=-x^3-3*y^5*(x^4+2*y^2-10)}](-2+x)^2+(-3+y)^2>1/4"); <(
   "Use":
-    dW('R=="[{x'=y-x^7*(x^4+2*y^2-10),y'=-x^3-3*y^5*(x^4+2*y^2-10)&true&x^4+2*y^2<=10}]((-2)+x)^2+((-3)+y)^2>1/4");
+    dW('R=="[{x'=y-x^7*(x^4+2*y^2-10),y'=-x^3-3*y^5*(x^4+2*y^2-10)&true&x^4+2*y^2<=10}](-2+x)^2+(-3+y)^2>1/4");
     QE,
   "Show":
     dbx('R=="[{x'=y-x^7*(x^4+2*y^2-10),y'=-x^3-3*y^5*(x^4+2*y^2-10)}]x^4+2*y^2<=10")
 )
 End.
 
+Tactic "Automated proof"
+  autoClose
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Man Maccallum Goriely Page 57".
-
-ProgramVariables.
-  R x.
-  R y.
 End.
 
-Problem.
+ArchiveEntry "Benchmarks/Nonlinear/Man Maccallum Goriely Page 57"
+
+ProgramVariables
+  Real x;
+  Real y;
+End.
+
+Problem
   x^2 + y^2 <= 1/4
   ->
   [
@@ -1091,16 +1128,16 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Nonlinear Circuit Example 3".
+ArchiveEntry "Benchmarks/Nonlinear/nonlinear Circuit Example 3"
 
 Citation "Mohamed H. Zaki, William Denman, Sofiène Tahar, Guy Bois. Integrating Abstraction Techniques for Formal Verification of Analog Designs".
 
-ProgramVariables.
-  R x1.
-  R x2.
+ProgramVariables
+  Real x1;
+  Real x2;
 End.
 
-Problem.
+Problem
   x1>=2 & x2^2<=1
   ->
   [
@@ -1121,16 +1158,16 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Nonlinear Circuit Example 4".
+ArchiveEntry "Benchmarks/Nonlinear/nonlinear Circuit Example 4"
 
 Citation "Mohamed H. Zaki, William Denman, Sofiène Tahar, Guy Bois. Integrating Abstraction Techniques for Formal Verification of Analog Designs".
 
-ProgramVariables.
-  R x1.
-  R x2.
+ProgramVariables
+  Real x1;
+  Real x2;
 End.
 
-Problem.
+Problem
   -1.1<=x1&x1<=-0.7 & 0.5<=x2&x2<=0.9
   ->
   [
@@ -1140,16 +1177,16 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Nonlinear Circuit RLC Circuit Oscillator".
+ArchiveEntry "Benchmarks/Nonlinear/nonlinear Circuit RLC Circuit Oscillator"
 
 Citation "Mohamed H. Zaki, William Denman, Sofiène Tahar, Guy Bois. Integrating Abstraction Techniques for Formal Verification of Analog Designs".
 
-ProgramVariables.
-  R Il.
-  R Vc.
+ProgramVariables
+  Real Il;
+  Real Vc;
 End.
 
-Problem.
+Problem
   Il=1 & Vc=1
   ->
   [
@@ -1164,10 +1201,10 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Scripted proof (2)".
+Tactic "Scripted proof (2)"
   implyR(1);
   dC("1-5*Il^3-15*Il^2+Vc^3+15/2*Vc^2+15/4*Il^4 <= 0", 1); /* invariant from paper */
-  <(ODE(1), ODE(1))
+  <(ODEinv(1), ODEinv(1))
 End.
 
 Tactic "Automated proof"
@@ -1177,18 +1214,18 @@ End.
 End.
 
 
-ArchiveEntry "Benchmarks/Nonlinear/Prajna PhD Thesis 2-4-1 Page 31 (Variant)".
+ArchiveEntry "Benchmarks/Nonlinear/Prajna PhD Thesis 2-4-1 Page 31 (Variant)"
 
 Description "Variant of Page 31 with x'=x instead of x'=y".
-Citation "Prajna, Stephen (2005) Optimization-based methods for nonlinear and hybrid systems verification. Dissertation (Ph.D.), California Institute of Technology.".
+Citation "Prajna, Stephen (2005) Optimization-based methods for nonlinear and hybrid systems verification; Dissertation (Ph.D.), California Institute of Technology.".
 Link "http://resolver.caltech.edu/CaltechETD:etd-05272005-144358".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   (-3/2 + x)^2 + y^2 <= 1/4
   ->
   [
@@ -1209,14 +1246,14 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Stable Limit Cycle 2".
+ArchiveEntry "Benchmarks/Nonlinear/Stable Limit Cycle 2"
 
-ProgramVariables.
-  R a.
-  R y.
+ProgramVariables
+  Real a;
+  Real y;
 End.
 
-Problem.
+Problem
   a^2 + y^2 < 1/16
   ->
   [
@@ -1224,10 +1261,10 @@ Problem.
   ] !(a < -1 | y < -1 | a > 1 | y > 1)
 End.
 
-Tactic "Scripted proof".
+Tactic "Scripted proof"
   implyR(1) ; dC("a^2+y^2<=1", 1) ; <(
     dW(1) ; QE,
-    ODE(1)
+    ODEinv(1)
   )
 End.
 
@@ -1237,17 +1274,17 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Strogatz Example 6_3_2".
+ArchiveEntry "Benchmarks/Nonlinear/Strogatz Example 6_3_2"
 
 Description "Example 6.3.2".
-Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
+Citation "Steven H. Strogatz. nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   x > -4/5 & x < -1/3 & y < 3/2 & y >= 1
   ->
   [
@@ -1268,17 +1305,17 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Strogatz Example 6_8_3".
+ArchiveEntry "Benchmarks/Nonlinear/Strogatz Example 6_8_3"
 
 Description "Example 6.8.3".
-Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
+Citation "Steven H. Strogatz. nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   2*(-1/3 + x)^2 + y^2 < 1/16
   ->
   [
@@ -1299,17 +1336,17 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Strogatz Exercise 6_1_5".
+ArchiveEntry "Benchmarks/Nonlinear/Strogatz Exercise 6_1_5"
 
 Description "Exercise 6.1.5".
-Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
+Citation "Steven H. Strogatz. nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   (-1/3 + x)^2 + 2*(-1/3 + y)^2 < 1/25
   ->
   [
@@ -1327,11 +1364,11 @@ implyR(1) ; dC("x>0", 1) ; <(
 )
 End.
 
-Tactic "Scripted proof (2)".
+Tactic "Scripted proof (2)"
   implyR(1);
   dC("x>=0 & y > 0 & x<2",1); <(
     dW(1); QE,
-    ODE(1)
+    ODEinv(1)
   )
 End.
 
@@ -1341,17 +1378,17 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Strogatz Exercise 6_1_9 Dipole".
+ArchiveEntry "Benchmarks/Nonlinear/Strogatz Exercise 6_1_9 Dipole"
 
 Description "Exercise 6.1.9".
-Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
+Citation "Steven H. Strogatz. nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   (-1/3 + x)^2 + y^2 < 1/25
   ->
   [
@@ -1372,17 +1409,17 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Strogatz Exercise 6_6_1 Reversible System".
+ArchiveEntry "Benchmarks/Nonlinear/Strogatz Exercise 6_6_1 Reversible System"
 
 Description "Exercise 6.6.1".
-Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
+Citation "Steven H. Strogatz. nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   (-1/3 + x)^2 + (-1/3 + y)^2 < 1/16
   ->
   [
@@ -1406,17 +1443,17 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Strogatz Exercise 6_6_2 Limit Cycle".
+ArchiveEntry "Benchmarks/Nonlinear/Strogatz Exercise 6_6_2 Limit Cycle"
 
 Description "Exercise 6.6.2".
-Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
+Citation "Steven H. Strogatz. nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   (-1/3 + x)^2 + (-1/3 + y)^2 < 1/16
   ->
   [
@@ -1434,11 +1471,11 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Scripted proof (2)".
+Tactic "Scripted proof (2)"
   implyR(1);
   dC("x^2 + y^2 - 2 <=0 & -(x^2 + y^2 - 0.01) <= 0",1); <(
     dW(1); QE,
-    ODE(1)
+    ODEinv(1)
   )
 End.
 
@@ -1448,17 +1485,17 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Strogatz Exercise 7_3_5".
+ArchiveEntry "Benchmarks/Nonlinear/Strogatz Exercise 7_3_5"
 
 Description "Exercise 7.3.5".
-Citation "Steven H. Strogatz. Nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
+Citation "Steven H. Strogatz. nonlinear Dynamics And Chaos: With Applications To Physics, Biology, Chemistry, And Engineering".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   (-1/3 + x)^2 + (-1/3 + y)^2 < 1/16
   ->
   [
@@ -1476,11 +1513,11 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Scripted proof (2)".
+Tactic "Scripted proof (2)"
   implyR(1);
   dC("-4/5 + x^2 + 2*x*y/5 + 7*y^2/5 <= 0 & x^2+y^2!=0",1); <(
     dW(1); QE,
-    ODE(1)
+    ODEinv(1)
   )
 End.
 
@@ -1490,14 +1527,14 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Unstable Unit Circle 2".
+ArchiveEntry "Benchmarks/Nonlinear/Unstable Unit Circle 2"
 
-ProgramVariables.
-  R b.
-  R y.
+ProgramVariables
+  Real b;
+  Real y;
 End.
 
-Problem.
+Problem
   b = 1/2 & y = 1/2
   ->
   [
@@ -1518,14 +1555,14 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Wien bridge oscillator".
+ArchiveEntry "Benchmarks/Nonlinear/Wien bridge oscillator"
 
-ProgramVariables.
- R x.   /* x-coordinate */
- R y.   /* y-coordinate */
+ProgramVariables
+ Real x;   /* x-coordinate */
+ Real y;   /* y-coordinate */
 End.
 
-Problem.
+Problem
   x^2 <= 1/2 & y^2 <= 1/3
   ->
   [
@@ -1541,24 +1578,24 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Scripted proof (2)".
-  implyR(1); dC("x^2 + x*y + y^2 - 111/59 <= 0", 1); doall(ODE(1)); done
+Tactic "Scripted proof (2)"
+  implyR(1); dC("x^2 + x*y + y^2 - 111/59 <= 0", 1); doall(ODEinv(1)); done
 End.
 
-Tactic "Automated proof".
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Wiggins Example 17_1_2".
+ArchiveEntry "Benchmarks/Nonlinear/Wiggins Example 17_1_2"
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   (-1/3 + x)^2 + (-1/3 + y)^2 < 1/16
   ->
   [
@@ -1579,14 +1616,14 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Wiggins Example 18_7_3_n".
+ArchiveEntry "Benchmarks/Nonlinear/Wiggins Example 18_7_3_n"
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   (-1/3 + x)^2 + (-1/3 + y)^2 < 1/16
   ->
   [
@@ -1596,7 +1633,7 @@ End.
 
 Tactic "Scripted proof"
   implyR(1) ; dC("y>0", 1) ; <(
-    ODE(1),
+    ODEinv(1),
     dbx(1)
   )
 End.
@@ -1607,17 +1644,17 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C1".
+ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C1"
 
 Description "Example C1 (initial set expanded)".
-Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of Nonlinear Hybrid Systems Based on Bilinear Programming.".
+Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of nonlinear Hybrid Systems Based on Bilinear Programming;".
 
-ProgramVariables.
-  R x1.
-  R x2.
+ProgramVariables
+  Real x1;
+  Real x2;
 End.
 
-Problem.
+Problem
   4 <= x1 & x1 <= 4.5 &
   1 <= x2 & x2 <= 2 ->
   [
@@ -1644,17 +1681,17 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C3".
+ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C3"
 
 Description "Example C3".
-Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of Nonlinear Hybrid Systems Based on Bilinear Programming.".
+Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of nonlinear Hybrid Systems Based on Bilinear Programming;".
 
-ProgramVariables.
-  R x1.
-  R x2.
+ProgramVariables
+  Real x1;
+  Real x2;
 End.
 
-Problem.
+Problem
   -1/5 <= x1 & x1 <= 1/5 &
   3/10 <= x2 & x2 <= 7/10 ->
   [
@@ -1681,17 +1718,17 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C4".
+ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C4"
 
 Description "Example C4".
-Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of Nonlinear Hybrid Systems Based on Bilinear Programming.".
+Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of nonlinear Hybrid Systems Based on Bilinear Programming;".
 
-ProgramVariables.
-  R x1.
-  R x2.
+ProgramVariables
+  Real x1;
+  Real x2;
 End.
 
-Problem.
+Problem
   -1 <= x1 & x1 <= 0 &
   -1 <= x2 & x2 <= 0 ->
   [
@@ -1718,17 +1755,17 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C6".
+ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C6"
 
 Description "Example C6".
-Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of Nonlinear Hybrid Systems Based on Bilinear Programming.".
+Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of nonlinear Hybrid Systems Based on Bilinear Programming;".
 
-ProgramVariables.
-  R x1.
-  R x2.
+ProgramVariables
+  Real x1;
+  Real x2;
 End.
 
-Problem.
+Problem
   -1/10 <= x1 & x1 <= 1/10 &
   -1/10 <= x2 & x2 <= 1/10 ->
   [
@@ -1749,23 +1786,23 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C7".
+ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C7"
 
 Description "Example C7".
-Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of Nonlinear Hybrid Systems Based on Bilinear Programming.".
+Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of nonlinear Hybrid Systems Based on Bilinear Programming;".
 
-ProgramVariables.
-  R x1.
-  R x2.
+ProgramVariables
+  Real x1;
+  Real x2;
 End.
 
-Problem.
+Problem
   -3/2 <= x1 & x1 <= -1/2 &
   -3/2 <= x2 & x2 <= -1/2 ->
   [
@@ -1792,17 +1829,17 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C8".
+ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C8"
 
 Description "Example C8".
-Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of Nonlinear Hybrid Systems Based on Bilinear Programming.".
+Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of nonlinear Hybrid Systems Based on Bilinear Programming;".
 
-ProgramVariables.
-  R x1.
-  R x2.
+ProgramVariables
+  Real x1;
+  Real x2;
 End.
 
-Problem.
+Problem
   -1/4 <= x1 & x1 <= 1/4 &
    3/4 <= x2 & x2 <= 3/2 ->
   [
@@ -1853,18 +1890,18 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Prajna PhD Thesis 2-4-1 Page 31".
+ArchiveEntry "Benchmarks/Nonlinear/Prajna PhD Thesis 2-4-1 Page 31"
 
 Description "Page 31".
-Citation "Prajna, Stephen (2005) Optimization-based methods for nonlinear and hybrid systems verification. Dissertation (Ph.D.), California Institute of Technology.".
+Citation "Prajna, Stephen (2005) Optimization-based methods for nonlinear and hybrid systems verification; Dissertation (Ph.D.), California Institute of Technology.".
 Link "http://resolver.caltech.edu/CaltechETD:etd-05272005-144358".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   (-3/2 + x)^2 + y^2 <= 1/4
   ->
   [
@@ -1874,7 +1911,7 @@ Problem.
 End.
 
 Tactic "Scripted proof"
-implyR('R=="((-3)/2+x)^2+y^2<=1/4->[{x'=x,y'=-x+x^3/3-y}](!(1+x)^2+(1+y)^2<=4/25)");
+implyR('R=="(-3/2+x)^2+y^2<=1/4->[{x'=x,y'=-x+x^3/3-y}](!(1+x)^2+(1+y)^2<=4/25)");
 dC("x>=0", 'R=="[{x'=x,y'=-x+x^3/3-y}](!(1+x)^2+(1+y)^2<=4/25)"); <(
   "Use":
     dW('R=="[{x'=x,y'=-x+x^3/3-y&true&x>=0}](!(1+x)^2+(1+y)^2<=4/25)");
@@ -1884,11 +1921,15 @@ dC("x>=0", 'R=="[{x'=x,y'=-x+x^3/3-y}](!(1+x)^2+(1+y)^2<=4/25)"); <(
 )
 End.
 
+Tactic "Automated proof"
+  autoClose
+End.
+
 End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Ferragut Giacomini 2010: Example 1"
 
-Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields. Qual. Theory Dyn. Syst. (2010)".
+Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields; Qual. Theory Dyn. Syst. (2010)".
 
 ProgramVariables
   Real x;
@@ -1896,7 +1937,7 @@ ProgramVariables
 End.
 
 Problem
-  -3<=x & x<=-2 & -3<=y&y<=-2
+  (-3)<=x & x<=(-2) & (-3)<=y&y<=(-2)
   ->
   [{x'=4 + 21*x - 7*y + 42*x^2 - 24*x*y + 4*y^2 + 27*x^3 - 9*x^2*y + 6*x^4,
     y'=12 + 71*x -21*y + 150*x^2 -80*x*y + 12*y^2 + 99*x^3 - 39*x^2*y + 2*x*y^2 + 18*x^4}
@@ -1926,10 +1967,10 @@ dC("3+x>=0", 'R=="[{x'=4+21*x-7*y+42*x^2-24*x*y+4*y^2+27*x^3-9*x^2*y+6*x^4,y'=12
                                 chaseAt('R=="!(x>=0|y>=0)");
                                 propClose,
                               "Show":
-                                ODE('R=="[{x'=4+21*x-7*y+42*x^2-24*x*y+4*y^2+27*x^3-9*x^2*y+6*x^4,y'=12+71*x-21*y+150*x^2-80*x*y+12*y^2+99*x^3-39*x^2*y+2*x*y^2+18*x^4&((((((true&3+x>=0)&3+y>=0)&4+3*x*(1+x)*(7+x*(7+2*x))+4*y^2>(7+3*x*(8+3*x))*y)&1+x*(3+x)>y)&1+3*x*(2+x)>2*y)&2+3*x < y)&x < 0}]y < 0")
+                                ODEinv('R=="[{x'=4+21*x-7*y+42*x^2-24*x*y+4*y^2+27*x^3-9*x^2*y+6*x^4,y'=12+71*x-21*y+150*x^2-80*x*y+12*y^2+99*x^3-39*x^2*y+2*x*y^2+18*x^4&((((((true&3+x>=0)&3+y>=0)&4+3*x*(1+x)*(7+x*(7+2*x))+4*y^2>(7+3*x*(8+3*x))*y)&1+x*(3+x)>y)&1+3*x*(2+x)>2*y)&2+3*x < y)&x < 0}]y < 0")
                             ),
                           "Show":
-                            ODE('R=="[{x'=4+21*x-7*y+42*x^2-24*x*y+4*y^2+27*x^3-9*x^2*y+6*x^4,y'=12+71*x-21*y+150*x^2-80*x*y+12*y^2+99*x^3-39*x^2*y+2*x*y^2+18*x^4&(((((true&3+x>=0)&3+y>=0)&4+3*x*(1+x)*(7+x*(7+2*x))+4*y^2>(7+3*x*(8+3*x))*y)&1+x*(3+x)>y)&1+3*x*(2+x)>2*y)&2+3*x < y}]x < 0")
+                            ODEinv('R=="[{x'=4+21*x-7*y+42*x^2-24*x*y+4*y^2+27*x^3-9*x^2*y+6*x^4,y'=12+71*x-21*y+150*x^2-80*x*y+12*y^2+99*x^3-39*x^2*y+2*x*y^2+18*x^4&(((((true&3+x>=0)&3+y>=0)&4+3*x*(1+x)*(7+x*(7+2*x))+4*y^2>(7+3*x*(8+3*x))*y)&1+x*(3+x)>y)&1+3*x*(2+x)>2*y)&2+3*x < y}]x < 0")
                         ),
                       "Show":
                         dbx('R=="[{x'=4+21*x-7*y+42*x^2-24*x*y+4*y^2+27*x^3-9*x^2*y+6*x^4,y'=12+71*x-21*y+150*x^2-80*x*y+12*y^2+99*x^3-39*x^2*y+2*x*y^2+18*x^4&((((true&3+x>=0)&3+y>=0)&4+3*x*(1+x)*(7+x*(7+2*x))+4*y^2>(7+3*x*(8+3*x))*y)&1+x*(3+x)>y)&1+3*x*(2+x)>2*y}]2+3*x < y")
@@ -1941,13 +1982,13 @@ dC("3+x>=0", 'R=="[{x'=4+21*x-7*y+42*x^2-24*x*y+4*y^2+27*x^3-9*x^2*y+6*x^4,y'=12
                 dbx('R=="[{x'=4+21*x-7*y+42*x^2-24*x*y+4*y^2+27*x^3-9*x^2*y+6*x^4,y'=12+71*x-21*y+150*x^2-80*x*y+12*y^2+99*x^3-39*x^2*y+2*x*y^2+18*x^4&((true&3+x>=0)&3+y>=0)&4+3*x*(1+x)*(7+x*(7+2*x))+4*y^2>(7+3*x*(8+3*x))*y}]1+x*(3+x)>y")
             ),
           "Show":
-            ODE('R=="[{x'=4+21*x-7*y+42*x^2-24*x*y+4*y^2+27*x^3-9*x^2*y+6*x^4,y'=12+71*x-21*y+150*x^2-80*x*y+12*y^2+99*x^3-39*x^2*y+2*x*y^2+18*x^4&(true&3+x>=0)&3+y>=0}]4+3*x*(1+x)*(7+x*(7+2*x))+4*y^2>(7+3*x*(8+3*x))*y")
+            ODEinv('R=="[{x'=4+21*x-7*y+42*x^2-24*x*y+4*y^2+27*x^3-9*x^2*y+6*x^4,y'=12+71*x-21*y+150*x^2-80*x*y+12*y^2+99*x^3-39*x^2*y+2*x*y^2+18*x^4&(true&3+x>=0)&3+y>=0}]4+3*x*(1+x)*(7+x*(7+2*x))+4*y^2>(7+3*x*(8+3*x))*y")
         ),
       "Show":
-        ODE('R=="[{x'=4+21*x-7*y+42*x^2-24*x*y+4*y^2+27*x^3-9*x^2*y+6*x^4,y'=12+71*x-21*y+150*x^2-80*x*y+12*y^2+99*x^3-39*x^2*y+2*x*y^2+18*x^4&true&3+x>=0}]3+y>=0")
+        ODEinv('R=="[{x'=4+21*x-7*y+42*x^2-24*x*y+4*y^2+27*x^3-9*x^2*y+6*x^4,y'=12+71*x-21*y+150*x^2-80*x*y+12*y^2+99*x^3-39*x^2*y+2*x*y^2+18*x^4&true&3+x>=0}]3+y>=0")
     ),
   "Show":
-    ODE('R=="[{x'=4+21*x-7*y+42*x^2-24*x*y+4*y^2+27*x^3-9*x^2*y+6*x^4,y'=12+71*x-21*y+150*x^2-80*x*y+12*y^2+99*x^3-39*x^2*y+2*x*y^2+18*x^4}]3+x>=0")
+    ODEinv('R=="[{x'=4+21*x-7*y+42*x^2-24*x*y+4*y^2+27*x^3-9*x^2*y+6*x^4,y'=12+71*x-21*y+150*x^2-80*x*y+12*y^2+99*x^3-39*x^2*y+2*x*y^2+18*x^4}]3+x>=0")
 )
 End.
 
@@ -1959,7 +2000,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Ferragut Giacomini 2010: Example 1 (Variant)"
 
-Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields. Qual. Theory Dyn. Syst. (2010)".
+Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields; Qual. Theory Dyn. Syst. (2010)".
 
 ProgramVariables
   Real x;
@@ -1978,7 +2019,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Ferragut Giacomini 2010: Example 2"
 
-Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields. Qual. Theory Dyn. Syst. (2010)".
+Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields; Qual. Theory Dyn. Syst. (2010)".
 
 ProgramVariables
   Real x;
@@ -1997,20 +2038,24 @@ dC("x+y < 0", 'R=="[{x'=x+2*y-y^2,y'=-y+y^2}]2*x+y < 0"); <(
   "Use":
     dC("x < ((-2)+y)*y", 'R=="[{x'=x+2*y-y^2,y'=-y+y^2&true&x+y < 0}]2*x+y < 0"); <(
       "Use":
-        ODE('R=="[{x'=x+2*y-y^2,y'=-y+y^2&(true&x+y < 0)&x < ((-2)+y)*y}]2*x+y < 0"),
+        ODEinv('R=="[{x'=x+2*y-y^2,y'=-y+y^2&(true&x+y < 0)&x < ((-2)+y)*y}]2*x+y < 0"),
       "Show":
-        ODE('R=="[{x'=x+2*y-y^2,y'=-y+y^2&true&x+y < 0}]x < ((-2)+y)*y")
+        ODEinv('R=="[{x'=x+2*y-y^2,y'=-y+y^2&true&x+y < 0}]x < ((-2)+y)*y")
     ),
   "Show":
     dbx('R=="[{x'=x+2*y-y^2,y'=-y+y^2}]x+y < 0")
 )
 End.
 
+Tactic "Automated proof"
+  autoClose
+End.
+
 End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Ferragut Giacomini 2010: Example 2 (Variant)"
 
-Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields. Qual. Theory Dyn. Syst. (2010)".
+Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields; Qual. Theory Dyn. Syst. (2010)".
 
 ProgramVariables
   Real x;
@@ -2041,7 +2086,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Ferragut Giacomini 2010: Example 3"
 
-Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields. Qual. Theory Dyn. Syst. (2010)".
+Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields; Qual. Theory Dyn. Syst. (2010)".
 
 ProgramVariables
   Real x;
@@ -2061,7 +2106,7 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
@@ -2069,7 +2114,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Ferragut Giacomini 2010: Example 4"
 
-Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields. Qual. Theory Dyn. Syst. (2010)".
+Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields; Qual. Theory Dyn. Syst. (2010)".
 
 ProgramVariables
   Real x;
@@ -2088,7 +2133,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Ferragut Giacomini 2010: Example 5"
 
-Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields. Qual. Theory Dyn. Syst. (2010)".
+Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields; Qual. Theory Dyn. Syst. (2010)".
 
 ProgramVariables
   Real x;
@@ -2119,7 +2164,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Ferragut Giacomini 2010: Example 5 (Variant 1)"
 
-Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields. Qual. Theory Dyn. Syst. (2010)".
+Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields; Qual. Theory Dyn. Syst. (2010)".
 
 ProgramVariables
   Real x;
@@ -2145,7 +2190,7 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
@@ -2153,7 +2198,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Ferragut Giacomini 2010: Example 5 (Variant 2)"
 
-Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields. Qual. Theory Dyn. Syst. (2010)".
+Citation "Antoni Ferragut, Hector Giacomini: A New Algorithm for Finding Rational First Integrals of Polynomial Vector Fields; Qual. Theory Dyn. Syst. (2010)".
 
 ProgramVariables
   Real x;
@@ -2185,7 +2230,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C1"
 
-Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C1".
+Citation "Z. Yang, M. Wu and W. Lin, nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C1".
 
 ProgramVariables
   Real x;
@@ -2205,7 +2250,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C1 (Nonparametric)"
 
-Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C1".
+Citation "Z. Yang, M. Wu and W. Lin, nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C1".
 
 ProgramVariables
   Real x;
@@ -2226,7 +2271,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C2"
 
-Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C2".
+Citation "Z. Yang, M. Wu and W. Lin, nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C2".
 
 ProgramVariables
   Real x;
@@ -2246,7 +2291,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C2 (Nonparametric)"
 
-Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C2".
+Citation "Z. Yang, M. Wu and W. Lin, nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C2".
 
 ProgramVariables
   Real x;
@@ -2264,13 +2309,16 @@ Problem
 End.
 
 Tactic "Scripted proof"
-  implyR(1) ; dC("x*((-26090)+x*(34696+12539*x))+38464*y < 61620", 1) ; <(
-    dW(1) ; QE,
-    barrier(1)
+  implyR(1);
+  dC("x*((-26090)+x*(34696+12539*x))+38464*y < 61620", 1); <(
+    "Use":
+      dW(1);
+      QE,
+    "Show": barrier(1)
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
@@ -2278,8 +2326,8 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Djaballah Chapoutot Kieffer Bouissou 2017: Example 3"
 
-Description "Example 3, p. 293".
-Citation "Adel Djaballah, Alexandre Chapoutot, Michel Kieffer, Olivier Bouissou. Construction of parametric barrier functions for dynamical systems using interval analysis. Automatica 78 (2017) 287–296.".
+Description "Example 3, p; 293".
+Citation "Adel Djaballah, Alexandre Chapoutot, Michel Kieffer, Olivier Bouissou; Construction of parametric barrier functions for dynamical systems using interval analysis; Automatica 78 (2017) 287–296.".
 Link "https://doi.org/10.1016/j.automatica.2016.12.013".
 
 ProgramVariables
@@ -2308,8 +2356,8 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Djaballah Chapoutot Kieffer Bouissou 2017: Example 5"
 
-Description "Example 5, p. 293".
-Citation "Adel Djaballah, Alexandre Chapoutot, Michel Kieffer, Olivier Bouissou. Construction of parametric barrier functions for dynamical systems using interval analysis. Automatica 78 (2017) 287–296.".
+Description "Example 5, p; 293".
+Citation "Adel Djaballah, Alexandre Chapoutot, Michel Kieffer, Olivier Bouissou; Construction of parametric barrier functions for dynamical systems using interval analysis; Automatica 78 (2017) 287–296.".
 Link "https://doi.org/10.1016/j.automatica.2016.12.013".
 
 Definitions
@@ -2332,21 +2380,21 @@ End.
 
 /* 3D Problems */
 
-ArchiveEntry "Benchmarks/Nonlinear/3D Lotka Volterra (I)".
+ArchiveEntry "Benchmarks/Nonlinear/3D Lotka Volterra (I)"
 
-Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems. CoRR abs/1605.01450 (2016)".
+Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems; CoRR abs/1605;01450 (2016)".
 
-Definitions.
-  R invcluster(R x, R y, R z, R u3, R u4) = ( u3*x+u3*y+u3*z+u4 ).
+Definitions
+  Real invcluster(Real x, Real y, Real z, Real u3, Real u4) = ( u3*x+u3*y+u3*z+u4 );
 End.
 
-ProgramVariables.
-  R x.
-  R y.
-  R z.
+ProgramVariables
+  Real x;
+  Real y;
+  Real z;
 End.
 
-Problem.
+Problem
   x=1 & y=1 & z=1
   ->
   [{ x'=x*y-x*z, y'=y*z-y*x, z'=z*x-z*y }@invariant(x>0, y>0, z>0)
@@ -2366,9 +2414,9 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Scripted proof (2)".
+Tactic "Scripted proof (2)"
   implyR(1) ; cut("\exists u3 \exists u4 (u3^2+u4^2!=0 & invcluster(x,y,z,u3,u4)=0)") ; <(
-    existsL('Llast)*2 ; dC("invcluster(x,y,z,u3,u4)=0", 1) ; doall(ODE(1)) ; done
+    existsL('Llast)*2 ; dC("invcluster(x,y,z,u3,u4)=0", 1) ; doall(ODEinv(1)) ; done
     ,
     hideR(1) ; QE
   )
@@ -2380,24 +2428,24 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/3D Lotka Volterra (II)".
+ArchiveEntry "Benchmarks/Nonlinear/3D Lotka Volterra (II)"
 
-Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems. CoRR abs/1605.01450 (2016)".
+Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems; CoRR abs/1605;01450 (2016)".
 
-Definitions.
-  R invcluster(R x, R y, R z, R u5, R u10, R u16, R u19, R u20) = (
+Definitions
+  Real invcluster(Real x, Real y, Real z, Real u5, Real u10, Real u16, Real u19, Real u20) = (
     u5*x*y*z+u10*x^3+3*u10*x^2*y+3*u10*x^2*z+3*x*y^2*u10+3*x*z^2*u10+u10*y^3+
                3*u10*y^2*z+3*u10*y*z^2+u10*z^3+u16*x^2+2*u16*x*y+2*u16*x*z+
-               u16*y^2+2*u16*y*z+u16*z^2+u19*x+u19*y+u19*z+u20 ).
+               u16*y^2+2*u16*y*z+u16*z^2+u19*x+u19*y+u19*z+u20 );
 End.
 
-ProgramVariables.
-  R x.
-  R y.
-  R z.
+ProgramVariables
+  Real x;
+  Real y;
+  Real z;
 End.
 
-Problem.
+Problem
   x=-1 & y=-1 & z=-1
   ->
   [{ x'=x*y-x*z, y'=y*z-y*x, z'=z*x-z*y }@invariant(x<0, y<0, z<0)
@@ -2423,17 +2471,17 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/3D Lotka Volterra (III)".
+ArchiveEntry "Benchmarks/Nonlinear/3D Lotka Volterra (III)"
 
-Citation "Sriram Sankaranarayanan. Automatic Invariant Generation For Hybrid Systems Using Ideal Fixed Points".
+Citation "Sriram Sankaranarayanan. Automatic Invariant Generation for Hybrid Systems Using Ideal Fixed Points".
 
-ProgramVariables.
-  R x.
-  R y.
-  R z.
+ProgramVariables
+  Real x;
+  Real y;
+  Real z;
 End.
 
-Problem.
+Problem
   x=1 & y=1 & z=-1
   ->
   [{ x'=x*y-x*z, y'=y*z-y*x, z'=z*x-z*y }@invariant(x>0, y>0, z<0)
@@ -2459,18 +2507,18 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Alongi Nelson Ex_4_1_9 page 143".
+ArchiveEntry "Benchmarks/Nonlinear/Alongi Nelson Ex_4_1_9 page 143"
 
 Description "Ex 4.1.9 Page 143".
 Citation "John M. Alongi and Gail S. Nelson. Recurrence and Topology".
 
-ProgramVariables.
-  R x.
-  R y.
-  R z.
+ProgramVariables
+  Real x;
+  Real y;
+  Real z;
 End.
 
-Problem.
+Problem
   x = 1 & y = 0 & z = 0 ->
   [{x'=x*z , y'=y*z , z'=-x^2-y^2 & x^2+y^2+z^2=1}@invariant(x+y>0)]
   !((x > -1 -> x^2 > 2) | z > 1)
@@ -2486,28 +2534,28 @@ End.
 
 Tactic "Scripted proof (2)"
   implyR(1) ; dC("x<=1&z<=0", 1) ; <(
-    ODE(1),
-    ODE(1)
+    ODEinv(1),
+    ODEinv(1)
   )
 End.
 
-Tactic "Automated proof".
+Tactic "Automated proof"
   auto
 End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Constraint-based Example 8 (Phytoplankton Growth)".
+ArchiveEntry "Benchmarks/Nonlinear/Constraint-based Example 8 (Phytoplankton Growth)"
 
 Citation "Sumit Gulwani and Ashish Tiwari. Constraint-based Approach for Analysis of Hybrid Systems".
 
-ProgramVariables.
- Real x1.
- Real x2.
- Real x3.
+ProgramVariables
+ Real x1;
+ Real x2;
+ Real x3;
 End.
 
-Problem.
+Problem
  x1 = 0 & x2 = 0 & x3 = 0
  ->
  [
@@ -2531,21 +2579,21 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Invariant 3-dim sphere".
+ArchiveEntry "Benchmarks/Nonlinear/Invariant 3-dim sphere"
 
-ProgramVariables.
-  R x.
-  R y.
-  R z.
+ProgramVariables
+  Real x;
+  Real y;
+  Real z;
 End.
 
-Problem.
+Problem
   x = 1/4 & y = 1/8 & z = 1/10
   ->
   [
@@ -2566,17 +2614,17 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Invariant Clusters Example 4".
+ArchiveEntry "Benchmarks/Nonlinear/Invariant Clusters Example 4"
 
-Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems. CoRR abs/1605.01450 (2016)".
+Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems; CoRR abs/1605;01450 (2016)".
 
-ProgramVariables.
-  R x.
-  R y.
-  R z.
+ProgramVariables
+  Real x;
+  Real y;
+  Real z;
 End.
 
-Problem.
+Problem
   x=1 & y=2 & z=3
   ->
   [
@@ -2591,9 +2639,9 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Scripted proof (2)".
+Tactic "Scripted proof (2)"
   implyR(1) ; cut("\exists u0 \exists u5 \exists u6 (u0^2+u5^2+u6^2!=0 & invcluster(x,y,z,u0,u5,u6)=0)") ; <(
-    existsL('Llast)*3 ; dC("invcluster(x,y,z,u0,u5,u6)=0", 1) ; doall(ODE(1)) ; done
+    existsL('Llast)*3 ; dC("invcluster(x,y,z,u0,u5,u6)=0", 1) ; doall(ODEinv(1)) ; done
     ,
     hideR(1) ; QE
   )
@@ -2605,17 +2653,17 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Invariant Clusters Example 5".
+ArchiveEntry "Benchmarks/Nonlinear/Invariant Clusters Example 5"
 
-Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems. CoRR abs/1605.01450 (2016)".
+Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems; CoRR abs/1605;01450 (2016)".
 
-ProgramVariables.
-  R x.
-  R y.
-  R z.
+ProgramVariables
+  Real x;
+  Real y;
+  Real z;
 End.
 
-Problem.
+Problem
   x=1 & y=2 & z=3
   ->
   [
@@ -2636,23 +2684,23 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Looping Particle".
+ArchiveEntry "Benchmarks/Nonlinear/Looping Particle"
 
-Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems. CoRR abs/1605.01450 (2016)".
+Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems; CoRR abs/1605;01450 (2016)".
 
-Definitions.
-  R g.
-  R r.
-  R invcluster(R x, R y, R omega, R u0, R u2, R u5) = ( u5*x^2+u5*y^2+u2*omega^2+2*u2*g/r^2*y+u0 ).
+Definitions
+  Real g;
+  Real r;
+  Real invcluster(Real x, Real y, Real omega, Real u0, Real u2, Real u5) = ( u5*x^2+u5*y^2+u2*omega^2+2*u2*g/r^2*y+u0 );
 End.
 
-ProgramVariables.
-  R x.
-  R y.
-  R omega.
+ProgramVariables
+  Real x;
+  Real y;
+  Real omega;
 End.
 
-Problem.
+Problem
   x=2 & y=0 & r=2
   ->
   [{ x'=-y*omega, y'=x*omega, omega'=-g/r^2*x }@invariant(x^2+y^2>=4)
@@ -2675,7 +2723,7 @@ End.
 
 Tactic "Scripted proof (3)"
   implyR(1) ; cut("\exists u0 \exists u2 \exists u5 (u0^2+u2^2+u5^2!=0 & invcluster(x,y,omega,u0,u2,u5)=0)") ; <(
-    existsL('Llast)*3 ; dC("invcluster(x,y,omega,u0,u2,u5)=0", 1) ; doall(ODE(1)) ; done
+    existsL('Llast)*3 ; dC("invcluster(x,y,omega,u0,u2,u5)=0", 1) ; doall(ODEinv(1)) ; done
     ,
     hideR(1) ; QE
   )
@@ -2687,15 +2735,15 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Shimizu Morioka System".
+ArchiveEntry "Benchmarks/Nonlinear/Shimizu Morioka System"
 
-ProgramVariables.
-  R x.
-  R y.
-  R z.
+ProgramVariables
+  Real x;
+  Real y;
+  Real z;
 End.
 
-Problem.
+Problem
   x = 5 & y = 3 & z = -4 -> [{x'=y, y'=x-y-x*z, z'=x^2-z}@invariant(z>=-5)]!(z < 0 & z^2 > 26+x^2)
 End.
 
@@ -2712,18 +2760,18 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C2".
+ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C2"
 
 Description "Example C2".
-Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of Nonlinear Hybrid Systems Based on Bilinear Programming.".
+Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of nonlinear Hybrid Systems Based on Bilinear Programming;".
 
-ProgramVariables.
-  R x1.
-  R x2.
-  R x3.
+ProgramVariables
+  Real x1;
+  Real x2;
+  Real x3;
 End.
 
-Problem.
+Problem
   -0.25 <= x1 & x1 <= 0.75 &
   -0.25 <= x2 & x2 <= 0.75 &
   -0.75 <= x3 & x3 <= 0.25 ->
@@ -2747,7 +2795,7 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
@@ -2755,7 +2803,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C3"
 
-Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C3".
+Citation "Z. Yang, M. Wu and W. Lin, nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C3".
 
 ProgramVariables
   Real x, y, z;
@@ -2777,7 +2825,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C3 (Nonparametric)"
 
-Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C3".
+Citation "Z. Yang, M. Wu and W. Lin, nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C3".
 
 ProgramVariables
   Real x, y, z;
@@ -2800,7 +2848,7 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
@@ -2808,7 +2856,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C4"
 
-Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C4".
+Citation "Z. Yang, M. Wu and W. Lin, nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C4".
 
 ProgramVariables
   Real x1, x2, x3;
@@ -2828,7 +2876,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C4 (Nonparametric)"
 
-Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C4".
+Citation "Z. Yang, M. Wu and W. Lin, nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C4".
 
 ProgramVariables
   Real x1, x2, x3;
@@ -2851,7 +2899,7 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
@@ -2859,7 +2907,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Gorbuzov Pranevich 2012: Example 1.2"
 
-Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems. ".
+Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems;".
 
 ProgramVariables
   Real x1, x2, x3;
@@ -2886,7 +2934,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Gorbuzov Pranevich 2012: Example 1.4"
 
-Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems. ".
+Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems;".
 
 ProgramVariables
   Real x1, x2, x3;
@@ -2916,7 +2964,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Gorbuzov Pranevich 2012: Example 1.5 Variant 1"
 
-Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems. ".
+Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems;".
 
 ProgramVariables
   Real x1, x2, x3;
@@ -2947,7 +2995,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Gorbuzov Pranevich 2012: Example 1.5 Variant 2"
 
-Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems. ".
+Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems;".
 
 ProgramVariables
   Real x1, x2, x3;
@@ -2969,7 +3017,7 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
@@ -2977,7 +3025,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Gorbuzov Pranevich 2012: Example 1.5 Variant 3"
 
-Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems. ".
+Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems;".
 
 ProgramVariables
   Real x1, x2, x3;
@@ -3015,8 +3063,8 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Djaballah Chapoutot Kieffer Bouissou 2017: Example 7"
 
-Description "Example 7, p. 293".
-Citation "Adel Djaballah, Alexandre Chapoutot, Michel Kieffer, Olivier Bouissou. Construction of parametric barrier functions for dynamical systems using interval analysis. Automatica 78 (2017) 287–296.".
+Description "Example 7, p; 293".
+Citation "Adel Djaballah, Alexandre Chapoutot, Michel Kieffer, Olivier Bouissou; Construction of parametric barrier functions for dynamical systems using interval analysis; Automatica 78 (2017) 287–296.".
 Link "https://doi.org/10.1016/j.automatica.2016.12.013".
 
 ProgramVariables
@@ -3058,11 +3106,11 @@ End.
 Tactic "Scripted proof"
   implyR(1) ; dC("x^2-2*s*z1>=0", 1) ; <(
     dW(1) ; QE,
-    ODE(1)
+    ODEinv(1)
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
@@ -3094,7 +3142,7 @@ End.
 Tactic "Scripted proof"
   implyR(1) ; dC("x^2 < 2*z2", 1) ; <(
     dW(1) ; QE,
-    ODE(1)
+    ODEinv(1)
   )
 End.
 
@@ -3131,11 +3179,11 @@ End.
 Tactic "Scripted proof"
   implyR(1) ; dC("-r()*x^2+1/3*y^2+2/3*x*y+x^2*z3-3/4*x^4>=0", 1) ; <(
     dW(1) ; QE,
-    ODE(1)
+    ODEinv(1)
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
@@ -3168,11 +3216,11 @@ End.
 Tactic "Scripted proof"
   implyR(1) ; dC("-r()*x^2+1/3*y^2+2/3*x*y+x^2*z4-3/4*x^4>=0", 1) ; <(
     dW(1) ; QE,
-    ODE(1)
+    ODEinv(1)
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
@@ -3204,11 +3252,11 @@ End.
 Tactic "Scripted proof"
   implyR(1) ; dC("y^2+z5^2<=1", 1) ; <(
     dW(1) ; QE,
-    ODE(1)
+    ODEinv(1)
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
@@ -3240,7 +3288,7 @@ End.
 Tactic "Scripted proof"
   implyR(1) ; dC("y^2+z6^2<=2", 1) ; <(
     dW(1) ; QE,
-    ODE(1)
+    ODEinv(1)
   )
 End.
 
@@ -3251,7 +3299,7 @@ Tactic "Scripted proof (2)"
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
@@ -3261,35 +3309,35 @@ End.
 
 /* 4 D */
 
-ArchiveEntry "Benchmarks/Nonlinear/Coupled Spring-Mass System (I)".
+ArchiveEntry "Benchmarks/Nonlinear/Coupled Spring-Mass System (I)"
 
-Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems. CoRR abs/1605.01450 (2016)".
+Citation "Hui Kong, Sergiy Bogomolov, Christian Schilling, Yu Jiang, Thomas A. Henzinger. Invariant Clusters for Hybrid Systems; CoRR abs/1605;01450 (2016)".
 
-Definitions.
-  R m1.
-  R m2.
-  R k1.
-  R k2.
-  R k.
-  R u1.
-  R u8.
-  R u10.
+Definitions
+  Real m1;
+  Real m2;
+  Real k1;
+  Real k2;
+  Real k;
+  Real u1;
+  Real u8;
+  Real u10;
 
-  R invcluster(R x1, R x2, R v1, R v2) = (
+  Real invcluster(Real x1, Real x2, Real v1, Real v2) = (
     u8*v1*v2+k2*x1*x2*(m1*u8-2*m2*u10)/(m1*m2) + u10*v1^2+u1
         + 1/2*v2^2*(k1*m2*u8-k2*m1*u8+k2*m2*u8+2*k2*m2*u10)/(k2*m1)
         + 1/2*(2*k1*m2*u10-k2*m1*u8+2*k2*m2*u10)*x1^2/(m1*m2)
-        + 1/2*(k1*m2*u8-k2*m1*u8+2*k2*m2*u10)*x2^2/(m1*m2) ).
+        + 1/2*(k1*m2*u8-k2*m1*u8+2*k2*m2*u10)*x2^2/(m1*m2) );
 End.
 
-ProgramVariables.
-  R x1.
-  R x2.
-  R v1.
-  R v2.
+ProgramVariables
+  Real x1;
+  Real x2;
+  Real v1;
+  Real v2;
 End.
 
-Problem.
+Problem
     x1=0
   & v1=0
   & x2=7/8
@@ -3327,22 +3375,22 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Coupled Spring-Mass System (II)".
+ArchiveEntry "Benchmarks/Nonlinear/Coupled Spring-Mass System (II)"
 
-Citation "Sriram Sankaranarayanan. Automatic Invariant Generation For Hybrid Systems Using Ideal Fixed Points".
+Citation "Sriram Sankaranarayanan. Automatic Invariant Generation for Hybrid Systems Using Ideal Fixed Points".
 
-Definitions.
-  R k.
+Definitions
+  Real k;
 End.
 
-ProgramVariables.
-  R x1.
-  R x2.
-  R v1.
-  R v2.
+ProgramVariables
+  Real x1;
+  Real x2;
+  Real v1;
+  Real v2;
 End.
 
-Problem.
+Problem
     x1=0
   & x2=0
   & v1=1
@@ -3360,22 +3408,22 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Damped Mathieu System".
+ArchiveEntry "Benchmarks/Nonlinear/Damped Mathieu System"
 
-Citation "James Kapinski, Jyotirmoy V. Deshmukh, Sriram Sankaranarayanan, and Nikos Arechiga. 2014. Simulation-guided Lyapunov analysis for hybrid dynamical systems. In Proceedings of the 17th International Conference on Hybrid systems: computation and control (HSCC '14). ACM, New York, NY, USA, 133-142. DOI=http://doi.org/10.1145/2562059.2562139".
+Citation "James Kapinski, Jyotirmoy V. Deshmukh, Sriram Sankaranarayanan, and Nikos Arechiga. 2014. Simulation-guided Lyapunov analysis for hybrid dynamical systems; In Proceedings of the 17th International Conference on Hybrid systems: computation and control (HSCC '14). ACM, New York, NY, USA, 133-142. DOI=http://doi.org/10.1145/2562059.2562139".
 
-Definitions.
-  R LyapunovCandidate(R x1, R x2) = ( 98*x1^2 + 24*x1*x2 + 24*x2*x1 + 55*x2^2 ).
+Definitions
+  Real LyapunovCandidate(Real x1, Real x2) = ( 98*x1^2 + 24*x1*x2 + 24*x2*x1 + 55*x2^2 );
 End.
 
-ProgramVariables.
-  R x1;
-  R x2;
-  R sint;
-  R cost;
+ProgramVariables
+  Real x1;
+  Real x2;
+  Real sint;
+  Real cost;
 End.
 
-Problem.
+Problem
   x1 = 1/20 & x2 = 1/32 & sint=0 & cost=1 /* t=0 initially */
   ->
   [{ x1'=x2, x2'=-x2-(2+sint)*x1, sint'=cost, cost'=-sint }@invariant(cost^2+sint^2<=100000/99999, cost^2+sint^2>=1)]LyapunovCandidate(x1, x2) < 1
@@ -3384,6 +3432,7 @@ End.
 Tactic "Scripted proof"
   implyR(1) ; dC("cost^2+sint^2<=100000/99999", 1) ; <(
     dC("cost^2+sint^2>=1", 1) ; <(
+      expand("LyapunovCandidate");
       dbx(1),
       dI(1)
     ),
@@ -3397,22 +3446,22 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Flight Maneuvers (I)".
+ArchiveEntry "Benchmarks/Nonlinear/Flight Maneuvers (I)"
 
-Citation "Khalil Ghorbal, Jean-Baptiste Jeannin, Erik Zawadzki, André Platzer, Geoffrey J. Gordon, and Peter Capell. Hybrid Theorem Proving of Aerospace Systems: Applications and Challenges".
+Citation "Khalil Ghorbal, Jean-Baptiste Jeannin, Erik Zawadzki, André Platzer, Geoffrey J. Gordon, and PeteReal Capell; Hybrid Theorem Proving of Aerospace Systems: Applications and Challenges".
 
-Definitions.
-  R w1.
+Definitions
+  Real w1;
 End.
 
-ProgramVariables.
-  R x.
-  R y.
-  R cost.
-  R sint.
+ProgramVariables
+  Real x;
+  Real y;
+  Real cost;
+  Real sint;
 End.
 
-Problem.
+Problem
     w1<0
   & cost = 1 & sint = 0
   & w1^2*(x^2 + y^2) - 8*w1*y > -8*w1 + w1^2
@@ -3426,7 +3475,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Gorbuzov Pranevich 2012: Example 1.1"
 
-Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems.".
+Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems;".
 
 ProgramVariables
   Real x1, x2, x3, x4;
@@ -3456,7 +3505,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Gorbuzov Pranevich 2012: Example 1.3 Variant 1"
 
-Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems. ".
+Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems; ".
 
 ProgramVariables
   Real x1, x2, x3, x4;
@@ -3495,7 +3544,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Gorbuzov Pranevich 2012: Example 1.3 Variant 2"
 
-Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems. ".
+Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems; ".
 
 ProgramVariables
   Real x1, x2, x3, x4;
@@ -3518,7 +3567,7 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
@@ -3526,7 +3575,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C5"
 
-Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C5".
+Citation "Z. Yang, M. Wu and W. Lin, nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C5".
 
 ProgramVariables
   Real x, y, z, v;
@@ -3546,7 +3595,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C5 (Nonparametric)"
 
-Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C5".
+Citation "Z. Yang, M. Wu and W. Lin, nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C5".
 
 ProgramVariables
   Real x, y, z, v;
@@ -3566,7 +3615,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C6"
 
-Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C6".
+Citation "Z. Yang, M. Wu and W. Lin, nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C6".
 
 ProgramVariables
   Real x1, x2, x3, x4;
@@ -3594,7 +3643,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C6 (Nonparametric)"
 
-Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C6".
+Citation "Z. Yang, M. Wu and W. Lin, nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C6".
 
 ProgramVariables
   Real x1, x2, x3, x4;
@@ -3617,7 +3666,7 @@ Problem
 
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
@@ -3663,9 +3712,9 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Lunar lander descent guidance (slow descent low thrust)".
+ArchiveEntry "Benchmarks/Nonlinear/LunaReal lander descent guidance (slow descent low thrust)"
 
-Citation "Hengjun Zhao, Mengfei Yang, Naijun Zhan, Bin Gu, Liang Zou, Yao Chen. Formal Verification of a Descent Guidance Control Program of a Lunar Lander. FM 2014.".
+Citation "Hengjun Zhao, Mengfei Yang, Naijun Zhan, Bin Gu, Liang Zou, Yao Chen. Formal Verification of a Descent Guidance Control Program of a LunaReal Lander; FM 2014.".
 
 Definitions
   Real Isp1   = 2500;  /* thrust engine impulse (low thrust) */
@@ -3676,12 +3725,12 @@ Definitions
   Real DeltaT = 0.128; /* controller sampling time */
   Real mMin   = 1100;  /* minimum lander mass */
   Real mMax   = 3000;  /* maximum lander mass */
-  Real c1     = 0.01;  /* control coeffiecent */
+  Real c1     = 0.01;  /* control coefficient */
   Real c2     = 0.6;   /* control coefficient */
 End.
 
 ProgramVariables
-  Real r;   /* altitude relative to lunar surface */
+  Real r;   /* altitude relative to lunaReal surface */
   Real v;   /* vertical velocity */
   Real m;   /* lunar lander mass */
   Real Fc;  /* lander thrust */
@@ -3691,7 +3740,7 @@ ProgramVariables
   Real alC;
 End.
 
-Problem.
+Problem
   m=1250 & r=30 & v=-2
   & a = 2027.5/m
   & alC = max(-c1*(a-gM) - c2*(v-vslw) + gM, 1500/m)
@@ -3707,9 +3756,9 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Lunar lander descent guidance (slow descent high thrust)".
+ArchiveEntry "Benchmarks/Nonlinear/LunaReal lander descent guidance (slow descent high thrust)"
 
-Citation "Hengjun Zhao, Mengfei Yang, Naijun Zhan, Bin Gu, Liang Zou, Yao Chen. Formal Verification of a Descent Guidance Control Program of a Lunar Lander. FM 2014.".
+Citation "Hengjun Zhao, Mengfei Yang, Naijun Zhan, Bin Gu, Liang Zou, Yao Chen. Formal Verification of a Descent Guidance Control Program of a LunaReal Lander; FM 2014.".
 
 Definitions
   Real Isp1   = 2500;  /* thrust engine impulse (low thrust) */
@@ -3720,12 +3769,12 @@ Definitions
   Real DeltaT = 0.128; /* controller sampling time */
   Real mMin   = 1100;  /* minimum lander mass */
   Real mMax   = 3000;  /* maximum lander mass */
-  Real c1     = 0.01;  /* control coeffiecent */
+  Real c1     = 0.01;  /* control coefficient */
   Real c2     = 0.6;   /* control coefficient */
 End.
 
 ProgramVariables
-  Real r;   /* altitude relative to lunar surface */
+  Real r;   /* altitude relative to lunaReal surface */
   Real v;   /* vertical velocity */
   Real m;   /* lunar lander mass */
   Real Fc;  /* lander thrust */
@@ -3735,7 +3784,7 @@ ProgramVariables
   Real alC;
 End.
 
-Problem.
+Problem
   m=1250 & r=30 & v=-5
   & a = 2027.5/m
   & alC = max(-c1*(a-gM) - c2*(v-vslw) + gM, 1500/m)
@@ -3755,7 +3804,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Gorbuzov Pranevich 2012: Example 1.13"
 
-Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems. ".
+Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems; ".
 
 ProgramVariables
   Real x1, x2, x3, x4, x5;
@@ -3769,35 +3818,39 @@ Problem
     x3'=x2-x3,
     x4'=-3*x1+5*x2-4*x3-x4-2*x5,
     x5'=4*x2-2*x3+x4
-   }/*@invariant(x1 + x3 + x4 > 0)*/
+   }@invariant(x1 + x3 + x4 > 0, x2^2+4*(x1+x4)*(x1+x3+x4)>0)
    ] !(x1 < -5 & x3 = -x4)
+End.
+
+Tactic "Automated proof"
+  autoClose
 End.
 
 End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Space Craft: Collision Avoidance"
 
-Citation "Fabian Immler, Matthias Althoff, Xin Chen, Chuchu Fan, Goran Frehse, Niklas Kochdumper, Yangge Li, Sayan Mitra, Mahendra Singh Tomar, and Majid Zamani. ARCH-COMP18 Category Report: Continuous and Hybrid Systems with Nonlinear Dynamics".
+Citation "Fabian Immler, Matthias Althoff, Xin Chen, Chuchu Fan, Goran Frehse, Niklas Kochdumper, Yangge Li, Sayan Mitra, Mahendra Singh Tomar, and Majid Zamani. ARCH-COMP18 Category Report: Continuous and Hybrid Systems with nonlinear Dynamics".
 
-Definitions.
-  R n.
-  R mu = ( 3.986*10^14*60^2 ).
-  R r = ( 42164*10^3 ).
-  R irc.
-  R mc = ( 500 ).
+Definitions
+  Real n;
+  Real mu = 3.986*10^14*60^2;
+  Real r  = 42164*10^3;
+  Real irc;
+  Real mc = 500;
 End.
 
-ProgramVariables.
-  R x.
-  R y.
-  R vx.
-  R vy.
-  R t.
-  R ux.
-  R uy.
+ProgramVariables
+  Real x;
+  Real y;
+  Real vx;
+  Real vy;
+  Real t;
+  Real ux;
+  Real uy;
 End.
 
-Problem.
+Problem
     n^2  = mu/r^3
   & 1 = irc^2 * ((r+x)^2 + y^2)
   & -925 <= x & x <= -875
@@ -3817,7 +3870,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C7"
 
-Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C7".
+Citation "Z. Yang, M. Wu and W. Lin, nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C7".
 
 ProgramVariables
   Real x1, x2, x3, x4, x5, x6;
@@ -3847,7 +3900,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Yang Wu Lin 2020: Benchmark C7 (Nonparametric)"
 
-Citation "Z. Yang, M. Wu and W. Lin, Nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C7".
+Citation "Z. Yang, M. Wu and W. Lin, nonlinear Analysis: Hybrid Systems (36), 2020, Benchmark C7".
 
 ProgramVariables
   Real x1, x2, x3, x4, x5, x6;
@@ -3877,7 +3930,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Gorbuzov Pranevich 2012: Example 1.6"
 
-Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems. ".
+Citation "V.N. Gorbuzov, A.F. Pranevich: First integrals of ordinary linear differential systems;".
 
 ProgramVariables
   Real x1, x2, x3, x4, x5, x6;
@@ -3905,7 +3958,7 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
@@ -3913,8 +3966,8 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Djaballah Chapoutot Kieffer Bouissou 2017: Example 8"
 
-Description "Example 8, p. 293".
-Citation "Adel Djaballah, Alexandre Chapoutot, Michel Kieffer, Olivier Bouissou. Construction of parametric barrier functions for dynamical systems using interval analysis. Automatica 78 (2017) 287–296. From Antonis Papachristodoulou, Stephen Prajna. On the Construction of Lyapunov Functions using the Sum of Squares Decomposition. 2002. (Example 1)".
+Description "Example 8, p; 293".
+Citation "Adel Djaballah, Alexandre Chapoutot, Michel Kieffer, Olivier Bouissou; Construction of parametric barrier functions for dynamical systems using interval analysis; Automatica 78 (2017) 287–296. From Antonis Papachristodoulou, Stephen Prajna. On the Construction of Lyapunov Functions using the Sum of Squares Decomposition. 2002. (Example 1)".
 Link "https://doi.org/10.1016/j.automatica.2016.12.013".
 
 ProgramVariables
@@ -3944,22 +3997,22 @@ End.
 
 /* 7 D */
 
-ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C9".
+ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C9"
 
 Description "Example C9".
-Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of Nonlinear Hybrid Systems Based on Bilinear Programming.".
+Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of nonlinear Hybrid Systems Based on Bilinear Programming;".
 
-ProgramVariables.
-  R x1.
-  R x2.
-  R x3.
-  R x4.
-  R x5.
-  R x6.
-  R x7.
+ProgramVariables
+  Real x1;
+  Real x2;
+  Real x3;
+  Real x4;
+  Real x5;
+  Real x6;
+  Real x7;
 End.
 
-Problem.
+Problem
   0.99 <= x1 & x1 <= 1.01 &
   0.99 <= x2 & x2 <= 1.01 &
   0.99 <= x3 & x3 <= 1.01 &
@@ -4003,38 +4056,38 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
 End.
 
 /* 8 D */
-ArchiveEntry "Benchmarks/Nonlinear/Collision Avoidance Maneuver (I)".
+ArchiveEntry "Benchmarks/Nonlinear/Collision Avoidance Maneuver (I)"
 
-Citation "Sriram Sankaranarayanan. Automatic Invariant Generation For Hybrid Systems Using Ideal Fixed Points".
+Citation "Sriram Sankaranarayanan. Automatic Invariant Generation for Hybrid Systems Using Ideal Fixed Points".
 
-Definitions.
-  R a.
-  R b.
-  R r1.
-  R r2.
-  R w.
-  R theta.
+Definitions
+  Real a;
+  Real b;
+  Real r1;
+  Real r2;
+  Real w;
+  Real theta;
 End.
 
-ProgramVariables.
-  R x1.
-  R x2.
-  R d1.
-  R d2.
-  R y1.
-  R y2.
-  R e1.
-  R e2.
+ProgramVariables
+  Real x1;
+  Real x2;
+  Real d1;
+  Real d2;
+  Real y1;
+  Real y2;
+  Real e1;
+  Real e2;
 End.
 
-Problem.
+Problem
     x1=r1 & y1=r1
   & x2=r2 & y2=r2
   & d1=a
@@ -4078,16 +4131,16 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/ATC: 2 Aircraft Tangential Roundabout Maneuver (ODE)".
+ArchiveEntry "Benchmarks/Nonlinear/ATC: 2 Aircraft Tangential Roundabout Maneuver (ODE)"
 
 Description "Essentials of Tangential Roundabout Maneuver (TRM) in Air Traffic Control (ATC)".
-Citation "Andre Platzer. Differential-algebraic dynamic logic for differential-algebraic programs. Journal of Logic and Computation, 20(1), pages 309-352, 2010.".
+Citation "Andre Platzer. Differential-algebraic dynamic logic for differential-algebraic programs; Journal of Logic and Computation, 20(1), pages 309-352, 2010.".
 Link "https://doi.org/10.1093/logcom/exn070".
 
 Definitions
@@ -4112,7 +4165,7 @@ ProgramVariables
   Real e2;   /* y-direction of aircraft 2 */
 End.
 
-Problem.
+Problem
     safeSeparation(x1, y1, x2, y2)
   & d1 =-om*(x2-c2) & d2=om*(x1-c1)
   & e1 =-om*(y2-c2) & e2=om*(y1-c1)
@@ -4129,41 +4182,41 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Collision Avoidance Maneuver (II)".
+ArchiveEntry "Benchmarks/Nonlinear/Collision Avoidance Maneuver (II)"
 
 Citation "Jiang Liu, Naijun Zhan, Hengjun Zhao. Computing Semi-algebraic Invariants for Polynomial Dynamical Systems".
 
-Definitions.
-  R w1.
-  R w2.
-  R xi1.
-  R xi2.
-  R di1.
-  R di2.
-  R yi1.
-  R yi2.
-  R ei1.
-  R ei2.
+Definitions
+  Real w1;
+  Real w2;
+  Real xi1;
+  Real xi2;
+  Real di1;
+  Real di2;
+  Real yi1;
+  Real yi2;
+  Real ei1;
+  Real ei2;
 End.
 
-ProgramVariables.
-  R x1.
-  R x2.
-  R d1.
-  R d2.
-  R y1.
-  R y2.
-  R e1.
-  R e2.
+ProgramVariables
+  Real x1;
+  Real x2;
+  Real d1;
+  Real d2;
+  Real y1;
+  Real y2;
+  Real e1;
+  Real e2;
 End.
 
-Problem.
+Problem
   x1 = xi1 &
   x2 = xi2 &
   d1 = di1 &
@@ -4196,33 +4249,33 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Collision Avoidance Maneuver (III)".
+ArchiveEntry "Benchmarks/Nonlinear/Collision Avoidance Maneuver (III)"
 
-Citation "Khalil Ghorbal and André Platzer. Characterizing algebraic invariants by differential radical invariants. In Erika Ábrahám and Klaus Havelund, editors, Tools and Algorithms for the Construction and Analysis of Systems, TACAS 2014, Proceedings, volume 8413 of LNCS, pp. 279-294. Springer, 2014.".
+Citation "Khalil Ghorbal and André Platzer. Characterizing algebraic invariants by differential radical invariants. In Erika Ábrahám and Klaus Havelund, editors, Tools and Algorithms for the Construction and Analysis of Systems, TACAS 2014, Proceedings, volume 8413 of LNCS, pp; 279-294. Springer, 2014.".
 
-Definitions.
-  R w1.
-  R w2.
+Definitions
+  Real w1;
+  Real w2;
 End.
 
-ProgramVariables.
-  R x1.
-  R x2.
-  R d1.
-  R d2.
-  R y1.
-  R y2.
-  R e1.
-  R e2.
+ProgramVariables
+  Real x1;
+  Real x2;
+  Real d1;
+  Real d2;
+  Real y1;
+  Real y2;
+  Real e1;
+  Real e2;
 End.
 
-Problem.
+Problem
     w1=w2
   & d1=2
   & d2=4
@@ -4240,27 +4293,27 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/Laub-Loomis".
+ArchiveEntry "Benchmarks/Nonlinear/Laub-Loomis"
 
-Citation "Fabian Immler, Matthias Althoff, Xin Chen, Chuchu Fan, Goran Frehse, Niklas Kochdumper, Yangge Li, Sayan Mitra, Mahendra Singh Tomar, and Majid Zamani. ARCH-COMP18 Category Report: Continuous and Hybrid Systems with Nonlinear Dynamics".
+Citation "Fabian Immler, Matthias Althoff, Xin Chen, Chuchu Fan, Goran Frehse, Niklas Kochdumper, Yangge Li, Sayan Mitra, Mahendra Singh Tomar, and Majid Zamani. ARCH-COMP18 Category Report: Continuous and Hybrid Systems with nonlinear Dynamics".
 
-Definitions.
-  R W.
-  B in(R v, R c, R w) <-> (c-w <= v & v <= c+w ).
+Definitions
+  Real W;
+  Bool in(Real v, Real c, Real w) <-> ( c-w <= v & v <= c+w );
 End.
 
-ProgramVariables.
-  R x1.
-  R x2.
-  R x3.
-  R x4.
-  R x5.
-  R x6.
-  R x7.
-  R t.
+ProgramVariables
+  Real x1;
+  Real x2;
+  Real x3;
+  Real x4;
+  Real x5;
+  Real x6;
+  Real x7;
+  Real t;
 End.
 
-Problem.
+Problem
     W=0.1
   & in(x1,1.2,W)
   & in(x2,1.05,W)
@@ -4279,25 +4332,25 @@ End.
 
 /* 9 D */
 
-ArchiveEntry "Benchmarks/Nonlinear/Planar 2-body problem".
+ArchiveEntry "Benchmarks/Nonlinear/Planar 2-body problem"
 
-Definitions.
-  R m.
+Definitions
+  Real m;
 End.
 
-ProgramVariables.
-  R x1.
-  R y1.
-  R vx1.
-  R vy1.
-  R x2.
-  R y2.
-  R vx2.
-  R vy2.
-  R r.
+ProgramVariables
+  Real x1;
+  Real y1;
+  Real vx1;
+  Real vy1;
+  Real x2;
+  Real y2;
+  Real vx2;
+  Real vy2;
+  Real r;
 End.
 
-Problem.
+Problem
   r = 1 &
   x1 = 0 & y1 = 0 & vx1 = 0 & vy1 = -1 &
   x2 = 1 & y2 = 0 & vx2 = 0 & vy2 = 1 &
@@ -4318,24 +4371,24 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C10".
+ArchiveEntry "Benchmarks/Nonlinear/ZYLZCL Example C10"
 
 Description "Example C10".
-Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of Nonlinear Hybrid Systems Based on Bilinear Programming.".
+Citation "Yifan Zhang, Zhengfeng Yang, Wang Lin, Huibiao Zhu, Xin Chen, Xuandong Li. Safety Verification of nonlinear Hybrid Systems Based on Bilinear Programming;".
 
-ProgramVariables.
-  R x1.
-  R x2.
-  R x3.
-  R x4.
-  R x5.
-  R x6.
-  R x7.
-  R x8.
-  R x9.
+ProgramVariables
+  Real x1;
+  Real x2;
+  Real x3;
+  Real x4;
+  Real x5;
+  Real x6;
+  Real x7;
+  Real x8;
+  Real x9;
 End.
 
-Problem.
+Problem
   0.99 <= x1 & x1 <= 1.01 &
   0.99 <= x2 & x2 <= 1.01 &
   0.99 <= x3 & x3 <= 1.01 &
@@ -4388,7 +4441,7 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
@@ -4396,10 +4449,10 @@ End.
 
 /* 12D */
 
-ArchiveEntry "Benchmarks/Nonlinear/ATC: 3 Aircraft Tangential Roundabout Maneuver (ODE)".
+ArchiveEntry "Benchmarks/Nonlinear/ATC: 3 Aircraft Tangential Roundabout Maneuver (ODE)"
 
 Description "Essentials of Tangential Roundabout Maneuver (TRM) in Air Traffic Control (ATC)".
-Citation "Andre Platzer. Differential-algebraic dynamic logic for differential-algebraic programs. Journal of Logic and Computation, 20(1), pages 309-352, 2010.".
+Citation "Andre Platzer. Differential-algebraic dynamic logic for differential-algebraic programs; Journal of Logic and Computation, 20(1), pages 309-352, 2010.".
 Link "https://doi.org/10.1093/logcom/exn070".
 
 Definitions
@@ -4435,7 +4488,7 @@ ProgramVariables
   Real f2;   /* y-direction of aircraft 3 */
 End.
 
-Problem.
+Problem
   safeSeparation3(x1, y1, x2, y2, z1, z2)
   & d1=-om*(x2-c2) & d2=om*(x1-c1)
   & e1=-om*(y2-c2) & e2=om*(y1-c1)
@@ -4455,7 +4508,7 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
@@ -4463,13 +4516,13 @@ End.
 
 /* 16D */
 
-ArchiveEntry "Benchmarks/Nonlinear/ATC: 4 Aircraft Tangential Roundabout Maneuver (ODE)".
+ArchiveEntry "Benchmarks/Nonlinear/ATC: 4 Aircraft Tangential Roundabout Maneuver (ODE)"
 
 Description "Essentials of Tangential Roundabout Maneuver (TRM) in Air Traffic Control (ATC)".
-Citation "Andre Platzer. Differential-algebraic dynamic logic for differential-algebraic programs. Journal of Logic and Computation, 20(1), pages 309-352, 2010.".
+Citation "Andre Platzer. Differential-algebraic dynamic logic for differential-algebraic programs; Journal of Logic and Computation, 20(1), pages 309-352, 2010.".
 Link "https://doi.org/10.1093/logcom/exn070".
 
-Definitions.
+Definitions
   Real p;  /* protected zone radius */
   Real om;   /* angular velocity of aircraft 1 */
   Real omy;  /* angular velocity of aircraft 2 */
@@ -4491,7 +4544,7 @@ Definitions.
     & safeSeparation(z1, u1, z2, u2);
 End.
 
-ProgramVariables.
+ProgramVariables
   Real x1;   /* x-position of aircraft 1 */
   Real x2;   /* y-position of aircraft 1 */
   Real d1;   /* x-direction of aircraft 1 */
@@ -4510,7 +4563,7 @@ ProgramVariables.
   Real g2;   /* y-direction of aircraft 4 */
 End.
 
-Problem.
+Problem
   safeSeparation4(x1, y1, x2, y2, z1, z2, u1, u2)
   & d1=-om*(x2-c2) & d2=om*(x1-c1)
   & e1=-om*(y2-c2) & e2=om*(y1-c1)
@@ -4532,7 +4585,7 @@ Tactic "Scripted proof"
   )
 End.
 
-Tactic "Automated proof"
+Tactic "Automated proof (from annotations)"
   auto
 End.
 
@@ -4614,9 +4667,17 @@ ProgramVariables
 End.
 
 Problem
-  (xleft>-1/2&xleft < -1/3&yleft < 0&yleft>=-1/2)&-1<=x1right&x1right<=0&-1<=x2right&x2right<=0->[{xleft'=2*xleft-xleft^5-xleft*yleft^4,yleft'=yleft-xleft^2*yleft-yleft^3,x1right'=-1+x1right^2+x2right^2,x2right'=5*(-1+x1right*x2right)&true&-2<=x1right&x1right<=2&-2<=x2right&x2right<=2}](!xleft+yleft>0&!(1<=x1right&x1right<=2&1<=x2right&x2right<=2))
+  (xleft>-1/2&xleft < -1/3&yleft < 0&yleft>=-1/2)&-1<=x1right&x1right<=0&-1<=x2right&x2right<=0
+  ->
+  [{xleft'=2*xleft-xleft^5-xleft*yleft^4,yleft'=yleft-xleft^2*yleft-yleft^3,
+    x1right'=-1+x1right^2+x2right^2,x2right'=5*(-1+x1right*x2right)&true&-2<=x1right&x1right<=2&-2<=x2right&x2right<=2
+   }@invariant(xleft < 0, yleft < 0, 22667*x1right^2+x2right*(257910+6221*x2right)+x1right*(141840+15973*x2right) < 42786)
+  ](!xleft+yleft>0&!(1<=x1right&x1right<=2&1<=x2right&x2right<=2))
 End.
 
+Tactic "Automated proof"
+  autoClose
+End.
 
 End.
 
@@ -4630,7 +4691,12 @@ ProgramVariables
 End.
 
 Problem
-  xleft^2+(-2+yleft)^2 < 1/24&-3/2<=x1right&x1right<=-1/2&-3/2<=x2right&x2right<=-1/2->[{xleft'=-xleft+2*xleft^2*yleft,yleft'=-yleft,x1right'=-x1right+x1right*x2right,x2right'=-x2right&true&-2<=x1right&x1right<=2&-2<=x2right&x2right<=2}](!(xleft<=-2|yleft<=-1)&!(-1/2<=x1right&x1right<=1/2&1/2<=x2right&x2right<=3/2))
+  xleft^2+(-2+yleft)^2 < 1/24&-3/2<=x1right&x1right<=-1/2&-3/2<=x2right&x2right<=-1/2
+  ->
+  [{xleft'=-xleft+2*xleft^2*yleft,yleft'=-yleft,x1right'=-x1right+x1right*x2right,
+    x2right'=-x2right&true&-2<=x1right&x1right<=2&-2<=x2right&x2right<=2
+   }@invariant(x2right+yleft>0, x2right^2+x2right*yleft+yleft^2>0, x1right < 0, x2right < 0, xleft*yleft < 1)
+  ](!(xleft<=-2|yleft<=-1)&!(-1/2<=x1right&x1right<=1/2&1/2<=x2right&x2right<=3/2))
 End.
 
 Tactic "Scripted proof"
@@ -4639,7 +4705,7 @@ Tactic "Scripted proof"
       dC("x1right < 0", 1) ; <(
         dC("x2right < 0", 1) ; <(
           dC("xleft*yleft < 1", 1) ; <(
-            ODE(1),
+            ODEinv(1),
             dbx(1)
           ),
           dbx(1)
@@ -4806,7 +4872,27 @@ ProgramVariables
 End.
 
 Problem
-  (xleft=1/4&yleft=1/8&zleft=1/10)&xright=1&yright=2&zright=3->[{xleft'=xleft^2-xleft*(xleft^3+yleft^3+zleft^3),yleft'=yleft^2-yleft*(xleft^3+yleft^3+zleft^3),zleft'=zleft^2-zleft*(xleft^3+yleft^3+zleft^3),xright'=yright*zright,yright'=xright*zright,zright'=xright*yright&true&true}](!(xleft>10|yleft>5|zleft<=-20)&!(xright=5&yright^2=27&zright^2=34))
+  (xleft=1/4&yleft=1/8&zleft=1/10)&xright=1&yright=2&zright=3->[{xleft'=xleft^2-xleft*(xleft^3+yleft^3+zleft^3),yleft'=yleft^2-yleft*(xleft^3+yleft^3+zleft^3),zleft'=zleft^2-zleft*(xleft^3+yleft^3+zleft^3),xright'=yright*zright,yright'=xright*zright,zright'=xright*yright&true&true}@invariant(xleft^2+yleft^2+zleft^2 < 1, 5+yright^2=zright^2)](!(xleft>10|yleft>5|zleft<=-20)&!(xright=5&yright^2=27&zright^2=34))
+End.
+
+Tactic "Scripted proof"
+unfold;
+dC("xleft^2+yleft^2+zleft^2 < 1", 'R=="[{xleft'=xleft^2-xleft*(xleft^3+yleft^3+zleft^3),yleft'=yleft^2-yleft*(xleft^3+yleft^3+zleft^3),zleft'=zleft^2-zleft*(xleft^3+yleft^3+zleft^3),xright'=yright*zright,yright'=xright*zright,zright'=xright*yright&true&true}](!(xleft>10|yleft>5|zleft<=-20)&!(xright=5&yright^2=27&zright^2=34))"); <(
+  "Use":
+    dC("5+yright^2=zright^2", 'R=="[{xleft'=xleft^2-xleft*(xleft^3+yleft^3+zleft^3),yleft'=yleft^2-yleft*(xleft^3+yleft^3+zleft^3),zleft'=zleft^2-zleft*(xleft^3+yleft^3+zleft^3),xright'=yright*zright,yright'=xright*zright,zright'=xright*yright&(true&true)&xleft^2+yleft^2+zleft^2 < 1}](!(xleft>10|yleft>5|zleft<=-20)&!(xright=5&yright^2=27&zright^2=34))"); <(
+      "Use":
+        dW('R=="[{xleft'=xleft^2-xleft*(xleft^3+yleft^3+zleft^3),yleft'=yleft^2-yleft*(xleft^3+yleft^3+zleft^3),zleft'=zleft^2-zleft*(xleft^3+yleft^3+zleft^3),xright'=yright*zright,yright'=xright*zright,zright'=xright*yright&((true&true)&xleft^2+yleft^2+zleft^2 < 1)&5+yright^2=zright^2}](!(xleft>10|yleft>5|zleft<=-20)&!(xright=5&yright^2=27&zright^2=34))");
+        QE,
+      "Show":
+        ODE('R=="[{xleft'=xleft^2-xleft*(xleft^3+yleft^3+zleft^3),yleft'=yleft^2-yleft*(xleft^3+yleft^3+zleft^3),zleft'=zleft^2-zleft*(xleft^3+yleft^3+zleft^3),xright'=yright*zright,yright'=xright*zright,zright'=xright*yright&(true&true)&xleft^2+yleft^2+zleft^2 < 1}]5+yright^2=zright^2")
+    ),
+  "Show":
+    ODE('R=="[{xleft'=xleft^2-xleft*(xleft^3+yleft^3+zleft^3),yleft'=yleft^2-yleft*(xleft^3+yleft^3+zleft^3),zleft'=zleft^2-zleft*(xleft^3+yleft^3+zleft^3),xright'=yright*zright,yright'=xright*zright,zright'=xright*yright&true&true}]xleft^2+yleft^2+zleft^2 < 1")
+)
+End.
+
+Tactic "Automated proof"
+  autoClose
 End.
 
 End.
