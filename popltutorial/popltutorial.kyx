@@ -134,7 +134,6 @@ End.
 
 Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
 End.
-/* Exported from KeYmaera X v4.7.4 */
 
 ArchiveEntry "POPL/POPL: 3 Solution: CurveBot"
 Description "CurveBot: run a robot round the bend".

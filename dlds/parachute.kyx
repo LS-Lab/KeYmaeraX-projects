@@ -67,11 +67,6 @@ implyR(1) ; loop("(x>=0&v < 0)&v>-(g/p)^(1/2)", 1) ; <(
   )
 End.
 
-Tactic "Parachute: Automatic"
-  useSolver("Mathematica");
-  autoClose
-End.
-
 Illustration "https://lfcps.org/info/fig-parachute.png".
 End.
        

@@ -284,11 +284,6 @@ Tactic "08: Event-triggered Ping Pong Ball: Proof: named"
   )
 End.
 
-Tactic "08: Event-triggered Ping Pong Ball: automatic"
-  auto
-End.
-
-
 Illustration "https://lfcps.org/info/ping-pong-ball-early.png".
 End.
 

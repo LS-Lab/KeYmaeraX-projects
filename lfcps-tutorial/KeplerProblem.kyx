@@ -3,7 +3,7 @@ Description "Two planets in gravitational force field with one planet as origin,
 Citation "Ernst Hairer. Geometric Numerical Integration. TU Munich 2010".
 
 Definitions
-  Real e;        /* eccentricity */
+  Real ec;       /* eccentricity */
   Real E;        /* generalized energy level */
 End.
 
@@ -13,8 +13,8 @@ ProgramVariables
 End.
 
 Problem
-  /* 0<=e&e<1 &
-  x=1-e&v=0 & y=0&w=((1+e)/(1-e))^(1/2) & */
+  /* 0<=ec&ec<1 &
+  x=1-ec&v=0 & y=0&w=((1+ec)/(1-ec))^(1/2) & */
   (v^2+w^2)/2-1/(x^2+y^2)^(1/2) = E ->
    [{x'=v,v'=-x/(x^2+y^2)^(3/2),
      y'=w,w'=-y/(x^2+y^2)^(3/2)&(x!=0|y!=0)}] (v^2+w^2)/2-1/(x^2+y^2)^(1/2) = E
@@ -27,7 +27,7 @@ End.
 
 Tactic "Kepler two body: Proof"
 useSolver("Mathematica");
-master
+autoClose
 End.
 
 Illustration "https://lfcps.org/info/Kepler.png".
