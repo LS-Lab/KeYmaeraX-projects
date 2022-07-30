@@ -3448,7 +3448,7 @@ End.
 
 ArchiveEntry "Benchmarks/Nonlinear/Flight Maneuvers (I)"
 
-Citation "Khalil Ghorbal, Jean-Baptiste Jeannin, Erik Zawadzki, André Platzer, Geoffrey J. Gordon, and PeteReal Capell; Hybrid Theorem Proving of Aerospace Systems: Applications and Challenges".
+Citation "Khalil Ghorbal, Jean-Baptiste Jeannin, Erik Zawadzki, André Platzer, Geoffrey J. Gordon, and Peter Capell; Hybrid Theorem Proving of Aerospace Systems: Applications and Challenges".
 
 Definitions
   Real w1;
@@ -3712,9 +3712,9 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/LunaReal lander descent guidance (slow descent low thrust)"
+ArchiveEntry "Benchmarks/Nonlinear/Lunar lander descent guidance (slow descent low thrust)"
 
-Citation "Hengjun Zhao, Mengfei Yang, Naijun Zhan, Bin Gu, Liang Zou, Yao Chen. Formal Verification of a Descent Guidance Control Program of a LunaReal Lander; FM 2014.".
+Citation "Hengjun Zhao, Mengfei Yang, Naijun Zhan, Bin Gu, Liang Zou, Yao Chen. Formal Verification of a Descent Guidance Control Program of a Lunar Lander; FM 2014.".
 
 Definitions
   Real Isp1   = 2500;  /* thrust engine impulse (low thrust) */
@@ -3730,7 +3730,7 @@ Definitions
 End.
 
 ProgramVariables
-  Real r;   /* altitude relative to lunaReal surface */
+  Real r;   /* altitude relative to lunar surface */
   Real v;   /* vertical velocity */
   Real m;   /* lunar lander mass */
   Real Fc;  /* lander thrust */
@@ -3756,9 +3756,9 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/LunaReal lander descent guidance (slow descent high thrust)"
+ArchiveEntry "Benchmarks/Nonlinear/Lunar lander descent guidance (slow descent high thrust)"
 
-Citation "Hengjun Zhao, Mengfei Yang, Naijun Zhan, Bin Gu, Liang Zou, Yao Chen. Formal Verification of a Descent Guidance Control Program of a LunaReal Lander; FM 2014.".
+Citation "Hengjun Zhao, Mengfei Yang, Naijun Zhan, Bin Gu, Liang Zou, Yao Chen. Formal Verification of a Descent Guidance Control Program of a Lunar Lander; FM 2014.".
 
 Definitions
   Real Isp1   = 2500;  /* thrust engine impulse (low thrust) */
@@ -3774,7 +3774,7 @@ Definitions
 End.
 
 ProgramVariables
-  Real r;   /* altitude relative to lunaReal surface */
+  Real r;   /* altitude relative to lunar surface */
   Real v;   /* vertical velocity */
   Real m;   /* lunar lander mass */
   Real Fc;  /* lander thrust */

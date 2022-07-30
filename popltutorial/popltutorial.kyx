@@ -134,6 +134,7 @@ End.
 
 Illustration "https://lfcps.org/info/fig-Dubins-path-robotesque-1.png".
 End.
+/* Exported from KeYmaera X v4.7.4 */
 
 ArchiveEntry "POPL/POPL: 3 Solution: CurveBot"
 Description "CurveBot: run a robot round the bend".
@@ -166,9 +167,9 @@ End.
 
 Tactic "4 Solution: Runaround Robot: Proof"
 implyR(1) ; loop("!(x=ox&y=oy)", 1) ; <(
-  QE,
-  id,
-  composeb(1) ; choiceb(1) ; andR(1) ; <(
+  "Init": QE,
+  "Post": id,
+  "Step": composeb(1) ; choiceb(1) ; andR(1) ; <(
     unfold ; expand("Q"); ODE(1),
     unfold ; <(
       expand("Q"); ODE(1),
@@ -181,9 +182,9 @@ End.
 
 Tactic "4 Solution: Runaround Robot: Manual Proof"
   implyR(1) ; loop("!(x=ox&y=oy)", 1) ; <(
-  QE,
-  id,
-  composeb(1) ; choiceb(1) ; andR(1) ; <(
+  "Init": QE,
+  "Post": id,
+  "Step": composeb(1) ; choiceb(1) ; andR(1) ; <(
     composeb(1) ; testb(1) ; implyR(1) ; assignb(1) ; dC("v=-1*(y-old(y-v/-1))&w=1*(x-old(x+w/-1))", 1) ; <(
       dC("(x+w/-1-ox)^2+(y-v/-1-oy)^2!=v^2+w^2", 1) ; <(
         dW(1) ; QE,
@@ -213,12 +214,11 @@ Tactic "4 Solution: Runaround Robot: automatic"
 End.
 
 Tactic "4 Solution: Runaround Robot: unfold"
-unfold;
-loop("!(x=ox&y=oy)", 1); <(
+unfold ; loop("!(x=ox&y=oy)", 1) ; <(
   "Init": QE,
   "Post": QE,
-  "Step": unfold; doall(ODE(1))
-)
+  "Step": unfold ; doall(ODE(1))
+  )
 End.
 
 
