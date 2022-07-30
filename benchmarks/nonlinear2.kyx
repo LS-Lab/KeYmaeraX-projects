@@ -1,0 +1,262 @@
+ArchiveEntry "Benchmarks/Nonlinear/Robertson Chemical Reaction"
+
+Definitions
+  Real a, b, g;   /* Coefficients */
+  Real s;         /* Initial sum of concentrations */
+End.
+
+ProgramVariables
+  Real x, y, z;   /* Concentrations of species */
+End.
+
+Problem
+  x+y+z=s
+  ->
+  [{ x' = -a*x + b*y*z,
+     y' = a*x - b*y*z - g*y^2,
+     z' = g*y^2
+   }
+  ](x+y+z=s)
+End.
+
+Tactic "Scripted proof"
+  unfold;
+  dIClose('R=="[{x'=-a()*x+b()*y*z,y'=a()*x-b()*y*z-g()*y^2,z'=g()*y^2}]x+y+z=s()")
+End.
+
+Tactic "Automated proof"
+  autoClose
+End.
+
+End.
+
+ArchiveEntry "Benchmarks/Nonlinear/Coupled van der Pol"
+
+Definitions
+  Real m, b;
+End.
+
+ProgramVariables
+  Real x1, x2, y1, y2;    /* oscillators */
+End.
+
+Problem
+    60 <= b & b <= 80
+  & m = 1
+  & 1.25 <= x1 & x1 <= 1.55 & 1.25 <= x2 & x2 <= 1.55
+  & 2.35 <= y1 & y1 <= 2.45 & 2.35 <= y2 & y2 <= 2.45
+  ->
+  [{ x1' = y1,
+     y1' = m*(1-x1^2)*y1 + b*(x2-x1) - x1,
+     x2' = y2,
+     y2' = m*(1-x2^2)*y2 - b*(x2-x1) - x2
+   }
+  ]!(y1>=3.7 & y2>=3.7)
+End.
+
+End.
+
+ArchiveEntry "Benchmarks/Nonlinear/Laub-Loomis"
+
+Definitions
+  Real W = 0.1;
+  Bool box(Real x, Real c, Real w) <-> c-w <= x & x<= c+w;
+End.
+
+ProgramVariables
+  Real x1, x2, x3, x4, x5, x6, x7;  /* state space */
+  Real t;                           /* time */
+End.
+
+Problem
+    box(x1, 1.2, W)
+  & box(x2, 1.05, W)
+  & box(x3, 1.5, W)
+  & box(x4, 2.4, W)
+  & box(x5, 1, W)
+  & box(x6, 0.1, W)
+  & box(x7, 0.45, W)
+  & t=0
+  ->
+  [{ x1' = 1.4*x3 - 0.9*x1,
+     x2' = 2.5*x5 - 1.5*x2,
+     x3' = 0.6*x7 - 0.8*x2*x3,
+     x4' = 2 - 1.3*x3*x4,
+     x5' = 0.7*x1 - x4*x5,
+     x6' = 0.3*x1 - 3.1*x6,
+     x7' = 1.8*x6 - 1.5*x2*x7,
+     t'  = 1
+     & t<=20
+   }
+  ]!(x4>=5)
+End.
+
+End.
+
+Theorem "Benchmarks/Nonlinear/Lotka-Volterra with tangential crossing (Invariance)"
+
+/* General version */
+
+Definitions
+  Real a=3;
+  Real b=3;
+  Real d=1;
+  Real g=1;
+  Real K(Real x, Real y) = exp(-d*x-b*y) * x^g * y^a;             /* Conserved energy in x>0 & y>0 */
+End.
+
+ProgramVariables
+  Real x, y, K_0;
+End.
+
+Problem
+    x>0
+  & y>0
+  & K_0 = K(x,y)
+  ->
+  [{ x' = a*x - b*x*y,
+     y' = d*x*y - g*y
+   }
+  ]K(x,y) = K_0
+End.
+
+Tactic "Scripted proof"
+unfold;
+dIRule(1); <(
+  "dI Init":
+    equalCommute(1);
+    id,
+  "dI Step":
+    chaseAt(1);
+    QE using "(exp(-1*x-3*y)*(-1*(3*x-3*x*y)-3*(1*x*y-1*y))*x^1+exp(-1*x-3*y)*(1*x^(1-1)*(3*x-3*x*y)))*y^3+exp(-1*x-3*y)*x^1*(3*y^(3-1)*(1*x*y-1*y))=0"
+)
+End.
+
+Tactic "Automated proof"
+  autoClose
+End.
+
+End.
+
+ArchiveEntry "Benchmarks/Nonlinear/Lotka-Volterra with tangential crossing (Crossing)"
+
+/* Cross */
+
+Definitions
+  Real a = 3;
+  Real b = 3;
+  Real d = 1;
+  Real g = 1;
+  Real R = 0.161;
+  Real ep = 0.012;
+  Real Qx = a/b;
+  Real Qy = g/d;
+  Real K(Real x, Real y) = exp(-d*x-b*y) * x^g * y^a;             /* Conserved energy in x>0 & y>0 */
+End.
+
+Problem
+  /* no crossing above Qy for +ep */
+    \forall xi \forall yi (K(xi,yi)=K(Qx+0.3+ep,Qy) & yi>=Qy -> (xi - Qx)^2 + (yi - Qy)^2  > R^2)
+  /* crossing below Qy for +ep */
+  & \exists xi \exists yi (K(xi,yi)=K(Qx+0.3+ep,Qy) & yi<Qy & (xi - Qx)^2 + (yi - Qy)^2 <= R^2)
+  /* crossing above Qy for -ep */
+  & \exists xi \exists yi (K(xi,yi)=K(Qx+0.3-ep,Qy) & yi>=Qy -> (xi - Qx)^2 + (yi - Qy)^2 <= R^2)
+  /* crossing below Qy for -ep */
+  & \exists xi \exists yi (K(xi,yi)=K(Qx+0.3-ep,Qy) & yi<Qy & (xi - Qx)^2 + (yi - Qy)^2 <= R^2)
+End.
+
+End.
+
+ArchiveEntry "Benchmarks/Nonlinear/Space Craft Rendezvous"
+
+Definitions
+  /* Parameters of dynamics. */
+  Real mu = 3.986 * 10^14 * 60^2;         /* Units: m^3 / min^2. */
+  Real r = 42164 * 10^3;                  /* Units: m. */
+  Real mc = 500;                          /* Mass of spacecraft in kg. */
+  Real n = (mu/r^3)^(1/2);
+  Real rc(Real x, Real y) = ((r^2+x^2) + y^2)^(1/2);  /* Units: m. */
+  Real boxCorner = 0.1;                          /* Corner coordinate of the space station square centered at origin. */
+  Real endT = 200;                               /* Maneuver time. */
+  Real abortT;                                   /* Time at which transition to aborting mode occurs, in [120, 150]. */
+
+  /* Dynamics. */
+  Real dvx(Real x, Real vy, Real y, Real ux) = n^2*x + 2*n*vy + (mu/r^2) + (mu/rc(x, y)^3)*(r+x) + ux/mc;
+  Real dvy(Real y, Real vx, Real x, Real uy) = n^2*y + 2*n*vx + (mu/rc(x, y)^3)*(y) + uy/mc;
+
+  Real apprXMatrix(Real a, Real b, Real c, Real d) = -28.8287*a + 0.1005*b - 1449.9754*c + 0.0046*d;
+  Real apprYMatrix(Real a, Real b, Real c, Real d) = -0.087*a - 33.2562*b - 0.00462*c + 1451.5013*d;
+  Real rendXMatrix(Real a, Real b, Real c, Real d) = -28.0288*a + 0.1312*b - 9614.989*c + 0;
+  Real rendYMatrix(Real a, Real b, Real c, Real d) = -0.1312*a - 288*b + 0*c - 9614.9883*d;
+
+  /* Safety conditions. */
+
+  /* The spaceship is always in line of sight (centered around y axis, */
+  Bool rAttempt(Real x) <-> x>=-100;
+  Bool lineOfSight(Real x, Real y) <->
+    rAttempt(x) -> (x>=-100 & y<=abs(x/3^(1/2)) & y>=-abs(x/3^(1/2)));
+
+  /* The spaceship is always outside the edges of the square representing the space station. */
+  Bool aborting(Real t) <-> t>=abortT;
+  Bool collisionAvoidance(Real t, Real x, Real y) <->
+    aborting(t) -> (x>boxCorner | y>boxCorner | x<(-boxCorner) | y<(-boxCorner));
+
+  /* Speed is bounded. */
+  Bool vBound(Real vx, Real vy) <-> (vx^2 + vy^2)^(1/2) <= 3.3;
+
+  /* Initial Conditions. */
+  Bool initPos(Real x, Real y) <-> x >= -925 & x <= -875 & y >= -425 & y<= -375;
+  Bool initVel(Real vx, Real vy) <-> vx>=0 & vx<=5 & vy>=0 & vy<=5;
+  Bool init(Real x, Real y, Real vx, Real vy) <->
+    abortT>120 & abortT<150 & initPos(x, y) & initVel(vx, vy);
+End.
+
+ProgramVariables
+  Real x;   /* x position of spacecraft in m. */
+  Real vx;  /* x velocity of spacecraft in meters/minute. */
+  Real y;   /* y position of spacecraft in m. */
+  Real vy;  /* y velocity of spacecraft in meters/minute. */
+  Real t;   /* Time in minutes. */
+  Real ux;  /* x acceleration effort. */
+  Real uy;  /* y acceleration effort. */
+End.
+
+Problem
+init(x, y, vx, vy) ->
+[
+  /* Approaching. */
+  t:=0;
+  ux:=apprXMatrix(x, y, vx, vy);
+  uy:=apprYMatrix(x, y, vx, vy);
+  {x' = vx,
+   y' = vy,
+   vx' = dvx(x, vy, y, ux),
+   vy' = dvy(y, vx, x, uy),
+   ux' = apprXMatrix(vx, vy, dvx(x, vy, y, ux), dvy(y, vx, x, uy)),
+   uy' = apprYMatrix(vx, vy, dvx(x, vy, y, ux), dvy(y, vx, x, uy)),
+      t'=1 & x<=-100 & x>=-1000
+  };
+  /* Rendezvous attempt. */
+  ux:=rendXMatrix(x, y, vx, vy);
+  uy:=rendYMatrix(x, y, vx, vy);
+  {x' = vx,
+   y' = vy,
+   vx' = dvx(x, vy, y, ux),
+   vy' = dvy(y, vx, x, uy),
+   ux' = rendXMatrix(vx, vy, dvx(x, vy, y, ux), dvy(y, vx, x, uy)),
+   uy' = rendYMatrix(vx, vy, dvx(x, vy, y, ux), dvy(y, vx, x, uy)),
+      t'=1 & x>=-100 & t<=abortT
+  };
+  /* Aborting. */
+  ux:=0;
+  uy:=0;
+  {x' = vx,
+   y' = vy,
+   vx' = dvx(x, vy, y, ux),
+   vy' = dvy(y, vx, x, uy),
+      t'=1 & t>=abortT & t<=endT
+  };
+](lineOfSight(x, y) & collisionAvoidance(t, x, y) & vBound(vx, vy))
+End.
+
+End.
