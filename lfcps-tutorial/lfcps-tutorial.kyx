@@ -528,7 +528,7 @@ Description "Two planets in gravitational force field with one planet as origin,
 Citation "Ernst Hairer. Geometric Numerical Integration. TU Munich 2010".
 
 Definitions
-  Real ec;        /* eccentricity */
+  Real ec;       /* eccentricity */
   Real E;        /* generalized energy level */
 End.
 
@@ -552,7 +552,7 @@ End.
 
 Tactic "Kepler two body: Proof"
 useSolver("Mathematica");
-master
+autoClose
 End.
 
 Illustration "https://lfcps.org/info/Kepler.png".
