@@ -1,4 +1,4 @@
-Theorem "IJRR17/Theorem 1: Static safety".
+Theorem "IJRR17/Theorem 1: Static safety"
 
 Definitions
   Real ep;      /* time limit for control decisions */
@@ -145,7 +145,7 @@ Tactic "Proof Theorem 1: Static safety"
     print("Proved acc arithmetic")
   );
 
-  implyR(1); andL('L)*; loop("loopinv(x, y, v, dx, dy, xo, yo)", 1); <(
+  implyR(1); /*expand("assumptions"); andL('L)*;*/ loop("loopinv(x, y, v, dx, dy, xo, yo)", 1); <(
     "Init": print("Base case..."); smartQE; print("Base case done")
     ,
     "Post": print("Use case..."); smartQE; print("Use case done")
@@ -158,7 +158,7 @@ Tactic "Proof Theorem 1: Static safety"
         print("Stopped branch"); di0; dw; prop; doall(smartQE); print("Stopped branch done")
       ,
       "[a:=A();w:=*;?-W()<=w&w<=W();r:=*;xo:=*;yo:=*;?r!=0&r*w=v;?abs(x-xo)>admissibleSeparation(v)|abs(y-yo)>admissibleSeparation(v);][t:=0;][{x'=v*dx,y'=v*dy,v'=a,dx'=-w*dy,dy'=w*dx,w'=a/r,t'=1&t<=ep()&v>=0}]loopinv(x,y,v,dx,dy,xo,yo)":
-        expand "loopinv";
+        expand("loopinv");
         andL('L)*;
         hideL('L == "abs(x-xo_0)>stopDist(v)|abs(y-yo_0)>stopDist(v)");
         dia; dw;
@@ -181,7 +181,7 @@ End.
 
 End.
 
-ArchiveEntry "IJRR17/Corollary 1.1: Velocity-controlled passive safety".
+ArchiveEntry "IJRR17/Corollary 1.1: Velocity-controlled passive safety"
 
 Definitions
   Real ep;      /* time limit for control decisions */
@@ -285,7 +285,7 @@ assumptions(x, y, v, dx, dy, xo, yo) ->
   ](v>0 -> (x - xo)^2 + (y - yo)^2 > 0)
 End.
 
-Tactic "Proof Corollary 1: Velocity-controlled passive safety".
+Tactic "Proof Corollary 1: Velocity-controlled passive safety"
   tactic diall as (
     diffInvariant("t>=0", 1);
     diffInvariant("isWellformedDir(dx,dy)", 1);
@@ -316,6 +316,8 @@ Tactic "Proof Corollary 1: Velocity-controlled passive safety".
       print("Stopped branch"); di0; dw; prop; doall(smartQE); print("Stopped branch done")
       ,
       print("Acceleration branch");
+      expand("loopinv");
+      andL('L)*;
       hideL('L == "v_0>0 -> abs(x-xo_0)>stopDist(v_0) | abs(y-yo_0)>stopDist(v_0)");
       dia; dw; prop; doall(smartQE); print("Acceleration branch done")
     );
@@ -328,7 +330,7 @@ End.
 
 End.
 
-Theorem "IJRR17/Corollary 1.2: Static safety with margin for imperfect trajectories".
+Theorem "IJRR17/Corollary 1.2: Static safety with margin for imperfect trajectories"
 
 Definitions
   Real ep;      /* time limit for control decisions */
@@ -510,6 +512,8 @@ Tactic "Proof Theorem 1: Static safety"
       print("Stopped branch"); di0; dw; prop; doall(qeHide; smartQE); print("Stopped branch done")
       ,
       print("Acceleration branch");
+      expand("loopinv");
+      andL('L)*;
       hideL('L == "abs(x-xo_0)>stopDist(v)|abs(y-yo_0)>stopDist(v)");
       dia; dw;
       prop; <(
@@ -527,7 +531,7 @@ End.
 
 End.
 
-Theorem "IJRR17/Corollary 1.3: Static safety with margin for imperfect trajectories (no division)".
+Theorem "IJRR17/Corollary 1.3: Static safety with margin for imperfect trajectories (no division)"
 
 Definitions
   Real ep;      /* time limit for control decisions */
@@ -631,7 +635,7 @@ assumptions(x, y, v, a, w, r, dx, dy, t, xo, yo) ->
   ](x - xo)^2 + (y - yo)^2 > 0
 End.
 
-Tactic "Proof Theorem 1: Static safety".
+Tactic "Proof Theorem 1: Static safety"
   tactic diall as (
     diffInvariant("t>=0", 1);
     diffInvariant("isWellformedDir(dx,dy)", 1)
@@ -734,7 +738,7 @@ Tactic "Proof Theorem 1: Static safety".
 
 End.
 
-Tactic "Proof with throughout invariant".
+Tactic "Proof with throughout invariant"
 implyR(1) ; throughout("(v>=0&(1-Ud<=dx^2+dy^2&dx^2+dy^2<=1+Ud)&(2*b*abs(x-xo)>(1+Ud)*v^2|2*b*abs(y-yo)>(1+Ud)*v^2))&t>=0&(a=-b|v=0&a=0|a=A&(2*b*abs(x-xo)>(1+Ud)*v^2+(1+Ud)*(A+b)*(A*(ep-t)^2+2*(ep-t)*v)|2*b*abs(y-yo)>(1+Ud)*v^2+(1+Ud)*(A+b)*(A*(ep-t)^2+2*(ep-t)*v)))", 1) ; <(
   simplify(1) ; smartQE,
   andL(-1) ; hideL(-7=="t>=0&(a=-b|v=0&a=0|a=A&(2*b*abs(x-xo)>(1+Ud)*v^2+(1+Ud)*(A+b)*(A*(ep-t)^2+2*(ep-t)*v)|2*b*abs(y-yo)>(1+Ud)*v^2+(1+Ud)*(A+b)*(A*(ep-t)^2+2*(ep-t)*v)))") ; andL(-6) ; andL(-7) ; hideL(-7=="1-Ud<=dx^2+dy^2&dx^2+dy^2<=1+Ud") ; QE,
@@ -866,7 +870,7 @@ End.
 
 End.
 
-Theorem "IJRR17/Theorem 2: Passive safety".
+Theorem "IJRR17/Theorem 2: Passive safety"
 
 Definitions
   Real ep;      /* time limit for control decisions */
@@ -981,7 +985,7 @@ assumptions(x, y, v, dx, dy, xo, yo) ->
   ](v>0 -> (x - xo)^2 + (y - yo)^2 > 0)
 End.
 
-Tactic "Proof Theorem 2: Passive safety".
+Tactic "Proof Theorem 2: Passive safety"
   tactic diall as (
     diffInvariant("t>=0", 1);
     diffInvariant("isWellformedDir(dx,dy)", 1);
@@ -1044,7 +1048,7 @@ Tactic "Proof Theorem 2: Passive safety".
       ,
       "[a:=A();w:=*;?-W()<=w&w<=W();r:=*;xo:=*;yo:=*;?r!=0&r*w=v;?abs(x-xo)>admissibleSeparation(v)|abs(y-yo)>admissibleSeparation(v);][t:=0;][{x'=v*dx,y'=v*dy,v'=a,dx'=-w*dy,dy'=w*dx,w'=a/r,xo'=vxo,yo'=vyo,t'=1&t<=ep()&v>=0}]loopinv(x,y,v,dx,dy,xo,yo)":
         print("Acceleration branch");
-        expand "loopinv";
+        expand("loopinv");
         andL('L)*;
         hideL('L == "v>0 -> abs(x-xo_0)>stopDist(v) | abs(y-yo_0)>stopDist(v)");
         dia; dw;
@@ -1063,7 +1067,7 @@ End.
 
 End.
 
-ArchiveEntry "IJRR17/Corollary 2: Velocity-controlled passive orientation safety".
+ArchiveEntry "IJRR17/Corollary 2: Velocity-controlled passive orientation safety"
 Definitions
   Real ep;      /* time limit for control decisions */
   Real W;       /* maximum steering */
@@ -1168,7 +1172,7 @@ Problem
     ] (v > 0 -> ((x - xo)^2 + (y - yo)^2 > 0 | (!isVisible(visDeg) & (abs(beta) < GammA))) )
 End.
 
-Tactic "Proof Corollary 2: Velocity-controlled passive orientation safety".
+Tactic "Proof Corollary 2: Velocity-controlled passive orientation safety"
   tactic diHide as (
     hideL('L~="visDeg>0->abs(x-xo)>0+(ep*v+ep*V)|abs(y-yo)>0+(ep*v+ep*V)")*;
     hideL('L~="v>0->(abs(x-xo_0)>0|abs(y-yo)>0)|!visDeg>0&abs(beta)+0/abs(r) < GammA")*
@@ -1241,7 +1245,7 @@ End.
 
 End.
 
-Theorem "IJRR17/Theorem 3: Passive Friendly Safety".
+Theorem "IJRR17/Theorem 3: Passive Friendly Safety"
 Definitions
   Real ep;      /* time limit for control decisions */
   Real tau;     /* time limit for obstacle reaction */
@@ -1360,7 +1364,7 @@ assumptions(x, y, v, dx, dy, xo, yo, vxo, vyo) ->
   )
 End.
 
-Tactic "IJRR17/Proof Theorem 3: Passive Friendly Safety".
+Tactic "IJRR17/Proof Theorem 3: Passive Friendly Safety"
   useSolver("Mathematica");
   tactic obstacleCanStop as (
     unfold;
@@ -1495,7 +1499,7 @@ End.
 
 End.
 
-Theorem "IJRR17/Theorem 4: Passive orientation safety".
+Theorem "IJRR17/Theorem 4: Passive orientation safety"
 Definitions
   Real ep;      /* time limit for control decisions */
   Real b;       /* minimum braking capability of the robot */
@@ -1607,7 +1611,7 @@ Problem
     ] (v > 0 -> ((x - xo)^2 + (y - yo)^2 > 0 | (!isVisible(visDeg) & (abs(beta) < GammA))) )
 End.
 
-Tactic "Proof Theorem 4: Passive orientation safety".
+Tactic "Proof Theorem 4: Passive orientation safety"
   tactic dIHide as (
     hideL('L~="v>0->(abs(x-xo)>v^2/(2*b)+V*v/b|abs(y-yo)>v^2/(2*b)+V*v/b)|!visDeg>0&abs(beta)+v^2/(2*b)/abs(r) < GammA")*
   );
@@ -1721,7 +1725,7 @@ End.
 
 End.
 
-Theorem "IJRR17/Theorem 5: Passive safety with actual acceleration".
+Theorem "IJRR17/Theorem 5: Passive safety with actual acceleration"
 
 Definitions
   Real ep;      /* time limit for control decisions */
@@ -1823,7 +1827,7 @@ assumptions(x, y, v, dx, dy, xo, yo) ->
   ](v>0 -> (x - xo)^2 + (y - yo)^2 > 0)
 End.
 
-Tactic "Proof Theorem 5: Passive safety with actual acceleration".
+Tactic "Proof Theorem 5: Passive safety with actual acceleration"
   tactic dIHide as (
     hideL('L~="v>0->abs(x-xo_0)>v^2/(2*b)+V*v/b|abs(y-yo_0)>v^2/(2*b)+V*v/b")*;
     hideL('L~="abs(x-xo)>v^2/(2*b)+V*v/b+(a/b+1)*(a/2*ep^2+ep*(v+V))|abs(y-yo)>v^2/(2*b)+V*v/b+(a/b+1)*(a/2*ep^2+ep*(v+V))")*
@@ -1920,7 +1924,7 @@ End.
 
 End.
 
-Theorem "IJRR17/Theorem 6: Passive safety despite location uncertainty".
+Theorem "IJRR17/Theorem 6: Passive safety despite location uncertainty"
 
 Definitions
   Real ep;      /* time limit for control decisions */
@@ -2030,7 +2034,7 @@ assumptions(x, y, v, dx, dy, xo, yo) ->
   ](v>0 -> (x - xo)^2 + (y - yo)^2 > 0)
 End.
 
-Tactic "Proof Theorem 6: Passive safety despite location uncertainty".
+Tactic "Proof Theorem 6: Passive safety despite location uncertainty"
   tactic dIHide as (
     hideL('L~="v>0->abs(x-xo_0)>v^2/(2*b)+V*v/b|abs(y-yo_0)>v^2/(2*b)+V*v/b")*;
     hideL('L~="abs(mx-xo)>v^2/(2*b)+V*v/b+((A/b+1)*(A/2*ep^2+ep*(v+V))+Dp)|abs(my-yo)>v^2/(2*b)+V*v/b+((A/b+1)*(A/2*ep^2+ep*(v+V))+Dp)")*
@@ -2124,7 +2128,7 @@ End.
 
 End.
 
-Theorem "IJRR17/Theorem 7: Passive safety despite actuator perturbation".
+Theorem "IJRR17/Theorem 7: Passive safety despite actuator perturbation"
 
 Definitions
   Real ep;      /* time limit for control decisions */
@@ -2233,7 +2237,7 @@ assumptions(x, y, v, dx, dy, xo, yo) ->
   ](v>0 -> (x - xo)^2 + (y - yo)^2 > 0)
 End.
 
-Tactic "Proof Theorem 7: Passive safety despite actuator perturbation".
+Tactic "Proof Theorem 7: Passive safety despite actuator perturbation"
   tactic dIHide as (
     hideL('L~="v>0 -> abs(x-xo) > stopDist(v) | abs(y-yo) > stopDist(v)")*;
     hideL('L~="abs(x-xo)>admissibleSeparation(v)|abs(y-yo)>admissibleSeparation(v)")*
@@ -2352,7 +2356,7 @@ End.
 
 End.
 
-Theorem "IJRR17/Theorem 8: Passive safety despite velocity uncertainty".
+Theorem "IJRR17/Theorem 8: Passive safety despite velocity uncertainty"
 
 Definitions
   Real ep;      /* time limit for control decisions */
@@ -2460,7 +2464,7 @@ assumptions(x, y, v, dx, dy, xo, yo) ->
   ](v>0 -> (x - xo)^2 + (y - yo)^2 > 0)
 End.
 
-Tactic "Proof Theorem 8: Passive safety despite velocity uncertainty".
+Tactic "Proof Theorem 8: Passive safety despite velocity uncertainty"
   tactic dIHide as (
     hideL('L~="v>0->abs(x-xo)>v^2/(2*b)+V*v/b|abs(y-yo)>v^2/(2*b)+V*v/b")*;
     hideL('L~="abs(x-xo)>(mv+DV)^2/(2*b)+V*(mv+DV)/b+(A/b+1)*(A/2*ep^2+ep*(mv+DV+V))|abs(y-yo)>(mv+DV)^2/(2*b)+V*(mv+DV)/b+(A/b+1)*(A/2*ep^2+ep*(mv+DV+V))")*
@@ -2534,17 +2538,19 @@ Tactic "Proof Theorem 8: Passive safety despite velocity uncertainty".
     print("Proved acc arithmetic")
   );
 
-  implyR(1); andL('L)*; loop("loopinv(x, y, v, dx, dy, xo, yo)", 1); <(
-    print("Base case..."); smartQE; print("Base case done")
+  implyR(1); loop("loopinv(x, y, v, dx, dy, xo, yo)", 1); <(
+    print("Base case..."); expandAllDefs(); smartQE; print("Base case done")
     ,
-    print("Use case..."); smartQE; print("Use case done")
+    print("Use case..."); expandAllDefs(); smartQE; print("Use case done")
     ,
     print("Induction step"); unfold; <(
-      print("Braking branch"); dib; dw; prop; doall(print("Braking QE"); preQEHide; smartQE); print("Braking branch done")
+      print("Braking branch"); dib; dw; prop; expandAllDefs(); doall(print("Braking QE"); preQEHide; smartQE); print("Braking branch done")
       ,
-      print("Stopped branch"); di0; dw; prop; doall(preQEHide; smartQE); print("Stopped branch done")
+      print("Stopped branch"); di0; dw; prop; expandAllDefs(); doall(preQEHide; smartQE); print("Stopped branch done")
       ,
       print("Acceleration branch");
+      expand("loopinv");
+      andL('L)*;
       hideL('L~="v>0 -> abs(x-xo)>stopDist(v) | abs(y-yo)>stopDist(v)");
       dia; dw;
       prop; <(
@@ -2562,7 +2568,7 @@ End.
 
 End.
 
-Theorem "IJRR17/Theorem 9: Passive safety for asynchronous controllers".
+Theorem "IJRR17/Theorem 9: Passive safety for asynchronous controllers"
 
 Definitions
   Real ep;      /* time limit for control decisions */
@@ -2675,7 +2681,7 @@ assumptions(x, y, v, dx, dy, xo, yo) ->
   ](v>0 -> (x - xo)^2 + (y - yo)^2 > 0)
 End.
 
-Tactic "Proof Theorem 9: Passive safety for asynchronous controllers".
+Tactic "Proof Theorem 9: Passive safety for asynchronous controllers"
   tactic dibHide as (
     hideL('L=="vxo^2+vyo^2<=V^2");
     hideL('L=="dx^2+dy^2=1");
@@ -2812,7 +2818,7 @@ End.
 
 End.
 
-Theorem "IJRR17/Theorem 11: Reach waypoint".
+Theorem "IJRR17/Theorem 11: Reach waypoint"
 
 /*
  *	Robot must stop within distance delta at goal.
@@ -2827,7 +2833,7 @@ Theorem "IJRR17/Theorem 11: Reach waypoint".
  *
  */
 
-Definitions.
+Definitions
   Real ep;      /* time limit for control decisions */
   Real b;       /* minimum braking capability of the robot */
   Real A;       /* maximum acceleration -b <= a <= A */
@@ -2888,7 +2894,7 @@ Problem
     < dwwp; >(waypointStartDist(xg) < xr)
 End.
 
-Tactic "Proof Theorem 11: Reach waypoint".
+Tactic "Proof Theorem 11: Reach waypoint"
   implyR(1) ; andL('L)* ; andR(1) ; <(
     auto,
     iterated(1) ; orR(1) ; composed(2) ; composed(2) ; choiced(2) ; orR(2) ; hideR(2) ; choiced(2) ; orR(2) ;
@@ -2936,7 +2942,7 @@ End.
 
 End.
 
-Theorem "IJRR17/Theorem 12: Cross intersection".
+Theorem "IJRR17/Theorem 12: Cross intersection"
 
 /*
  *	Robot must safely cross an intersection.
@@ -2960,7 +2966,7 @@ Theorem "IJRR17/Theorem 12: Cross intersection".
  *
  */
 
-Definitions.
+Definitions
   Real ep;      /* time limit for control decisions */
   Real b;       /* minimum braking capability of the robot */
   Real A;       /* maximum acceleration -b <= a <= A */
@@ -3044,12 +3050,12 @@ Problem
     < dwcx; >(RAfterX(xr))
 End.
 
-Tactic "Proof Theorem 12: Cross intersection (single convergence condition)".
+Tactic "Proof Theorem 12: Cross intersection (single convergence condition)"
 useSolver("Mathematica");
 implyR('R=="assumptions(xr,vr,ixr(),vo)->[dwcx{|^@|};](xr=ixr()->xo!=ixo())&<dwcx{|^@|};>RAfterX(xr)");
 andR('R=="[dwcx{|^@|};](xr=ixr()->xo!=ixo())&<dwcx{|^@|};>RAfterX(xr)"); <(
   "[dwcx{|^@|};](xr=ixr()->xo!=ixo())":
-    expand "dwcx";
+    expand("dwcx");
     loop("loopinv(xr,vr,ixr(),xo,vo)", 'R=="[{obstacle{|^@|};{robot{|^@|};t:=0;}dyn{|^@|};}*](xr=ixr()->xo!=ixo())"); <(
       "Init":
         QE,
@@ -3058,17 +3064,17 @@ andR('R=="[dwcx{|^@|};](xr=ixr()->xo!=ixo())&<dwcx{|^@|};>RAfterX(xr)"); <(
       "Step":
         composeb('R=="[obstacle{|^@|};{robot{|^@|};t:=0;}dyn{|^@|};]loopinv(xr,vr,0,xo,vo)");
         composeb('R=="[obstacle{|^@|};]#[{robot{|^@|};t:=0;}dyn{|^@|};]loopinv(xr,vr,0,xo,vo)#");
-        expand "dyn";
+        expand("dyn");
         solve('R=="[obstacle{|^@|};][robot{|^@|};t:=0;]#[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1&t<=ep()&vr>=0&vo>=Vmin()}]loopinv(xr,vr,0,xo,vo)#");
         allL("t_", 'R=="[obstacle{|^@|};][robot{|^@|};t:=0;]\forall t_ (t_>=0->#\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&ao*s_+vo>=Vmin())#->loopinv(ar*(t_^2/2)+vr*t_+xr,ar*t_+vr,0,ao*(t_^2/2)+vo*t_+xo,ao*t_+vo))");
         simplify('R=="[obstacle{|^@|};][robot{|^@|};t:=0;]\forall t_ #(t_>=0->(0<=t_&t_<=t_->t_+t<=ep()&ar*t_+vr>=0&ao*t_+vo>=Vmin())->loopinv(ar*(t_^2/2)+vr*t_+xr,ar*t_+vr,0,ao*(t_^2/2)+vo*t_+xo,ao*t_+vo))#");
-        expand "obstacle";
-        expand "robot";
+        expand("obstacle");
+        expand("robot");
         unfold; <(
           "[?RAfterX(xr)|OAfterX(xo);ar:=*;?-b()<=ar&ar<=A();][t:=0;]\forall t_ (t_>=0->t_+t<=ep()&ar*t_+vr>=0&ao*t_+vo>=Vmin()->loopinv(ar*(t_^2/2)+vr*t_+xr,ar*t_+vr,0,ao*(t_^2/2)+vo*t_+xo,ao*t_+vo))":
             QE,
           "[?vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();][t:=0;]\forall t_ (t_>=0->t_+t<=ep()&ar*t_+vr>=0&ao*t_+vo>=Vmin()->loopinv(ar*(t_^2/2)+vr*t_+xr,ar*t_+vr,0,ao*(t_^2/2)+vo*t_+xo,ao*t_+vo))":
-            expand "loopinv";
+            expand("loopinv");
             andR('R=="0<=ar*t_+vr&Vmin()<=ao*t_+vo&(RAfterX(ar*(t_^2/2)+vr*t_+xr)|OAfterX(ao*(t_^2/2)+vo*t_+xo)|ar*(t_^2/2)+vr*t_+xr+stopDist(ar*t_+vr) < 0|ar*t_+vr>0&(ao*(t_^2/2)+vo*t_+xo+(ao*t_+vo)*(0-(ar*(t_^2/2)+vr*t_+xr))/(ar*t_+vr)+A()/2*((0-(ar*(t_^2/2)+vr*t_+xr))/(ar*t_+vr))^2 < ixo()|ixo() < ao*(t_^2/2)+vo*t_+xo+Vmin()*(0-(ar*(t_^2/2)+vr*t_+xr))/(ar*t_+vr)))"); <(
               "0<=ar*t_+vr":
                 QE using "ar*t_+vr>=0 :: 0<=ar*t_+vr :: nil",
@@ -3110,7 +3116,7 @@ andR('R=="[dwcx{|^@|};](xr=ixr()->xo!=ixo())&<dwcx{|^@|};>RAfterX(xr)"); <(
                 )
             ),
           "[?vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr;ar:=0;][t:=0;]\forall t_ (t_>=0->t_+t<=ep()&ar*t_+vr>=0&ao*t_+vo>=Vmin()->loopinv(ar*(t_^2/2)+vr*t_+xr,ar*t_+vr,0,ao*(t_^2/2)+vo*t_+xo,ao*t_+vo))":
-            expand "loopinv";
+            expand("loopinv");
             andL('L)*;
             fullSimplify;
             orR('R)*;
@@ -3136,7 +3142,7 @@ andR('R=="[dwcx{|^@|};](xr=ixr()->xo!=ixo())&<dwcx{|^@|};>RAfterX(xr)"); <(
                 )
             ),
           "[ar:=-b();][t:=0;]\forall t_ (t_>=0->t_+t<=ep()&ar*t_+vr>=0&ao*t_+vo>=Vmin()->loopinv(ar*(t_^2/2)+vr*t_+xr,ar*t_+vr,0,ao*(t_^2/2)+vo*t_+xo,ao*t_+vo))":
-            expand "loopinv";
+            expand("loopinv");
             andL('L)*;
             andR('R=="0<=(-b())*t_+vr&Vmin()<=ao*t_+vo&(RAfterX((-b())*(t_^2/2)+vr*t_+xr)|OAfterX(ao*(t_^2/2)+vo*t_+xo)|(-b())*(t_^2/2)+vr*t_+xr+stopDist((-b())*t_+vr) < 0|(-b())*t_+vr>0&(ao*(t_^2/2)+vo*t_+xo+(ao*t_+vo)*(0-((-b())*(t_^2/2)+vr*t_+xr))/((-b())*t_+vr)+A()/2*((0-((-b())*(t_^2/2)+vr*t_+xr))/((-b())*t_+vr))^2 < ixo()|ixo() < ao*(t_^2/2)+vo*t_+xo+Vmin()*(0-((-b())*(t_^2/2)+vr*t_+xr))/((-b())*t_+vr)))"); <(
               "0<=(-b())*t_+vr":
@@ -3198,14 +3204,14 @@ andR('R=="[dwcx{|^@|};](xr=ixr()->xo!=ixo())&<dwcx{|^@|};>RAfterX(xr)"); <(
                 )
             ),
           "[?vr=0;ar:=0;][t:=0;]\forall t_ (t_>=0->t_+t<=ep()&ar*t_+vr>=0&ao*t_+vo>=Vmin()->loopinv(ar*(t_^2/2)+vr*t_+xr,ar*t_+vr,0,ao*(t_^2/2)+vo*t_+xo,ao*t_+vo))":
-            expand "loopinv";
+            expand("loopinv");
             andL('L)*;
             allL2R('L=="vr=0");
             simplify('R=="0<=0*t_+0&Vmin()<=ao*t_+vo&(RAfterX(0*(t_^2/2)+0*t_+xr)|OAfterX(ao*(t_^2/2)+vo*t_+xo)|0*(t_^2/2)+0*t_+xr+stopDist(0*t_+0) < 0|0*t_+0>0&(ao*(t_^2/2)+vo*t_+xo+(ao*t_+vo)*(0-(0*(t_^2/2)+0*t_+xr))/(0*t_+0)+A()/2*((0-(0*(t_^2/2)+0*t_+xr))/(0*t_+0))^2 < ixo()|ixo() < ao*(t_^2/2)+vo*t_+xo+Vmin()*(0-(0*(t_^2/2)+0*t_+xr))/(0*t_+0)))");
             orR('R)*;
             QE using "A()>0 :: b()>0 :: ep()>0 :: Vmin()>0 :: vr=0 :: t_>=0 :: -b()<=ao :: ao<=A() :: t_+0<=ep() :: 0*t_+0>=0 :: ao*t_+vo>=Vmin() :: 0<=0 :: Vmin()<=vo :: RAfterX(xr)|OAfterX(xo)|xr+stopDist(0) < 0|0>0&(xo+vo*(0-xr)/0+A()/2*((0-xr)/0)^2 < ixo()|ixo() < xo+Vmin()*(0-xr)/0) :: RAfterX(xr) :: OAfterX(xo) :: RAfterX(xr) :: OAfterX(ao*(t_^2/2)+vo*t_+xo) :: xr+stopDist(0) < 0 :: nil",
           "[?xr+stopDist(vr)+accComp(vr) < ixr();ar:=A();][t:=0;]\forall t_ (t_>=0->t_+t<=ep()&ar*t_+vr>=0&ao*t_+vo>=Vmin()->loopinv(ar*(t_^2/2)+vr*t_+xr,ar*t_+vr,0,ao*(t_^2/2)+vo*t_+xo,ao*t_+vo))":
-            expand "loopinv";
+            expand("loopinv");
             andL('L)*;
             andR('R=="0<=A()*t_+vr&Vmin()<=ao*t_+vo&(RAfterX(A()*(t_^2/2)+vr*t_+xr)|OAfterX(ao*(t_^2/2)+vo*t_+xo)|A()*(t_^2/2)+vr*t_+xr+stopDist(A()*t_+vr) < 0|A()*t_+vr>0&(ao*(t_^2/2)+vo*t_+xo+(ao*t_+vo)*(0-(A()*(t_^2/2)+vr*t_+xr))/(A()*t_+vr)+A()/2*((0-(A()*(t_^2/2)+vr*t_+xr))/(A()*t_+vr))^2 < ixo()|ixo() < ao*(t_^2/2)+vo*t_+xo+Vmin()*(0-(A()*(t_^2/2)+vr*t_+xr))/(A()*t_+vr)))"); <(
               "0<=A()*t_+vr":
@@ -3222,10 +3228,10 @@ andR('R=="[dwcx{|^@|};](xr=ixr()->xo!=ixo())&<dwcx{|^@|};>RAfterX(xr)"); <(
         )
     ),
   "<dwcx{|^@|};>RAfterX(xr)":
-    expand "dwcx";
-    expand "obstacle";
-    expand "robot";
-    expand "dyn";
+    expand("dwcx");
+    expand("obstacle");
+    expand("robot");
+    expand("dyn");
     con("v", "A()>0&b()>0&ep()>0&Vmin()>0&vo>=Vmin()&vr>=0&(xo<=0->vr=0)&\exists n (n>=2&xo+(v-n)*ep()*Vmin()>0&vr+(min(v,n-1)-(n-2))*ep()*A()>=A()*ep()&(xr>0|xr+min(v,n-2)*ep()*(A()*ep())>0))", 'R=="<{{ao:=*;?-b()<=ao&ao<=A();}{{?RAfterX(xr)|OAfterX(xo);ar:=*;?-b()<=ar&ar<=A();++?!(RAfterX(xr)|OAfterX(xo));{?vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep())));{?vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr;ar:=0;++?!(vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+stopDist(vr)+accComp(vr) < ixr();ar:=A();}}}}t:=0;}{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1&t<=ep()&vr>=0&vo>=Vmin()}}*>RAfterX(xr)"); <(
       "Init":
         QE,
@@ -3253,8 +3259,8 @@ andR('R=="[dwcx{|^@|};](xr=ixr()->xo!=ixo())&<dwcx{|^@|};>RAfterX(xr)"); <(
               "xr>0":
                 andR('R=="(RAfterX(xr)|OAfterX(xo))&<ar:=*;?-b()<=ar&ar<=A();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&0*s_+vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&0*t_+vo>=Vmin()&ar*t_+vr>=0&(0*(t_^2/2)+vo*t_+xo<=0->ar*t_+vr=0)&\exists n (n>=2&0*(t_^2/2)+vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min(v-1,n-1)-(n-2))*ep()*A()>=A()*ep()&(ar*(t_^2/2)+vr*t_+xr>0|ar*(t_^2/2)+vr*t_+xr+min(v-1,n-2)*ep()*(A()*ep())>0)))"); <(
                   "RAfterX(xr)|OAfterX(xo)":
-                    expand "RAfterX";
-                    expand "ixr";
+                    expand("RAfterX");
+                    expand("ixr");
                     simplify('R=="xr>0|OAfterX(xo)") using "xr>0";
                     closeT,
                   "<ar:=*;?-b()<=ar&ar<=A();><t:=0;>\exists t_ (t_>=0&\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&0*s_+vo>=Vmin())&A()>0&b()>0&ep()>0&Vmin()>0&0*t_+vo>=Vmin()&ar*t_+vr>=0&(0*(t_^2/2)+vo*t_+xo<=0->ar*t_+vr=0)&\exists n (n>=2&0*(t_^2/2)+vo*t_+xo+(v-1-n)*ep()*Vmin()>0&ar*t_+vr+(min(v-1,n-1)-(n-2))*ep()*A()>=A()*ep()&(ar*(t_^2/2)+vr*t_+xr>0|ar*(t_^2/2)+vr*t_+xr+min(v-1,n-2)*ep()*(A()*ep())>0)))":
@@ -3598,12 +3604,12 @@ andR('R=="[dwcx{|^@|};](xr=ixr()->xo!=ixo())&<dwcx{|^@|};>RAfterX(xr)"); <(
 )
 End.
 
-Tactic "Proof Theorem 12: Cross intersection (loop split and unroll)".
+Tactic "Proof Theorem 12: Cross intersection (loop split and unroll)"
 useSolver("Mathematica");
 implyR('R=="assumptions(xr,vr,ixr(),vo)->[dwcx{|^@|};](xr=ixr()->xo!=ixo())&<dwcx{|^@|};>RAfterX(xr)");
 andR('R=="[dwcx{|^@|};](xr=ixr()->xo!=ixo())&<dwcx{|^@|};>RAfterX(xr)"); <(
   "[dwcx{|^@|};](xr=ixr()->xo!=ixo())":
-    expand "dwcx";
+    expand("dwcx");
     loop("loopinv(xr,vr,ixr(),xo,vo)", 'R=="[{obstacle{|^@|};{robot{|^@|};t:=0;}dyn{|^@|};}*](xr=ixr()->xo!=ixo())"); <(
       "Init":
         QE,
@@ -3612,17 +3618,17 @@ andR('R=="[dwcx{|^@|};](xr=ixr()->xo!=ixo())&<dwcx{|^@|};>RAfterX(xr)"); <(
       "Step":
         composeb('R=="[obstacle{|^@|};{robot{|^@|};t:=0;}dyn{|^@|};]loopinv(xr,vr,0,xo,vo)");
         composeb('R=="[obstacle{|^@|};]#[{robot{|^@|};t:=0;}dyn{|^@|};]loopinv(xr,vr,0,xo,vo)#");
-        expand "dyn";
+        expand("dyn");
         solve('R=="[obstacle{|^@|};][robot{|^@|};t:=0;]#[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1&t<=ep()&vr>=0&vo>=Vmin()}]loopinv(xr,vr,0,xo,vo)#");
         allL("t_", 'R=="[obstacle{|^@|};][robot{|^@|};t:=0;]\forall t_ (t_>=0->#\forall s_ (0<=s_&s_<=t_->s_+t<=ep()&ar*s_+vr>=0&ao*s_+vo>=Vmin())#->loopinv(ar*(t_^2/2)+vr*t_+xr,ar*t_+vr,0,ao*(t_^2/2)+vo*t_+xo,ao*t_+vo))");
         simplify('R=="[obstacle{|^@|};][robot{|^@|};t:=0;]\forall t_ #(t_>=0->(0<=t_&t_<=t_->t_+t<=ep()&ar*t_+vr>=0&ao*t_+vo>=Vmin())->loopinv(ar*(t_^2/2)+vr*t_+xr,ar*t_+vr,0,ao*(t_^2/2)+vo*t_+xo,ao*t_+vo))#");
-        expand "obstacle";
-        expand "robot";
+        expand("obstacle");
+        expand("robot");
         unfold; <(
           "[?RAfterX(xr)|OAfterX(xo);ar:=*;?-b()<=ar&ar<=A();][t:=0;]\forall t_ (t_>=0->t_+t<=ep()&ar*t_+vr>=0&ao*t_+vo>=Vmin()->loopinv(ar*(t_^2/2)+vr*t_+xr,ar*t_+vr,0,ao*(t_^2/2)+vo*t_+xo,ao*t_+vo))":
             QE,
           "[?vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();][t:=0;]\forall t_ (t_>=0->t_+t<=ep()&ar*t_+vr>=0&ao*t_+vo>=Vmin()->loopinv(ar*(t_^2/2)+vr*t_+xr,ar*t_+vr,0,ao*(t_^2/2)+vo*t_+xo,ao*t_+vo))":
-            expand "loopinv";
+            expand("loopinv");
             andR('R=="0<=ar*t_+vr&Vmin()<=ao*t_+vo&(RAfterX(ar*(t_^2/2)+vr*t_+xr)|OAfterX(ao*(t_^2/2)+vo*t_+xo)|ar*(t_^2/2)+vr*t_+xr+stopDist(ar*t_+vr) < 0|ar*t_+vr>0&(ao*(t_^2/2)+vo*t_+xo+(ao*t_+vo)*(0-(ar*(t_^2/2)+vr*t_+xr))/(ar*t_+vr)+A()/2*((0-(ar*(t_^2/2)+vr*t_+xr))/(ar*t_+vr))^2 < ixo()|ixo() < ao*(t_^2/2)+vo*t_+xo+Vmin()*(0-(ar*(t_^2/2)+vr*t_+xr))/(ar*t_+vr)))"); <(
               "0<=ar*t_+vr":
                 QE using "ar*t_+vr>=0 :: 0<=ar*t_+vr :: nil",
@@ -3664,7 +3670,7 @@ andR('R=="[dwcx{|^@|};](xr=ixr()->xo!=ixo())&<dwcx{|^@|};>RAfterX(xr)"); <(
                 )
             ),
           "[?vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr;ar:=0;][t:=0;]\forall t_ (t_>=0->t_+t<=ep()&ar*t_+vr>=0&ao*t_+vo>=Vmin()->loopinv(ar*(t_^2/2)+vr*t_+xr,ar*t_+vr,0,ao*(t_^2/2)+vo*t_+xo,ao*t_+vo))":
-            expand "loopinv";
+            expand("loopinv");
             andL('L)*;
             fullSimplify;
             orR('R)*;
@@ -3690,7 +3696,7 @@ andR('R=="[dwcx{|^@|};](xr=ixr()->xo!=ixo())&<dwcx{|^@|};>RAfterX(xr)"); <(
                 )
             ),
           "[ar:=-b();][t:=0;]\forall t_ (t_>=0->t_+t<=ep()&ar*t_+vr>=0&ao*t_+vo>=Vmin()->loopinv(ar*(t_^2/2)+vr*t_+xr,ar*t_+vr,0,ao*(t_^2/2)+vo*t_+xo,ao*t_+vo))":
-            expand "loopinv";
+            expand("loopinv");
             andL('L)*;
             andR('R=="0<=(-b())*t_+vr&Vmin()<=ao*t_+vo&(RAfterX((-b())*(t_^2/2)+vr*t_+xr)|OAfterX(ao*(t_^2/2)+vo*t_+xo)|(-b())*(t_^2/2)+vr*t_+xr+stopDist((-b())*t_+vr) < 0|(-b())*t_+vr>0&(ao*(t_^2/2)+vo*t_+xo+(ao*t_+vo)*(0-((-b())*(t_^2/2)+vr*t_+xr))/((-b())*t_+vr)+A()/2*((0-((-b())*(t_^2/2)+vr*t_+xr))/((-b())*t_+vr))^2 < ixo()|ixo() < ao*(t_^2/2)+vo*t_+xo+Vmin()*(0-((-b())*(t_^2/2)+vr*t_+xr))/((-b())*t_+vr)))"); <(
               "0<=(-b())*t_+vr":
@@ -3752,14 +3758,14 @@ andR('R=="[dwcx{|^@|};](xr=ixr()->xo!=ixo())&<dwcx{|^@|};>RAfterX(xr)"); <(
                 )
             ),
           "[?vr=0;ar:=0;][t:=0;]\forall t_ (t_>=0->t_+t<=ep()&ar*t_+vr>=0&ao*t_+vo>=Vmin()->loopinv(ar*(t_^2/2)+vr*t_+xr,ar*t_+vr,0,ao*(t_^2/2)+vo*t_+xo,ao*t_+vo))":
-            expand "loopinv";
+            expand("loopinv");
             andL('L)*;
             allL2R('L=="vr=0");
             simplify('R=="0<=0*t_+0&Vmin()<=ao*t_+vo&(RAfterX(0*(t_^2/2)+0*t_+xr)|OAfterX(ao*(t_^2/2)+vo*t_+xo)|0*(t_^2/2)+0*t_+xr+stopDist(0*t_+0) < 0|0*t_+0>0&(ao*(t_^2/2)+vo*t_+xo+(ao*t_+vo)*(0-(0*(t_^2/2)+0*t_+xr))/(0*t_+0)+A()/2*((0-(0*(t_^2/2)+0*t_+xr))/(0*t_+0))^2 < ixo()|ixo() < ao*(t_^2/2)+vo*t_+xo+Vmin()*(0-(0*(t_^2/2)+0*t_+xr))/(0*t_+0)))");
             orR('R)*;
             QE using "A()>0 :: b()>0 :: ep()>0 :: Vmin()>0 :: vr=0 :: t_>=0 :: -b()<=ao :: ao<=A() :: t_+0<=ep() :: 0*t_+0>=0 :: ao*t_+vo>=Vmin() :: 0<=0 :: Vmin()<=vo :: RAfterX(xr)|OAfterX(xo)|xr+stopDist(0) < 0|0>0&(xo+vo*(0-xr)/0+A()/2*((0-xr)/0)^2 < ixo()|ixo() < xo+Vmin()*(0-xr)/0) :: RAfterX(xr) :: OAfterX(xo) :: RAfterX(xr) :: OAfterX(ao*(t_^2/2)+vo*t_+xo) :: xr+stopDist(0) < 0 :: nil",
           "[?xr+stopDist(vr)+accComp(vr) < ixr();ar:=A();][t:=0;]\forall t_ (t_>=0->t_+t<=ep()&ar*t_+vr>=0&ao*t_+vo>=Vmin()->loopinv(ar*(t_^2/2)+vr*t_+xr,ar*t_+vr,0,ao*(t_^2/2)+vo*t_+xo,ao*t_+vo))":
-            expand "loopinv";
+            expand("loopinv");
             andL('L)*;
             andR('R=="0<=A()*t_+vr&Vmin()<=ao*t_+vo&(RAfterX(A()*(t_^2/2)+vr*t_+xr)|OAfterX(ao*(t_^2/2)+vo*t_+xo)|A()*(t_^2/2)+vr*t_+xr+stopDist(A()*t_+vr) < 0|A()*t_+vr>0&(ao*(t_^2/2)+vo*t_+xo+(ao*t_+vo)*(0-(A()*(t_^2/2)+vr*t_+xr))/(A()*t_+vr)+A()/2*((0-(A()*(t_^2/2)+vr*t_+xr))/(A()*t_+vr))^2 < ixo()|ixo() < ao*(t_^2/2)+vo*t_+xo+Vmin()*(0-(A()*(t_^2/2)+vr*t_+xr))/(A()*t_+vr)))"); <(
               "0<=A()*t_+vr":
@@ -3776,11 +3782,11 @@ andR('R=="[dwcx{|^@|};](xr=ixr()->xo!=ixo())&<dwcx{|^@|};>RAfterX(xr)"); <(
         )
     ),
   "<dwcx{|^@|};>RAfterX(xr)":
-    expand "dwcx";
+    expand("dwcx");
     useAt("<*> merge", "1", 'R=="<{obstacle{|^@|};{robot{|^@|};t:=0;}dyn{|^@|};}*>RAfterX(xr)");
-    expand "obstacle";
-    expand "robot";
-    expand "dyn";
+    expand("obstacle");
+    expand("robot");
+    expand("dyn");
     con("v", "A()>0&b()>0&ep()>0&Vmin()>0&vo>=Vmin()&vr>=0&(xo>0|vr=0)&xo+v*ep()*Vmin()>0", 'R=="<{{ao:=*;?-b()<=ao&ao<=A();}{{?RAfterX(xr)|OAfterX(xo);ar:=*;?-b()<=ar&ar<=A();++?!(RAfterX(xr)|OAfterX(xo));{?vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep())));{?vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr;ar:=0;++?!(vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+stopDist(vr)+accComp(vr) < ixr();ar:=A();}}}}t:=0;}{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1&t<=ep()&vr>=0&vo>=Vmin()}}*><{{ao:=*;?-b()<=ao&ao<=A();}{{?RAfterX(xr)|OAfterX(xo);ar:=*;?-b()<=ar&ar<=A();++?!(RAfterX(xr)|OAfterX(xo));{?vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep())));{?vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr;ar:=0;++?!(vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+stopDist(vr)+accComp(vr) < ixr();ar:=A();}}}}t:=0;}{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1&t<=ep()&vr>=0&vo>=Vmin()}}*>RAfterX(xr)"); <(
       "Init":
         QE,
@@ -3979,7 +3985,7 @@ End.
 
 End.
 
-Theorem "IJRR17/Theorem 13: Passive safety with trajectory distance measurement".
+Theorem "IJRR17/Theorem 13: Passive safety with trajectory distance measurement"
 
 Definitions
   Real ep;      /* time limit for control decisions */
@@ -4087,7 +4093,7 @@ assumptions(x, y, v, w, r, dx, dy, xo, yo, xc, yc) ->
   ](v>0 -> (x - xo)^2 + (y - yo)^2 > 0)
 End.
 
-Tactic "Proof Theorem 13: Passive safety with trajectory distance measurement".
+Tactic "Proof Theorem 13: Passive safety with trajectory distance measurement"
 tactic dIHide as (
   hideL('L~="v>0->abs(x-xo)>v^2/(2*b)+V*v/b|abs(y-yo)>v^2/(2*b)+V*v/b|abs(abs(r)-((xo-xc)^2+(yo-yc)^2)^(1/2))>V*v/b")
 );
@@ -4296,7 +4302,7 @@ End.
 
 End.
 
-Theorem "IJRR17/Theorem 14: Reach waypoint with deadline".
+Theorem "IJRR17/Theorem 14: Reach waypoint with deadline"
 
 /*
  *	Robot must stop within distance delta at goal.
@@ -4392,7 +4398,7 @@ Problem
      & < dwwpdl; >(waypointStartDist(xg) < xr & vr = 0)
 End.
 
-Tactic "Proof Theorem 14: Reach waypoint with deadline".
+Tactic "Proof Theorem 14: Reach waypoint with deadline"
   useSolver("Mathematica");
   implyR(1) ; andR(1) ; <(
     loop("0<=vr&vr<=Vmax&xr+vr^2/(2*b) < xg+GDelta&(xg-GDelta < xr->vr=0|T>=vr/b)&(xr<=xg-GDelta->vr>=A*ep&T>(xg-xr-GDelta)/(A*ep)+ep+Vmax/b|vr<=A*ep&T>ep-vr/A+(xg-xr-GDelta)/(A*ep)+ep+Vmax/b)", 1) ; <(
@@ -4637,7 +4643,7 @@ End.
 
 End.
 
-Lemma "IJRR17/Lemma: Cross intersection with deadline - Safety".
+Lemma "IJRR17/Lemma: Cross intersection with deadline - Safety"
 
 /*
  *	Robot must safely cross an intersection.
@@ -4662,7 +4668,7 @@ Lemma "IJRR17/Lemma: Cross intersection with deadline - Safety".
  *
  */
 
-Definitions.
+Definitions
   Real ep;      /* time limit for control decisions */
   Real b;       /* minimum braking capability of the robot */
   Real A;       /* maximum acceleration -b <= a <= A */
@@ -4761,34 +4767,34 @@ Problem
   assumptions(xr, vr, ixr, xo, vo, ixo, T) -> [ dwcxd; ]( (xr=ixr -> xo!=ixo) & (T>=D -> RAfterX(xr)) )
 End.
 
-Tactic "Proof Lemma: Cross intersection with deadline - Safety".
+Tactic "Proof Lemma: Cross intersection with deadline - Safety"
 implyR('R=="assumptions(xr,vr,ixr(),xo,vo,ixo(),T)->[dwcxd{|^@|};]((xr=ixr()->xo!=ixo())&(T>=D()->RAfterX(xr)))");
 boxAnd('R=="[dwcxd{|^@|};]((xr=ixr()->xo!=ixo())&(T>=D()->RAfterX(xr)))");
 andR('R=="[dwcxd{|^@|};](xr=ixr()->xo!=ixo())&[dwcxd{|^@|};](T>=D()->RAfterX(xr))"); <(
   "[dwcxd{|^@|};](xr=ixr()->xo!=ixo())":
-    expand "dwcxd";
+    expand("dwcxd");
     loop("safetyloopinv(xr,vr,ixr(),xo,vo,ixo())", 'R=="[{obstacle{|^@|};{robot{|^@|};t:=0;}dyn{|^@|};}*](xr=ixr()->xo!=ixo())"); <(
       "Init":
         QE,
       "Post":
         QE,
       "Step":
-        expand "safetyloopinv";
+        expand("safetyloopinv");
         boxAnd('R=="[obstacle{|^@|};{robot{|^@|};t:=0;}dyn{|^@|};](0<=vr&Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))");
         andR('R=="[obstacle{|^@|};{robot{|^@|};t:=0;}dyn{|^@|};]0<=vr&[obstacle{|^@|};{robot{|^@|};t:=0;}dyn{|^@|};](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))"); <(
           "[obstacle{|^@|};{robot{|^@|};t:=0;}dyn{|^@|};]0<=vr":
             composeb('R=="[obstacle{|^@|};{robot{|^@|};t:=0;}dyn{|^@|};]0<=vr");
             composeb('R=="[obstacle{|^@|};]#[{robot{|^@|};t:=0;}dyn{|^@|};]0<=vr#");
-            expand "obstacle";
-            expand "robot";
-            expand "dyn";
+            expand("obstacle");
+            expand("robot");
+            expand("dyn");
             GV('R=="[ao:=*;?-b()<=ao&ao<=A();][{?OAfterX(xo);ar:=A();++?!OAfterX(xo);{?RAfterX(xr);ar:=*;?-b()<=ar&ar<=A();++?!RAfterX(xr);{?vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep())));{?vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr;ar:=0;++?!(vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+stopDist(vr)+accComp(vr) < ixr();ar:=A();}}}}}t:=0;][{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}]0<=vr");
             GV('R=="\forall ao #[{?OAfterX(xo);ar:=A();++?!OAfterX(xo);{?RAfterX(xr);ar:=*;?-b()<=ar&ar<=A();++?!RAfterX(xr);{?vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep())));{?vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr;ar:=0;++?!(vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+stopDist(vr)+accComp(vr) < ixr();ar:=A();}}}}}t:=0;][{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}]0<=vr#");
             dW('R=="\forall ao \forall ar \forall t #[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}]0<=vr#");
             simplify('R=="\forall ao \forall ar \forall t \forall t \forall vo \forall vr (t<=ep()&vr>=0&vo>=Vmin()->0<=vr)");
             closeT,
           "[obstacle{|^@|};{robot{|^@|};t:=0;}dyn{|^@|};](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))":
-            expand "robot";
+            expand("robot");
             notAnd('R=="[obstacle{|^@|};{{?OAfterX(xo);ar:=A();++?!OAfterX(xo);{?RAfterX(xr);ar:=*;?-b()<=ar&ar<=A();++?!RAfterX(xr);{?vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?#!(vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep())))#;{?vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr;ar:=0;++?!(vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+stopDist(vr)+accComp(vr) < ixr();ar:=A();}}}}}t:=0;}dyn{|^@|};](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))");
             notGreater('R=="[obstacle{|^@|};{{?OAfterX(xo);ar:=A();++?!OAfterX(xo);{?RAfterX(xr);ar:=*;?-b()<=ar&ar<=A();++?!RAfterX(xr);{?vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?#!vr>0#|!(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));{?vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr;ar:=0;++?!(vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+stopDist(vr)+accComp(vr) < ixr();ar:=A();}}}}}t:=0;}dyn{|^@|};](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))");
             notOr('R=="[obstacle{|^@|};{{?OAfterX(xo);ar:=A();++?!OAfterX(xo);{?RAfterX(xr);ar:=*;?-b()<=ar&ar<=A();++?!RAfterX(xr);{?vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?vr<=0|#!(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()))#;{?vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr;ar:=0;++?!(vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+stopDist(vr)+accComp(vr) < ixr();ar:=A();}}}}}t:=0;}dyn{|^@|};](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))");
@@ -4797,10 +4803,10 @@ andR('R=="[dwcxd{|^@|};](xr=ixr()->xo!=ixo())&[dwcxd{|^@|};](T>=D()->RAfterX(xr)
             notAnd('R=="[obstacle{|^@|};{{?OAfterX(xo);ar:=A();++?!OAfterX(xo);{?RAfterX(xr);ar:=*;?-b()<=ar&ar<=A();++?!RAfterX(xr);{?vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?vr<=0|xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2>=ixo()&ixo()>=xo+Vmin()*(ixr()-xr)/(vr+A()*ep());{?vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr;ar:=0;++?#!(vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr)#;{ar:=-b();++?vr=0;ar:=0;++?xr+stopDist(vr)+accComp(vr) < ixr();ar:=A();}}}}}t:=0;}dyn{|^@|};](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))");
             notGreater('R=="[obstacle{|^@|};{{?OAfterX(xo);ar:=A();++?!OAfterX(xo);{?RAfterX(xr);ar:=*;?-b()<=ar&ar<=A();++?!RAfterX(xr);{?vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?vr<=0|xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2>=ixo()&ixo()>=xo+Vmin()*(ixr()-xr)/(vr+A()*ep());{?vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr;ar:=0;++?#!vr>0#|!ixo() < xo+Vmin()*(ixr()-xr)/vr;{ar:=-b();++?vr=0;ar:=0;++?xr+stopDist(vr)+accComp(vr) < ixr();ar:=A();}}}}}t:=0;}dyn{|^@|};](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))");
             notLess('R=="[obstacle{|^@|};{{?OAfterX(xo);ar:=A();++?!OAfterX(xo);{?RAfterX(xr);ar:=*;?-b()<=ar&ar<=A();++?!RAfterX(xr);{?vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?vr<=0|xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2>=ixo()&ixo()>=xo+Vmin()*(ixr()-xr)/(vr+A()*ep());{?vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr;ar:=0;++?vr<=0|#!ixo() < xo+Vmin()*(ixr()-xr)/vr#;{ar:=-b();++?vr=0;ar:=0;++?xr+stopDist(vr)+accComp(vr) < ixr();ar:=A();}}}}}t:=0;}dyn{|^@|};](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))");
-            expand "obstacle";
+            expand("obstacle");
             unfold; <(
               "[?OAfterX(xo);ar:=A();][t:=0;][dyn{|^@|};](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))":
-                expand "dyn";
+                expand("dyn");
                 dC("xo>=old(xo)", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))"); <(
                   "Use":
                     dW('R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&(t<=ep()&vr>=0&vo>=Vmin())&xo>=xo_0}](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))");
@@ -4809,7 +4815,7 @@ andR('R=="[dwcxd{|^@|};](xr=ixr()->xo!=ixo())&[dwcxd{|^@|};](T>=D()->RAfterX(xr)
                     dIClose('R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}]xo>=xo_0") using "A()>0 :: b()>0 :: ep()>0 :: Vmin()>0 :: t=0 :: -b()<=ao :: ao<=A() :: Vmin()<=vo :: xo_0=xo :: [{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}]xo>=xo_0 :: nil"
                 ),
               "[?RAfterX(xr);ar:=*;?-b()<=ar&ar<=A();][t:=0;][dyn{|^@|};](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))":
-                expand "dyn";
+                expand("dyn");
                 dC("xr>=old(xr)", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))"); <(
                   "Use":
                     dW('R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&(t<=ep()&vr>=0&vo>=Vmin())&xr>=xr_0}](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))");
@@ -4818,7 +4824,7 @@ andR('R=="[dwcxd{|^@|};](xr=ixr()->xo!=ixo())&[dwcxd{|^@|};](T>=D()->RAfterX(xr)
                     dIClose('R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}]xr>=xr_0") using "0<=vr :: -b()<=ar :: ar<=A() :: xr_0=xr :: nil"
                 ),
               "[?vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();][t:=0;][dyn{|^@|};](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))":
-                expand "dyn";
+                expand("dyn");
                 dC("t>=0&vr=old(vr)+ar*t&vo=old(vo)+ao*t", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))"); <(
                   "Use":
                     dC("xr=old(xr)+old(vr)*t+ar*t^2/2&xo=old(xo)+old(vo)*t+ao*t^2/2", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&(t<=ep()&vr>=0&vo>=Vmin())&t>=0&vr=vr_0+ar*t&vo=vo_0+ao*t}](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))"); <(
@@ -4847,7 +4853,7 @@ andR('R=="[dwcxd{|^@|};](xr=ixr()->xo!=ixo())&[dwcxd{|^@|};](T>=D()->RAfterX(xr)
                     dIClose('R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](t>=0&vr=vr_0+ar*t&vo=vo_0+ao*t)") using "A()>0 :: b()>0 :: ep()>0 :: Vmin()>0 :: D()>=ep() :: t=0 :: 0<=vr_0 :: -b()<=ao :: ao<=A() :: vr_0>0 :: 0<=ar :: ar<=A() :: Vmin()<=vo_0 :: vr_0=vr :: vo_0=vo :: [{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](t>=0&vr=vr_0+ar*t&vo=vo_0+ao*t) :: nil"
                 ),
               "[?vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr;ar:=0;][t:=0;][dyn{|^@|};](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))":
-                expand "dyn";
+                expand("dyn");
                 dC("t>=0&vr=old(vr)&vo=old(vo)+ao*t", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))"); <(
                   "Use":
                     dC("xr=old(xr)+old(vr)*t&xo=old(xo)+old(vo)*t+ao*t^2/2", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&(t<=ep()&vr>=0&vo>=Vmin())&t>=0&vr=vr_0&vo=vo_0+ao*t}](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))"); <(
@@ -4872,7 +4878,7 @@ andR('R=="[dwcxd{|^@|};](xr=ixr()->xo!=ixo())&[dwcxd{|^@|};](T>=D()->RAfterX(xr)
                     dIClose('R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](t>=0&vr=vr_0&vo=vo_0+ao*t)") using "b()>0 :: ar=0 :: t=0 :: -b()<=ao :: ao<=A() :: vr_0>0 :: vr_0=vr :: vo_0=vo :: [{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](t>=0&vr=vr_0&vo=vo_0+ao*t) :: nil"
                 ),
               "[ar:=-b();][t:=0;][dyn{|^@|};](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))":
-                expand "dyn";
+                expand("dyn");
                 dC("t>=0&vr=old(vr)-b()*t", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))"); <(
                   "Use":
                     dC("xr=old(xr)+old(vr)*t-b()*t^2/2", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&(t<=ep()&vr>=0&vo>=Vmin())&t>=0&vr=vr_0-b()*t}](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))"); <(
@@ -4906,7 +4912,7 @@ andR('R=="[dwcxd{|^@|};](xr=ixr()->xo!=ixo())&[dwcxd{|^@|};](T>=D()->RAfterX(xr)
                     dIClose('R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](t>=0&vr=vr_0-b()*t)") using "b()>0 :: Vmin()>0 :: ar=-b() :: t=0 :: 0<=vr_0 :: vr_0=vr :: [{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](t>=0&vr=vr_0-b()*t) :: nil"
                 ),
               "[?vr=0;ar:=0;][t:=0;][dyn{|^@|};](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))":
-                expand "dyn";
+                expand("dyn");
                 dC("vr=0", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))"); <(
                   "Use":
                     dC("xr=old(xr)", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&(t<=ep()&vr>=0&vo>=Vmin())&vr=0}](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))"); <(
@@ -4923,7 +4929,7 @@ andR('R=="[dwcxd{|^@|};](xr=ixr()->xo!=ixo())&[dwcxd{|^@|};](T>=D()->RAfterX(xr)
                     dIClose('R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}]vr=0") using "vr=0 :: ar=0 :: [{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}]vr=0 :: nil"
                 ),
               "[?xr+stopDist(vr)+accComp(vr) < ixr();ar:=A();][t:=0;][dyn{|^@|};](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))":
-                expand "dyn";
+                expand("dyn");
                 dC("t>=0&vr=old(vr)+A()*t", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))"); <(
                   "Use":
                     dC("xr=old(xr)+old(vr)*t+A()*t^2/2", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&(t<=ep()&vr>=0&vo>=Vmin())&t>=0&vr=vr_0+A()*t}](Vmin()<=vo&(RAfterX(xr)|OAfterX(xo)|xr+stopDist(vr) < 0|vr>0&(xo+vo*(0-xr)/vr+A()/2*((0-xr)/vr)^2 < 0|0 < xo+Vmin()*(0-xr)/vr)))"); <(
@@ -4943,7 +4949,7 @@ andR('R=="[dwcxd{|^@|};](xr=ixr()->xo!=ixo())&[dwcxd{|^@|};](T>=D()->RAfterX(xr)
         )
     ),
   "[dwcxd{|^@|};](T>=D()->RAfterX(xr))":
-    expand "dwcxd";
+    expand("dwcxd");
     loop("0<=vr&Vmin()<=vo&T<=(xo-0)/Vmin()&(T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)", 'R=="[{obstacle{|^@|};{robot{|^@|};t:=0;}dyn{|^@|};}*](T>=D()->RAfterX(xr))"); <(
       "Init":
         QE,
@@ -4955,7 +4961,7 @@ andR('R=="[dwcxd{|^@|};](xr=ixr()->xo!=ixo())&[dwcxd{|^@|};](T>=D()->RAfterX(xr)
           "[obstacle{|^@|};{robot{|^@|};t:=0;}dyn{|^@|};]0<=vr":
             composeb('R=="[obstacle{|^@|};{robot{|^@|};t:=0;}dyn{|^@|};]0<=vr");
             composeb('R=="[obstacle{|^@|};]#[{robot{|^@|};t:=0;}dyn{|^@|};]0<=vr#");
-            expand "dyn";
+            expand("dyn");
             dW('R=="[obstacle{|^@|};][robot{|^@|};t:=0;]#[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}]0<=vr#");
             simplify('R=="[obstacle{|^@|};][robot{|^@|};t:=0;]#\forall t \forall vo \forall vr (t<=ep()&vr>=0&vo>=Vmin()->0<=vr)#");
             boxTrue('R=="[obstacle{|^@|};]#[robot{|^@|};t:=0;]true#");
@@ -4966,7 +4972,7 @@ andR('R=="[dwcxd{|^@|};](xr=ixr()->xo!=ixo())&[dwcxd{|^@|};](T>=D()->RAfterX(xr)
               "[obstacle{|^@|};{robot{|^@|};t:=0;}dyn{|^@|};]Vmin()<=vo":
                 composeb('R=="[obstacle{|^@|};{robot{|^@|};t:=0;}dyn{|^@|};]Vmin()<=vo");
                 composeb('R=="[obstacle{|^@|};]#[{robot{|^@|};t:=0;}dyn{|^@|};]Vmin()<=vo#");
-                expand "dyn";
+                expand("dyn");
                 dW('R=="[obstacle{|^@|};][robot{|^@|};t:=0;]#[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}]Vmin()<=vo#");
                 simplify('R=="[obstacle{|^@|};][robot{|^@|};t:=0;]#\forall t \forall vo \forall vr (t<=ep()&vr>=0&vo>=Vmin()->Vmin()<=vo)#");
                 boxTrue('R=="[obstacle{|^@|};]#[robot{|^@|};t:=0;]true#");
@@ -4978,11 +4984,11 @@ andR('R=="[dwcxd{|^@|};](xr=ixr()->xo!=ixo())&[dwcxd{|^@|};](T>=D()->RAfterX(xr)
                     composeb('R=="[obstacle{|^@|};{robot{|^@|};t:=0;}dyn{|^@|};]T<=(xo-0)/Vmin()");
                     composeb('R=="[obstacle{|^@|};]#[{robot{|^@|};t:=0;}dyn{|^@|};]T<=(xo-0)/Vmin()#");
                     composeb('R=="[obstacle{|^@|};]#[robot{|^@|};t:=0;][dyn{|^@|};]T<=(xo-0)/Vmin()#");
-                    expand "robot";
+                    expand("robot");
                     GV('R=="[obstacle{|^@|};]#[?OAfterX(xo);ar:=A();++?!OAfterX(xo);{?RAfterX(xr);ar:=*;?-b()<=ar&ar<=A();++?!RAfterX(xr);{?vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep())));{?vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr;ar:=0;++?!(vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+stopDist(vr)+accComp(vr) < ixr();ar:=A();}}}}][t:=0;][dyn{|^@|};]T<=(xo-0)/Vmin()#");
-                    expand "obstacle";
+                    expand("obstacle");
                     unfold;
-                    expand "dyn";
+                    expand("dyn");
                     dC("t>=0&T=old(T)+t&vo=old(vo)+ao*t", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}]T<=(xo-0)/Vmin()"); <(
                       "Use":
                         dC("xo=old(xo)+old(vo)*t+ao*t^2/2", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&(t<=ep()&vr>=0&vo>=Vmin())&t>=0&T=T_0+t&vo=vo_0+ao*t}]T<=(xo-0)/Vmin()"); <(
@@ -4996,11 +5002,11 @@ andR('R=="[dwcxd{|^@|};](xr=ixr()->xo!=ixo())&[dwcxd{|^@|};](T>=D()->RAfterX(xr)
                         dIClose('R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](t>=0&T=T_0+t&vo=vo_0+ao*t)") using "A()>0 :: b()>0 :: ep()>0 :: Vmin()>0 :: t=0 :: Vmin()<=vo_0 :: T_0=T :: vo_0=vo :: [{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](t>=0&T=T_0+t&vo=vo_0+ao*t) :: nil"
                     ),
                   "[obstacle{|^@|};{robot{|^@|};t:=0;}dyn{|^@|};](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)":
-                    expand "obstacle";
-                    expand "robot";
+                    expand("obstacle");
+                    expand("robot");
                     unfold; <(
                       "[?OAfterX(xo);ar:=A();][t:=0;][dyn{|^@|};](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)":
-                        expand "dyn";
+                        expand("dyn");
                         dC("t>=0&T=old(T)+t&vr=old(vr)+A()*t", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)"); <(
                           "Use":
                             dC("xr=old(xr)+old(vr)*t+A()*t^2/2", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&(t<=ep()&vr>=0&vo>=Vmin())&t>=0&T=T_0+t&vr=vr_0+A()*t}](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)"); <(
@@ -5014,7 +5020,7 @@ andR('R=="[dwcxd{|^@|};](xr=ixr()->xo!=ixo())&[dwcxd{|^@|};](T>=D()->RAfterX(xr)
                             dIClose('R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](t>=0&T=T_0+t&vr=vr_0+A()*t)") using "A()>0 :: ep()>0 :: ar=A() :: t=0 :: 0<=vr_0 :: T_0=T :: vr_0=vr :: [{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](t>=0&T=T_0+t&vr=vr_0+A()*t) :: nil"
                         ),
                       "[?RAfterX(xr);ar:=*;?-b()<=ar&ar<=A();][t:=0;][dyn{|^@|};](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)":
-                        expand "dyn";
+                        expand("dyn");
                         dC("t>=0&T=old(T)+t&vr=old(vr)+ar*t&vo=old(vo)+ao*t", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)"); <(
                           "Use":
                             dC("xr=old(xr)+old(vr)*t+ar*t^2/2&xo=old(xo)+old(vo)*t+ao*t^2/2", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&(t<=ep()&vr>=0&vo>=Vmin())&t>=0&T=T_0+t&vr=vr_0+ar*t&vo=vo_0+ao*t}](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)"); <(
@@ -5089,7 +5095,7 @@ andR('R=="[dwcxd{|^@|};](xr=ixr()->xo!=ixo())&[dwcxd{|^@|};](T>=D()->RAfterX(xr)
                             dIClose('R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](t>=0&T=T_0+t&vr=vr_0+ar*t&vo=vo_0+ao*t)") using "A()>0 :: b()>0 :: t=0 :: 0<=vr_0 :: -b()<=ao :: ao<=A() :: -b()<=ar :: ar<=A() :: T_0=T :: vr_0=vr :: vo_0=vo :: [{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](t>=0&T=T_0+t&vr=vr_0+ar*t&vo=vo_0+ao*t) :: nil"
                         ),
                       "[?vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();][t:=0;][dyn{|^@|};](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)":
-                        expand "dyn";
+                        expand("dyn");
                         dC("t>=0&T=old(T)+t&vr>=old(vr)&vo=old(vo)+ao*t", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)"); <(
                           "Use":
                             dC("xr>=old(xr)+old(vr)*t&xo=old(xo)+old(vo)*t+ao*t^2/2", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&(t<=ep()&vr>=0&vo>=Vmin())&t>=0&T=T_0+t&vr>=vr_0&vo=vo_0+ao*t}](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)"); <(
@@ -5107,7 +5113,7 @@ andR('R=="[dwcxd{|^@|};](xr=ixr()->xo!=ixo())&[dwcxd{|^@|};](T>=D()->RAfterX(xr)
                             dIClose('R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](t>=0&T=T_0+t&vr>=vr_0&vo=vo_0+ao*t)") using "A()>0 :: b()>0 :: Vmin()>0 :: t=0 :: 0<=vr_0 :: -b()<=ao :: ao<=A() :: 0<=ar :: ar<=A() :: T_0=T :: vr_0=vr :: vo_0=vo :: [{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](t>=0&T=T_0+t&vr>=vr_0&vo=vo_0+ao*t) :: nil"
                         ),
                       "[?vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr;ar:=0;][t:=0;][dyn{|^@|};](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)":
-                        expand "dyn";
+                        expand("dyn");
                         dC("t>=0&T=old(T)+t&vr=old(vr)&vo=old(vo)+ao*t", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)"); <(
                           "Use":
                             dC("xr=old(xr)+old(vr)*t&xo=old(xo)+old(vo)*t+ao*t^2/2", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&(t<=ep()&vr>=0&vo>=Vmin())&t>=0&T=T_0+t&vr=vr_0&vo=vo_0+ao*t}](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)"); <(
@@ -5144,7 +5150,7 @@ andR('R=="[dwcxd{|^@|};](xr=ixr()->xo!=ixo())&[dwcxd{|^@|};](T>=D()->RAfterX(xr)
                             dIClose('R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](t>=0&T=T_0+t&vr=vr_0&vo=vo_0+ao*t)") using "A()>0 :: b()>0 :: Vmin()>0 :: ar=0 :: t=0 :: -b()<=ao :: ao<=A() :: vr_0>0 :: Vmin()<=vo_0 :: T_0=T :: vr_0=vr :: vo_0=vo :: [{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](t>=0&T=T_0+t&vr=vr_0&vo=vo_0+ao*t) :: nil"
                         ),
                       "[ar:=-b();][t:=0;][dyn{|^@|};](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)":
-                        expand "dyn";
+                        expand("dyn");
                         dC("t>=0&T=old(T)+t&vr=old(vr)-b()*t&vo=old(vo)+ao*t", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)"); <(
                           "Use":
                             dC("xr=old(xr)+old(vr)*t-b()*t^2/2&xo=old(xo)+old(vo)*t+ao*t^2/2", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&(t<=ep()&vr>=0&vo>=Vmin())&t>=0&T=T_0+t&vr=vr_0-b()*t&vo=vo_0+ao*t}](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)"); <(
@@ -5191,7 +5197,7 @@ andR('R=="[dwcxd{|^@|};](xr=ixr()->xo!=ixo())&[dwcxd{|^@|};](T>=D()->RAfterX(xr)
                             dIClose('R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](t>=0&T=T_0+t&vr=vr_0-b()*t&vo=vo_0+ao*t)") using "A()>0 :: b()>0 :: Vmin()>0 :: ar=-b() :: t=0 :: 0<=vr_0 :: -b()<=ao :: ao<=A() :: Vmin()<=vo_0 :: T_0=T :: vr_0=vr :: vo_0=vo :: [{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](t>=0&T=T_0+t&vr=vr_0-b()*t&vo=vo_0+ao*t) :: nil"
                         ),
                       "[?vr=0;ar:=0;][t:=0;][dyn{|^@|};](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)":
-                        expand "dyn";
+                        expand("dyn");
                         dC("t>=0&T=old(T)+t&vr=old(vr)", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)"); <(
                           "Use":
                             dC("xr=old(xr)+old(vr)*t", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&(t<=ep()&vr>=0&vo>=Vmin())&t>=0&T=T_0+t&vr=vr_0}](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)"); <(
@@ -5215,7 +5221,7 @@ andR('R=="[dwcxd{|^@|};](xr=ixr()->xo!=ixo())&[dwcxd{|^@|};](T>=D()->RAfterX(xr)
                             dIClose('R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](t>=0&T=T_0+t&vr=vr_0)") using "A()>0 :: b()>0 :: Vmin()>0 :: vr_0=0 :: ar=0 :: t=0 :: 0<=vr_0 :: -b()<=ao :: ao<=A() :: Vmin()<=vo :: T_0=T :: vr_0=vr :: [{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](t>=0&T=T_0+t&vr=vr_0) :: nil"
                         ),
                       "[?xr+stopDist(vr)+accComp(vr) < ixr();ar:=A();][t:=0;][dyn{|^@|};](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)":
-                        expand "dyn";
+                        expand("dyn");
                         dC("t>=0&T=old(T)+t&vr=old(vr)+A()*t", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)"); <(
                           "Use":
                             dC("xr=old(xr)+old(vr)*t+A()*t^2/2", 'R=="[{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&(t<=ep()&vr>=0&vo>=Vmin())&t>=0&T=T_0+t&vr=vr_0+A()*t}](T<=0&xr+A()/2*(D()-ep())^2>0|T>0&xr+vr*max(0,D()-T)+A()/2*max(0,D()-T)^2>0)"); <(
@@ -5370,7 +5376,7 @@ End.
 
 /* todo: port tactic */
 /*
-Tactic "Proof Theorem 15: Cross intersection with deadline (single convergence condition)".
+Tactic "Proof Theorem 15: Cross intersection with deadline (single convergence condition)"
 useSolver("Mathematica");
 
 tactic leafQE as ( print("Proving arithmetic"); QE; done );
@@ -5532,25 +5538,25 @@ implyR(1) ; andR(1) ; <(
 End.
 */
 
-Tactic "IJRR17/Proof Theorem 15: Cross intersection with deadline (loop split and unroll)".
+Tactic "IJRR17/Proof Theorem 15: Cross intersection with deadline (loop split and unroll)"
 useSolver("Mathematica");
 implyR('R=="assumptions(xr,vr,ixr(),xo,vo,ixo(),T)->[dwcxd{|^@|};]((xr=ixr()->xo!=ixo())&(T>=D()->RAfterX(xr)))&<dwcxd{|^@|};>RAfterX(xr)");
 andR('R=="[dwcxd{|^@|};]((xr=ixr()->xo!=ixo())&(T>=D()->RAfterX(xr)))&<dwcxd{|^@|};>RAfterX(xr)"); <(
   "[dwcxd{|^@|};]((xr=ixr()->xo!=ixo())&(T>=D()->RAfterX(xr)))":
     useLemma("IJRR17/Lemma: Cross intersection with deadline - Safety", "prop"),
   "<dwcxd{|^@|};>RAfterX(xr)":
-    expand "dwcxd";
+    expand("dwcxd");
     useAt("<*> merge", "1", 'R=="<{obstacle{|^@|};{robot{|^@|};t:=0;}dyn{|^@|};}*>RAfterX(xr)");
-    expand "obstacle";
-    expand "robot";
-    expand "dyn";
-    expand "assumptions";
+    expand("obstacle");
+    expand("robot");
+    expand("dyn");
+    expand("assumptions");
     andL('L=="bounds()&initialState(xr,vr,ixr(),xo,vo,ixo(),T)");
     con("v", "vo>=Vmin()&vr>=0&(xo>0|vr=0)&xo+v*ep()*Vmin()>0", 'R=="<{{ao:=*;?-b()<=ao&ao<=A();}{{?OAfterX(xo);ar:=A();++?!OAfterX(xo);{?RAfterX(xr);ar:=*;?-b()<=ar&ar<=A();++?!RAfterX(xr);{?vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep())));{?vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr;ar:=0;++?!(vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+stopDist(vr)+accComp(vr) < ixr();ar:=A();}}}}}t:=0;}{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}}*><{{ao:=*;?-b()<=ao&ao<=A();}{{?OAfterX(xo);ar:=A();++?!OAfterX(xo);{?RAfterX(xr);ar:=*;?-b()<=ar&ar<=A();++?!RAfterX(xr);{?vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep())));{?vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr;ar:=0;++?!(vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+stopDist(vr)+accComp(vr) < ixr();ar:=A();}}}}}t:=0;}{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}}*>RAfterX(xr)"); <(
       "Init":
         QE,
       "Post":
-        expand "bounds";
+        expand("bounds");
         andL('L)*;
         edit("xo>0", 'L=="xo+v*ep()*Vmin()>0") using "v<=0 :: ep()>0 :: Vmin()>0 :: nil";
         hideL('L=="v<=0");
@@ -5629,7 +5635,7 @@ andR('R=="[dwcxd{|^@|};]((xr=ixr()->xo!=ixo())&(T>=D()->RAfterX(xr)))&<dwcxd{|^@
             )
         ),
       "Step":
-        expand "bounds";
+        expand("bounds");
         andL('L)*;
         composed('R=="<{ao:=*;?-b()<=ao&ao<=A();}{{?OAfterX(xo);ar:=A();++?!OAfterX(xo);{?RAfterX(xr);ar:=*;?-b()<=ar&ar<=A();++?!RAfterX(xr);{?vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep())));{?vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr;ar:=0;++?!(vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+stopDist(vr)+accComp(vr) < ixr();ar:=A();}}}}}t:=0;}{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}>(vo>=Vmin()&vr>=0&(xo>0|vr=0)&xo+(v-1)*ep()*Vmin()>0)");
         composed('R=="<ao:=*;?-b()<=ao&ao<=A();>#<{{?OAfterX(xo);ar:=A();++?!OAfterX(xo);{?RAfterX(xr);ar:=*;?-b()<=ar&ar<=A();++?!RAfterX(xr);{?vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep()));ar:=*;?0<=ar&ar<=A();++?!(vr>0&(xo+vo*(ixr()-xr)/vr+A()/2*((ixr()-xr)/vr)^2 < ixo()|ixo() < xo+Vmin()*(ixr()-xr)/(vr+A()*ep())));{?vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr;ar:=0;++?!(vr>0&ixo() < xo+Vmin()*(ixr()-xr)/vr);{ar:=-b();++?vr=0;ar:=0;++?xr+stopDist(vr)+accComp(vr) < ixr();ar:=A();}}}}}t:=0;}{xr'=vr,vr'=ar,xo'=vo,vo'=ao,t'=1,T'=1&t<=ep()&vr>=0&vo>=Vmin()}>(vo>=Vmin()&vr>=0&(xo>0|vr=0)&xo+(v-1)*ep()*Vmin()>0)#");
