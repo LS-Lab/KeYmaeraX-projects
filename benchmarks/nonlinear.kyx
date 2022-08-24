@@ -1128,7 +1128,7 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/nonlinear Circuit Example 3"
+ArchiveEntry "Benchmarks/Nonlinear/Nonlinear Circuit Example 3"
 
 Citation "Mohamed H. Zaki, William Denman, Sofiène Tahar, Guy Bois. Integrating Abstraction Techniques for Formal Verification of Analog Designs".
 
@@ -1158,7 +1158,7 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/nonlinear Circuit Example 4"
+ArchiveEntry "Benchmarks/Nonlinear/Nonlinear Circuit Example 4"
 
 Citation "Mohamed H. Zaki, William Denman, Sofiène Tahar, Guy Bois. Integrating Abstraction Techniques for Formal Verification of Analog Designs".
 
@@ -1177,7 +1177,7 @@ End.
 
 End.
 
-ArchiveEntry "Benchmarks/Nonlinear/nonlinear Circuit RLC Circuit Oscillator"
+ArchiveEntry "Benchmarks/Nonlinear/Nonlinear Circuit RLC Circuit Oscillator"
 
 Citation "Mohamed H. Zaki, William Denman, Sofiène Tahar, Guy Bois. Integrating Abstraction Techniques for Formal Verification of Analog Designs".
 
