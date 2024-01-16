@@ -44,6 +44,59 @@ End.
 Illustration "https://lfcps.org/info/fig-bouncing-ball-dark1ghost.png".
 End.
 
+
+Theorem "Short Hop definitions"
+Description "5.4: A Proof of a Short Bouncing Ball single-hop without loop (definitions)".
+
+Definitions      /* function symbols cannot change their value */
+  Real H;        /* initial height */
+  Real g;        /* gravity */
+  Real c;        /* damping coefficient */
+  HP   gravity ::= {{x'=v,v'=-g}};      /* ODE subprogram */
+  Bool consts  <-> (g>0 & 1>=c&c>=0);   /* constant assumptions */
+  Bool safe(Real x) <-> (x>=0 & x<=H);  /* safe bouncing ball */
+End.
+
+ProgramVariables /* program variables may change their value over time */
+  Real x, v;     /* height and velocity */
+End.
+
+Problem
+  x>=0 & x=H
+  & v=0 & consts
+ ->
+  [
+      gravity;
+      {?x=0; v:=-c*v;  ++  ?x>=0;}
+  ] safe(x)
+End.
+
+Tactic "Short Hop def: Proof"
+  implyR('R=="x>=0&x=H()&v=0&consts()->[gravity{|^@|};{?x=0;v:=-c()*v;++?x>=0;}]safe(x)");
+  composeb('R=="[gravity{|^@|};{?x=0;v:=-c()*v;++?x>=0;}]safe(x)");
+  choiceb('R=="[gravity{|^@|};]#[?x=0;v:=-c()*v;++?x>=0;]safe(x)#");
+  testb('R=="[gravity{|^@|};]([?x=0;v:=-c()*v;]safe(x)&#[?x>=0;]safe(x)#)");
+  composeb('R=="[gravity{|^@|};](#[?x=0;v:=-c()*v;]safe(x)#&(x>=0->safe(x)))");
+  assignb('R=="[gravity{|^@|};]([?x=0;]#[v:=-c()*v;]safe(x)#&(x>=0->safe(x)))");
+  testb('R=="[gravity{|^@|};](#[?x=0;]safe(x)#&(x>=0->safe(x)))");
+  expand("gravity");
+  ODE('R=="[{x'=v,v'=-g()}]((x=0->safe(x))&(x>=0->safe(x)))")
+End.
+  
+Tactic "Short Hop def: Chase Proof"
+  implyR('R=="x>=0&x=H()&v=0&consts()->[gravity{|^@|};{?x=0;v:=-c()*v;++?x>=0;}]safe(x)");
+  composeb('R=="[gravity{|^@|};{?x=0;v:=-c()*v;++?x>=0;}]safe(x)");
+  chaseAt('R=="[gravity{|^@|};]#[?x=0;v:=-c()*v;++?x>=0;]safe(x)#");
+  expand("gravity");
+  solve('R=="[{x'=v,v'=-g()}]((x=0->safe(x))&(x>=0->safe(x)))");
+  QE
+End.
+
+Tactic "Short Hop def: automatic"
+  autoClose
+End.
+
+End.
 ArchiveEntry "LFCPS Textbook/07: Bouncing Ball"
 Description "7.4: Acrophobic Bouncing Ball".
 
@@ -183,13 +236,74 @@ Tactic "07: Bouncing Ball: in-place proof: named"
 End.
        
 Tactic "07: Bouncing Ball: automatic"
-  useSolver("Mathematica");
-  autoClose
+  auto
 End.
        
 Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
 End.
 
+ArchiveEntry "LFCPS Textbook/07: Bouncing Ball definitions"
+Description "7.4: Acrophobic Bouncing Ball".
+
+Definitions     /* function symbols cannot change their value */
+  Real H;       /* initial height */
+  Real g;       /* gravity */
+  Real c;       /* damping coefficient */
+  HP   gravity  ::= {{x'=v,v'=-g&x>=0}};            /* ODE subprogram */
+  HP   onground ::= {?x=0; v:=-c*v;};               /* action on ground */
+  HP   inair    ::= {?x!=0;};                       /* action in air */
+  Bool consts   <-> (g>0 & 1=c&c>=0);               /* constant assumptions */
+  Bool init(Real x, Real v) <-> (x>=0 & x=H & v=0); /* initial condition */
+  Bool safe(Real x)         <-> (x>=0 & x<=H);      /* safe bouncing ball */
+End.
+
+ProgramVariables /* program variables may change their value over time */
+  Real x, v;     /* height and vertical velocity */
+End.
+
+Problem
+  init(x,v) &
+  consts
+ ->
+  [
+    {
+      gravity;
+      {onground;  ++  inair;}
+    }* @invariant(2*g*x=2*g*H-v^2 & x>=0)
+  ] safe(x)
+End.
+
+Tactic "07: Bouncing Ball definitions: Proof"
+  implyR('R=="init(x,v)&consts()->[{gravity{|^@|};{onground{|^@|};++inair{|^@|};}}*]safe(x)");
+loop("2*g()*x=2*g()*H()-v^2&x>=0", 'R=="[{gravity{|^@|};{onground{|^@|};++inair{|^@|};}}*]safe(x)"); <(
+  "Init":
+    QE,
+  "Post":
+    expand("safe");
+    QE,
+  "Step":
+    composeb('R=="[gravity{|^@|};{onground{|^@|};++inair{|^@|};}](2*g()*x=2*g()*H()-v^2&x>=0)");
+    choiceb('R=="[gravity{|^@|};]#[onground{|^@|};++inair{|^@|};](2*g()*x=2*g()*H()-v^2&x>=0)#");
+    expand("onground");
+    expand("inair");
+    composeb('R=="[gravity{|^@|};](#[?x=0;v:=-c()*v;](2*g()*x=2*g()*H()-v^2&x>=0)#&[?x!=0;](2*g()*x=2*g()*H()-v^2&x>=0))");
+    assignb('R=="[gravity{|^@|};]([?x=0;]#[v:=-c()*v;](2*g()*x=2*g()*H()-v^2&x>=0)#&[?x!=0;](2*g()*x=2*g()*H()-v^2&x>=0))");
+    testb('R=="[gravity{|^@|};](#[?x=0;](2*g()*x=2*g()*H()-(-c()*v)^2&x>=0)#&[?x!=0;](2*g()*x=2*g()*H()-v^2&x>=0))");
+    testb('R=="[gravity{|^@|};]((x=0->2*g()*x=2*g()*H()-(-c()*v)^2&x>=0)&#[?x!=0;](2*g()*x=2*g()*H()-v^2&x>=0)#)");
+    expand("gravity");
+    solve('R=="[{x'=v,v'=-g()&x>=0}]((x=0->2*g()*x=2*g()*H()-(-c()*v)^2&x>=0)&(x!=0->2*g()*x=2*g()*H()-v^2&x>=0))");
+    QE
+)
+End.
+
+Tactic "07: Bouncing Ball definitions: automatic"
+  useSolver("Mathematica");
+  autoClose
+End.
+       
+Illustration "https://lfcps.org/info/fig-bouncing-ball-dark-trace.png".
+End.       
+       
 ArchiveEntry "LFCPS Textbook/07: Simple Discrete Loop"
 Description "Example 7.2: Stronger Invariants for simple discrete loop".
 
@@ -216,7 +330,6 @@ Tactic "07: Simple Discrete Loop: automatic"
 End.
 
 End.
-
 ArchiveEntry "LFCPS Textbook/08: Event-triggered Ping-Pong Ball"
 Description "8.2.7 Proposition 8.1: Event-triggered ping-pong is safe".
 
@@ -286,8 +399,7 @@ End.
 
 Illustration "https://lfcps.org/info/ping-pong-ball-early.png".
 End.
-
-ArchiveEntry "LFCPS Textbook/09: Time-Triggered Ping-Pong Ball"
+       ArchiveEntry "LFCPS Textbook/09: Time-Triggered Ping-Pong Ball"
 Description "9.2.5 Proposition 9.1: Time-triggered ping-pong is safe".
 
 Definitions
@@ -391,8 +503,7 @@ End.
 
 Illustration "https://lfcps.org/info/ping-pong-ball-time-miss.png".
 End.
-
-ArchiveEntry "LFCPS Textbook/10: Simple rotational dynamics"
+       ArchiveEntry "LFCPS Textbook/10: Simple rotational dynamics"
 Description "10.3.7 Simple rotational dynamics".
 
 Definitions
@@ -458,13 +569,13 @@ Tactic "10: Self-crossing invariant: Proof Steps: positional"
 End.
 
 Tactic  "10: Self-crossing invariant: Proof Steps"
-  implyR('R=="x^2+x^3-y^2-c()=0->[{x'=-2*y,y'=-2*x-3*x^2}]x^2+x^3-y^2-c()=0");
-  dIRule('R=="[{x'=-2*y,y'=-2*x-3*x^2}]x^2+x^3-y^2-c()=0"); <(
+  implyR('R=="x^2+x^3-y^2-c()=0->[{x'=(-2)*y,y'=(-2)*x-3*x^2}]x^2+x^3-y^2-c()=0");
+  dIRule('R=="[{x'=(-2)*y,y'=(-2)*x-3*x^2}]x^2+x^3-y^2-c()=0"); <(
     "dI Init":
       id,
     "dI Step":
-      Dassignb('R=="[y':=-2*x-3*x^2;][x':=-2*y;]2*x^(2-1)*x'+3*x^(3-1)*x'-2*y^(2-1)*y'-0=0");
-      Dassignb('R=="[x':=-2*y;]2*x^(2-1)*x'+3*x^(3-1)*x'-2*y^(2-1)*(-2*x-3*x^2)-0=0");
+      Dassignb('R=="[y':=(-2)*x-3*x^2;][x':=(-2)*y;]2*x^(2-1)*x'+3*x^(3-1)*x'-2*y^(2-1)*y'-0=0");
+      Dassignb('R=="[x':=(-2)*y;]2*x^(2-1)*x'+3*x^(3-1)*x'-2*y^(2-1)*((-2)*x-3*x^2)-0=0");
       QE
   )
 End.
@@ -527,7 +638,8 @@ End.
 
 End.
 
-ArchiveEntry "LFCPS Textbook/11: Aerodynamic Bouncing Ball"
+
+       ArchiveEntry "LFCPS Textbook/11: Aerodynamic Bouncing Ball"
 Description "11.12: Proving Aerodynamic Bouncing Balls".
 
 Definitions      /* function symbols cannot change their value */
@@ -1089,8 +1201,7 @@ Tactic "12: Exponential difference: top-level proof"
 End.
    
 End.
-
-ArchiveEntry "LFCPS Textbook/16: Dual Filibuster Game"
+       ArchiveEntry "LFCPS Textbook/16: Dual Filibuster Game"
 Description "Example 16.4".
 
 ProgramVariables
@@ -1165,30 +1276,30 @@ Tactic "16: Push-around Cart: Proof: positional"
 End.
 
 Tactic "16: Push-around Cart: Proof: named"
-  implyR('R=="x>=0&v>=0->[{{d:=1;++d:=-1;}^@{a:=1;++a:=-1;}{x'=v,v'=a+d}}*]x>=0");
-  loop("x>=0&v>=0", 'R=="[{{d:=1;++d:=-1;}^@{a:=1;++a:=-1;}{x'=v,v'=a+d}}*]x>=0"); <(
+  implyR('R=="x>=0&v>=0->[{{d:=1;++d:=(-1);}^@{a:=1;++a:=(-1);}{x'=v,v'=a+d}}*]x>=0");
+  loop("x>=0&v>=0", 'R=="[{{d:=1;++d:=(-1);}^@{a:=1;++a:=(-1);}{x'=v,v'=a+d}}*]x>=0"); <(
     "Init":
       propClose,
     "Step":
-      composeb('R=="[{d:=1;++d:=-1;}^@{a:=1;++a:=-1;}{x'=v,v'=a+d}](x>=0&v>=0)");
-      dualb('R=="[{d:=1;++d:=-1;}^@][{a:=1;++a:=-1;}{x'=v,v'=a+d}](x>=0&v>=0)");
-      diamond('R=="![d:=1;++d:=-1;](![{a:=1;++a:=-1;}{x'=v,v'=a+d}](x>=0&v>=0))");
-      composeb('R=="<d:=1;++d:=-1;>#[{a:=1;++a:=-1;}{x'=v,v'=a+d}](x>=0&v>=0)#");
-      choiced('R=="<d:=1;++d:=-1;>[a:=1;++a:=-1;][{x'=v,v'=a+d}](x>=0&v>=0)");
-      orR('R=="<d:=1;>[a:=1;++a:=-1;][{x'=v,v'=a+d}](x>=0&v>=0)|<d:=-1;>[a:=1;++a:=-1;][{x'=v,v'=a+d}](x>=0&v>=0)");
-      assignd('R=="<d:=1;>[a:=1;++a:=-1;][{x'=v,v'=a+d}](x>=0&v>=0)");
-      assignd('R=="<d:=-1;>[a:=1;++a:=-1;][{x'=v,v'=a+d}](x>=0&v>=0)");
-      choiceb('R=="[a:=1;++a:=-1;][{x'=v,v'=a+1}](x>=0&v>=0)");
-      andR('R=="[a:=1;][{x'=v,v'=a+1}](x>=0&v>=0)&[a:=-1;][{x'=v,v'=a+1}](x>=0&v>=0)"); <(
+      composeb('R=="[{d:=1;++d:=(-1);}^@{a:=1;++a:=(-1);}{x'=v,v'=a+d}](x>=0&v>=0)");
+      dualb('R=="[{d:=1;++d:=(-1);}^@][{a:=1;++a:=(-1);}{x'=v,v'=a+d}](x>=0&v>=0)");
+      diamond('R=="![d:=1;++d:=(-1);](![{a:=1;++a:=(-1);}{x'=v,v'=a+d}](x>=0&v>=0))");
+      composeb('R=="<d:=1;++d:=(-1);>#[{a:=1;++a:=(-1);}{x'=v,v'=a+d}](x>=0&v>=0)#");
+      choiced('R=="<d:=1;++d:=(-1);>[a:=1;++a:=(-1);][{x'=v,v'=a+d}](x>=0&v>=0)");
+      orR('R=="<d:=1;>[a:=1;++a:=(-1);][{x'=v,v'=a+d}](x>=0&v>=0)|<d:=(-1);>[a:=1;++a:=(-1);][{x'=v,v'=a+d}](x>=0&v>=0)");
+      assignd('R=="<d:=1;>[a:=1;++a:=(-1);][{x'=v,v'=a+d}](x>=0&v>=0)");
+      assignd('R=="<d:=(-1);>[a:=1;++a:=(-1);][{x'=v,v'=a+d}](x>=0&v>=0)");
+      choiceb('R=="[a:=1;++a:=(-1);][{x'=v,v'=a+1}](x>=0&v>=0)");
+      andR('R=="[a:=1;][{x'=v,v'=a+1}](x>=0&v>=0)&[a:=(-1);][{x'=v,v'=a+1}](x>=0&v>=0)"); <(
         "[a:=1;][{x'=v,v'=a+1}](x>=0&v>=0)":
           assignb('R=="[a:=1;][{x'=v,v'=a+1}](x>=0&v>=0)");
           solve('R=="[{x'=v,v'=1+1}](x>=0&v>=0)");
-          hideR('R=="[a:=1;++a:=-1;][{x'=v,v'=a+-1}](x>=0&v>=0)");
+          hideR('R=="[a:=1;++a:=(-1);][{x'=v,v'=a+(-1)}](x>=0&v>=0)");
           QE,
-        "[a:=-1;][{x'=v,v'=a+1}](x>=0&v>=0)":
-          assignb('R=="[a:=-1;][{x'=v,v'=a+1}](x>=0&v>=0)");
-          solve('R=="[{x'=v,v'=-1+1}](x>=0&v>=0)");
-          hideR('R=="[a:=1;++a:=-1;][{x'=v,v'=a+-1}](x>=0&v>=0)");
+        "[a:=(-1);][{x'=v,v'=a+1}](x>=0&v>=0)":
+          assignb('R=="[a:=(-1);][{x'=v,v'=a+1}](x>=0&v>=0)");
+          solve('R=="[{x'=v,v'=(-1)+1}](x>=0&v>=0)");
+          hideR('R=="[a:=1;++a:=(-1);][{x'=v,v'=a+(-1)}](x>=0&v>=0)");
           QE
       ),
     "Post":
@@ -1223,7 +1334,6 @@ Tactic "16: Goalie in Robot Soccer: Proof: positional"
 End.
 
 Tactic "16: Goalie in Robot Soccer: Proof: named"
-  useSolver("Mathematica");
   implyR('R=="(x/v)^2*(u-w)^2<=1&x < 0&v>0&y=g-><{w:=w;++w:=-w;}^@{u:=u;++u:=-u;}{x'=v,y'=w,g'=u}>x^2+(y-g)^2<=1");
   composed('R=="<{w:=w;++w:=-w;}^@{u:=u;++u:=-u;}{x'=v,y'=w,g'=u}>x^2+(y-g)^2<=1");
   composed('R=="<{w:=w;++w:=-w;}^@>#<{u:=u;++u:=-u;}{x'=v,y'=w,g'=u}>x^2+(y-g)^2<=1#");
