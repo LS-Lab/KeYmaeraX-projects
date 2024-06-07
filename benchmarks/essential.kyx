@@ -649,7 +649,7 @@ End.
 ArchiveEntry "Dynamics: Darboux equality"
 
 Definitions
-  Real B().
+  Real B();
 End.
 
 ProgramVariables
@@ -676,7 +676,7 @@ End.
 ArchiveEntry "Dynamics: Fractional Darboux equality"
 
 Definitions
-  Real B().
+  Real B();
 End.
 
 ProgramVariables

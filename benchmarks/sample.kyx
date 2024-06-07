@@ -1,66 +1,66 @@
-ArchiveEntry "Basic Hybrid Program".
+ArchiveEntry "Basic Hybrid Program"
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   x>0 & y>0 -> [{x'=5}][{x:=x+3;}*@invariant(x>0) ++ y:=x;](x>0&y>0)
 End.
 
 End.
 
-ArchiveEntry "ETCS: Essentials".
+ArchiveEntry "ETCS: Essentials"
 
 Description "Essentials of European Train Control System (ETCS)".
 Citation "Andre Platzer. Differential dynamic logic for hybrid systems. Journal of Automated Reasoning, 41(2), pages 143-189, 2008.".
 Link "http://symbolaris.com/pub/freedL.pdf#page=14".
 
-Definitions.
-  R ep(). /* Control cycle duration upper bound */
-  R b().  /* Braking force */
-  R A().  /* Maximum acceleration */
-  R m().  /* End of movement authority (train must not drive past m) */
+Definitions
+  Real ep(); /* Control cycle duration upper bound */
+  Real b();  /* Braking force */
+  Real A();  /* Maximum acceleration */
+  Real m();  /* End of movement authority (train must not drive past m) */
 
-  R stopDist(R v) = (v^2/(2*b())).                     /* Train stopping distance from speed (.) with braking force b */
-  R accCompensation(R v) = (((A()/b()) + 1)*((A()/2)*ep()^2 + ep()*v)).     /* Distance to compensate speed increase. */
-  R SB(R v)       = (stopDist(v) + accCompensation(v)).      /* Distance needed to stop safely when accelerating once */
+  Real stopDist(Real v) = (v^2/(2*b()));                     /* Train stopping distance from speed (.) with braking force b */
+  Real accCompensation(Real v) = (((A()/b()) + 1)*((A()/2)*ep()^2 + ep()*v));     /* Distance to compensate speed increase. */
+  Real SB(Real v)       = (stopDist(v) + accCompensation(v));      /* Distance needed to stop safely when accelerating once */
 
   /* Initial states */
-  B initial(R m, R z, R v) <-> (
+  Bool initial(Real m, Real z, Real v) <-> (
     v >= 0 &
     m-z >= stopDist(v) &         /* train has sufficient distance to the end of the movement authority to stop safely */
     b()>0 &                                                                                     /* brakes are working */
     A()>=0 &                                                                                     /* engine is working */
     ep()>=0
-  ).
+  );
 
-  B safe(R m, R z, R v, R d) <-> (
+  Bool safe(Real m, Real z, Real v, Real d) <-> (
     z >= m -> v <= d      /* train 'z' drives past end of movement authority 'm' only with appropriate speed 'v'<='d' */
-  ).
+  );
 
   /* loop invariant: always maintain sufficient stopping distance */
-  B loopInv(R m, R z, R v) <-> (v >= 0 & m-z >= stopDist(v)).
+  Bool loopInv(Real m, Real z, Real v) <-> (v >= 0 & m-z >= stopDist(v));
 
   /* train controller */
   HP ctrl ::= {
         ?m() - z <= SB(v); a := -b();    /* train protection: emergency brake when close to end of movement authority */
      ++ ?m() - z >= SB(v); a :=  A();    /* free driving: accelerate when sufficient distance */
-  }.
+  };
 
   HP drive ::= {
     t := 0;                                                  /* reset control cycle timer */
     {z'=v, v'=a, t'=1  & v >= 0 & t <= ep()}                 /* drive (not backwards v>=0)
                                                                 for at most ep time (t<=ep) until next controller run */
-  }.
+  };
 End.
 
-ProgramVariables.
-  R a.  /* Actual acceleration -b <= a <= A */
-  R v.  /* Current velocity */
-  R z.  /* Train position */
-  R t.  /* Actual control cycle duration t <= ep */
+ProgramVariables
+  Real a;  /* Actual acceleration -b <= a <= A */
+  Real v;  /* Current velocity */
+  Real z;  /* Train position */
+  Real t;  /* Actual control cycle duration t <= ep */
 End.
 
 /* Safety specification of the form: initial -> [{ctrl;plant}*]safe
@@ -68,7 +68,7 @@ End.
  * any number of repetitions of running a controller 'ctrl' and then driving according to 'plant'
  * keeps the system safe (end up only in states where 'safe' is true).
  */
-Problem.
+Problem
 initial(m(),z,v)  ->
     [
       {

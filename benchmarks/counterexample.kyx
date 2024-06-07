@@ -1,318 +1,322 @@
-ArchiveEntry "Unsound Barcan".
+ArchiveEntry "Unsound Barcan"
 
-ProgramVariables.
-  R x.
+ProgramVariables
+  Real x;
 End.
 
-Problem.
+Problem
   \forall x [x:=0;]x>=0 -> [x:=0;]\forall x x>=0
 End.
 
 End.
 
-ArchiveEntry "Unsound G, V".
+ArchiveEntry "Unsound G, V"
 
-ProgramVariables.
-  R x.
+ProgramVariables
+  Real x;
 End.
 
-Problem.
+Problem
   x>=0 -> [x:=x-1;]x>=0
 End.
 
 End.
 
-ArchiveEntry "Counterexample False Constant".
+ArchiveEntry "Counterexample False Constant"
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   x=y-> [{x'=1}]x=y
 End.
 
 End.
 
-ArchiveEntry "Counterexample False Circular Invariant".
+ArchiveEntry "Counterexample False Circular Invariant"
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   x=y-> [{x'=x,y'=-y}]x=y
 End.
 
 End.
 
-ArchiveEntry "Counterexample 3.17 Variation".
+ArchiveEntry "Counterexample 3.17 Variation"
 
 Citation "Andre Platzer. Logical Analysis of Hybrid Systems: Proving Theorems for Complex Dynamics. Counterexample 3.17 variation".
 
-ProgramVariables.
-  R x1.
-  R x2.
-  R d1.
-  R d2.
-  R om.
+Definitions
+  Real v;
 End.
 
-Problem.
+ProgramVariables
+  Real x1;
+  Real x2;
+  Real d1;
+  Real d2;
+  Real om;
+End.
+
+Problem
   (x1>=0 | d1^2+d2^2=v^2) & d1^2+d2^2=1 & om!=0 -> [{x1'=d1,x2'=d2,d1'=-om*d2,d2'=om*d1}](x1>=0 | d1^2+d2^2=v^2)
 End.
 
 End.
 
-ArchiveEntry "Counterexample 3.18".
+ArchiveEntry "Counterexample 3.18"
 
 Citation "Andre Platzer. Logical Analysis of Hybrid Systems: Proving Theorems for Complex Dynamics. Counterexample 3.18".
 
-ProgramVariables.
-  R x.
+ProgramVariables
+  Real x;
 End.
 
-Problem.
+Problem
   x^2<=0 -> [{x'=1}]x^2<=0
 End.
 
 End.
 
-ArchiveEntry "Counterexample 3.19".
+ArchiveEntry "Counterexample 3.19"
 
 Description "False differential induction".
 Citation "Andre Platzer. Logical Analysis of Hybrid Systems: Proving Theorems for Complex Dynamics. Counterexample 3.19".
 
-ProgramVariables.
-  R x.
+ProgramVariables
+  Real x;
 End.
 
-Problem.
+Problem
   x!=0 -> [{x'=1}]x!=0
 End.
 
 End.
 
-ArchiveEntry "Counterexample 3.19 Variation".
+ArchiveEntry "Counterexample 3.19 Variation"
 
 Description "False differential induction".
 Citation "Andre Platzer. Logical Analysis of Hybrid Systems: Proving Theorems for Complex Dynamics. Counterexample 3.19".
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   x!=5 -> [{x'=1}]x!=5
 End.
 
 End.
 
-ArchiveEntry "Counterexample 3.25".
+ArchiveEntry "Counterexample 3.25"
 
 Description "False differential induction".
-Citation "Andre Platzer. Logical Analysis of Hybrid Systems: Proving Theorems for Complex Dynamics. Counterexample 3.25"
+Citation "Andre Platzer. Logical Analysis of Hybrid Systems: Proving Theorems for Complex Dynamics. Counterexample 3.25".
 
-ProgramVariables.
-  R x.
-  R y.
-  R a.
-  R b.
+ProgramVariables
+  Real x;
+  Real y;
+  Real a;
+  Real b;
 End.
 
-Problem.
+Problem
   <{x'=a,y'=b}>x=y
 End.
 
 End.
 
-ArchiveEntry "Counterexample 3.26".
+ArchiveEntry "Counterexample 3.26"
 
 Description "False exponential decay".
 Citation "Andre Platzer. Logical Analysis of Hybrid Systems: Proving Theorems for Complex Dynamics. Counterexample 3.26".
 
-ProgramVariables.
-  R x.
+ProgramVariables
+  Real x;
 End.
 
-Problem.
+Problem
   <{x'=-x}>x<=0
 End.
 
 End.
 
-ArchiveEntry "Counterexample 3.32".
+ArchiveEntry "Counterexample 3.32"
 
 Description "Initial value prevents progress".
 Citation "Andre Platzer. Logical Analysis of Hybrid Systems: Proving Theorems for Complex Dynamics. Counterexample 3.32".
 
-ProgramVariables.
-  R x.
+ProgramVariables
+  Real x;
 End.
 
-Problem.
+Problem
   x=0 -> <{x'=1 & x<=1 | x>=2}>x>=3
 End.
 
 End.
 
-ArchiveEntry "Counterexample 3.32 Variation".
+ArchiveEntry "Counterexample 3.32 Variation"
 
 Description "Initial value prevents progress".
 Citation "Andre Platzer. Logical Analysis of Hybrid Systems: Proving Theorems for Complex Dynamics. Counterexample 3.32".
 
-ProgramVariables.
-  R x.
+ProgramVariables
+  Real x;
 End.
 
-Problem.
+Problem
   <x:=0; {x'=1 & x<=1 | x>=2}>x>=3
 End.
 
 End.
 
-ArchiveEntry "False differential induction".
+ArchiveEntry "False differential induction"
 
-ProgramVariables.
-	R x.
+ProgramVariables
+	Real x;
 End.
 
-Problem.
+Problem
 	x>0 -> [{x'=-1}]x>0
 End.
 
 End.
 
-ArchiveEntry "False loop induction (1)".
+ArchiveEntry "False loop induction (1)"
 
-ProgramVariables.
-  R x.
+ProgramVariables
+  Real x;
 End.
 
-Problem.
+Problem
   x=0 -> [{x:=x+1;}*]x<=1
 End.
 
 End.
 
-ArchiveEntry "False loop induction (2)".
+ArchiveEntry "False loop induction (2)"
 
-ProgramVariables.
-  R x.
+ProgramVariables
+  Real x;
 End.
 
-Problem.
+Problem
   [x:=0; {x:=x+1;}*]x<=1
 End.
 
 End.
 
-ArchiveEntry "False loop induction (3)".
+ArchiveEntry "False loop induction (3)"
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   x=0 & x=y -> [{x:=x+1;y:=1;}*](x<=1 | y=0)
 End.
 
 End.
 
-ArchiveEntry "False loop induction (4)".
+ArchiveEntry "False loop induction (4)"
 
-ProgramVariables.
-  R x.
-  R y.
+ProgramVariables
+  Real x;
+  Real y;
 End.
 
-Problem.
+Problem
   x=0 -> [{x:=x+1;y:=0;}*]x<=1 | y=0
 End.
 
 End.
 
-ArchiveEntry "Primes in postcondition".
+ArchiveEntry "Primes in postcondition"
 
-ProgramVariables.
-  R x.
+ProgramVariables
+  Real x;
 End.
 
-Problem.
+Problem
   [{x'=1}]x'=1 -> x'=1
 End.
 
 End.
 
-ArchiveEntry "Primes in evolution domain constraints (1)".
+ArchiveEntry "Primes in evolution domain constraints (1)"
 
-ProgramVariables.
-  R x.
+ProgramVariables
+  Real x;
 End.
 
-Problem.
+Problem
   [{x'=2}]x'=5 <-> \forall t (t>=0 -> [x:=x+2*t;]x'=5)
 End.
 
 End.
 
-ArchiveEntry "Primes in evolution domain constraints (2)".
+ArchiveEntry "Primes in evolution domain constraints (2)"
 
-ProgramVariables.
-  R x.
+ProgramVariables
+  Real x;
 End.
 
-Problem.
+Problem
   [{x'=2 & x'>=5}]x<9 <-> \forall t (t>=0 -> (\forall s (0<=s & s<=t -> (x'>=5 -> [x:=x+2*t;]x<9))))
 End.
 
 End.
 
-ArchiveEntry "Primes in evolution domain constraints (3)".
+ArchiveEntry "Primes in evolution domain constraints (3)"
 
-ProgramVariables.
-  R x.
+ProgramVariables
+  Real x;
 End.
 
-Problem.
+Problem
   [{x'=2 & x'>=5}]false -> (x'>=5 -> false)
 End.
 
 End.
 
-ArchiveEntry "Unsound renaming".
+ArchiveEntry "Unsound renaming"
 
-ProgramVariables.
- R x.
- R y.
- R z.
+ProgramVariables
+ Real x;
+ Real y;
+ Real z;
 End.
 
-Problem.
+Problem
   (x+y)'=x'+y' -> (x+y)'=z'+y'
 End.
 
 End.
 
-ArchiveEntry "LICS: Example 3b event-triggered car is unsafe".
+ArchiveEntry "LICS: Example 3b event-triggered car is unsafe"
 
 Citation "André Platzer. Logics of dynamical systems. ACM/IEEE Symposium on Logic in Computer Science, LICS 2012, June 25–28, 2012, Dubrovnik, Croatia, pp. 13-24. IEEE 2012.".
 Link "http://symbolaris.com/pub/lds-lics.pdf#page=7".
 
-ProgramVariables.
-	R x.  /* x position of car */
-	R v.  /* v velocity of car */
-	R a.  /* a acceleration of car */
-	R b.  /* A max acceleration */
-	R A.  /* b max braking */
-	R m.  /* m position of Stop Sign */
+ProgramVariables
+	Real x;  /* x position of car */
+	Real v;  /* v velocity of car */
+	Real a;  /* a acceleration of car */
+	Real b;  /* A max acceleration */
+	Real A;  /* b max braking */
+	Real m;  /* m position of Stop Sign */
 End.
 
-Problem.
+Problem
    ( v >= 0
 	 & A >= 0
 	 & b > 0 )
@@ -327,7 +331,7 @@ Problem.
   ]x<=m
 End.
 
-Tactic "Proof should fail".
+Tactic "Proof should fail"
   /* assert tactic that checks master leaves open goals with counterexample/false */
   master
 End.

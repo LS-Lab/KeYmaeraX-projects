@@ -45,7 +45,7 @@ Illustration "https://lfcps.org/info/fig-bouncing-ball-dark1ghost.png".
 End.
 
 
-Theorem "Short Hop definitions"
+Theorem "LFCPS Textbook/05: Short Hop definitions"
 Description "5.4: A Proof of a Short Bouncing Ball single-hop without loop (definitions)".
 
 Definitions      /* function symbols cannot change their value */
@@ -71,7 +71,7 @@ Problem
   ] safe(x)
 End.
 
-Tactic "Short Hop def: Proof"
+Tactic "05: Short Hop def: Proof"
   implyR('R=="x>=0&x=H()&v=0&consts()->[gravity{|^@|};{?x=0;v:=-c()*v;++?x>=0;}]safe(x)");
   composeb('R=="[gravity{|^@|};{?x=0;v:=-c()*v;++?x>=0;}]safe(x)");
   choiceb('R=="[gravity{|^@|};]#[?x=0;v:=-c()*v;++?x>=0;]safe(x)#");
@@ -83,7 +83,7 @@ Tactic "Short Hop def: Proof"
   ODE('R=="[{x'=v,v'=-g()}]((x=0->safe(x))&(x>=0->safe(x)))")
 End.
   
-Tactic "Short Hop def: Chase Proof"
+Tactic "05: Short Hop def: Chase Proof"
   implyR('R=="x>=0&x=H()&v=0&consts()->[gravity{|^@|};{?x=0;v:=-c()*v;++?x>=0;}]safe(x)");
   composeb('R=="[gravity{|^@|};{?x=0;v:=-c()*v;++?x>=0;}]safe(x)");
   chaseAt('R=="[gravity{|^@|};]#[?x=0;v:=-c()*v;++?x>=0;]safe(x)#");
@@ -92,7 +92,7 @@ Tactic "Short Hop def: Chase Proof"
   QE
 End.
 
-Tactic "Short Hop def: automatic"
+Tactic "05: Short Hop def: automatic"
   autoClose
 End.
 

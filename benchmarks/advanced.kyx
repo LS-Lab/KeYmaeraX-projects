@@ -552,6 +552,7 @@ Citation "Stefan Mitsch, Khalil Ghorbal, David Vogelbacher, and André Platzer. 
 Link "http://symbolaris.com/pub/morerobix.pdf#page=8".
 
 Definitions
+  import kyx.math.abs;
   Real ep;      /* time limit for control decisions */
   Real b;       /* minimum braking capability of the robot */
   Real A;       /* maximum acceleration -b <= a <= A */
@@ -730,6 +731,7 @@ Citation "Stefan Mitsch, Khalil Ghorbal, David Vogelbacher, and André Platzer. 
 Link "http://symbolaris.com/pub/morerobix.pdf#page=11".
 
 Definitions
+  import kyx.math.abs;
   Real ep;      /* time limit for control decisions */
   Real b;       /* minimum braking capability of the robot */
   Real A;       /* maximum acceleration -b <= a <= A */
@@ -919,6 +921,7 @@ Citation "Liang Zou, Jidong Lv, Shuling Wang, Naijun Zhan, Tao Tang, Lei Yuan, Y
 Link "https://doi.org/10.1007/978-3-642-54108-7_14".
 
 Definitions
+  import kyx.math.min;
   Real Cb;
   Real Ca;
   Real CA;
@@ -1080,6 +1083,7 @@ ArchiveEntry "Benchmarks/Advanced/Lunar lander descent guidance (slow descent)"
 Citation "Hengjun Zhao, Mengfei Yang, Naijun Zhan, Bin GuLiang Zou, Yao Chen. Formal Verification of a Descent Guidance Control Program of a Lunar Lander. FM 2014.".
 
 Definitions
+  import kyx.math.{min,max};
   Real Isp1   = 2500;  /* thrust engine impulse (low thrust) */
   Real Isp2   = 2800;  /* thrust engine impulse (high thrust) */
   Real gM     = 1.622; /* gravitational acceleration on the moon */
