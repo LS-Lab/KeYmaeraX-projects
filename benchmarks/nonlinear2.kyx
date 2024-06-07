@@ -98,7 +98,7 @@ Theorem "Benchmarks/Nonlinear/Lotka-Volterra with tangential crossing (Invarianc
 /* General version */
 
 Definitions
-  /* import kyx.math.exp; */
+  import kyx.math.exp;
   Real a=3;
   Real b=3;
   Real d=1;
@@ -144,7 +144,7 @@ ArchiveEntry "Benchmarks/Nonlinear/Lotka-Volterra with tangential crossing (Cros
 /* Cross */
 
 Definitions
-  /* import kyx.math.exp; */
+  import kyx.math.exp;
   Real a = 3;
   Real b = 3;
   Real d = 1;
@@ -172,7 +172,7 @@ End.
 ArchiveEntry "Benchmarks/Nonlinear/Space Craft Rendezvous"
 
 Definitions
-  /* import kyx.math.abs; */
+  import kyx.math.abs;
   /* Parameters of dynamics. */
   Real mu = 3.986 * 10^14 * 60^2;         /* Units: m^3 / min^2. */
   Real r = 42164 * 10^3;                  /* Units: m. */
