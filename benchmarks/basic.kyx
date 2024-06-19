@@ -1747,6 +1747,7 @@ Citation "Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and Andr
 Link "http://symbolaris.com/pub/KeYmaera-tutorial.pdf#page=20".
 
 Definitions
+  import kyx.math.abs;
   Real A;
   Real B;
   Real b;
