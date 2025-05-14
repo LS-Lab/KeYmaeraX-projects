@@ -1,3 +1,165 @@
+ArchiveEntry "Benchmarks/Nonlinear/Traffic Scenario"
+
+Definitions
+  import kyx.math.tan;
+
+  /* Disturbances */
+  Real w1;
+  Real w2;
+
+  Real lwb = 2.578; /* Length of wheel base */
+
+  HP dyn ::= { {
+    /* x' = f(x,uref+K*(x+z-xref),w) */
+    d'  = u1 + w1,
+    p'  = v/lwb * tan(d),
+    v'  = u2 + w2,
+    sx' = v*cos(p),
+    sy' = v*sin(p),
+    /* xref' = f(xref,uref,0) */
+    dref' = u1ref,
+    pref' = vref/lwb * tan(dref),
+    vref' = u2ref,
+    sxref'= vref*cos(pref),
+    syref'= vref*sin(pref)
+  } };
+
+  HP sense ::= {
+    dhat := *; 
+    phat := *;
+    vhat := *; 
+    sxhat := *;
+    syhat := *;
+    ?Z(dhat-d, phat-p, vhat-v, sxhat-sx, syhat-sy);
+  };
+
+  HP control ::= {
+    /* read next element of reference trajectory */
+    u1ref := *;
+    u2ref := *; 
+    ?U(u1ref,u2ref);
+
+    /* read next element of feedback matrix */
+    K1_1 := *; K1_2 := *; K1_3 := *; K1_4 := *; K1_5 := *;
+    K2_1 := *; K2_2 := *; K2_3 := *; K2_4 := *; K2_5 := *;
+    
+    /* worst-case analysis: for u1ref,u2ref \in U we get u1,u2 \in U only when K=0 or when xhat=xref */
+    ?K1_1 = 0 & K1_2 = 0 & K1_3 = 0 & K1_4 = 0 & K1_5 = 0
+    &K2_1 = 0 & K2_2 = 0 & K2_3 = 0 & K2_4 = 0 & K2_5 = 0;
+
+    /* apply tracking controller */
+    u1 := ufb(
+      dhat, phat, vhat, sxhat, syhat, 
+      u1ref, 
+      K1_1, K1_2, K1_3, K1_4, K1_5,
+      dref, pref, vref, sxref, syref);    
+    u2 := ufb(
+      dhat, phat, vhat, sxhat, syhat, 
+      u2ref, 
+      K2_1, K2_2, K2_3, K2_4, K2_5,
+      dref, pref, vref, sxref, syref);    
+  };
+
+  /* Tracking controller: use with appropriate elements of U and K */
+  Real ufb(
+    /* Measured state xhat: R^5 */
+    Real dhat, Real phat, Real vhat, Real sxhat, Real syhat, 
+    /* Reference control inputs uref: R^2 */
+    Real uref, 
+    /* Feedback matrix K: R^(2x5) */
+    Real K_1, Real K_2, Real K_3, Real K_4, Real K_5, 
+    /* Reference trajectory xref: R^5 */
+    Real dref, Real pref, Real vref, Real sxref, Real syref) = (
+      /* uref + K*(x - xref) */
+      uref + (K_1*(dhat-dref) + K_2*(phat-pref) + K_3*(vhat-vref) + K_4*(sxhat-sxref) + K_5*(syhat-syref))
+  );
+  
+  /* Measurement error set Z */
+  Bool Z(Real z1, Real z2, Real z3, Real z4, Real z5) <-> (
+      (-0.0004 <= z1 & z1 <= 0.0004)
+    & (-0.0004 <= z2 & z2 <= 0.0004)
+    & (-0.006  <= z3 & z3 <= 0.006)
+    & (-0.002  <= z4 & z4 <= 0.002)
+    & (-0.002  <= z5 & z5 <= 0.002)
+  );
+
+  /* Input set U */
+  Bool U(Real u1, Real u2) <-> (
+      (-0.7 <= u1 & u1 <= 0.7)
+    & (-11 <= u2 & u2 <= 11)
+  );
+
+  /* Disturbance set W */
+  Bool W(Real w1, Real w2) <-> ( 
+      (-0.02 <= w1 & w1 <= 0.02)
+    & (-0.3 <= w2 & w2 <= 0.3)
+  );
+
+  /* Initial set */
+  Bool I(
+    Real d, Real p, Real v, Real sx, Real sy,
+    Real dref, Real pref, Real vref, Real sxref, Real syref) <-> (
+      Z(d-dref, p-pref, v-vref, sx-sxref, sy-syref)
+  );
+End.
+
+ProgramVariables
+  Real d;      /* Steering angle */
+  Real p;      /* Vehicle heading */
+  Real v;      /* Speed */
+  Real sx, sy; /* Position */
+
+  /* Measured variables */
+  Real dhat, phat, vhat, sxhat, syhat;
+
+  /* Reference variables */
+  Real dref, pref, vref, sxref, syref;
+
+  /* Feedback matrix K */
+  Real K1_1, K1_2, K1_3, K1_4, K1_5,
+       K2_1, K2_2, K2_3, K2_4, K2_5;
+
+  Real u1;     /* Control input: steering */
+  Real u2;     /* Control input: acceleration */
+
+  /* Reference control */
+  Real u1ref, u2ref;
+End.
+
+Problem
+    I(d,    p,    v,    sx,    sy,
+      dref, pref, vref, sxref, syref)
+  & U(u1, u2)    
+  -> [
+    {
+      sense;
+      control;
+      dyn;
+    }*@invariant(U(u1, u2))
+  ]U(u1,u2)
+
+End.
+
+Tactic "Scripted proof"
+unfold;
+loop("U(u1,u2)", 'R=="[{sense{|^@|};control{|^@|};dyn{|^@|};}*]U(u1,u2)"); <(
+  "Init":
+    id,
+  "Post":
+    id,
+  "Step":
+    expandAllDefs();
+    auto
+)  
+End.
+
+Tactic "Automated proof"
+expandAllDefs();
+auto
+End.
+
+End.
+
 ArchiveEntry "Benchmarks/Nonlinear/Robertson Chemical Reaction"
 
 Definitions
