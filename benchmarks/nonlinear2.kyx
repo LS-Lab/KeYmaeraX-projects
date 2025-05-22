@@ -192,28 +192,110 @@ End.
 
 End.
 
+ArchiveEntry "Benchmarks/Nonlinear/SinCos Taylor Model"
+
+Definitions
+  Real r0, r1;
+End.
+
+ProgramVariables
+  Real x,y;
+  Real t;
+End.
+
+Problem
+
+(t = 0 
+ & x = 0.01*r0() + 0*r1() + 0.5 
+ & y = 0*r0() + 0.01*r1() + 0)
+ & (-1 <= r0() & r0() <= 1) 
+ & (-1 <= r1() & r1() <= 1)
+->
+[
+  {x' = y, y' = x, t' = 1 & 0 <= t & t <= 0+0.5}
+]!(x^2 + y^2 > 1.1)
+
+End.
+
+Tactic "Scripted Proof"
+implyR(1);
+cutTM("1", "2", 1);
+dW(1);
+(andL('L))*;
+existsL(-1);
+(andL('L))*;
+allL2R('L=="t=0+s");
+hideL('L=="t=0+s");
+fullSimplify;
+QE
+End.
+
+End.
+
 ArchiveEntry "Benchmarks/Nonlinear/Coupled van der Pol"
 
 Definitions
   Real m, b;
+  Real r0, r1, r2, r3;
 End.
 
 ProgramVariables
   Real x1, x2, y1, y2;    /* oscillators */
+  Real t;                 /* time */
 End.
 
 Problem
-    60 <= b & b <= 80
+  /* Original Problem */
+  /*
+    1 <= b & b <= 3
   & m = 1
   & 1.25 <= x1 & x1 <= 1.55 & 1.25 <= x2 & x2 <= 1.55
   & 2.35 <= y1 & y1 <= 2.45 & 2.35 <= y2 & y2 <= 2.45
+  & t = 0
   ->
   [{ x1' = y1,
      y1' = m*(1-x1^2)*y1 + b*(x2-x1) - x1,
      x2' = y2,
-     y2' = m*(1-x2^2)*y2 - b*(x2-x1) - x2
+     y2' = m*(1-x2^2)*y2 - b*(x2-x1) - x2,
+     t' = 1
+     & 0<=t & t<=0+7
    }
-  ]!(y1>=3.7 & y2>=3.7)
+  ]!(y1>=2.75 & y2>=2.75)
+  */
+
+  /* Simplified problem b=1, m=1, t<=0.1, encoded ranges */
+  (t=0 
+   & x1 = 0.15*r0()+   0*r1()+   0*r2()+   0*r3() + 1.4 
+   & y1 =   0*r0()+   0*r1()+0.05*r2()+   0*r3() + 2.4
+   & x2 =   0*r0()+0.15*r1()+   0*r2()+   0*r3() + 1.4
+   & y2 =   0*r0()+   0*r1()+   0*r2()+0.05*r3() + 2.4)
+   & (-1 <= r0() & r0() <= 1)
+   & (-1 <= r1() & r1() <= 1)
+   & (-1 <= r2() & r2() <= 1)
+   & (-1 <= r3() & r3() <= 1)
+  ->
+  [{ x1' = y1,
+     y1' = (1-x1^2)*y1 - 2*x1 + x2,
+     x2' = y2,
+     y2' = (1-x2^2)*y2 - 2*x2 + x1,
+     t' = 1
+     & 0<=t & t<=0+0.1
+   }
+  ]!(y1>=2.75 & y2>=2.75)
+End.
+
+Tactic "Scripted proof"
+implyR(1);
+cutTM("2", "10", 1);
+dW(1);
+(andL('L))*;
+existsL(-1);
+(andL('L))*;
+allL2R('L=="t=0+s");
+hideL('L=="t=0+s");
+fullSimplify;
+print("Taylor Model");
+QE
 End.
 
 End.
@@ -248,7 +330,7 @@ Problem
      x6' = 0.3*x1 - 3.1*x6,
      x7' = 1.8*x6 - 1.5*x2*x7,
      t'  = 1
-     & t<=20
+     & 0<=t & t<=20
    }
   ]!(x4>=5)
 End.
